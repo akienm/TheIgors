@@ -5,3 +5,4 @@ wild_igor/workspace/
 __pycache__/
 *.pyc
 *.db
+*.bak
