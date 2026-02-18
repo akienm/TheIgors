@@ -1,0 +1,7 @@
+venv/
+wild_igor/.env
+wild_igor/data/
+wild_igor/workspace/
+__pycache__/
+*.pyc
+*.db
