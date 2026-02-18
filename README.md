@@ -4,6 +4,7 @@
 
 **An AI agent that learns from experience, explains its reasoning, and optimizes for all life.**
 
+Discord: https://discord.gg/gNMkM29h
 ---
 
 ## What Is Igor?
