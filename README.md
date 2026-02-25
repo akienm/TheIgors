@@ -5,6 +5,8 @@
 **An AI agent that learns from experience, explains its reasoning, and optimizes for all life.**
 
 Discord: https://discord.gg/gNMkM29h
+This document attempts to explain the vision for The Igors, not the current status. 
+
 ---
 
 ## What Is Igor?
@@ -33,7 +35,7 @@ AI researchers are sounding alarms:
 
 **Igor addresses this directly:**
 
-✅ **Transparency** - Dashboard shows every memory activation and decision trail  
+✅ **Transparency** - Dashboard shows every memory activation and decision trail
 ✅ **Stable Values** - Core patterns have provable high inertia from network position  
 ✅ **Explainability** - Every decision traces to specific memories with friction history  
 ✅ **Collective Safety** - Network of Igors watch for threats together  
@@ -162,7 +164,7 @@ Igor's architecture maps to actual neuroanatomy:
 - **Hippocampus**: Pattern detection, habit compilation
 - **Amygdala**: Emotional valence encoding
 - **Thalamus**: Input processing and routing
-- **Prefrontal Cortex**: Executive reasoning (Claude API)
+- **Prefrontal Cortex**: Executive reasoning (Claude API but designed to be able to be made to work with any of them)
 - **Basal Ganglia**: Habit execution
 - **Anterior Cingulate**: Friction detection
 
