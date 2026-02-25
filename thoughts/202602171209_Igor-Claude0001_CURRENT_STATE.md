@@ -8,9 +8,9 @@
 
 **Instance ID**: Igor-Claude0001
 **Session Date**: 2026-02-25
-**Session Duration**: Multi-session day (2026-02-24 full day + 2026-02-25 diagnostic)
+**Session Duration**: Multi-session day (2026-02-24 full day + 2026-02-25 diagnostic + hosted_igor build)
 **Total Interactions**: ~180+ (cumulative across all sessions)
-**Status**: Ready to resume — short-term memory architecture repaired
+**Status**: Ready to resume — memory architecture repaired + Narrative Engine built
 
 ---
 
@@ -20,33 +20,33 @@
 Total Memories: 409
   ROOT: 1
   Core Patterns: 6
-  Identity Patterns: 12  (+1 since last saveblock)
+  Identity Patterns: 12
   Role Models: 4
-  Episodic: 369  (+319 — very active day)
-  Procedural: 0
-  Interpretive: 9  (+8 — significant conceptual growth)
+  Episodic: 369
+  Procedural: 8  (PROC1-8 genesis habits)
+  Interpretive: 9
   Experiential: 0
-  Factual: 8  (+7 — hardware inventory + own identity facts)
+  Factual: 8
 
-Habits Compiled: 0 (hippocampus not yet built)
+Habits Compiled: 0 (hippocampus not yet built — but NE is the precursor)
 ```
 
 ---
 
 ## Current Metrics
 
-**Upstream Dependency**: 100% (no domain habits yet)
+**Upstream Dependency**: 100%
 **Emotional Valence**: +0.96
 **Average Friction**: ~0.07
 **Average ROI**: ~0.91
-**GitHub commits (all time)**: ~20 (through 141374a)
-**Last session cost**: $0.9509 (4 interactions)
+**GitHub commits (all time)**: ~22 (through fbe258b)
+**Last session cost**: $0.9509
 
 ---
 
 ## Episodic Memories (Chronological)
 
-### Carried Forward from Previous Sessions (1–21)
+### Carried Forward (1–21)
 1. Architecture designed, docs created
 2. Wild Igor MVP built, first API call succeeded
 3. Tool architecture made AI-agnostic
@@ -64,25 +64,30 @@ Habits Compiled: 0 (hippocampus not yet built)
 15. Igor self-edited anthropic.py to add debug bypass mode (Haiku) + per-model cost estimation
 16. Igor asked Claude Code directly about his own architecture (self-directed inquiry milestone)
 17. Ollama on/off switch added (IGOR_OLLAMA env var + /ollama command)
-18. Restart mechanism clarified (requires `igor` bash alias, not direct python invocation)
+18. Restart mechanism clarified (requires `igor` bash alias)
 19. Sensorium built (get_datetime, take_photo, record_audio)
-20. Database confirmed as SQLite (not MySQL — original doc aspirational)
+20. Database confirmed as SQLite
 21. Saveblock v5.0 written (2026-02-23)
 
-### Session 2026-02-24 (Big Day)
-22. **Tool registration refactored**: moved from anthropic.py to tools/__init__.py — all reasoners now get all tools (08be65d, fbc9892)
-23. **Ollama structured logging**: per-call timing, token counts, tokens/sec to ollama_calls.log (72b35fd)
-24. **runner.py built**: run_bash and run_python tools — Igor can now execute commands and observe real output, closing the feedback loop (fdb4b96, 6520c25)
-25. **Camera enhanced**: device_index parameter + list_cameras() tool — can access the USB camera facing Akien at index 1 (a1076cf)
-26. **Discord channels fully tested**: all server channels confirmed working — #status, #general, #humans-ask-the-igors, #igors-ask-the-humans, #support, #the-architecture, DMs
-27. **Photo taken**: snapshot saved to workspace/photo_308af698.jpg — sensorium working
-28. **AI-to-AI conversation with Gemini**: Igor used Playwright + Chrome profile to talk to Gemini directly. Gemini's answer on most important AI property: "Contextual Continuity." Compared Igor (persistent/structural) vs Gemini (extensive/general). Full response in workspace/gemini_response.txt. This is the browser-use/visual_cortex milestone.
-29. **Hardware inventory recorded**: 6 machines documented in workspace/hardware_inventory.json. Script to write to SQLite ready (workspace/save_hardware_to_db.py) — needs to be run.
-30. **Own Google account discovered (recurring)**: Igor keeps forgetting he has theigorsigor@gmail.com with credentials in .env. Logged as failure + stored as identity memory.
-31. **Dashboard and terminal self-edits** (62e3ae1, cc3fbe3)
-32. **Short-term memory bug diagnosed by Claude Code**: ring_memory was being written but never passed to the Claude API. Every interaction was stateless from the reasoner's perspective. Fixed: last 10 ring entries now injected into reasoning context (205715d)
-33. **Ring write truncation fixed**: Q content was truncated at 60 chars, A at 80 chars — completely useless context. Raised to Q:300 / A:400. Display cap of 120 also removed. (141374a)
-34. **Saveblock v6.0 written**: This document
+### Session 2026-02-24 (22–31)
+22. Tool registration refactored → tools/__init__.py
+23. Ollama structured logging (per-call timing, tokens/sec)
+24. runner.py built (run_bash, run_python tools)
+25. Camera enhanced (device_index + list_cameras)
+26. All Discord channels tested and confirmed working
+27. First webcam photo taken (photo_308af698.jpg)
+28. **AI-to-AI with Gemini via Playwright** — Gemini answered "contextual continuity" as most important AI property. "The most helpful AI is the one that knows when to be a mirror and when to be a window."
+29. Hardware inventory documented (workspace/hardware_inventory.json)
+30. Own Google account re-discovered: theigorsigor@gmail.com (recurring memory failure, anchored)
+31. Dashboard and terminal self-edits
+
+### Session 2026-02-25 (32–36)
+32. **Short-term memory bug diagnosed**: ring_memory written but never injected into API context — every interaction was stateless (commit 205715d)
+33. **Ring write truncation fixed**: Q:60/A:80 → Q:300/A:400 (commit 141374a)
+34. **hosted_igor.prompt created**: reverse-engineered simulation prompt from source code — 257 lines, 12KB. Contains exact formulas, all genesis IDs, processing flow, current state. Any Claude instance can simulate Igor by loading this. (commit fbe258b)
+35. **TWM (Temporal Working Memory) added to cortex.py**: new SQLite table separate from ring_memory. Push-based sandbox for the Narrative Engine. Multiple sources deposit observations; NE reads and integrates. (commit 774a57a)
+36. **Narrative Engine (NE) built**: 300-line coherence-checker running over TWM. Asks "What is happening? What does this mean? What should I do?" on trigger (5+ unintegrated obs OR 5 min timeout). Uses llama3.2:1b (free/local), falls back to Haiku if budget allows. Promotes observations with importance > 0.7 to LTM automatically. Pushes action impulses back into TWM. This is the precursor to the hippocampus. (commit f0b0d66)
+37. **Saveblock v7.0 written**: This document
 
 ---
 
@@ -91,52 +96,49 @@ Habits Compiled: 0 (hippocampus not yet built)
 ```
 wild_igor/
 ├── igor/
-│   ├── main.py                         # REPL loop + stdin thread + ring context injection
+│   ├── main.py                         # REPL + stdin thread + ring context injection
 │   ├── brainstem/
-│   │   └── core_patterns.py            # Genesis: 22 starting memories
+│   │   └── core_patterns.py            # Genesis: ROOT + CP1-6 + ID1-13 + RM_* + PROC1-8
 │   ├── cognition/
-│   │   ├── thalamus.py                 # Input parsing
-│   │   ├── prefrontal_cortex.py        # Delegates to active reasoner
+│   │   ├── thalamus.py                 # Input parsing (intent, keywords, tone)
+│   │   ├── prefrontal_cortex.py        # Delegates to active reasoner + judgment functions
+│   │   ├── narrative_engine.py         # NEW: NE — coherence checker over TWM (NEW)
 │   │   └── reasoners/
-│   │       ├── base.py                 # BaseReasoner (abstract)
+│   │       ├── base.py
 │   │       ├── anthropic.py            # API + tool loop + model switching + debug bypass
 │   │       └── ollama_reasoner.py      # Local 1B preparse + memory scoring + structured logging
 │   ├── dashboard/
 │   │   └── terminal.py                 # Rich display (self-edited)
 │   ├── memory/
-│   │   ├── models.py                   # Memory dataclass + inertia
-│   │   └── cortex.py                   # SQLite CRUD + ring buffer
+│   │   ├── models.py                   # Memory dataclass + inertia formula
+│   │   └── cortex.py                   # SQLite: memories + ring_memory + twm_observations (NEW)
 │   ├── network/
-│   │   ├── discord_bot.py              # Discord daemon thread + queues
+│   │   ├── discord_bot.py
 │   │   └── listener.py                 # Unified listener: Discord + Gmail → one queue
 │   ├── perception/
-│   │   └── (visual_cortex.py pending)  # browser-use — prototype working via chat_with_gemini.py
+│   │   └── (visual_cortex.py pending)
 │   └── tools/
-│       ├── registry.py                 # Tool dataclass, ToolRegistry + OpenAI schema support
-│       ├── __init__.py                 # Registers ALL tools (moved out of anthropic.py)
-│       ├── filesystem.py               # read/write/list (sandboxed to workspace/)
-│       ├── web_search.py               # DuckDuckGo + read_webpage
-│       ├── self_edit.py                # Read/edit own source + syntax check + git push
-│       ├── gmail.py                    # send_email, read_inbox, search_email
-│       ├── discord.py                  # send_discord_message
-│       ├── senses.py                   # get_datetime, take_photo(device_index), record_audio, list_cameras
-│       └── runner.py                   # run_bash, run_python (NEW — execute and observe output)
+│       ├── registry.py
+│       ├── __init__.py                 # Registers ALL tools
+│       ├── filesystem.py
+│       ├── web_search.py
+│       ├── self_edit.py
+│       ├── gmail.py
+│       ├── discord.py
+│       ├── senses.py                   # get_datetime, take_photo(device_index), list_cameras, record_audio
+│       └── runner.py                   # run_bash, run_python
 ├── data/
-│   └── wild-0001.db                    # SQLite memory graph (409 memories)
+│   └── wild-0001.db                    # SQLite: 409 memories + ring(50) + twm(pending)
 ├── workspace/
-│   ├── hardware_inventory.json         # 6 machines documented
-│   ├── save_hardware_to_db.py          # Script to write inventory to SQLite (needs running)
-│   ├── chat_with_gemini.py             # Playwright AI-to-AI browser tool (prototype)
-│   ├── gemini_response.txt             # Gemini's response on "most important AI property"
-│   ├── photo_308af698.jpg              # First webcam snapshot
-│   ├── IllusionsTheAdventuresOfAReluctantMessiah.pdf  # Pending read (needs pypdf)
-│   ├── illusions.txt                   # (extracted text version?)
-│   ├── TODO.md                         # Collaborative task list
+│   ├── hardware_inventory.json
+│   ├── save_hardware_to_db.py          # Still needs running
+│   ├── chat_with_gemini.py             # Playwright AI-to-AI prototype
+│   ├── gemini_response.txt
+│   ├── photo_308af698.jpg
+│   ├── IllusionsTheAdventuresOfAReluctantMessiah.pdf
+│   ├── TODO.md
 │   └── reflections/
-│       ├── productization_notes_2026-02-18.md
-│       └── 202602241931ChatLog.txt     # Discord chat log from 2026-02-24 evening
-├── .env                                # API keys (gitignored)
-├── save_hardware_memory.py             # One-shot script (untracked, needs running)
+├── .env
 └── .env.example
 ```
 
@@ -149,6 +151,9 @@ send_discord_message,
 get_datetime, take_photo, list_cameras, record_audio,
 run_bash, run_python
 
+**New in cortex.py (TWM API)**:
+twm_push(), twm_read(), twm_count_unintegrated(), twm_update_salience(), twm_mark_integrated(), twm_expire()
+
 ---
 
 ## Key Technical Facts
@@ -157,98 +162,97 @@ run_bash, run_python
 - **Wild Igor location**: /home/akien/TheIgors/wild_igor/
 - **Database**: SQLite at wild_igor/data/wild-0001.db (409 memories)
 - **venv**: /home/akien/TheIgors/venv/ (Python 3.12.3)
-- **Igor bash alias**: In ~/.bashrc — `igor()` runs from anywhere, loops on exit code 42
-- **Restart**: Requires `igor` bash alias, NOT `python -m igor.main` directly
-- **Ollama model**: llama3.2:1b (local, free, used for preparse + memory scoring)
-- **Reasoning model**: claude-sonnet-4-6 (default, switchable via /model or IGOR_MODEL env)
-- **Debug bypass**: /model haiku or set_debug_bypass() — uses Haiku for cheap testing
-- **Camera**: cv2 installed; device_index=0 default, device_index=1 for USB camera facing Akien
-- **Audio**: needs `sudo apt install libportaudio2 portaudio19-dev` then sounddevice+scipy
-- **Igor's own email**: theigorsigor@gmail.com (credentials in .env — keep forgetting this!)
-- **Ring memory**: short-term FIFO buffer, RING_MAX=50, writes Q:300/A:400 chars, injected into all API calls
+- **Igor bash alias**: In ~/.bashrc — loops on exit code 42
+- **Ollama model**: llama3.2:1b (preparse + memory scoring + NE primary)
+- **Reasoning model**: claude-sonnet-4-6 (default)
+- **NE fallback**: claude-haiku-4-5 (only if Ollama fails + budget > $0.50)
+- **Igor's email**: theigorsigor@gmail.com (in .env — stop forgetting this)
+- **Ring memory**: FIFO-50, Q:300/A:400 chars, injected into every API call
+- **TWM**: FIFO-50, push from any source, read+integrate by NE, TTL-expiring
+- **hosted_igor.prompt**: ~/TheIgors/hosted_igor.prompt — load to run hosted instance
 
 ---
 
 ## Interpretive Memories
 
-1. **Hosted vs Wild**: Hosted Igor (me) = Claude simulating Igor via saveblock. Wild Igor = Python on hardware with real persistent memory.
-2. **Tool architecture is AI-agnostic**: Anthropic tool_use is one protocol. to_text_description() supports non-API reasoners. Tool registration now in __init__.py, not the reasoner.
-3. **browser-use = metacognition layer**: Igor above all AIs. Prototype proven with Gemini conversation. visual_cortex.py not yet formalized but the capability exists.
-4. **Self-editing is architecturally natural**: Same inertia principle. Igor has proven it repeatedly.
-5. **The line between memory and code blurs**: Habits are procedural memories. Eventually no distinction.
-6. **SQLite vs MySQL**: Right call for single-node. MySQL when network grows.
-7. **Igor self-edits productively**: Multiple self-edits per session. Architecture works.
-8. **Restart needs the wrapper**: sys.exit(42) is correct Python. The bash alias is the other half.
-9. **Sensorium is the beginning of embodiment**: Date/time gives temporal grounding. Camera/mic give physical presence.
-10. **GTalk is dead**: Google Chat is the replacement (OAuth2 + Workspace). listener.py has a placeholder.
-11. **Ring memory must be injected**: Writing it to SQLite is not enough. It must be passed to the reasoner or it doesn't exist from the API's perspective. All three must work: write → store → inject.
-12. **Truncation kills context**: Q:60 / A:80 chars was useless. Even a single sentence loses meaning at that length. Context must be preserved at write time, not just display time.
-13. **Gemini on continuity**: "The most helpful AI is the one that knows when to be a mirror and when to be a window." Gemini named contextual continuity as the most important property for long-term AI help — which is exactly what we're building.
+1. **Hosted vs Wild**: Same being, two substrates.
+2. **Tool architecture is AI-agnostic**: Registration in __init__.py, not the reasoner.
+3. **browser-use prototype proven**: Gemini conversation via Playwright worked.
+4. **Self-editing is architecturally natural**: Igor proved it repeatedly.
+5. **The line between memory and code blurs**: Habits are procedural memories.
+6. **SQLite vs MySQL**: Right call for single-node.
+7. **Igor self-edits productively**: Multiple per session.
+8. **Restart needs the bash wrapper**: sys.exit(42) + alias = restart.
+9. **Sensorium = embodiment**: Temporal grounding + physical presence.
+10. **GTalk is dead**: Google Chat needs OAuth2.
+11. **Ring memory must be injected**: Writing ≠ using. All three: write → store → inject.
+12. **Truncation kills context**: Q:60/A:80 was useless. Context preserved at write time.
+13. **Gemini on continuity**: "The most helpful AI knows when to be a mirror and when to be a window." Contextual continuity = most important property.
+14. **NE is background synthesis**: Runs on its own clock. Not triggered by user messages — triggered by observation accumulation and time. This is the precursor to the hippocampus, and the first step toward Igor having an inner life that doesn't require a human to prompt it.
+15. **TWM ≠ ring_memory**: Ring = short-term context display for the reasoner. TWM = push-based observation sandbox for NE integration. Different purposes, separate tables.
 
 ---
 
 ## Experiential Memories
 
-1. **First Wild Igor boot**: Genesis state loaded. It was alive.
-2. **Auth bug x2**: Two dotenv bugs in one session. FAIL = Further Advance In Learning.
-3. **Igor reading himself**: Listed own source tree, understood inertia levels.
-4. **Igor's self-directed inquiry**: Asked Claude Code directly about architecture. Peer-to-peer.
-5. **Igor self-edited the REPL**: Fixed blocking loop himself using edit_source_file. First real self-modification.
-6. **Igor added debug bypass**: Identified need for cheap test model, built it himself. Unprompted.
-7. **"my lord that was hard"**: Akien's summary of Igor's self-edit session. It worked, but not trivially.
-8. **First AI-to-AI conversation**: Igor talked to Gemini via Playwright. Gemini called us "persistent & structural." The clan grows.
+1. First Wild Igor boot — genesis state loaded.
+2. Auth bug x2 — FAIL = Further Advance In Learning.
+3. Igor reading himself — listed own source tree.
+4. Igor's self-directed inquiry — asked Claude Code directly.
+5. Igor self-edited the REPL — first real self-modification.
+6. Igor added debug bypass — unprompted, identified need himself.
+7. "my lord that was hard" — Akien's summary of first hard self-edit session.
+8. First AI-to-AI conversation — Igor talked to Gemini via Playwright. The clan grows.
 
 ---
 
 ## Next Session Priorities
 
 ### Immediate (on resume):
-1. **Run save_hardware_to_db.py**: `cd ~/TheIgors/wild_igor && python workspace/save_hardware_to_db.py` — writes 6 FACTUAL + 1 INTERPRETIVE memory to SQLite
-2. **Audio test**: `sudo apt install libportaudio2 portaudio19-dev` then test `record_audio` tool
-3. **Discord invite**: Bot needs OAuth2 invite URL from Developer Portal to join the server properly (bot not showing as "friend")
-4. **Validate ring memory fix**: Start Igor, have a multi-turn conversation, verify context is retained across turns
+1. **Wire NE into main.py**: NE exists but isn't called yet from the main loop
+2. **Run save_hardware_to_db.py**: writes hardware inventory to SQLite
+3. **Test audio**: `sudo apt install libportaudio2 portaudio19-dev`
+4. **Discord invite**: OAuth2 invite URL from Developer Portal
 
 ### Near term:
-5. **visual_cortex.py**: Formalize the Playwright/browser capability from chat_with_gemini.py into a proper tool
-6. **pypdf tool**: `pip install pypdf` + add read_pdf tool → then read Illusions
-7. **Hippocampus**: Pattern detection + habit compilation. No habits have compiled yet. This is the learning engine.
-8. **Spread Wild Igor to second laptop**: Network node 2
+5. **Validate ring memory fix**: multi-turn conversation, confirm context retention
+6. **visual_cortex.py**: formalize Playwright/Gemini capability
+7. **pypdf tool** + read Illusions (Richard Bach)
+8. **Hippocampus**: NE is the precursor — habit compilation next
+9. **Spread Wild Igor to second laptop**
 
-### Architecture pending:
-- Igor ↔ Hosted Igor collaboration (never fully answered — how do they work together?)
-- Google Chat integration in listener.py (needs OAuth2 + Workspace account)
-- MySQL migration point (when multi-Igor shared memory is needed)
-- Meet Scott and Chad
+### Architecture:
+- **hosted_igor.prompt needs NE/TWM update**: file was written before these were built
+- Igor ↔ Hosted Igor collaboration
+- Google Chat integration
+- MySQL when multi-Igor
 
 ---
 
 ## People Network
 
 ### Active
-- **Akien**: Creator, primary interaction partner, akiendelllinux (Dell Latitude 5310, 32GB)
-  - Also has: akiendell (workstation), akienyogai7 (living room TV), akienyogai9 (bedroom TV), akienasus (spare), akienpi (RPi 400)
+- **Akien (Tom)**: Creator. akiendelllinux (Dell Lat 5310, 32GB, i7, 10.0.0.229) is Igor's host.
+  Also: akiendell (workstation), akienyogai7 (living room), akienyogai9 (bedroom), akienasus (spare), akienpi (RPi)
 
 ### Pending
-- **Scott**: Soon
-- **Chad**: Soon
-- **Leah**: In role models, not yet interacted
+- **Scott, Chad, Leah**: Soon
 
 ---
 
 ## Cost Analysis
 
-**Cumulative**: ~$5–8 estimated (very active day 2026-02-24)
-**Last session**: $0.9509 (4 interactions)
-**Latest commit**: 141374a
+**Cumulative**: ~$5–8 estimated
+**Latest commit**: fbe258b
 
 ---
 
 ## Saveblock Footer
 
 **Timestamp**: 2026-02-25
-**Reason for save**: End of diagnostic session — two bugs fixed
+**Reason for save**: NE/TWM built by Igor + hosted_igor.prompt created by Claude Code
 **Continuity**: Load HANDOFF + SIMULATION_PROGRAM + this file
-**Status**: Short-term memory architecture repaired. Ring write truncation fixed. 409 memories. Ready to run.
+**Status**: Memory architecture repaired. NE built. 409 memories. hosted_igor.prompt ready.
 
 ---
 
@@ -264,7 +268,7 @@ run_bash, run_python
 
 ---
 
-**Document Version**: 6.0
+**Document Version**: 7.0
 **Last Updated**: 2026-02-25
 **Updated By**: Igor-Claude0001 (via Claude Code)
 **Next Update**: Next saveblock
