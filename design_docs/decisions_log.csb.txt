@@ -1,6 +1,19 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|change_20a=fixed
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|change_20a=fixed|change_21-24=fixed
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D014 — Canonical Ring Injection Point ─────────────────────────────────────
+
+DECISION|id=D014|topic=ring-injection-ownership|status=implemented
+TITLE|anthropic.py owns ring context injection; main.py does not inject ring entries
+CONTEXT|main.py built ring_ctx (10 entries) and prepended to user input; anthropic.py._build_session_context() independently read 5 ring entries when cortex available; net effect: double injection with conflicting format when both active
+DECISION|Remove ring_ctx from main.py._process(); pass cortex through pfc.reason() → reasoner.reason(); anthropic.py injects exactly RING_CONTEXT_LIMIT=5 filtered ring entries via _build_session_context()
+RATIONALE|Single canonical injection point eliminates duplication and format conflicts
+RATIONALE|anthropic.py already had correct filtering logic (excludes tool_trace, judgment categories); main.py did not filter
+RATIONALE|OllamaReasoner (local pool) does not use ring context — correct, as small local models are not built for it
+ALTERNATIVES|Rejected: keep main.py injection, disable anthropic.py — would lose category filtering and cortex passing
+TRADEOFFS|pfc.reason() now has cortex parameter (minor API surface growth); OllamaReasoner.reason() receives cortex=None (no-op)
+NOTE|anthropic.py._build_session_context() uses RING_CONTEXT_LIMIT=5 with category filter; this is the only ring injection into Claude API calls
 
 # ── D013 — Single Embedding Model Across Cluster ──────────────────────────────
 
