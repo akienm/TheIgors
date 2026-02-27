@@ -1,6 +1,19 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|change_20a=fixed|change_21-24=fixed
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|change_30=gateway_pattern
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D015 — Gateway Pattern: Igor Owns All State ───────────────────────────────
+
+DECISION|id=D015|topic=gateway-pattern|status=implemented|change=30
+TITLE|Igor class is the sole owner of runtime state; interfaces hold no state references
+CONTEXT|web/server.py held `_cortex = None` module-level var; `_api_dashboard` called `_cortex.total_count()` directly; `update_stats()` was a push from `_process()` every interaction
+DECISION|Add `Igor.get_stats() → dict`; pass `stats_fn=self.get_stats` to `web_server.start()`; `/api/dashboard` calls `stats_fn()`; remove `_cortex` from server.py and `update_stats()` entirely
+RATIONALE|Igor.cortex is internal state — exposing it to web server creates cross-module coupling that is hard to test, refactor, or version independently
+RATIONALE|Pull model (dashboard polls `stats_fn()`) is simpler than push model (Igor pushes on every interaction); live values without push/pull race conditions
+RATIONALE|Prepares for change.33 (arbiter) and change.35-36 (network) which will add more interfaces; clean boundary now prevents proliferation of direct state access
+ALTERNATIVES|Rejected: keep `_cortex` in server.py (existing coupling); keep `update_stats()` push with cortex removed (hybrid still couples push timing to `_process()`)
+TRADEOFFS|`/api/dashboard` now calls `cortex.total_count()` on every HTTP poll (5s); negligible cost for SQLite COUNT(*)
+NOTE|discord_bot.py was already clean — no cortex access; only web/server.py needed the fix
 
 # ── D014 — Canonical Ring Injection Point ─────────────────────────────────────
 
