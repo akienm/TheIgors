@@ -1,0 +1,39 @@
+2026-02-26 18:05:17,589 event=bot_thread_start 
+2026-02-26 18:05:17,589 event=bot_thread_launched allowed_channel=None
+2026-02-26 18:05:20,587 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-26 18:18:35,065 event=msg_received author='akienm' channel='status' message_id=1476750328505303132 content_len=7 preview='you ok?'
+2026-02-27 11:14:05,072 event=bot_thread_start 
+2026-02-27 11:14:05,072 event=bot_thread_launched allowed_channel=None
+2026-02-27 11:14:07,980 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 11:30:28,151 event=bot_thread_start 
+2026-02-27 11:30:28,151 event=bot_thread_launched allowed_channel=None
+2026-02-27 11:30:32,338 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 11:48:59,296 event=bot_thread_start 
+2026-02-27 11:48:59,297 event=bot_thread_launched allowed_channel=None
+2026-02-27 11:49:02,229 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 11:54:44,782 event=bot_thread_start 
+2026-02-27 11:54:44,783 event=bot_thread_launched allowed_channel=None
+2026-02-27 11:54:47,662 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 12:05:55,870 event=bot_thread_start 
+2026-02-27 12:05:55,871 event=bot_thread_launched allowed_channel=None
+2026-02-27 12:05:58,798 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 12:17:25,299 event=bot_thread_start 
+2026-02-27 12:17:25,299 event=bot_thread_launched allowed_channel=None
+2026-02-27 12:17:28,421 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 12:26:07,122 event=bot_thread_start 
+2026-02-27 12:26:07,123 event=bot_thread_launched allowed_channel=None
+2026-02-27 12:26:09,909 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 12:42:48,361 event=bot_thread_start 
+2026-02-27 12:42:48,361 event=bot_thread_launched allowed_channel=None
+2026-02-27 12:42:51,280 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 12:55:51,500 event=bot_thread_start 
+2026-02-27 12:55:51,500 event=bot_thread_launched allowed_channel=None
+2026-02-27 12:55:54,798 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 12:56:13,767 event=msg_received author='akienm' channel='status' message_id=1477031593041330466 content_len=15 preview='testing discord'
+2026-02-27 12:56:46,072 event=msg_received author='akienm' channel='status' message_id=1477031728605302784 content_len=21 preview='no response receieved'
+2026-02-27 13:34:30,093 event=bot_thread_start 
+2026-02-27 13:34:30,093 event=bot_thread_launched allowed_channel=None
+2026-02-27 13:34:33,035 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 14:24:11,802 event=bot_thread_start 
+2026-02-27 14:24:11,803 event=bot_thread_launched allowed_channel=None
+2026-02-27 14:24:14,676 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False

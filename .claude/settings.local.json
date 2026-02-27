@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(/home/akien/TheIgors/venv/bin/pip list:*)",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "Bash(git rm:*)",
+      "Bash(git:*)",
+      "Bash(python:*)",
+      "Bash(ollama list:*)"
     ]
   }
 }

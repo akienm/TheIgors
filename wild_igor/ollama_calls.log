@@ -1,0 +1,92 @@
+2026-02-26 18:06:02,342 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=1.2 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-26 18:06:40,159 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=37816.5 tokens_in=543 tokens_out=383 tok_per_sec=10.1 ok=True
+2026-02-26 18:08:31,625 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=26755.2 tokens_in=783 tokens_out=230 tok_per_sec=8.6 ok=True
+2026-02-26 18:13:29,721 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=42.8 ok=False error="model 'llama3.2:1b' not found (status code: 404)"
+2026-02-26 18:13:29,932 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=210.4 ok=False error="model 'llama3.2:1b' not found (status code: 404)"
+2026-02-26 19:30:24,726 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=4614793.5 tokens_in=1254 tokens_out=575 tok_per_sec=0.1 ok=True
+2026-02-26 19:30:24,837 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=13.0 ok=False error="model 'llama3.2:1b' not found (status code: 404)"
+2026-02-26 19:31:25,292 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=60455.2 tokens_in=1112 tokens_out=332 tok_per_sec=5.5 ok=True
+2026-02-26 19:32:44,706 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=79311.0 tokens_in=1167 tokens_out=507 tok_per_sec=6.4 ok=True
+2026-02-26 20:26:52,111 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=1.4 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-26 20:27:26,718 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=34606.5 tokens_in=790 tokens_out=282 tok_per_sec=8.1 ok=True
+2026-02-27 11:30:42,343 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=0.7 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 11:31:20,067 fn=OllamaReasoner.reason model=llama3.2:1b elapsed_ms=37724.2 tokens_in=817 tokens_out=219 tok_per_sec=5.8 ok=True
+2026-02-27 11:55:04,490 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.6 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 11:55:04,499 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=8.9 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:04,512 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=12.7 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:04,542 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=30.6 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:08,227 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3684.2 tokens_in=485 tokens_out=192 tok_per_sec=52.1 ok=True
+2026-02-27 11:55:08,855 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=5.2 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:08,861 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=5.7 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:08,869 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=7.7 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:10,401 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1532.0 tokens_in=488 tokens_out=43 tok_per_sec=28.1 ok=True
+2026-02-27 11:55:11,027 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=5.1 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:11,034 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=6.3 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:55:14,508 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3474.1 tokens_in=388 tokens_out=187 tok_per_sec=53.8 ok=True
+2026-02-27 11:56:32,058 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=68.6 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 11:56:32,883 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=824.4 tokens_in=347 tokens_out=13 tok_per_sec=15.8 ok=True
+2026-02-27 12:06:06,005 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.6 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:06:11,519 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=5513.6 tokens_in=300 tokens_out=189 tok_per_sec=34.3 ok=True
+2026-02-27 12:06:16,998 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2371.7 tokens_in=440 tokens_out=64 tok_per_sec=27.0 ok=True
+2026-02-27 12:06:20,998 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3386.0 tokens_in=349 tokens_out=59 tok_per_sec=17.4 ok=True
+2026-02-27 12:06:21,664 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=43.3 ok=False error="model 'gemma3:270M' not found (status code: 404)"
+2026-02-27 12:06:22,832 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1167.6 tokens_in=409 tokens_out=32 tok_per_sec=27.4 ok=True
+2026-02-27 12:06:50,999 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=937.3 tokens_in=259 tokens_out=31 tok_per_sec=33.1 ok=True
+2026-02-27 12:17:44,563 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.6 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:17:46,886 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2322.7 tokens_in=278 tokens_out=40 tok_per_sec=17.2 ok=True
+2026-02-27 12:17:49,048 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1514.0 tokens_in=324 tokens_out=46 tok_per_sec=30.4 ok=True
+2026-02-27 12:17:52,457 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2769.6 tokens_in=361 tokens_out=72 tok_per_sec=26.0 ok=True
+2026-02-27 12:18:50,558 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1713.3 tokens_in=137 tokens_out=16 tok_per_sec=9.3 ok=True
+2026-02-27 12:19:08,029 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1269.2 tokens_in=119 tokens_out=70 tok_per_sec=55.2 ok=True
+2026-02-27 12:19:25,182 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.5 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:19:26,399 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1217.5 tokens_in=230 tokens_out=32 tok_per_sec=26.3 ok=True
+2026-02-27 12:19:28,318 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1213.9 tokens_in=274 tokens_out=26 tok_per_sec=21.4 ok=True
+2026-02-27 12:26:30,860 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.6 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:26:34,093 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3233.6 tokens_in=288 tokens_out=108 tok_per_sec=33.4 ok=True
+2026-02-27 12:26:36,330 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1614.6 tokens_in=363 tokens_out=40 tok_per_sec=24.8 ok=True
+2026-02-27 12:26:39,007 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2032.8 tokens_in=390 tokens_out=22 tok_per_sec=10.8 ok=True
+2026-02-27 12:43:12,244 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.8 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:43:14,816 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2572.2 tokens_in=264 tokens_out=70 tok_per_sec=27.2 ok=True
+2026-02-27 12:43:53,613 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1049.4 tokens_in=201 tokens_out=25 tok_per_sec=23.8 ok=True
+2026-02-27 12:43:57,716 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2470.2 tokens_in=336 tokens_out=58 tok_per_sec=23.5 ok=True
+2026-02-27 12:44:00,348 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1964.6 tokens_in=255 tokens_out=50 tok_per_sec=25.5 ok=True
+2026-02-27 12:44:46,966 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=761.1 tokens_in=198 tokens_out=26 tok_per_sec=34.2 ok=True
+2026-02-27 12:56:08,776 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.6 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:56:10,497 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1720.1 tokens_in=271 tokens_out=7 tok_per_sec=4.1 ok=True
+2026-02-27 12:56:14,727 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3235.6 tokens_in=384 tokens_out=152 tok_per_sec=47.0 ok=True
+2026-02-27 12:56:18,656 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3311.4 tokens_in=279 tokens_out=120 tok_per_sec=36.2 ok=True
+2026-02-27 12:56:47,847 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1454.7 tokens_in=281 tokens_out=7 tok_per_sec=4.8 ok=True
+2026-02-27 12:57:06,354 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1382.4 tokens_in=299 tokens_out=51 tok_per_sec=36.9 ok=True
+2026-02-27 12:57:06,951 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.5 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 12:57:12,188 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=5237.3 tokens_in=305 tokens_out=307 tok_per_sec=58.6 ok=True
+2026-02-27 12:57:25,482 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1143.0 tokens_in=208 tokens_out=32 tok_per_sec=28.0 ok=True
+2026-02-27 12:57:42,405 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=720.0 tokens_in=156 tokens_out=22 tok_per_sec=30.6 ok=True
+2026-02-27 12:57:49,706 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=674.9 tokens_in=198 tokens_out=26 tok_per_sec=38.5 ok=True
+2026-02-27 13:34:44,357 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1.3 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 13:34:46,038 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1680.5 tokens_in=113 tokens_out=12 tok_per_sec=7.1 ok=True
+2026-02-27 13:34:56,229 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=481.8 tokens_in=10 tokens_out=21 tok_per_sec=43.6 ok=True
+2026-02-27 14:24:32,716 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=5711.7 tokens_in=331 tokens_out=394 tok_per_sec=69.0 ok=True
+2026-02-27 14:24:33,366 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.5 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 14:24:36,881 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3514.7 tokens_in=311 tokens_out=120 tok_per_sec=34.1 ok=True
+2026-02-27 14:24:39,103 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1609.5 tokens_in=251 tokens_out=66 tok_per_sec=41.0 ok=True
+2026-02-27 14:27:27,744 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1640.2 tokens_in=139 tokens_out=30 tok_per_sec=18.3 ok=True
+2026-02-27 14:27:41,840 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=451.3 tokens_in=129 tokens_out=7 tok_per_sec=15.5 ok=True
+2026-02-27 14:27:58,688 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=709.7 tokens_in=130 tokens_out=35 tok_per_sec=49.3 ok=True
+2026-02-27 14:28:01,835 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.5 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 14:28:03,124 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1288.4 tokens_in=259 tokens_out=25 tok_per_sec=19.4 ok=True
+2026-02-27 14:28:05,159 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1398.3 tokens_in=246 tokens_out=46 tok_per_sec=32.9 ok=True
+2026-02-27 14:28:07,180 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1368.2 tokens_in=223 tokens_out=62 tok_per_sec=45.3 ok=True
+2026-02-27 14:28:52,377 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=733.6 tokens_in=228 tokens_out=21 tok_per_sec=28.6 ok=True
+2026-02-27 14:28:57,502 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=515.4 tokens_in=150 tokens_out=16 tok_per_sec=31.0 ok=True
+2026-02-27 14:29:58,391 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.5 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 14:29:59,385 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=993.5 tokens_in=219 tokens_out=22 tok_per_sec=22.1 ok=True
+2026-02-27 14:30:22,003 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=3342.7 tokens_in=293 tokens_out=173 tok_per_sec=51.8 ok=True
+2026-02-27 14:30:24,224 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1069.1 tokens_in=315 tokens_out=28 tok_per_sec=26.2 ok=True
+2026-02-27 14:30:32,311 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=414.1 tokens_in=130 tokens_out=7 tok_per_sec=16.9 ok=True
+2026-02-27 14:31:11,643 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1074.1 tokens_in=351 tokens_out=26 tok_per_sec=24.2 ok=True
+2026-02-27 14:31:12,285 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=0.5 ok=False error='Failed to connect to Ollama. Please check that Ollama is downloaded, running and accessible. https://ollama.com/download'
+2026-02-27 14:31:13,702 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1416.0 tokens_in=277 tokens_out=42 tok_per_sec=29.7 ok=True
+2026-02-27 14:31:17,193 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2840.9 tokens_in=222 tokens_out=147 tok_per_sec=51.7 ok=True
+2026-02-27 15:16:24,865 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2211.8 tokens_in=320 tokens_out=45 tok_per_sec=20.3 ok=True
+2026-02-27 15:16:26,881 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1361.9 tokens_in=327 tokens_out=54 tok_per_sec=39.6 ok=True
+2026-02-27 15:21:41,597 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2312.9 tokens_in=128 tokens_out=20 tok_per_sec=8.6 ok=True
