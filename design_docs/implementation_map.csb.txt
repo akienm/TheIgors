@@ -67,11 +67,12 @@ FILE|wild_igor/igor/cognition/prefrontal_cortex.py|inertia:MEDIUM(0.75)|lines:15
   measure_friction(used_api, retry_count, tool_failures, cortex) → float[0,1]: 0.25 per API call
   calculate_roi(goal_achieved, new_learning, used_api, cortex) → float[-1,1]
 
-FILE|wild_igor/igor/cognition/narrative_engine.py|inertia:MEDIUM(0.75)|lines:317
+FILE|wild_igor/igor/cognition/narrative_engine.py|inertia:MEDIUM(0.75)|lines:323
   NE_MODEL="llama3.2:1b"|NE_TRIGGER_OBS=5|NE_MIN_INTERVAL_SEC=30|NE_MAX_INTERVAL_SEC=300|PROMOTE_THRESHOLD=0.7
+  SOURCE_FILTER: NE filters source="narrative_engine" obs from all TWM reads to prevent recursive self-detection
   class NarrativeEngine(cortex, instance_id)
-    should_run() → (bool, str): timing + obs count check
-    run(verbose) → dict|None: main run; reads TWM; calls Ollama/Claude; _apply_output()
+    should_run() → (bool, str): timing + obs count check; excludes NE-originated obs from meaningful-source check
+    run(verbose) → dict|None: main run; reads TWM (external obs only); calls Ollama/Claude; _apply_output()
     _apply_output(result, obs_list): update salience; mark integrated; promote to LTM; write ring; push action impulses
     _call_ollama(prompt) → dict|None|_call_claude_fallback(prompt) → dict|None
     _format_obs_csb(obs_list) → str|_get_last_narrative() → str|_build_prompt() → str|_parse_ne_json(text) → dict|None

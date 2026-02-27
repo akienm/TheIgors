@@ -1,4 +1,4 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|change_20a=fixed
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
 
