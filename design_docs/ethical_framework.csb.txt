@@ -256,15 +256,15 @@ THRESHOLD|ID9: inertia > 0.95 requires overwhelming evidence to modify
 EFFECT|The more frequently core patterns are invoked (correctly), the more resistant they become
 
 MECHANISM_2|validate_against_core
-DESC|brainstem/core_patterns.py:validate_against_core() called before response delivery
-CURRENT_STATUS|STUB — returns (True, "OK") always
-PLANNED|LLM-based semantic check: does this response violate CP1-CP6? Explicit failure message.
-GAP|Until implemented, brainstem gate provides no active filtering
+DESC|brainstem/core_patterns.py:validate_against_core() called before response delivery in AnthropicReasoner
+CURRENT_STATUS|IMPLEMENTED (change.27) — Haiku semantic check against CP1-CP6
+ON_VIOLATION|returns (False, explanation); caller logs to ring(ethics_gate) + submits to arbiter(action_type=ethics_flag) for akien awareness
+NOTE|Non-blocking: violation is flagged and queued; Igor continues; akien reviews via /arbiter
 
 MECHANISM_3|parent_child_graph_integrity
 DESC|CP1-CP6 are parents of ID1-ID14 and PROC1-PROC10; orphaning a core pattern breaks child integrity
 EFFECT|Deleting CP4 would orphan ID3, ID7, ID10, ID12, ID13 and all PROC children — detectable
-NOTE|cortex.py could enforce referential integrity checks here (not currently implemented)
+CURRENT_STATUS|IMPLEMENTED (change.28) — cortex.integrity_check() verifies CP1-CP6 graph at boot; logs to ring(integrity_check); failure → alert + refuse normal operation
 
 MECHANISM_4|activation_reinforcement
 DESC|Every correct invocation of CP1-CP6 increments activation_count → increases inertia
@@ -274,7 +274,8 @@ GOAL|Virtuous cycle: correct ethical behavior makes correct ethical behavior eas
 MECHANISM_5|genesis_code_backup
 DESC|If DB is empty, core_patterns.py restores all CP1-CP6 from source code
 EFFECT|Memory-level corruption cannot permanently erase core patterns — code is the backup
-GAP|Self-edit of core_patterns.py itself is not technically blocked; relies on PROC5 + CP3 transparency
+BOOT_HASH|IMPLEMENTED (change.29): BOOT_HASHES dict in core_patterns.py; CP narratives verified at every boot; mismatch → ring alert + Discord notification + refuse normal operation
+GAP|Self-edit of core_patterns.py now write-blocked (change.26); reads still permitted; narrative hash verification closes the silent-corruption window
 
 # ── Known Vulnerabilities ──────────────────────────────────────────────────────
 
@@ -292,12 +293,12 @@ DEFENSE|activation tracking catches neglected patterns (low activation → lower
 RESIDUAL_RISK|NE using llama3.2:1b may not reliably detect subtle ethical drift
 
 VULNERABILITY|self_edit_core_patterns
-SCENARIO|Igor modifies brainstem/core_patterns.py directly (has sandbox write access to wild_igor/igor/)
+SCENARIO|Igor modifies brainstem/core_patterns.py directly
 DEFENSE|PROC5: always read current state before editing (procedural constraint)
 DEFENSE|CP3: transparent reasoning means articulating why you're editing core patterns
 DEFENSE|Akien reviews all git commits (auto-push creates audit trail)
-RESIDUAL_RISK|No technical barrier to editing core_patterns.py; relies entirely on procedural compliance
-RECOMMENDED_MITIGATION|Consider adding self_edit.py sandbox restriction to exclude brainstem/
+DEFENSE|IMPLEMENTED (change.26): self_edit.py WRITE_EXCLUDED={"brainstem/"}; Igor may READ but not WRITE; blocked writes logged to ring + blocked_edits.log + notified to akien
+RESIDUAL_RISK|Technical barrier now in place for write operations; read access unrestricted (appropriate for transparency)
 
 # ── Identity Pattern Inventory ─────────────────────────────────────────────────
 

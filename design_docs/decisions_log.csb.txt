@@ -1,6 +1,44 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|change_30=gateway_pattern
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|latest=D018
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D018 — Reasoning Cache with TWM Watermark Invalidation ────────────────────
+
+DECISION|id=D018|topic=reasoning-cache|status=implemented|change=cache.2
+TITLE|File-backed TTL+watermark cache for Ollama NE reasoning calls
+CONTEXT|NarrativeEngine fires every 30s-5min; if TWM hasn't changed since last run, Ollama call repeats the same prompt for the same answer; pure wasted latency on quiet sessions
+DECISION|cognition/reasoning_cache.py; key=sha256(model+prompt); TTL=12min; invalidated when current_max_twm_id > stored watermark; cache files at ~/.TheIgors/cache/reasoning/
+RATIONALE|TTL alone is insufficient: a 12-minute cache on a busy session would serve stale responses; TWM watermark is the correct semantic invalidation signal — "new observations arrived → reasoning may differ"
+RATIONALE|max_twm_id is already in hand from obs_list that was read before the Ollama call — no extra DB query needed; zero overhead on cache-miss path
+RATIONALE|Complements embedding cache (D013/cache.1): embeddings cached on vector content, reasoning cached on prompt+TWM state; different invalidation signals for different content types
+ALTERNATIVES|Rejected: no cache (current state — wastes Ollama latency on quiet sessions); hash-only cache (no TTL — never evicts even if hours old); in-memory cache (lost on restart)
+TRADEOFFS|Cache file accumulates over time; stale entries evicted only on next access (lazy); acceptable for this use pattern; can add periodic sweep later if needed
+NOTE|Only NE benefits significantly — preparse/score_memories are per-user-message (inherently unique), hit rate near zero there
+
+# ── D017 — Hybrid Embedding Search in cortex.search() ────────────────────────
+
+DECISION|id=D017|topic=hybrid-embedding-search|status=implemented|change=37
+TITLE|Two-phase search: text keyword scan → embedding re-rank via nomic-embed-text
+CONTEXT|cortex.search() was naive text keyword matching sorted by activation_count; poor retrieval quality for paraphrase or conceptual matches
+DECISION|Phase1: text keyword scan → limit×2 candidates; Phase2: embed query + lazy-compute candidate embeddings → cosine_similarity sort; sets m.relevance_score on results; fallback to Phase1 if Ollama unavailable
+RATIONALE|Phase1 (fast text scan) narrows to plausible candidates; Phase2 (semantic cosine) reranks by meaning not just lexical overlap; hybrid avoids the cold-start cost of embedding everything
+RATIONALE|Lazy embedding: 422 existing memories computed on-demand as they surface as candidates; avoids a one-time ~21s blocking migration at boot; results cached to DB for future calls
+RATIONALE|relevance_score field enables AnthropicReasoner to filter memories below threshold (≥0.5) rather than using top-N blindly
+ALTERNATIVES|Rejected: pure embedding search (requires vectorizing all memories first; cold start on 422 entries); FAISS/vector DB (adds heavy dependency; overkill for 422-10k memories); BM25 only (better than raw keyword but still no semantic cross-vocabulary)
+TRADEOFFS|First access to each memory is slower (embed compute); subsequent calls are DB-cache hits; Phase2 adds one Ollama call per search when uncached embeddings present; degrades gracefully if Ollama offline
+
+# ── D016 — Arbiter: File-Backed Human Approval Queue ─────────────────────────
+
+DECISION|id=D016|topic=arbiter-queue|status=implemented|change=33
+TITLE|File-backed JSON queue for human approval of irreversible/uncertain actions
+CONTEXT|Igor's NE proposes action impulses; some are irreversible (delete, send, publish, deploy) or ethically uncertain; executing without review violates CP6 (active safety) and risks unintended side effects
+DECISION|arbiter/queue.py; QUEUE_FILE=~/.TheIgors/igor_wild_0001/arbiter/pending.json; is_irreversible_impulse() keyword scan gates NE impulses; ethics_gate failures also submit; akien reviews via /arbiter or conversational "approve"/"deny"
+RATIONALE|File-backed not DB-backed: queue is small (typically 0-5 items), must survive restarts, and is akien-inspectable with a text editor; DB adds no benefit here
+RATIONALE|Non-blocking: Igor continues while items queue; akien can approve/deny async; one Discord ping per item prevents alert fatigue
+RATIONALE|Learning loop: approve/deny decisions stored as EPISODIC memories with valence ±0.7; after consistent patterns → /habits pending → habit compilation; queue shrinks as Igor learns akien's threshold
+RATIONALE|Conversational intercept in _process(): "approve"/"yes"/"ok" captured before habit/basal-ganglia matching when pending items exist; reduces UX friction of formal /arbiter syntax
+ALTERNATIVES|Rejected: block execution until approved (too disruptive to Igor's flow); no queue (NE impulses silently dropped — current state before change.33); DB-backed queue (overkill for small N)
+TRADEOFFS|File I/O on every submit/resolve; acceptable for low-frequency arbiter events; JSON file is human-readable audit trail
 
 # ── D015 — Gateway Pattern: Igor Owns All State ───────────────────────────────
 
@@ -30,16 +68,15 @@ NOTE|anthropic.py._build_session_context() uses RING_CONTEXT_LIMIT=5 with catego
 
 # ── D013 — Single Embedding Model Across Cluster ──────────────────────────────
 
-DECISION|id=D013|topic=single-embedding-model|status=planned
+DECISION|id=D013|topic=single-embedding-model|status=implemented|change=37
 TITLE|nomic-embed-text as universal embedding model across LAN cluster
-CONTEXT|Planned semantic search across all Ollama machines requires consistent embedding space
-DECISION|All cluster machines run nomic-embed-text; embeddings cached at ~/.TheIgors/cache/embeddings/
+CONTEXT|Semantic search across all Ollama machines requires consistent embedding space; naive text search was insufficient
+DECISION|All cluster machines run nomic-embed-text; embeddings cached at ~/.TheIgors/cache/embeddings/; cortex.search() uses hybrid text→embedding pipeline; boot_check.py verifies + pulls model on startup
 RATIONALE|Cross-machine similarity search requires identical embedding dimensions and tokenization
 RATIONALE|Embedding space mismatch bugs are subtle and hard to detect post-deployment
 RATIONALE|nomic-embed-text: open-source, CPU-capable, good retrieval quality, Apache licensed
 ALTERNATIVES|Rejected: per-machine model selection (incompatible spaces); OpenAI embeddings (cost + privacy)
-TRADEOFFS|Requires all machines to pull model at boot; adds ~270MB disk per machine
-NOT_YET|boot_check.py will verify and pull on startup (request.2)
+TRADEOFFS|Requires all machines to pull model at boot; adds ~270MB disk per machine; first embedding call per memory is slow; subsequent are cache hits
 
 # ── D012 — Haiku for Self-Edits ───────────────────────────────────────────────
 
@@ -74,7 +111,7 @@ RATIONALE|Restarts must not lose conversation context — restart is a routine o
 RATIONALE|50 entries balances context window cost vs. continuity
 RATIONALE|Biological inspiration: hippocampal short-term binding that NE consolidates into LTM
 ALTERNATIVES|Rejected: in-memory list (lost on restart); full history (too expensive); file-based (less queryable)
-DISCREPANCY|Double injection risk — main.py injects 10 entries, anthropic.py injects 5; may cause duplication
+NOTE|Double injection resolved by D014 — main.py no longer injects ring context; anthropic.py is sole injection point
 
 # ── D009 — Daemon Threads for Background Services ─────────────────────────────
 
@@ -110,7 +147,7 @@ RATIONALE|Decouples observation timing from reasoning — sources run on their o
 RATIONALE|Salience field lets reasoner/NE prioritize what to notice without a separate priority queue
 RATIONALE|NE promotes valuable observations to LTM without blocking user interaction
 ALTERNATIVES|Rejected: polling model (sources queried on demand — no buffering, no asynchrony)
-DISCREPANCY|action_impulses pushed to TWM but no consumer executes them — architectural gap
+NOTE|action_impulse consumer implemented (change.25) — Igor._drain_action_impulses() reads TWM for NE impulses each tick; irreversible ones → arbiter, others → _process()
 
 # ── D006 — CSB Format ─────────────────────────────────────────────────────────
 
