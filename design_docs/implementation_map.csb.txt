@@ -1,0 +1,266 @@
+DOC_ID|implementation_map|v2026-02-27|status:living_document
+purpose: file-by-file map of what lives where; key classes/functions; data flow
+maintainer: claude_code|updated_after: each change group
+
+[FILE_MAP]
+
+FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:641
+  class Igor(instance_id)
+    __init__: boots cortex+reasoners+NE+pool+discord+net_listener+web_server; surfaces ring/restart/changelog
+    run(): main event loop; 0.5s tick; drains network + stdin
+    _process(user_input) → str: thalamus→preparse→habit||reason→store→ring→dashboard→web_stats
+    _drain_network(): polls net_listener.incoming; routes by source; sends web replies
+    _run_ne_background(): fires NarrativeEngine in daemon thread; skips if still running
+    _find_habit(parsed) → Memory|None: text-match trigger against PROCEDURAL memories
+    _handle_command(command, raw): dispatches /commands
+    _cmd_help|_cmd_memories|_cmd_core|_cmd_habits|_cmd_local|_cmd_model|_cmd_ollama
+    _cmd_compress: summarize ring→LTM via Ollama; sys.exit(42) to restart
+    _cmd_quit|_cmd_restart|_shutdown(reason)
+  _stdin_reader(stdin_queue): daemon thread; readline loop; pushes to queue
+  _make_instance_id(host) → str: base34 epoch seconds
+  main(): load .env; parse args; find/create instance_id; Igor().run()
+  globals: DATA_DIR|CHANGE_LOG_PATH|CHANGE_REQUEST_PATH
+
+FILE|wild_igor/igor/memory/models.py|inertia:HIGH(0.95)|lines:78
+  class MemoryType(Enum): ROOT|CORE_PATTERN|IDENTITY|ROLE_MODEL|EPISODIC|PROCEDURAL|INTERPRETIVE|EXPERIENTIAL|FACTUAL
+  dict BASE_INERTIA: type→float
+  @dataclass Memory: id(8-char uuid)|narrative|memory_type|parent_id|children_ids|link_ids|valence|activation_count|friction_history|timestamp|metadata
+    @property inertia() → float
+    @property avg_friction() → float|None
+    @property is_habit() → bool
+
+FILE|wild_igor/igor/memory/cortex.py|inertia:MEDIUM(0.75)|lines:361
+  class Cortex(db_path)
+    _init_db(): CREATE TABLE IF NOT EXISTS memories|ring_memory|twm_observations
+    LTM: store|get|get_children|get_by_type|add_child|record_activation|search|count_by_type|total_count|get_habits
+    ring: write_ring|write_restart_note|read_ring_memory|get_last_restart_note
+    TWM: twm_push|twm_read|twm_count_unintegrated|twm_mark_integrated|twm_update_salience|twm_clear
+  RING_MAX=50|TWM_MAX=50
+
+FILE|wild_igor/igor/brainstem/core_patterns.py|inertia:HIGH(0.95)|lines:205
+  initialize_genesis(cortex, instance_id) → root_id
+    plants: ROOT + CP1-CP6 + ID1-ID14 + RM_AKIEN/RM_LEAH/RM_CLAUDE/RM_IGOR_DW + PROC1-PROC10
+    guard: if cortex.total_count()>0: skip (only on fresh DB)
+  get_core_patterns(cortex) → list[Memory]
+  validate_against_core(response, cortex) → (True,"OK")  # STUB
+
+FILE|wild_igor/igor/brainstem/amm_diagnostics.py|inertia:HIGH(0.95)|lines:194
+  class SmartDict(OrderedDict): .bannerize(title)|.show(title)
+  class Diagnostics(logging.Logger): debug|info|warning|error|critical with context prefix + bannerize
+    .break_here(): drop into caller frame (pdb)
+    @staticmethod _bannerize(data, title): pretty-print dicts/lists
+    @classmethod requests_response_to_smartdict(response) → SmartDict
+  get_logger(name) → Diagnostics
+  STATUS: not wired into Igor's main path; standalone debug utility
+
+FILE|wild_igor/igor/cognition/thalamus.py|inertia:MEDIUM(0.50)|lines:91
+  @dataclass ParsedInput: raw|intent|keywords|tone|is_command|command
+  process(raw_input) → ParsedInput
+  _extract_keywords(text) → list[str]: stop-word filtered; 3+ char words
+  _classify_intent(text, keywords) → str: regex/string matching; 7 categories
+  _detect_tone(text) → str: keyword matching; 5 categories
+
+FILE|wild_igor/igor/cognition/prefrontal_cortex.py|inertia:MEDIUM(0.75)|lines:155
+  reason(user_input, relevant_memories, core_patterns, instance_id, reasoner) → (str, float)
+  _log_judgment(cortex, judgment_type, inputs, result, reasoning): ring write category="judgment"
+  assess_valence(interaction_text, response_text, cortex) → float[-1,1]: keyword pos/neg count
+  measure_friction(used_api, retry_count, tool_failures, cortex) → float[0,1]: 0.25 per API call
+  calculate_roi(goal_achieved, new_learning, used_api, cortex) → float[-1,1]
+
+FILE|wild_igor/igor/cognition/narrative_engine.py|inertia:MEDIUM(0.75)|lines:317
+  NE_MODEL="llama3.2:1b"|NE_TRIGGER_OBS=5|NE_MIN_INTERVAL_SEC=30|NE_MAX_INTERVAL_SEC=300|PROMOTE_THRESHOLD=0.7
+  class NarrativeEngine(cortex, instance_id)
+    should_run() → (bool, str): timing + obs count check
+    run(verbose) → dict|None: main run; reads TWM; calls Ollama/Claude; _apply_output()
+    _apply_output(result, obs_list): update salience; mark integrated; promote to LTM; write ring; push action impulses
+    _call_ollama(prompt) → dict|None|_call_claude_fallback(prompt) → dict|None
+    _format_obs_csb(obs_list) → str|_get_last_narrative() → str|_build_prompt() → str|_parse_ne_json(text) → dict|None
+
+FILE|wild_igor/igor/cognition/push_sources.py|inertia:MEDIUM(0.75)|lines:300
+  class BasePushSource: push(cortex) → list[int]
+  class MemorySurfacer: MIN_INTERVAL=120s; reads ring→keywords→LTM search→twm_push(sal:0.3-0.6,ttl:600)
+  class TimerSentinel: MIN_INTERVAL=300s; TIME|day|session_age → twm_push(sal:0.2,ttl:600)
+  class UserInputSource: no timer; push_message(cortex,content,channel,author) → twm_push(sal:0.7,ttl:1800)
+  class MachinesWatcher: CHECK=30s; mtime watch on machines.csv → twm_push(sal:0.8,ttl:3600)
+  class InboxWatcher: CHECK=5s; new files in inbox dir → twm_push(sal:0.9,ttl:3600)
+  singletons: memory_surfacer|timer_sentinel|user_input_source|machines_watcher|inbox_watcher
+  run_background_sources(cortex) → int: calls all timer-based sources; swallows exceptions
+
+FILE|wild_igor/igor/cognition/interruptors.py|inertia:MEDIUM(0.75)|lines:190
+  class BaseInterruptor: check(cortex) → str|None; _write_alert(cortex, msg)
+  class BudgetInterruptor: name="claude_budget"; checks budget_status(); 3 alert levels
+  class ContextInterruptor: name="context_length"; WARN_AT=20|URGENT_AT=30|COOLDOWN=5
+    _count_session_interactions(cortex): walks ring backward from SESSION_START marker
+  ACTIVE_INTERRUPTORS: [BudgetInterruptor(), ContextInterruptor()]
+  run_all(cortex) → list[str]: runs all; swallows exceptions
+
+FILE|wild_igor/igor/cognition/local_pool.py|inertia:MEDIUM(0.75)|lines:112
+  MACHINES_CSV=~/.TheIgors/local/machines.csv|OLLAMA_PORT=11434
+  _parse_online_machines() → list[dict]: reads CSV; skips IP=="OFFLINE"
+  class LocalOllamaPool(model=DEFAULT_MODEL)
+    _refresh(): rebuild from CSV; append local fallback
+    _next_reasoner() → Iterator[OllamaReasoner]: round-robin generator
+    reason(user_input, memories, core_patterns, instance_id) → (str, float)
+    set_model(name)|machines_summary() → str
+
+FILE|wild_igor/igor/cognition/reasoners/base.py|inertia:HIGH(0.90)|lines:38
+  abstract class BaseReasoner: reason()|name()
+
+FILE|wild_igor/igor/cognition/reasoners/anthropic.py|inertia:MEDIUM(0.70)|lines:325
+  DEFAULT_MODEL="claude-sonnet-4-6"|DEBUG_BYPASS_MODEL="claude-haiku-4-5-20251001"
+  MODEL_ALIASES: sonnet/opus/haiku → full IDs
+  SELF_EDIT_TRIGGER_TOOLS: {read_source_file, list_source_files}
+  RING_CONTEXT_LIMIT=5|SYSTEM_PROMPT: 6 CPs + tool heuristics
+  class AnthropicReasoner(BaseReasoner)
+    reason(): tool loop; auto-Haiku on self-edit detect; budget check per turn; interruptors after final
+    _build_session_context(cortex): last 5 ring entries (excl tool_trace+judgment)
+    _build_memory_context(memories): top 3 at ≥0.5 relevance
+    _estimate_cost(usage, model) → float
+
+FILE|wild_igor/igor/cognition/reasoners/ollama_reasoner.py|inertia:MEDIUM(0.70)|lines:292
+  DEFAULT_MODEL="llama3.2:1b"
+  _LOG_PATH: wild_igor/ollama_calls.log
+  class OllamaReasoner(model, host): reason() → (str, 0.0); no tools; host=None → localhost
+  preparse(user_input, habits, model) → dict: JSON classification via Ollama
+  score_memories(query, memories, model, top_n=5) → list[Memory]: 0-10 scoring via Ollama
+  summarize_session(ring_entries, instance_id, model) → str: CSB summary for /compress
+
+FILE|wild_igor/igor/network/listener.py|inertia:MEDIUM(0.75)|lines:189
+  @dataclass NetworkMessage: source|content|author|reply_info|raw
+  incoming: queue.Queue  # unified; all sources → Igor
+  _poll_discord()|_poll_web()|_poll_gmail()
+  _run_loop(): every 0.5s: poll_discord+poll_web; every 300s: poll_gmail
+  start(): launches daemon thread "network-listener"
+
+FILE|wild_igor/igor/network/discord_bot.py|inertia:MEDIUM(0.75)|lines:208
+  @dataclass DiscordMessage: content|author|channel_id|channel_name|guild_name|message_id
+  incoming: queue.Queue|outgoing: queue.Queue
+  send(channel_id, text): enqueues to outgoing
+  class IgorBot(discord.Client): on_ready|on_message; drains outgoing on heartbeat
+  start(): launches daemon thread; asyncio.run in thread
+
+FILE|wild_igor/igor/web/server.py|inertia:LOW(0.30)|lines:405
+  INBOX_DIR=~/.TheIgors/igor_wild_0001/inbox|OUTBOX_DIR=~/.TheIgors/igor_wild_0001/outbox
+  incoming: queue.Queue  # web→Igor
+  _client_queues: list[asyncio.Queue]  # per-WS; fanned out by _broadcast()
+  _loop: asyncio.EventLoop  # captured in on_startup; used for call_soon_threadsafe
+  _stats: dict  # updated by update_stats(); read by /api/dashboard
+  send(text): broadcast JSON {type:message,author:igor,...}
+  update_stats(**kw): update _stats dict (thread-safe via GIL)
+  _broadcast(payload): fan out to all _client_queues
+  route handlers: _index|_api_upload|_api_outbox_list|_api_outbox_download|_api_dashboard|_ws_endpoint
+  start(cortex): launches daemon thread "web-server"
+
+FILE|wild_igor/igor/dashboard/terminal.py|inertia:LOW(0.30)|lines:180
+  render(cortex, instance_id, ...): Rich Panel; alerts top; memory counts; metrics
+  print_activated_memories|print_habit_trigger|print_reasoning
+  _get_active_alerts(cortex): reads ring category="interruptor"; deduplicates by name
+  _get_budget_line(): reads budget_status(); color-codes
+
+FILE|wild_igor/igor/tools/registry.py|inertia:LOW(0.30)|lines:84
+  @dataclass Tool: name|description|parameters(JSON Schema)|fn
+    .execute(**kwargs)|.to_anthropic_schema()|.to_openai_schema()|.to_text_description()
+  class ToolRegistry: register|get|all|execute|to_anthropic_schemas|to_openai_schemas|to_text_descriptions
+  registry = ToolRegistry()  # module-level singleton
+
+FILE|wild_igor/igor/tools/__init__.py|lines:6
+  imports: filesystem|web_search|self_edit|gmail|discord|senses|runner|confluence|budget
+  NOTE: import triggers tool registration as side effect
+
+FILE|wild_igor/igor/tools/filesystem.py|WORKSPACE=/home/akien/
+  read_file(path)|write_file(path,content)|list_directory(path)
+  sandbox: _safe_path() rejects escapes from /home/akien/
+  PDF support: pypdf; for .pdf files only
+
+FILE|wild_igor/igor/tools/web_search.py
+  web_search(query, max_results=5): DuckDuckGo HTML; no API key; returns titles+URLs+snippets
+  read_webpage(url): requests+BeautifulSoup; returns text content
+
+FILE|wild_igor/igor/tools/self_edit.py|SANDBOX=wild_igor/igor/
+  INERTIA map: brainstem/:0.95|memory/models.py:0.95|reasoners/base.py:0.90|memory/cortex.py:0.75|...tools/:0.30
+  list_source_files(path)|read_source_file(path)|edit_source_file(path,content,reason)|patch_source_file(path,old,new,reason)|run_syntax_check(path)
+  _git_commit_and_push(rel_path, reason): stage+commit+push on every edit; message="self-edit: igor/path"
+
+FILE|wild_igor/igor/tools/budget.py
+  DEFAULT_BUDGET_USD=10.00|WARN_FRACTION=0.20|CRITICAL_USD=2.00
+  DB: memory/claude_budget.db; tables: spend|config
+  get_budget()|set_budget()|get_spend_total()|get_remaining()|record_spend()|budget_status()|check_before_call()
+  tools: check_claude_budget|set_claude_budget|claude_spend_history
+
+FILE|wild_igor/igor/tools/gmail.py
+  send_email(to,subject,body)|read_email_inbox(max_messages): SMTP+IMAP; app password; GMAIL_USER+GMAIL_APP_PASSWORD
+
+FILE|wild_igor/igor/tools/discord.py
+  send_discord_message(channel_id, text): wraps discord_bot.send()
+
+FILE|wild_igor/igor/tools/senses.py|WORKSPACE=wild_igor/workspace/
+  get_datetime(): TZ from env|take_photo(filename,device_index): OpenCV → workspace/
+  list_cameras(max_index=5)|record_audio(seconds=5,filename): sounddevice+scipy → WAV
+
+FILE|wild_igor/igor/tools/runner.py|WORKSPACE=wild_igor/workspace/
+  run_bash(command, timeout=30)|run_python(code, timeout=30)
+  NOT sandboxed; runs as current OS user; cwd=workspace/
+
+FILE|wild_igor/igor/tools/confluence.py
+  Atlassian Confluence read/search tools
+  STATUS: NOT in tools/__init__.py → not auto-registered → not available to Igor
+
+FILE|wild_igor/igor/perception/__init__.py|lines:0
+  STATUS: empty stub; no implementation
+
+FILE|wild_igor/web_ui/|Svelte 4 + Vite frontend
+  package.json: @sveltejs/vite-plugin-svelte|vite|svelte (devDeps)
+  vite.config.js: dev proxy /ws+/api → localhost:8080; build outDir=dist
+  src/App.svelte: root; Chat+Dashboard layout; flexbox column
+  src/lib/Chat.svelte: WS connect; message list; drag-and-drop (svelte:window events)
+  src/lib/Dashboard.svelte: polls /api/dashboard every 5s; shows mem/cost/val/friction
+  src/lib/FileZone.svelte: visual drop overlay only
+  build: npm install && npm run build → dist/ served by server.py
+
+FILE|wild_igor/igor/brainstem/amm_diagnostics.py
+  NOTE: see above; standalone diagnostic utility; not integrated
+
+[DATA_FLOW]
+
+FLOW|user_message (REPL)
+  stdin → _stdin_reader → stdin_queue → Igor.run() → Igor._process()
+  → thalamus.process() → [preparse(Ollama)] → [habit_match || pfc.reason(Anthropic||Ollama)]
+  → console.print(response) → cortex.store(EPISODIC) → cortex.write_ring() → dashboard.render()
+  → web_server.update_stats()
+
+FLOW|user_message (web)
+  browser → WS /ws → web/server.py _ws_endpoint → web_server.incoming.put()
+  → network/listener.py _poll_web() → net_listener.incoming.put(NetworkMessage source=web)
+  → Igor._drain_network() → Igor._process(synthetic) → web_server.send(response)
+  → _broadcast() → all WebSocket clients
+
+FLOW|user_message (discord)
+  Discord API → discord_bot IgorBot.on_message() → discord_bot.incoming.put()
+  → listener._poll_discord() → net_listener.incoming → Igor._drain_network()
+  → Igor._process() [no web_server.send for discord; uses discord_bot.send() via tool]
+
+FLOW|TWM_cycle
+  push_sources|interruptors → cortex.twm_push()
+  → NarrativeEngine.run() [background thread, every 30s-5min]
+  → twm_read() → Ollama call → _apply_output()
+  → twm_mark_integrated() + twm_update_salience() + cortex.store(Memory) [if importance≥0.7]
+  → cortex.write_ring(NE narrative fragment)
+
+FLOW|self_edit
+  Igor detects edit intent → AnthropicReasoner auto-switches to Haiku
+  → read_source_file() [reads current state] → patch_source_file(old,new,reason)
+  → ast.parse() [syntax check] → write file → _git_commit_and_push() → restart required
+
+[KEY_PATHS]
+config: wild_igor/.env|wild_igor/.env.example
+machines: ~/.TheIgors/local/machines.csv
+instance_data: wild_igor/data/{instance_id}.db
+inbox: ~/.TheIgors/igor_wild_0001/inbox/
+outbox: ~/.TheIgors/igor_wild_0001/outbox/
+changes: ~/.TheIgors/claudecode/changes.log
+change_requests: ~/.TheIgors/claudecode/change_request.txt
+budget_db: wild_igor/memory/claude_budget.db
+ollama_log: wild_igor/ollama_calls.log
+discord_log: wild_igor/logs/discord.log
+web_ui_dist: wild_igor/web_ui/dist/
+workspace: wild_igor/workspace/

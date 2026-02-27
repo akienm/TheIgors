@@ -1,0 +1,257 @@
+DOC_ID|detailed_architecture_description|v2026-02-27|status:living_document
+purpose: ground truth module-level architecture reference for Claude Code sessions
+scope: wild_igor/ codebase — what is ACTUALLY implemented as of this date
+maintainer: claude_code|updated_after: each change group
+
+[SYSTEM_OVERVIEW]
+name:Igor|type:Python AI agent|platform:local hardware + LAN cluster
+memory:SQLite|lang:Python 3.12|entry:wild_igor/igor/main.py
+launch:igor bash alias; exit_code=42 → restart loop; exit_code=0 → stop
+philosophy: everything-is-memory|brain-region-naming|transparency-first|FAIL=Further_Advance_In_Learning
+instance_id: base34-encoded epoch seconds|format:igor_{host}_{id}|example:igor_wild_0001
+
+[LAYER: brainstem]
+inertia:HIGH (0.95)|resist change strongly
+files: brainstem/core_patterns.py|brainstem/amm_diagnostics.py
+
+MODULE|brainstem/core_patterns.py
+  purpose: genesis state initialization; plants ROOT + 6 CPs + 14 IDs + 4 RMs + 10 PROCs on first boot
+  key_fn: initialize_genesis(cortex, instance_id) → root_id; skips if cortex.total_count()>0
+  key_fn: get_core_patterns(cortex) → list[Memory]; returns all CORE_PATTERN memories
+  key_fn: validate_against_core(response, cortex) → (bool,str)
+  DISCREPANCY: validate_against_core is a STUB; always returns (True,"OK"); semantic validation not yet implemented
+  genesis_count: 22 memories on fresh init (1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC = 35? actual count in DB may differ)
+  NOTE: code checks total_count()==22 for "is_new" at startup — verify this matches actual genesis count
+
+MODULE|brainstem/amm_diagnostics.py
+  purpose: diagnostic logging utility (SmartDict, Diagnostics logger, bannerizer)
+  used_by: NOT wired into main Igor flow; standalone debug utility
+  DISCREPANCY: imported nowhere in Igor's main path; legacy/standalone tool
+
+[LAYER: memory]
+inertia:HIGH (models.py:0.95)|MEDIUM (cortex.py:0.75)
+
+MODULE|memory/models.py
+  purpose: Memory dataclass; MemoryType enum; inertia property; base inertia table
+  key_class: Memory(narrative,type,id,parent_id,children_ids,link_ids,valence,activation_count,friction_history,timestamp,metadata)
+    .inertia → float; computed NOT stored; formula: base + min(0.10,act*0.002) + min(0.10,children*0.01) + friction_boost
+    .is_habit → bool; PROCEDURAL + "trigger" in metadata
+    .id → 8-char uuid prefix; auto-generated
+  MemoryType: ROOT|CORE_PATTERN|IDENTITY|ROLE_MODEL|EPISODIC|PROCEDURAL|INTERPRETIVE|EXPERIENTIAL|FACTUAL
+  base_inertia: ROOT:1.0|CORE_PATTERN:0.95|IDENTITY:0.85|ROLE_MODEL:0.75|EPISODIC:0.20|PROCEDURAL:0.30|INTERPRETIVE:0.25|EXPERIENTIAL:0.20|FACTUAL:0.25
+
+MODULE|memory/cortex.py
+  purpose: SQLite-backed memory graph; ring buffer; TWM (Temporal Working Memory)
+  key_class: Cortex(db_path)
+  tables:
+    memories — main LTM graph; columns: id|narrative|memory_type|parent_id|children_ids(json)|link_ids(json)|valence|activation_count|friction_history(json)|timestamp|metadata(json)
+    ring_memory — short-term FIFO buffer; max 50 entries; survives restarts; columns: id|category|content|timestamp
+    twm_observations — temporal working memory sandbox; max 50 obs; columns: id|timestamp|source|content_csb|salience|metadata_json|integrated|integration_count|expires_at
+  key_methods:
+    store(memory) → Memory|get(id)|get_children(parent_id)|get_by_type(type)|add_child(parent,child)
+    record_activation(id, friction)|search(query, limit=10) → list[Memory]
+    write_ring(content, category)|write_restart_note(reason)|read_ring_memory(limit,category)|get_last_restart_note()
+    twm_push(source,content_csb,salience,metadata,ttl_seconds) → obs_id
+    twm_read(limit,include_integrated)|twm_mark_integrated(ids)|twm_update_salience(id,salience)
+  search: naive keyword matching (no embeddings yet); sorted by activation_count DESC
+  DISCREPANCY: search docstring says "Spreading activation comes later" — NOT implemented
+  ring_category_conventions: note|restart_note|session_control|narrative|judgment|tool_trace|interruptor|hardware
+
+[LAYER: cognition]
+inertia:MEDIUM (0.50-0.75)
+
+MODULE|cognition/thalamus.py
+  purpose: parse raw text input → ParsedInput; intent classification; keyword extraction; tone detection
+  key_fn: process(raw_input) → ParsedInput(raw,intent,keywords,tone,is_command,command)
+  intent_values: greeting|meta_question|factual_question|action_request|memory_instruction|general|command
+  tone_values: urgent|curious|frustrated|friendly|neutral
+  DISCREPANCY: intent classification is simple string matching, not LLM; docstring says "improve with LLM later"
+  command_detection: starts with "/" → is_command=True; command=first word after /
+
+MODULE|cognition/prefrontal_cortex.py
+  purpose: executive reasoning delegation; judgment functions (valence, friction, roi)
+  key_fn: reason(user_input, relevant_memories, core_patterns, instance_id, reasoner) → (str, float)
+  key_fn: assess_valence(interaction_text, response_text, cortex) → float[-1.0,1.0]; simple keyword match + ring log
+  key_fn: measure_friction(used_api, retry_count, tool_failures, cortex) → float[0.0,1.0]; API call = 0.25 friction
+  key_fn: calculate_roi(goal_achieved, new_learning, used_api, cortex) → float[-1.0,1.0]
+  all_judgments: logged to ring_memory with full reasoning (category="judgment")
+
+MODULE|cognition/narrative_engine.py
+  purpose: background coherence checker; integrates TWM observations; promotes to LTM; issues action impulses
+  key_class: NarrativeEngine(cortex, instance_id)
+  trigger: ≥5 unintegrated TWM obs OR max_interval(5min) with meaningful content; min_interval 30s
+  model: llama3.2:1b (Ollama local); fallback to claude-haiku if Ollama fails + budget permits
+  output_schema: summary_csb|connections|salience_updates|memory_candidates|action_impulses|internal_state
+  promotes: memory_candidates with importance≥0.7 → LTM as EPISODIC (or other type from NE)
+  action_impulses: re-pushed to TWM with 5min TTL; NOT yet consumed by any consumer
+  run_pattern: daemon thread fired from main loop _run_ne_background(); skips if thread still alive
+  DISCREPANCY: action_impulses are pushed to TWM but no consumer reads them — planned not implemented
+
+MODULE|cognition/push_sources.py
+  purpose: proactive TWM observation pushers; timer-based background sources
+  pattern: BasePushSource.push(cortex) → list[obs_ids]; rate-limited per source
+  sources:
+    MemorySurfacer — every 2min; keyword-searches LTM; pushes salience 0.3-0.6; bridges LTM→TWM
+    TimerSentinel — every 5min; time/day/session_age heartbeat; salience 0.2
+    UserInputSource — per message (not timer); explicit call; salience 0.7; bridges incoming→TWM
+    MachinesWatcher — every 30s; watches machines.csv mtime; pushes salience 0.8 on change
+    InboxWatcher — every 5s; watches ~/.TheIgors/igor_wild_0001/inbox/; pushes salience 0.9 on new files
+  called_from: main.py run() loop; run_background_sources(cortex) per 0.5s idle tick
+
+MODULE|cognition/interruptors.py
+  purpose: proactive alert injection; fires on condition; writes to ring_memory + returns alert string
+  pattern: BaseInterruptor.check(cortex) → str|None; run in AnthropicReasoner after each response
+  interruptors:
+    BudgetInterruptor — checks remaining Claude budget; levels: exhausted/critical(<$2)/warn(<20%)
+    ContextInterruptor — counts session interactions since SESSION_START ring; warns at 20, urgent at 30
+  DISCREPANCY: interruptors run inside AnthropicReasoner only; not invoked in local/Ollama path
+
+MODULE|cognition/local_pool.py
+  purpose: round-robin Ollama pool across LAN machines; fallback to local
+  key_class: LocalOllamaPool(model=DEFAULT_MODEL)
+    .reason(user_input, memories, core_patterns, instance_id) → (str, float)
+    .set_model(name)|.machines_summary()|._refresh() — re-reads machines.csv
+  reads: ~/.TheIgors/local/machines.csv; skips rows where IP="OFFLINE"
+  fallback: always appends OllamaReasoner(host=None) as final entry (localhost)
+  round_robin: advances index on each successful call; tries all before failing
+
+MODULE|cognition/reasoners/base.py
+  purpose: abstract interface for all reasoning adapters
+  inertia:HIGH (0.90)
+  interface: BaseReasoner.reason(user_input,memories,core_patterns,instance_id) → (str, float:cost_usd)
+             BaseReasoner.name() → str
+
+MODULE|cognition/reasoners/anthropic.py
+  purpose: Anthropic API reasoner; full agentic tool loop; budget guard; auto-Haiku for self-edits
+  model: claude-sonnet-4-6 (default)|aliases: sonnet/opus/haiku
+  system_prompt: hardcoded 6 core patterns + tool heuristics
+  ring_context: injects last 5 high-signal ring entries as session context (skips tool_trace/judgment)
+  memory_context: top 3 memories with relevance≥0.5 (or top 2 below threshold)
+  auto_haiku: triggers on read_source_file / list_source_files tool call → switches to haiku for session
+  cost_model: haiku=$0.80/$4 per MTok|sonnet=$3/$15 per MTok (input/output)
+  budget: check_before_call() before each API turn; record_spend() after
+  interruptors: run_all() after final response
+  tool_visibility: every tool call + result printed to console + written to ring (category=tool_trace)
+  DISCREPANCY: RING_CONTEXT_LIMIT=5 but main.py also builds ring_ctx of 10 entries and appends to user_input before calling pfc.reason() — double ring injection risk; audit needed
+
+MODULE|cognition/reasoners/ollama_reasoner.py
+  purpose: local Ollama reasoner; preparse; score_memories; summarize_session
+  DEFAULT_MODEL: llama3.2:1b
+  OllamaReasoner.reason() → (str, 0.0); no tool support; pure text completion
+  preparse(user_input, habits) → {intent,keywords,habit_match,confidence,should_escalate}
+    uses Ollama JSON mode; temp=0.1; fallback to defaults on failure
+  score_memories(query, memories) → list[Memory] ranked by relevance; uses Ollama 0-10 scoring
+  summarize_session(ring_entries, instance_id) → CSB summary string (stored as INTERPRETIVE memory)
+  logging: every Ollama call → ollama_calls.log (fn|model|elapsed_ms|tokens_in|tokens_out|tok_per_sec|ok)
+  DISCREPANCY: DEFAULT_MODEL=llama3.2:1b; request.2 mandates gemma3:270M — not yet changed
+
+[LAYER: network]
+
+MODULE|network/discord_bot.py
+  purpose: Discord client; queues incoming messages; supports webhook+bot send; forensic logging
+  queues: incoming:queue.Queue (Discord→Igor)|outgoing:queue.Queue (Igor→Discord)
+  key_class: IgorBot(discord.Client); event handlers: on_ready|on_message
+  send(channel_id, text): queues to outgoing; background task drains outgoing queue
+  logging: every event → wild_igor/logs/discord.log
+  config: DISCORD_BOT_TOKEN|DISCORD_GUILD_ID|DISCORD_CHANNEL_ID|DISCORD_WEBHOOK_URL
+
+MODULE|network/listener.py
+  purpose: unified network listener daemon thread; normalizes all sources to NetworkMessage
+  queues: incoming:queue.Queue (all sources → Igor main loop)
+  sources_polled:
+    _poll_discord() — drains discord_bot.incoming; interval 0.5s
+    _poll_web() — drains web_server.incoming; same 0.5s interval
+    _poll_gmail() — IMAP poll; every 300s; marks UNSEEN as read; max 10 per poll
+  NetworkMessage: source|content|author|reply_info|raw
+  reply_info_keys: discord→{channel_id,channel_name,guild_name,message_id}|gmail→{from,subject,reply_to}|web→{client_id}
+
+MODULE|web/server.py
+  purpose: Starlette/uvicorn web UI server; daemon thread; bidirectional WebSocket; inbox/outbox file API
+  port: IGOR_WEB_PORT env (default 8080)
+  endpoints: GET /|WS /ws|POST /api/upload|GET /api/outbox|GET /api/outbox/{file}|GET /api/dashboard
+  serving: web_ui/dist/ if built (Svelte); else embedded fallback HTML (fully functional)
+  public_api: send(text)|update_stats(**kw)
+  broadcast: per-client asyncio.Queue; loop.call_soon_threadsafe() for thread safety
+  dirs: INBOX=~/.TheIgors/igor_wild_0001/inbox|OUTBOX=~/.TheIgors/igor_wild_0001/outbox
+  DISCREPANCY: inbox/outbox dirs hardcoded to igor_wild_0001; multi-instance not handled
+
+[LAYER: tools]
+inertia:LOW (0.30)
+registration: import-time side effect via registry.register(Tool(...))|triggered by `from . import tools`
+
+TOOLS_REGISTERED:
+  filesystem: read_file|write_file|list_directory; sandbox: /home/akien/
+  web_search: web_search(query,max_results)|read_webpage(url); DuckDuckGo HTML, no API key
+  self_edit: list_source_files|read_source_file|edit_source_file|patch_source_file|run_syntax_check; sandbox: wild_igor/igor/
+  gmail: send_email|read_email_inbox; SMTP+IMAP; app password auth; config: GMAIL_USER|GMAIL_APP_PASSWORD
+  discord: send_discord_message(channel_id,text); wraps discord_bot.outgoing queue
+  senses: get_datetime|take_photo(device_index)|list_cameras|record_audio(seconds); OpenCV+sounddevice
+  runner: run_bash(command,timeout)|run_python(code,timeout); cwd=workspace/; NOT sandboxed
+  budget: check_claude_budget|set_claude_budget|claude_spend_history
+  confluence: read_confluence_page|search_confluence; EXISTS in file but NOT imported in tools/__init__.py
+
+DISCREPANCY|confluence: tools/confluence.py exists but not in tools/__init__.py → not available to Igor
+DISCREPANCY|perception/__init__.py: empty stub; no perception module implemented despite package existing
+
+[LAYER: dashboard]
+
+MODULE|dashboard/terminal.py
+  purpose: Rich terminal dashboard rendered after every interaction
+  key_fn: render(cortex,instance_id,interaction_count,last_friction,last_valence,last_roi,last_action,new_memories,upstream_calls)
+  shows: interruptor alerts (top,bold)|memory type counts|habits count|upstream_dependency_%|valence+friction+roi
+  budget_line: inline budget status with color coding (green/yellow/red)
+  border: red if active alerts else cyan
+  helpers: print_activated_memories|print_habit_trigger|print_reasoning
+
+[LAYER: main]
+inertia:MEDIUM (0.50)
+
+MODULE|main.py
+  purpose: Igor class; event loop; stdin+network polling; command handling; NE background thread
+  key_class: Igor(instance_id)
+  boot_sequence:
+    1. Cortex(db_path)|initialize_genesis()|NarrativeEngine()|AnthropicReasoner()|LocalOllamaPool()
+    2. discord_bot.start()|net_listener.start()|web_server.start(cortex)
+    3. surface last_restart_note + ring[10] + change_log
+    4. write SESSION_START to ring
+  run(): while True: _drain_network() → stdin.get_nowait() → _process() || idle: run_background_sources() + _run_ne_background() + sleep(0.5)
+  _process(user_input) → str: thalamus.process() → habit_match || (local_pool || pfc.reason()) → episodic_store + ring_write + dashboard + web_server.update_stats()
+  _drain_network(): drains net_listener.incoming; routes by source; web replies via web_server.send()
+  local_mode: default True (IGOR_LOCAL env)|False → cloud (Anthropic)|True → local pool first, fallback cloud
+  commands: /help|/memories|/core|/habits|/cost|/model|/ollama|/local|/compress|/restart|/quit
+  DISCREPANCY: CHANGE_REQUEST_PATH defined but never read at boot; changes.log is read, not change_request.txt
+  DISCREPANCY: _process() builds ring_ctx of 10 entries AND AnthropicReasoner injects 5 ring entries → potential double-context; verify net effect
+
+[COMMUNICATION_PATTERNS]
+human→igor: stdin (REPL) | Discord | Gmail | Web WebSocket | inbox file drop
+igor→human: stdout (Rich console) | discord_bot.send() | web_server.send() | outbox files
+Igor→LTM: cortex.store(Memory) | cortex.write_ring() | cortex.twm_push()
+LTM→Igor: cortex.search() | cortex.read_ring_memory() | cortex.twm_read()
+TWM→NE→LTM: NarrativeEngine.run() reads TWM, promotes to LTM, writes ring
+push_sources→TWM: each source calls cortex.twm_push() on schedule
+interruptors→ring: after each Anthropic response, write alerts to ring + console
+self_edit→git: patch_source_file/edit_source_file → git add + commit + push (auto)
+
+[IMPLEMENTED_VS_PLANNED]
+IMPLEMENTED:
+  memory graph (SQLite)|ring buffer|TWM|genesis state|all 9 memory types
+  Anthropic reasoner (full tool loop)|Ollama reasoner|local pool (round-robin)
+  Narrative Engine (Ollama; promotes to LTM)|push sources (5 active)
+  interruptors (budget+context)|tool registry|all registered tools (except confluence)
+  Discord integration|Gmail IMAP read+send|Web UI (Starlette+Svelte fallback)
+  InboxWatcher+OutboxHTTP|self-edit (patch preferred)|budget tracking|dashboard
+
+PARTIAL:
+  habit system: PROCEDURAL+trigger memories exist; matched by text in _find_habit(); no compilation
+  brainstem validation: validate_against_core always returns True; stub
+  intent classification: string matching not LLM
+
+NOT_YET_IMPLEMENTED:
+  spreading activation (only naive text search)
+  embeddings (nomic-embed-text planned in request.2; not in code)
+  multi-Igor coordination / clan sync (planned Change 13+)
+  action_impulse consumer (NE pushes impulses; nothing acts on them)
+  change_request.txt boot read (CHANGE_REQUEST_PATH defined, unused)
+  upstream=0 goal (habit coverage of all interactions)
+  perception module (empty package)
+  confluence tool auto-registration

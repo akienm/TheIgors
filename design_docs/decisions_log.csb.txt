@@ -1,0 +1,162 @@
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27
+META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
+META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D013 — Single Embedding Model Across Cluster ──────────────────────────────
+
+DECISION|id=D013|topic=single-embedding-model|status=planned
+TITLE|nomic-embed-text as universal embedding model across LAN cluster
+CONTEXT|Planned semantic search across all Ollama machines requires consistent embedding space
+DECISION|All cluster machines run nomic-embed-text; embeddings cached at ~/.TheIgors/cache/embeddings/
+RATIONALE|Cross-machine similarity search requires identical embedding dimensions and tokenization
+RATIONALE|Embedding space mismatch bugs are subtle and hard to detect post-deployment
+RATIONALE|nomic-embed-text: open-source, CPU-capable, good retrieval quality, Apache licensed
+ALTERNATIVES|Rejected: per-machine model selection (incompatible spaces); OpenAI embeddings (cost + privacy)
+TRADEOFFS|Requires all machines to pull model at boot; adds ~270MB disk per machine
+NOT_YET|boot_check.py will verify and pull on startup (request.2)
+
+# ── D012 — Haiku for Self-Edits ───────────────────────────────────────────────
+
+DECISION|id=D012|topic=haiku-for-self-edits|status=implemented
+TITLE|claude-haiku-4-5-20251001 for Igor self-edits regardless of IGOR_MODEL
+CONTEXT|Self-edits are frequent; Sonnet-level reasoning unnecessary for code patching
+DECISION|self_edit.py automatically uses Haiku; reasoners/anthropic.py switches model for self-edit calls
+RATIONALE|Significant cost reduction for high-frequency patch operations
+RATIONALE|Haiku handles patch_source_file reliably; quality sufficient for targeted line replacement
+RATIONALE|If Haiku fails a complex edit, Igor can escalate explicitly
+ALTERNATIVES|Rejected: always Sonnet (expensive, overkill); always Haiku (too weak for complex reasoning tasks)
+
+# ── D011 — Base-34 Instance IDs ───────────────────────────────────────────────
+
+DECISION|id=D011|topic=base34-instance-ids|status=defined|implementation=partial
+TITLE|Base-34 encoded epoch seconds for Igor instance identifiers
+CONTEXT|Need short, human-readable, collision-resistant identifiers for distributed instances
+DECISION|Charset: 23456789ABCDEFGHIJKLMNOPQRSTUVWXYZ (34 chars); encode Unix timestamp at genesis
+RATIONALE|Excludes 0/1 to avoid O/I/l/0 visual ambiguity in filenames, logs, and verbal communication
+RATIONALE|Epoch seconds gives temporal ordering; base-34 encoding shortens to ~6-7 chars
+RATIONALE|wild- prefix for local hardware; claude- prefix for hosted instances
+ALTERNATIVES|Rejected: UUID (too long, no ordering, visually ambiguous); sequential int (collision across machines)
+NOTE|wild-0001 is development shorthand — not actually base-34 encoded; production instances will use encoding
+
+# ── D010 — Ring Memory for Session Continuity ─────────────────────────────────
+
+DECISION|id=D010|topic=ring-memory-for-context|status=implemented
+TITLE|FIFO-50 ring memory in SQLite for session continuity across restarts
+CONTEXT|Igor self-edits trigger restart (exit code 42); conversation context must survive
+DECISION|ring_memory table (FIFO-50) persists last 50 turns; injected into Claude prompt on every call
+RATIONALE|Restarts must not lose conversation context — restart is a routine operation, not a crash
+RATIONALE|50 entries balances context window cost vs. continuity
+RATIONALE|Biological inspiration: hippocampal short-term binding that NE consolidates into LTM
+ALTERNATIVES|Rejected: in-memory list (lost on restart); full history (too expensive); file-based (less queryable)
+DISCREPANCY|Double injection risk — main.py injects 10 entries, anthropic.py injects 5; may cause duplication
+
+# ── D009 — Daemon Threads for Background Services ─────────────────────────────
+
+DECISION|id=D009|topic=daemon-threads-for-background|status=implemented
+TITLE|Background services run in daemon threads with their own asyncio loops
+CONTEXT|Discord bot, web server, narrative engine must run concurrently with REPL without blocking it
+DECISION|Each service: threading.Thread(daemon=True) + asyncio.run() inside the thread
+RATIONALE|Daemon threads die automatically when main thread exits — no cleanup code needed
+RATIONALE|Each service gets own asyncio event loop; eliminates shared-loop coordination issues
+RATIONALE|Thread-safe queue.Queue bridges between threads; simple and well-understood
+ALTERNATIVES|Rejected: asyncio tasks in main loop (REPL stdin.read() blocks); multiprocessing (IPC overhead)
+SERVICES_USING|discord_bot.py, web/server.py, narrative_engine.py
+
+# ── D008 — Svelte + Starlette Web UI ─────────────────────────────────────────
+
+DECISION|id=D008|topic=svelte-starlette-web-ui|status=implemented
+TITLE|Svelte 4 + Starlette/uvicorn for local-network web UI
+CONTEXT|Plan specified FastAPI but FastAPI was not installed; Starlette was (as FastAPI dependency)
+DECISION|Svelte (npm/Vite build) for frontend; Starlette directly for backend
+RATIONALE|Starlette was already in venv — adding FastAPI would add a wrapper with no benefit here
+RATIONALE|Svelte compiles to small, fast vanilla JS; no runtime framework in browser
+RATIONALE|Fallback HTML embedded in server.py for when Svelte dist/ not built yet
+ALTERNATIVES|Rejected: FastAPI (not installed); plain HTML (harder to maintain); React (heavier toolchain)
+FILES|wild_igor/igor/web/server.py, wild_igor/web_ui/
+
+# ── D007 — Push-Based TWM ─────────────────────────────────────────────────────
+
+DECISION|id=D007|topic=push-based-twm|status=implemented
+TITLE|TWM is push-only; reasoner reads it as additional context; NE integrates async
+CONTEXT|Need working memory that accumulates observations without blocking main loop
+DECISION|Sources push to twm_observations; anthropic.py loads TWM on each call; NE promotes async
+RATIONALE|Decouples observation timing from reasoning — sources run on their own schedule
+RATIONALE|Salience field lets reasoner/NE prioritize what to notice without a separate priority queue
+RATIONALE|NE promotes valuable observations to LTM without blocking user interaction
+ALTERNATIVES|Rejected: polling model (sources queried on demand — no buffering, no asynchrony)
+DISCREPANCY|action_impulses pushed to TWM but no consumer executes them — architectural gap
+
+# ── D006 — CSB Format ─────────────────────────────────────────────────────────
+
+DECISION|id=D006|topic=csb-format|status=implemented
+TITLE|CSB (Compressed Semantic Block) pipe-delimited format throughout Igor
+CONTEXT|Need dense structured data for TWM observations, ring memory, logs, documentation
+DECISION|Pipe-delimited positional or key=value fields; human-readable, machine-parseable via split('|')
+RATIONALE|JSON overhead (brackets, quotes, escaping) adds noise in dense observation streams
+RATIONALE|Works inline in Claude prompt text without confusing the model's parsing
+RATIONALE|Consistent format across all layers: push sources, ring_memory, changes.log, design_docs
+ALTERNATIVES|Rejected: JSON (verbose, quote-escape friction); YAML (indentation-sensitive); CSV (commas in content)
+USED_IN|twm_push() content_csb, ring_push() entries, all push sources, all design_docs/*.csb.txt
+
+# ── D005 — Inertia from Network Position ──────────────────────────────────────
+
+DECISION|id=D005|topic=inertia-from-network-position|status=implemented
+TITLE|Inertia computed from graph structure and activation history, not declared as a field
+CONTEXT|Need resistance-to-change that honestly reflects actual importance in knowledge graph
+DECISION|inertia = f(memory_type_base, activation_count, children_count, depth_from_root)
+RATIONALE|Inertia that emerges from use patterns is epistemically honest — earned, not assigned
+RATIONALE|Prevents gaming: cannot set inertia=1.0 arbitrarily; must earn resistance through activation
+RATIONALE|Brainstem memories (type base=0.9) start high and grow; episodic starts low and stays low
+ALTERNATIVES|Rejected: declared inertia field (gameable, requires maintenance); uniform inertia (no differentiation)
+NOTE|inertia_override optional field exists in models.py for exceptional cases; rarely used
+
+# ── D004 — SQLite for All Persistent Storage ──────────────────────────────────
+
+DECISION|id=D004|topic=sqlite-not-json|status=implemented
+TITLE|SQLite for all persistent state; no JSON files for runtime data
+CONTEXT|Need persistent memory that survives restarts, supports complex queries, prevents corruption
+DECISION|SQLite for memories, ring_memory, twm_observations, budget; no JSON state files
+RATIONALE|ACID transactions prevent partial writes during self-edits or crashes
+RATIONALE|SQL queries enable inertia computation, activation stats, type-filtered retrieval, full-text search
+RATIONALE|Single-file DB is portable and inspectable with sqlite3 CLI for debugging
+RATIONALE|SQLite ships with Python stdlib — zero additional dependencies
+ALTERNATIVES|Rejected: pickle (unsafe, opaque); JSON files (no transactions, no indexing); Postgres (external process)
+FILES|wild_igor/data/wild-0001.db (memories, ring, twm), wild_igor/data/claude_budget.db (tokens)
+
+# ── D003 — API-First Reasoning ────────────────────────────────────────────────
+
+DECISION|id=D003|topic=api-first-reasoning|status=implemented
+TITLE|Claude API (Anthropic) for primary reasoning; Ollama for free background tasks
+CONTEXT|Need high-quality reasoning for memory graph analysis, self-editing, complex user requests
+DECISION|anthropic.py = primary reasoner; ollama_reasoner.py = NE background + preparse only
+RATIONALE|Quality gap: llama3.2:1b cannot reliably write correct Python or analyze complex memory graphs
+RATIONALE|Cost managed via budget.py and Haiku for self-edits; Sonnet only for user-facing responses
+RATIONALE|Local Ollama provides free/fast background tasks; no API cost for NE narrative synthesis
+ALTERNATIVES|Rejected: fully local (quality insufficient); fully cloud (too expensive for continuous background)
+TRADEOFFS|API dependency; network latency; cost; mitigated by budget tracking and Haiku tier
+
+# ── D002 — Brain-Region Naming ────────────────────────────────────────────────
+
+DECISION|id=D002|topic=brain-region-naming|status=implemented
+TITLE|Modules named after brain regions for intuitive cognitive architecture mental model
+CONTEXT|Multi-layer cognitive system needs clear architectural metaphor for navigation and reasoning
+DECISION|brainstem/ (axioms), cortex.py (memory), thalamus.py (routing), prefrontal_cortex.py (reasoning), NE (integration)
+RATIONALE|Biological names carry implicit semantics well-known to developers: brainstem=low-level/always-on
+RATIONALE|Reduces cognitive load when navigating; new contributors can leverage prior knowledge
+RATIONALE|Supports CP4 (reduce friction) — metaphor reduces documentation burden
+ALTERNATIVES|Rejected: abstract names (router.py, executor.py) — less memorable, harder to reason about purpose
+NOTE|Metaphor is loose; not a claim that Igor implements biological neuroscience faithfully
+
+# ── D001 — Everything Is a Memory ────────────────────────────────────────────
+
+DECISION|id=D001|topic=everything-is-memory|status=implemented
+TITLE|All knowledge stored as Memory objects in SQLite graph; no separate config or rules files
+CONTEXT|Need persistent, self-modifiable knowledge store that survives restarts and supports inference
+DECISION|Store ALL knowledge as Memory objects: ethics (CORE_PATTERN), identity (IDENTITY), procedures (PROCEDURAL), facts (FACTUAL), events (EPISODIC)
+RATIONALE|Uniform representation enables uniform operations: inertia, valence, activation, graph traversal
+RATIONALE|Self-modification IS memory modification — no separate "rules file" to bypass or forget to update
+RATIONALE|Graph structure (parent_id + adjacency) enables inertia propagation, context clustering, spreading activation (planned)
+RATIONALE|Inertia naturally varies by type: ethics resist change more than episodic events
+ALTERNATIVES|Rejected: JSON config (not queryable, not self-modifying, static); Python constants (frozen, no activation tracking)
+IMPLICATION|Everything Igor knows about itself, its ethics, its procedures lives in the same queryable space it reasons over
+STATUS|implemented|db: wild_igor/data/wild-0001.db (~422+ memories as of 2026-02)

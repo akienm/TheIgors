@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/home/akien/TheIgors/venv/bin/pip list:*)",
+      "Bash(source:*)"
+    ]
+  }
+}
