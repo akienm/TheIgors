@@ -114,13 +114,15 @@ MODULE|cognition/interruptors.py
   DISCREPANCY: interruptors run inside AnthropicReasoner only; not invoked in local/Ollama path
 
 MODULE|cognition/local_pool.py
-  purpose: round-robin Ollama pool across LAN machines; fallback to local
+  purpose: priority-sorted Ollama pool across LAN machines; fallback to local (change.35)
   key_class: LocalOllamaPool(model=DEFAULT_MODEL)
     .reason(user_input, memories, core_patterns, instance_id) → (str, float)
     .set_model(name)|.machines_summary()|._refresh() — re-reads machines.csv
-  reads: ~/.TheIgors/local/machines.csv; skips rows where IP="OFFLINE"
+  reads: ~/.TheIgors/local/machines.csv; skips OFFLINE; sorts by PRIORITY_ORDER (realtime first)
+  PRIORITY_ORDER: {realtime:0, main_loop:1, background:2, batch:3}
+  capabilities: parse_capabilities(row) → list[str]; data present; routing by capability is future work
   fallback: always appends OllamaReasoner(host=None) as final entry (localhost)
-  round_robin: advances index on each successful call; tries all before failing
+  round_robin: advances index on each successful call; priority-sorted so realtime tried first
 
 MODULE|cognition/reasoners/base.py
   purpose: abstract interface for all reasoning adapters
@@ -226,8 +228,10 @@ MODULE|main.py
   boot_sequence:
     1. Cortex(db_path)|initialize_genesis()|integrity_check()|boot_hash_verify()|NarrativeEngine()|AnthropicReasoner()|LocalOllamaPool()
     2. discord_bot.start()|net_listener.start()|web_server.start(stats_fn=self.get_stats)|boot_check daemon
-    3. surface last_restart_note + ring[10] + change_log + change_request.txt (change.23)
-    4. write SESSION_START to ring
+    3. _export_portable_identity() → SOUL.md + IDENTITY.md written every boot (change.36)
+    4. if is_new: _announce_first_boot() → Discord ping + machines.csv self-registration (change.36)
+    5. surface last_restart_note + ring[10] + change_log + change_request.txt (change.23)
+    6. write SESSION_START to ring
   run(): while True: stdin.get_nowait() FIRST → _process() [commands responsive]; else: _drain_network() + run_background_sources() + _run_ne_background() + _drain_action_impulses() + sleep(0.5)
   get_stats() → dict: {memory_count, session_cost, last_valence, last_friction, arbiter_pending} (gateway D015)
   _process(user_input) → str: arbiter_intercept → thalamus → preparse → habit_match || reason → episodic_store + ring_write + dashboard; _pre_compaction_flush at URGENT_AT
@@ -272,7 +276,7 @@ PARTIAL:
 
 NOT_YET_IMPLEMENTED:
   full spreading activation (graph traversal; only cosine search + activation_count)
-  multi-Igor coordination / clan sync (changes 35-36 await Scott+Chad onboard)
+  multi-Igor coordination / clan sync (full agent-council; changes 35-36 groundwork implemented)
   upstream=0 goal (habit coverage of all interactions)
   perception module (empty package)
   formal habit auto-compilation from NE proposals (NE proposes, mini-arbiter reviews)

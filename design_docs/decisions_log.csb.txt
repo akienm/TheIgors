@@ -1,6 +1,32 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|latest=D018
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|latest=D020
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D020 — Portable Identity: SOUL.md + IDENTITY.md ─────────────────────────
+
+DECISION|id=D020|topic=portable-identity|status=implemented|change=36
+TITLE|DB-derived SOUL.md (CP1-CP6) and IDENTITY.md (ID1-ID14) written at every boot
+CONTEXT|Igor instances need a portable, human-readable representation of their ethics and identity that can be inspected, shared with new instances, and committed to git; the DB is the source of truth but not portable
+DECISION|_export_portable_identity() writes SOUL.md to ~/.TheIgors/ (shared) and IDENTITY.md to ~/.TheIgors/igor_{instance_id}/ (instance-specific) on every boot; first-boot triggers Discord announcement + machines.csv self-registration
+RATIONALE|Generating from DB on every boot ensures files always reflect current DB state — no drift between file and memory
+RATIONALE|SOUL.md shared path signals it is the same for all instances on a machine; IDENTITY.md in instance dir signals it is instance-specific
+RATIONALE|First-boot Discord announcement enables the clan-acknowledgment pattern (existing Igors see a new Igor come online)
+RATIONALE|machines.csv self-registration is groundwork for auto-discovery; new machines add themselves rather than requiring manual CSV editing
+ALTERNATIVES|Rejected: static files in repo (drift from DB); export only on /compress (too infrequent); separate export command (too easy to forget)
+TRADEOFFS|File I/O on every boot; negligible cost; files are overwritten each boot (not append)
+NOTE|Full wild Igor installer (change.36 full scope) deferred; this is the groundwork layer
+
+# ── D019 — Priority-Sorted Ollama Pool ───────────────────────────────────────
+
+DECISION|id=D019|topic=priority-sorted-pool|status=implemented|change=35
+TITLE|LocalOllamaPool sorted by machine priority (realtime→main_loop→background→batch)
+CONTEXT|Round-robin across all machines treats a realtime i7-1185G7 identically to a batch Raspberry Pi; higher-priority machines should handle requests first
+DECISION|machines.csv gains Capabilities column; PRIORITY_ORDER dict in local_pool.py sorts machines before building reasoner list; realtime machines tried first; local always final fallback
+RATIONALE|Priority-sorted pool gives better latency without requiring query classification; realtime machine answers before batch machine is tried
+RATIONALE|Capabilities column grounds the machines.csv as a cluster capability registry, enabling future routing by capability (embedding-only vs reasoning vs orchestration)
+ALTERNATIVES|Rejected: pure round-robin (ignores machine quality differences); capability routing (requires query classification not yet implemented); separate pools per tier (over-engineering for current N)
+TRADEOFFS|First machine tried will be realtime every session start; may over-saturate realtime machine; mitigated by _index advancing on each successful call
+NOTE|Full capability-based routing (route embedding queries to embedding machines only) is a future improvement; this pass establishes the data model
 
 # ── D018 — Reasoning Cache with TWM Watermark Invalidation ────────────────────
 

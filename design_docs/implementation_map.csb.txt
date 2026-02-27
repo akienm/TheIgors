@@ -19,6 +19,8 @@ FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:~750
     _cmd_help|_cmd_memories|_cmd_core|_cmd_local|_cmd_model|_cmd_ollama
     _cmd_habits(raw): /habits list|pending|compile|explain N
     _cmd_arbiter(raw): /arbiter list|approve N|deny N|explain N
+    _export_portable_identity(): writes SOUL.md (~/.TheIgors/) + IDENTITY.md (instance dir) from live DB; every boot (change.36)
+    _announce_first_boot(): Discord ping + machines.csv self-registration on is_new (change.36)
     _cmd_compress: summarize ring→LTM via Ollama; sys.exit(42) to restart
     _cmd_quit|_cmd_restart|_shutdown(reason)
     _arbiter_resolve(arbiter_queue, item_id, status): resolve + store EPISODIC learning memory (valence ±0.7)
@@ -123,14 +125,16 @@ FILE|wild_igor/igor/cognition/interruptors.py|inertia:MEDIUM(0.75)|lines:190
   ACTIVE_INTERRUPTORS: [BudgetInterruptor(), ContextInterruptor()]
   run_all(cortex) → list[str]: runs all; swallows exceptions
 
-FILE|wild_igor/igor/cognition/local_pool.py|inertia:MEDIUM(0.75)|lines:112
+FILE|wild_igor/igor/cognition/local_pool.py|inertia:MEDIUM(0.75)|lines:~135
   MACHINES_CSV=~/.TheIgors/local/machines.csv|OLLAMA_PORT=11434
-  _parse_online_machines() → list[dict]: reads CSV; skips IP=="OFFLINE"
+  PRIORITY_ORDER: {priority.realtime:0, priority.main_loop:1, priority.background:2, priority.batch:3}
+  _parse_online_machines() → list[dict]: reads CSV; skips OFFLINE; sorts by priority (change.35)
+  parse_capabilities(row) → list[str]: splits Capabilities column
   class LocalOllamaPool(model=DEFAULT_MODEL)
-    _refresh(): rebuild from CSV; append local fallback
+    _refresh(): rebuild from CSV (priority-sorted); append local fallback
     _next_reasoner() → Iterator[OllamaReasoner]: round-robin generator
     reason(user_input, memories, core_patterns, instance_id) → (str, float)
-    set_model(name)|machines_summary() → str
+    set_model(name)|machines_summary() → str: shows hostname(priority)[caps] for each machine
 
 FILE|wild_igor/igor/cognition/reasoners/base.py|inertia:HIGH(0.90)|lines:38
   abstract class BaseReasoner: reason()|name()
@@ -322,7 +326,9 @@ FLOW|self_edit
 
 [KEY_PATHS]
 config: wild_igor/.env|wild_igor/.env.example
-machines: ~/.TheIgors/local/machines.csv
+machines: ~/.TheIgors/local/machines.csv  # now has Priority + Capabilities columns
+soul: ~/.TheIgors/SOUL.md                  # CP1-CP6 export; refreshed every boot
+identity: ~/.TheIgors/igor_{id}/IDENTITY.md # ID1-ID14 export; instance-specific
 instance_data: wild_igor/data/{instance_id}.db
 inbox: ~/.TheIgors/igor_wild_0001/inbox/
 outbox: ~/.TheIgors/igor_wild_0001/outbox/
