@@ -179,6 +179,8 @@ FILE|wild_igor/igor/tools/web_search.py
 
 FILE|wild_igor/igor/tools/self_edit.py|SANDBOX=wild_igor/igor/
   INERTIA map: brainstem/:0.95|memory/models.py:0.95|reasoners/base.py:0.90|memory/cortex.py:0.75|...tools/:0.30
+  WRITE_EXCLUDED={"brainstem/"}: Igor may READ but not WRITE these paths (change.26)
+  blocked writes → logged to ~/.TheIgors/igor_wild_0001/blocked_edits.log + return BLOCKED_EDIT error
   list_source_files(path)|read_source_file(path)|edit_source_file(path,content,reason)|patch_source_file(path,old,new,reason)|run_syntax_check(path)
   _git_commit_and_push(rel_path, reason): stage+commit+push on every edit; message="self-edit: igor/path"
 
