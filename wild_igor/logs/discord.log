@@ -37,3 +37,21 @@
 2026-02-27 14:24:11,802 event=bot_thread_start 
 2026-02-27 14:24:11,803 event=bot_thread_launched allowed_channel=None
 2026-02-27 14:24:14,676 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 17:43:48,052 event=bot_thread_start 
+2026-02-27 17:43:48,053 event=bot_thread_launched allowed_channel=None
+2026-02-27 17:43:50,893 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 19:52:29,358 event=bot_thread_start 
+2026-02-27 19:52:29,358 event=bot_thread_launched allowed_channel=None
+2026-02-27 19:52:32,256 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 20:06:31,572 event=bot_thread_start 
+2026-02-27 20:06:31,572 event=bot_thread_launched allowed_channel=None
+2026-02-27 20:06:34,365 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-27 20:32:40,227 event=send_queued channel_id=1063633277652619305 text_len=1143 preview='**[Igor Evening Session Complete]**\n\nRead Illusions one sent'
+2026-02-27 20:32:40,284 event=bot_send_no_channel channel_id=1063633277652619305 known_channels=[1473757917290172466, 1473757917290172467, 1473757917290172468, 1473757917290172469, 1473758043970994330, 1473758123591467181, 1473758162623397978, 1473758216595963988, 1473758963752370176]
+2026-02-27 20:32:40,289 event=msg_dropped channel_id=1063633277652619305 webhook=False preview='**[Igor Evening Session Complete]**\n\nRead Illusions one sent'
+2026-02-27 20:48:58,361 event=bot_thread_start 
+2026-02-27 20:48:58,361 event=bot_thread_launched allowed_channel=None
+2026-02-27 20:49:01,192 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
+2026-02-28 03:15:34,060 event=bot_thread_start 
+2026-02-28 03:15:34,060 event=bot_thread_launched allowed_channel=None
+2026-02-28 03:15:37,023 event=bot_ready user='igor0001#7027' guild='TheIgors' scope='all channels' webhook=False
