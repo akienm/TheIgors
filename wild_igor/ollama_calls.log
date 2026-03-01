@@ -106,3 +106,5 @@
 2026-02-27 19:53:10,914 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1300.6 tokens_in=125 tokens_out=7 tok_per_sec=5.4 ok=True
 2026-02-27 19:53:24,109 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=1.5 ok=False error="model 'gemma3:270M' not found (status code: 404)"
 2026-02-27 19:53:24,655 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=545.6 tokens_in=137 tokens_out=19 tok_per_sec=34.8 ok=True
+2026-02-28 10:53:22,174 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2452.8 tokens_in=169 tokens_out=4 tok_per_sec=1.6 ok=True
+2026-02-28 17:59:41,592 fn=summarize_session model=gemma3:1b elapsed_ms=2865185.3 tokens_in=2004 tokens_out=221 tok_per_sec=0.1 ok=True

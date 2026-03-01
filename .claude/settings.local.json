@@ -6,7 +6,12 @@
       "Bash(git rm:*)",
       "Bash(git:*)",
       "Bash(python:*)",
-      "Bash(ollama list:*)"
+      "Bash(ollama list:*)",
+      "Bash(gh auth:*)",
+      "Bash(python3:*)",
+      "Bash(do gh:*)",
+      "Bash(gh issue:*)",
+      "Bash(do:*)"
     ]
   }
 }
