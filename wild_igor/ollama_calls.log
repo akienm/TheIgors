@@ -108,3 +108,4 @@
 2026-02-27 19:53:24,655 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=545.6 tokens_in=137 tokens_out=19 tok_per_sec=34.8 ok=True
 2026-02-28 10:53:22,174 fn=OllamaReasoner.reason model=gemma3:270M elapsed_ms=2452.8 tokens_in=169 tokens_out=4 tok_per_sec=1.6 ok=True
 2026-02-28 17:59:41,592 fn=summarize_session model=gemma3:1b elapsed_ms=2865185.3 tokens_in=2004 tokens_out=221 tok_per_sec=0.1 ok=True
+2026-02-28 19:00:37,002 fn=summarize_session model=gemma3:1b elapsed_ms=57561.0 tokens_in=1346 tokens_out=259 tok_per_sec=4.5 ok=True
