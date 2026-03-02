@@ -1,15 +1,17 @@
-DOC_ID|implementation_map|v2026-02-27|status:living_document
+DOC_ID|implementation_map|v2026-03-01|status:living_document
 purpose: file-by-file map of what lives where; key classes/functions; data flow
 maintainer: claude_code|updated_after: each change group
 
 [FILE_MAP]
 
-FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:~750
+FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:~1100
   class Igor(instance_id)
-    __init__: boots cortex+reasoners+NE+pool+discord+net_listener+web_server+boot_check; surfaces ring/restart/changelog/change_request
+    __init__: boots cortex+observer+reasoners+NE+pool+discord+net_listener+web_server+boot_check; _load_warm_context(); surfaces ring/restart/changelog/change_request
     run(): main event loop; 0.5s tick; stdin checked FIRST (responsiveness); then _drain_network + background + _drain_action_impulses
     get_stats() → dict: memory_count|session_cost|last_valence|last_friction|arbiter_pending (gateway pattern D015)
-    _process(user_input) → str: arbiter_intercept → thalamus → preparse → habit||reason → store → ring → dashboard
+    _instance_dir() → Path: ~/.TheIgors/igor_{instance_id}/ — shared helper for warm_context + identity exports
+    _process(user_input) → str: dashboard bookend + try/finally idle reset; delegates to _process_inner()
+    _process_inner(user_input, is_impulse): routing signal detect → arbiter_intercept → thalamus → preparse → habit||reason → store → ring → dashboard → stamp _last_response_time
     _drain_network(): polls net_listener.incoming; routes by source; web replies via web_server.send()
     _drain_action_impulses(): reads TWM for NE action_impulses; is_irreversible_impulse() → arbiter or _process()
     _pre_compaction_flush(): summarize_session via Ollama → INTERPRETIVE memory + changes.log; fires once at URGENT_AT=30
@@ -22,8 +24,11 @@ FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:~750
     _export_portable_identity(): writes SOUL.md (~/.TheIgors/) + IDENTITY.md (instance dir) from live DB; every boot (change.36)
     _announce_first_boot(): Discord ping + machines.csv self-registration on is_new (change.36)
     _cmd_compress: summarize ring→LTM via Ollama; sys.exit(42) to restart
-    _cmd_quit|_cmd_restart|_shutdown(reason)
+    _cmd_quit|_cmd_restart|_shutdown(reason): calls _save_warm_context() before exit
     _arbiter_resolve(arbiter_queue, item_id, status): resolve + store EPISODIC learning memory (valence ±0.7)
+    _save_warm_context(): serializes TWM+ring_tail+ne_state+session_summary to ~/.TheIgors/igor_{id}/warm_context.0.json; rotates .0→.1 first (D022)
+    _load_warm_context(): loads .0 (fallback .1); TTL=WARM_CONTEXT_TTL_HOURS (def 4h); expired→archive; restores session_summary+ne_state always; ring_tail+TWM only if DB empty (D022)
+  instance vars: _last_response_time(float)|_consecutive_slow(int) — Part C routing signal tracking
   _stdin_reader(stdin_queue): daemon thread; readline loop; pushes to queue
   _make_instance_id(host) → str: base34 epoch seconds
   main(): load .env; parse args; find/create instance_id; Igor().run()
@@ -95,6 +100,16 @@ FILE|wild_igor/igor/cognition/narrative_engine.py|inertia:MEDIUM(0.75)|lines:~40
     _call_ollama(prompt, max_twm_id) → dict|None: checks reasoning_cache first; writes cache on success
     _call_claude_fallback(prompt) → dict|None: Haiku fallback if Ollama fails + budget permits
 
+FILE|wild_igor/igor/cognition/forensic_logger.py|inertia:LOW(0.30)|lines:~200
+  LOG_DIR=~/.TheIgors/logs/|MAX_BYTES=10MB|all logs newest-first (prepend)
+  log_reasoning_call(): reasoning_calls.log — every upstream API call
+  log_ne_run(): ne_runs.log — every NE run or skip
+  log_self_edit(): self_edit.log — every self-edit attempt (OK/BLOCKED/SYNTAX_FAIL)
+  log_tool_call(): tool_calls.log — every tool invocation
+  log_memory_op(): memory_ops.log — store/search/retrieve/update ops
+  log_tier_selection(): reasoning_calls.log — tier decision before each upstream call; includes complexity_score+signals
+  log_routing_decision(): reasoning_calls.log — local pool routing; est_latency|actual_latency|budget|cost_score|speed_score|tier_score|escalated|weights
+
 FILE|wild_igor/igor/cognition/reasoning_cache.py|inertia:LOW(0.30)|lines:70
   CACHE_DIR=~/.TheIgors/cache/reasoning/|TTL_SECONDS=720 (12 min)
   get(model, prompt, current_max_twm_id) → str|None: returns cached text; None if TTL expired or new TWM obs since write
@@ -125,39 +140,67 @@ FILE|wild_igor/igor/cognition/interruptors.py|inertia:MEDIUM(0.75)|lines:190
   ACTIVE_INTERRUPTORS: [BudgetInterruptor(), ContextInterruptor()]
   run_all(cortex) → list[str]: runs all; swallows exceptions
 
-FILE|wild_igor/igor/cognition/local_pool.py|inertia:MEDIUM(0.75)|lines:~135
-  MACHINES_CSV=~/.TheIgors/local/machines.csv|OLLAMA_PORT=11434
+FILE|wild_igor/igor/cognition/local_pool.py|inertia:MEDIUM(0.75)|lines:~260
+  MACHINES_CSV=~/.TheIgors/local/machines.csv|OLLAMA_PORT=11434|BENCHMARK_DIR=~/.TheIgors/benchmarks/
+  BENCHMARK_TTL_HOURS=24|_DEFAULT_LATENCY_BUDGET=8.0
   PRIORITY_ORDER: {priority.realtime:0, priority.main_loop:1, priority.background:2, priority.batch:3}
-  _parse_online_machines() → list[dict]: reads CSV; skips OFFLINE; sorts by priority (change.35)
+  _BENCH_PROMPTS: 3 short fixed prompts for throughput measurement
+  _parse_online_machines() → list[dict]: reads CSV; skips OFFLINE; sorts by priority
   parse_capabilities(row) → list[str]: splits Capabilities column
+  Part A — benchmarking:
+    _run_benchmark(model, host=None) → dict: runs 3 prompts; records tokens_per_sec+avg_latency_ms+measured_at; raises on failure
+    _load_benchmark_cache(hostname, model) → dict|None: loads JSON if <24h old and model matches
+    _save_benchmark_cache(hostname, result): writes ~/.TheIgors/benchmarks/{hostname}.json
+    _init_benchmark_async(model, on_complete): loads cache or spawns daemon thread; calls on_complete(result) when ready
+  class RoutingWeights: (Part B+C)
+    __init__: reads ROUTING_WEIGHT_COST(0.60)+ROUTING_WEIGHT_SPEED(0.40) from env; CLAMP [0.2,0.8] STEP 0.05
+    adjust(signal): "speed_pressure" → ↑speed ↓cost; "cost_pressure" → ↑cost ↓speed; "quality_pressure" → no-op
+    score_local(est_latency, budget) → (cost_score, speed_score, tier_score)
   class LocalOllamaPool(model=DEFAULT_MODEL)
-    _refresh(): rebuild from CSV (priority-sorted); append local fallback
-    _next_reasoner() → Iterator[OllamaReasoner]: round-robin generator
-    reason(user_input, memories, core_patterns, instance_id) → (str, float)
-    set_model(name)|machines_summary() → str: shows hostname(priority)[caps] for each machine
+    __init__: _refresh(); _init_benchmark_async(); self.weights=RoutingWeights()
+    _on_benchmark_done(result): stores into self._benchmark
+    _estimate_latency(user_input) → float|None: prompt_tokens/tokens_per_sec; None if no benchmark yet
+    reason(): estimate latency → if >budget raise (escalate to cloud); else round-robin; logs log_routing_decision() on both paths
+    set_model(name): invalidates benchmark if model changed; triggers re-benchmark
+    machines_summary() → str: shows hostname(priority)[caps] + bench tok/s
 
-FILE|wild_igor/igor/cognition/reasoners/base.py|inertia:HIGH(0.90)|lines:38
+FILE|wild_igor/igor/cognition/observer.py|inertia:LOW(0.30)|lines:~80
+  _cortex: module-level ref; set by init(cortex) at boot
+  init(cortex): wires cortex for DB writes; called in Igor.__init__()
+  observe(label, value, context=None): fire-and-forget metric write; never raises
+    layer 1: ~/.TheIgors/logs/metrics.log (forensic; always on; 10MB rotation)
+    layer 2: cortex.store(EXPERIENTIAL memory) with salience=0.2 (if cortex wired in)
+    auto-detects caller module via inspect.stack()[1]
+
+FILE|wild_igor/igor/cognition/reasoners/base.py|inertia:HIGH(0.90)|lines:~100
   abstract class BaseReasoner: reason()|name()
+  token economy constants (D021):
+    TOOL_RESULT_MAX_CHARS=20_000 | MAX_TURNS=25 | CONTEXT_WARN_CHARS=100_000
+  @staticmethod _cap_tool_result(result) → str: truncates + appends [TRUNCATED — N chars...] notice
+  @staticmethod _messages_total_chars(messages) → int: rough char count of all message content
 
-FILE|wild_igor/igor/cognition/reasoners/anthropic.py|inertia:MEDIUM(0.70)|lines:~355
+FILE|wild_igor/igor/cognition/reasoners/anthropic.py|inertia:MEDIUM(0.70)|lines:~370
   DEFAULT_MODEL="claude-sonnet-4-6"|DEBUG_BYPASS_MODEL="claude-haiku-4-5-20251001"
   MODEL_ALIASES: sonnet/opus/haiku → full IDs
   SELF_EDIT_TRIGGER_TOOLS: {read_source_file, list_source_files}
-  RING_CONTEXT_LIMIT=5|SYSTEM_PROMPT: 6 CPs + tool heuristics
   class AnthropicReasoner(BaseReasoner)
-    reason(): tool loop; auto-Haiku on self-edit detect; budget check per turn; interruptors after final
+    reason(): tool loop; MAX_TURNS guard; CONTEXT_WARN_CHARS warning; auto-Haiku on self-edit detect; budget check per turn; _cap_tool_result() on all tool outputs; interruptors after final
     ethics_gate: validate_against_core() on every final response; FAIL → ring(ethics_gate) + arbiter.submit(action_type=ethics_flag)
-    _build_session_context(cortex): last 5 ring entries (excl tool_trace+judgment)
-    _build_memory_context(memories): top 3 at ≥0.5 relevance
     _estimate_cost(usage, model) → float
 
-FILE|wild_igor/igor/cognition/reasoners/ollama_reasoner.py|inertia:MEDIUM(0.70)|lines:292
-  DEFAULT_MODEL="gemma3:270M"
+FILE|wild_igor/igor/cognition/reasoners/ollama_reasoner.py|inertia:MEDIUM(0.70)|lines:~300
+  DEFAULT_MODEL="gemma3:1b"
   _LOG_PATH: wild_igor/ollama_calls.log
   class OllamaReasoner(model, host): reason() → (str, 0.0); no tools; host=None → localhost
   preparse(user_input, habits, model) → dict: JSON classification via Ollama
   score_memories(query, memories, model, top_n=5) → list[Memory]: 0-10 scoring via Ollama
-  summarize_session(ring_entries, instance_id, model) → str: CSB summary for /compress
+  summarize_session(ring_entries, instance_id, model) → str: labeled-field template (TASKS/CHANGES/TOOLS/STATE/VALENCE) for reliable gemma3:1b output
+  compute_complexity(user_input) → dict: pure-Python heuristic; signals verb_match/scope_match/multi_step/multi_tool; score>0.6 → skip_to=tier.4
+
+FILE|wild_igor/igor/memory/scrub.py|inertia:MEDIUM(0.75)|lines:~60
+  scrub(text) → str: regex-based credential scrubber; removes prefixed keys (sk-/Bearer/api_key=), hex≥32, base64≥40
+  hooked into: cortex.store()|cortex.write_ring()|cortex.twm_push()|anthropic.py before messages|openrouter_reasoner.py before messages
+  issue #19 fix (2026-03-01)
 
 FILE|wild_igor/igor/arbiter/__init__.py|lines:0
   empty package init
@@ -339,6 +382,9 @@ change_requests: ~/.TheIgors/claudecode/change_request.txt
 budget_db: wild_igor/memory/claude_budget.db
 embedding_cache: ~/.TheIgors/cache/embeddings/
 reasoning_cache: ~/.TheIgors/cache/reasoning/
+benchmarks: ~/.TheIgors/benchmarks/{hostname}.json  # per-machine Ollama throughput; 24h TTL
+warm_context: ~/.TheIgors/igor_{id}/warm_context.{0,1}.json  # warm working memory; 4h TTL; rotation .0→.1
+metrics_log: ~/.TheIgors/logs/metrics.log  # observe() forensic layer
 ollama_log: wild_igor/ollama_calls.log
 discord_log: wild_igor/logs/discord.log
 web_ui_dist: wild_igor/web_ui/dist/

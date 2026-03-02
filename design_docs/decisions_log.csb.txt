@@ -1,6 +1,55 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-02-27|latest=D020
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-01|latest=D024
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D024 — observe() Self-Instrumentation Primitive ──────────────────────────
+
+DECISION|id=D024|topic=self-instrumentation|status=implemented|date=2026-03-01
+TITLE|observe() as the dynamic self-instrumentation layer alongside static forensic logs
+CONTEXT|Forensic logs (WO3) are static — we decide what to log, they record it, we read it. But Igor needs a way to instrument himself where he notices friction, and for those observations to compile into habits over time
+DECISION|cognition/observer.py: observe(label, value, context) → metrics.log + EXPERIENTIAL memory; init(cortex) wired at boot; never raises; Igor places calls himself; self-edit lets him add new call-sites
+RATIONALE|Two distinct layers serve two distinct audiences: forensic logs = us debugging Igor; observe() = Igor debugging himself. Same infrastructure, different semantics and ownership
+RATIONALE|EXPERIENTIAL memories (salience 0.2) are low-noise — they inform retrieval and habit compilation without dominating responses
+RATIONALE|Auto-detecting caller via inspect.stack()[1] keeps call sites minimal — observe("tier_selected", "tier.3", {...}) with no manual provenance boilerplate
+ALTERNATIVES|Rejected: adding more fields to forensic log (mixes our instrumentation with Igor's; no path to habit compilation); TWM-only (no persistence; lost between sessions)
+TRADEOFFS|inspect.stack() has minor overhead; acceptable at observe() frequency; swallowed on failure so never blocks main loop
+
+# ── D023 — Adaptive Routing: Benchmark + Latency Budget + RoutingWeights ──────
+
+DECISION|id=D023|topic=adaptive-routing|status=implemented|date=2026-03-01
+TITLE|Boot benchmarking, latency budget enforcement, and session-scoped routing weight adjustment
+CONTEXT|gemma3:1b is slow on some hardware (7+ tok/sec → 8-15s for typical prompts); routing only optimized for complexity, not speed or cost; no signal that user was frustrated by latency
+DECISION|Part A: _run_benchmark() measures tokens/sec via 3 short prompts; cached 24h per machine at ~/.TheIgors/benchmarks/{hostname}.json; async daemon thread — no startup delay; Part B: LocalOllamaPool.reason() estimates latency before committing; raises if >LATENCY_BUDGET_SECONDS to trigger cloud escalation; logs est+actual+scores; Part C: RoutingWeights(cost=0.60, speed=0.40) per session; signal detection in _process_inner() adjusts ±0.05 clamped [0.2,0.8]; resets to .env defaults each boot
+RATIONALE|Measured throughput (not guessed) is the only reliable basis for latency estimation; hardware varies significantly across cluster machines
+RATIONALE|Latency budget as a hard raise (not soft preference) ensures the escalation chain is actually triggered when local is too slow; soft preference would be ignored under load
+RATIONALE|Session-scoped weights that reset each boot prevent weight drift; if a pattern is truly useful, the NE/habit compiler should promote it to PROCEDURAL memory — that is the correct persistence mechanism
+ALTERNATIVES|Rejected: fixed latency threshold with no scoring (ignores cost dimension); global persistent weights (drift without clear cause; wrong persistence layer); per-machine weight tuning (premature complexity)
+TRADEOFFS|Benchmark adds ~3s of background work on first boot (hidden in daemon thread); latency estimate uses prompt_tokens as proxy which underestimates output latency — acceptable for a conservative budget gate
+
+# ── D022 — Warm Context: Shutdown Serialization + Boot Reload ─────────────────
+
+DECISION|id=D022|topic=warm-context|status=implemented|date=2026-03-01
+TITLE|Serialize working memory to disk at shutdown; reload at boot for session continuity
+CONTEXT|Ring memory and TWM persist in SQLite, but there is no explicit "here is where we were" signal surfaced at boot; sessions feel cold even though the data exists; cross-instance migration needs explicit state transfer
+DECISION|_save_warm_context() at shutdown: writes TWM+ring_tail+ne_state+session_summary+current_job+timestamp to ~/.TheIgors/igor_{id}/warm_context.0.json; rotates .0→.1 first; _load_warm_context() at boot: loads .0 (fallback .1); TTL=WARM_CONTEXT_TTL_HOURS (env, default 4h); expired→archive; always injects session_summary + ne_state (if no recent narrative); injects ring_tail+TWM only if DB is empty (avoids duplicates since both persist in SQLite)
+RATIONALE|Rotation (.0→.1 before writing) ensures ^C during write loses at most the current session — never the previous one; file integrity guaranteed by OS atomic rename
+RATIONALE|De-duplication (ring_tail/TWM only if DB empty) is correct for the normal case (same DB resumed) and the new-instance case (fresh DB, needs full restore); both cases handled with one code path
+RATIONALE|4h TTL prevents stale context from polluting a new work session started the next day; archived files are human-readable audit of prior sessions
+RATIONALE|ne_state injected as category="narrative" so the NE sees it as continuity context on its first run — reduces the cold-start cognitive ramp
+ALTERNATIVES|Rejected: always re-inject ring_tail (duplicates in normal resume case); never re-inject ring_tail (breaks cross-instance migration); infinite TTL (stale context next day is worse than cold start)
+TRADEOFFS|JSON file is not encrypted — contains session content; acceptable for local single-user deployment; scrub.py runs on all cortex write paths before shutdown so credentials are already scrubbed
+
+# ── D021 — Token Economy: Tool Result Capping + Turn Limit ───────────────────
+
+DECISION|id=D021|topic=token-economy|status=implemented|date=2026-03-01
+TITLE|Cap tool results at 20K chars and limit tool-call turns to 25 per session
+CONTEXT|Igor ran find /home/akien/TheIgors -type f | sort and accumulated 1.1M tokens across turns — hitting both OpenRouter (1M limit) and Anthropic (200K limit) hard limits, causing all upstreams to fail
+DECISION|BaseReasoner._cap_tool_result(result) truncates to TOOL_RESULT_MAX_CHARS=20_000 and appends [TRUNCATED — N chars not shown. Break large tasks into smaller steps...]; applied to every tool result in both anthropic.py and openrouter_reasoner.py before appending to messages; MAX_TURNS=25 guard at top of while loop; CONTEXT_WARN_CHARS=100_000 logs a yellow warning when messages grow large
+RATIONALE|The truncation notice is addressed to the model ("Break large tasks into smaller steps") — it communicates the constraint and the expected response in the same message; no system prompt change required
+RATIONALE|20K chars (~5K tokens) per result is generous for real data (a typical file listing or API response) while preventing pathological cases (full directory trees, large file reads)
+RATIONALE|Single source of truth in base.py: both reasoners import constants from one place; future reasoners automatically inherit the policy
+ALTERNATIVES|Rejected: prompt-only instruction to avoid large commands (model may not comply under instruction pressure); per-tool result caps (complex, inconsistent); sliding window (correct but complex; not needed if per-result cap is sufficient)
+TRADEOFFS|Real data may occasionally exceed 20K and legitimately need more context; the truncation notice pushes Igor toward the correct behavior (chunked reads, smaller steps) rather than a silent cut
 
 # ── D020 — Portable Identity: SOUL.md + IDENTITY.md ─────────────────────────
 
