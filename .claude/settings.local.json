@@ -11,7 +11,9 @@
       "Bash(python3:*)",
       "Bash(do gh:*)",
       "Bash(gh issue:*)",
-      "Bash(do:*)"
+      "Bash(do:*)",
+      "Bash(do echo:*)",
+      "Bash(venv/bin/python3:*)"
     ]
   }
 }
