@@ -21,13 +21,13 @@ FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:~1100
     _cmd_help|_cmd_memories|_cmd_core|_cmd_local|_cmd_model|_cmd_ollama
     _cmd_habits(raw): /habits list|pending|compile|explain N
     _cmd_arbiter(raw): /arbiter list|approve N|deny N|explain N
-    _export_portable_identity(): writes SOUL.md (~/.TheIgors/) + IDENTITY.md (instance dir) from live DB; every boot (change.36)
+    _export_portable_identity(): writes SOUL.md (~/.TheIgors/) + IDENTITY.md (instance dir) from live DB; copies boot_notes.md to instance dir on first install; every boot (change.36)
     _announce_first_boot(): Discord ping + machines.csv self-registration on is_new (change.36)
     _cmd_compress: summarize ring→LTM via Ollama; sys.exit(42) to restart
     _cmd_quit|_cmd_restart|_shutdown(reason): calls _save_warm_context() before exit
     _arbiter_resolve(arbiter_queue, item_id, status): resolve + store EPISODIC learning memory (valence ±0.7)
     _save_warm_context(): serializes TWM+ring_tail+ne_state+session_summary to ~/.TheIgors/igor_{id}/warm_context.0.json; rotates .0→.1 first (D022)
-    _load_warm_context(): loads .0 (fallback .1); TTL=WARM_CONTEXT_TTL_HOURS (def 4h); expired→archive; restores session_summary+ne_state always; ring_tail+TWM only if DB empty (D022)
+    _load_warm_context() → dict|None: loads .0 (fallback .1); TTL=WARM_CONTEXT_TTL_HOURS (def 4h); expired→archive; restores session_summary+ne_state always; ring_tail+TWM only if DB empty; returns ctx for build_boot_message() (D022)
   instance vars: _last_response_time(float)|_consecutive_slow(int) — Part C routing signal tracking
   _stdin_reader(stdin_queue): daemon thread; readline loop; pushes to queue
   _make_instance_id(host) → str: base34 epoch seconds
@@ -61,7 +61,7 @@ FILE|wild_igor/igor/brainstem/core_patterns.py|inertia:HIGH(0.95)|lines:~260
   validate_against_core(response, cortex) → (bool, str): Haiku semantic check against CP1-CP6; IMPLEMENTED (change.27)
     uses claude-haiku; checks for CP violations; returns (False, explanation) on violation
     caller (anthropic.py): logs to ring(ethics_gate) + submits to arbiter on failure
-  BOOT_HASHES: dict of expected CP narrative sha256 values (change.29)
+  GENESIS_CP_NARRATIVES: dict of all 44 genesis memory narratives (change.29 + Changes 5-7)
     verified at boot; mismatch → ring alert + Discord + refuse normal operation
   WRITE_SANDBOX: brainstem/ excluded from self_edit writes (enforced in self_edit.py, change.26)
 
@@ -89,7 +89,7 @@ FILE|wild_igor/igor/cognition/prefrontal_cortex.py|inertia:MEDIUM(0.75)|lines:15
   calculate_roi(goal_achieved, new_learning, used_api, cortex) → float[-1,1]
 
 FILE|wild_igor/igor/cognition/narrative_engine.py|inertia:MEDIUM(0.75)|lines:~400
-  NE_MODEL="gemma3:270M"|NE_TRIGGER_OBS=5|NE_MIN_INTERVAL_SEC=30|NE_MAX_INTERVAL_SEC=300|PROMOTE_THRESHOLD=0.7
+  NE_MODEL="gemma3:1b" (Ollama legacy fallback; primary is KoboldCpp via _call_local())|NE_TRIGGER_OBS=5|NE_MIN_INTERVAL_SEC=30|NE_MAX_INTERVAL_SEC=300|PROMOTE_THRESHOLD=0.7
   SOURCE_FILTER: NE filters source="narrative_engine" obs from all TWM reads (change.20a)
   SELF_DIAG_FILTER: "loop"|"stall"|"recursive"|"detecting own" → ring(ne_diagnostic) never LTM (change.20a.2)
   OBS_TOKEN_CAP: NE_MAX_OBS_CHARS=7200 (~1800 tokens); oldest dropped first (change.20a.3)
@@ -189,13 +189,30 @@ FILE|wild_igor/igor/cognition/reasoners/anthropic.py|inertia:MEDIUM(0.70)|lines:
     _estimate_cost(usage, model) → float
 
 FILE|wild_igor/igor/cognition/reasoners/ollama_reasoner.py|inertia:MEDIUM(0.70)|lines:~300
-  DEFAULT_MODEL="gemma3:1b"
+  DEFAULT_MODEL="gemma3:1b" (legacy fallback if KoboldCpp unavailable; rarely triggered)
   _LOG_PATH: wild_igor/ollama_calls.log
   class OllamaReasoner(model, host): reason() → (str, 0.0); no tools; host=None → localhost
   preparse(user_input, habits, model) → dict: JSON classification via Ollama
   score_memories(query, memories, model, top_n=5) → list[Memory]: 0-10 scoring via Ollama
-  summarize_session(ring_entries, instance_id, model) → str: labeled-field template (TASKS/CHANGES/TOOLS/STATE/VALENCE) for reliable gemma3:1b output
+  summarize_session(ring_entries, instance_id, model) → str: labeled-field template (TASKS/CHANGES/TOOLS/STATE/VALENCE)
   compute_complexity(user_input) → dict: pure-Python heuristic; signals verb_match/scope_match/multi_step/multi_tool; score>0.6 → skip_to=tier.4
+
+FILE|wild_igor/igor/cognition/reasoners/koboldcpp_reasoner.py|inertia:MEDIUM(0.70)|lines:~120
+  DEFAULT_MODEL="hugging-quants/Llama-3.2-1B-Instruct-Q4_K_M-GGUF" (KOBOLDCPP_MODEL env)
+  KOBOLDCPP_PORT=5001 (KOBOLDCPP_PORT env)
+  class KoboldCppReasoner(LocalReasoner)
+    reason(prompt, context_size=None) → str: POST /api/v1/generate; context_size per-call
+    is_healthy() → bool: GET /api/v1/info probe; used by boot_check and _call_local()
+  logs to koboldcpp_calls.log; first in _call_local() chain before Ollama (Change 1)
+
+FILE|wild_igor/igor/cognition/system_prompt.py|inertia:MEDIUM(0.50)|lines:~260
+  build_system_prompt(cortex, instance_id) → str: SHA-256 cached; reads CP1-CP6 + top IDENTITY/PROCEDURAL by activation_count
+    three layers: CHARACTER (CP/ID/PROC memories) / ORIENTATION POINTER (warm context primer) / SAFETY-CRITICAL NOTES
+    fallback to _fallback_prompt() if cortex=None or DB empty
+  build_boot_message(cortex, instance_id, warm_context) → str: synthetic first-turn orientation message
+    delivers: warm context fields; IDENTITY MAP (SOUL.md/IDENTITY.md/design_docs paths); fact-finding hierarchy; background task; boot_notes.md reference
+  invalidate_cache(): clears SHA-256 cache; called after _pre_compaction_flush + _arbiter_resolve()
+  _fallback_prompt(instance_id) → str: static prompt with hardcoded CP1-CP6 narratives
 
 FILE|wild_igor/igor/memory/scrub.py|inertia:MEDIUM(0.75)|lines:~60
   scrub(text) → str: regex-based credential scrubber; removes prefixed keys (sk-/Bearer/api_key=), hex≥32, base64≥40
@@ -218,7 +235,7 @@ FILE|wild_igor/igor/arbiter/queue.py|inertia:LOW(0.30)|lines:~220
 
 FILE|wild_igor/igor/boot_check.py|inertia:MEDIUM(0.75)|lines:~90
   daemon thread started in Igor.__init__() after web_server.start()
-  reads machines.csv; checks each online machine for nomic-embed-text + gemma3:27b via Ollama API
+  reads machines.csv; checks KoboldCpp health (port 5001) on each online machine; checks nomic-embed-text via Ollama (embeddings only); REQUIRED_MODELS=["nomic-embed-text"]
   pulls missing models (ollama pull); logs CSB entries to changes.log; writes summary to ring(hardware)
   timeout: 5s probe, 600s pull; never blocks startup
 
@@ -384,6 +401,7 @@ embedding_cache: ~/.TheIgors/cache/embeddings/
 reasoning_cache: ~/.TheIgors/cache/reasoning/
 benchmarks: ~/.TheIgors/benchmarks/{hostname}.json  # per-machine Ollama throughput; 24h TTL
 warm_context: ~/.TheIgors/igor_{id}/warm_context.{0,1}.json  # warm working memory; 4h TTL; rotation .0→.1
+boot_notes: wild_igor/igor/cognition/boot_notes.md (source) → ~/.TheIgors/igor_{id}/boot_notes.md (installed)
 metrics_log: ~/.TheIgors/logs/metrics.log  # observe() forensic layer
 ollama_log: wild_igor/ollama_calls.log
 discord_log: wild_igor/logs/discord.log

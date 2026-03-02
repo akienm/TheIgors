@@ -1,4 +1,4 @@
-GLOSSARY|TheIgors Project|CSB Format|updated=2026-02-27
+GLOSSARY|TheIgors Project|CSB Format|updated=2026-03-02
 META|format=csb|delimiter=pipe|purpose=domain terminology reference for onboarding + Claude Code sessions
 META|maintained_by=claude_code|source=codebase+design_docs|living_document=yes
 
@@ -20,9 +20,10 @@ ACCESS|all reads/writes via cortex.py (Cortex class); never direct SQL from reas
 
 TERM|TWM|Temporal Working Memory
 DESC|`twm_observations` SQLite table; push-only observation sandbox with TTL
-FIELDS|id, source, content_csb, salience (0-1), metadata_json, created_at, ttl_seconds, expires_at
+FIELDS|id, source, content_csb, salience (0-1), urgency (0-1, default 0.2), metadata_json, created_at, ttl_seconds, expires_at
 LIFECYCLE|pushed by sources → read by NE and anthropic.py as context → expires or promoted to LTM
-NOTE|action_impulses pushed here but currently have no consumer (discrepancy)
+TTL_EXTENSION|twm_extend_ttl() adds 1800s on Signal A/B/C; prevents eviction of actively-relevant obs
+NOTE|action_impulses pushed here; consumed by Igor._drain_action_impulses() each tick
 
 TERM|ring_memory|FIFO-50 circular buffer in SQLite
 DESC|`ring_memory` table; last 50 turns of conversation; survives Igor restarts
@@ -57,9 +58,11 @@ LEVELS|inbox_file=0.9, user_input=0.7, machines_csv=0.8, memory_surfacer=0.3-0.6
 PURPOSE|lets NE and reasoner prioritize what to notice in working memory
 
 TERM|genesis
-DESC|Startup state initialization; runs only if SQLite DB is empty
-CREATES|ROOT + CP1-CP6 + ID1-ID14 + RM_AKIEN/LEAH/CLAUDE/IGOR_DW + PROC1-PROC10
+DESC|Startup state initialization; runs only if SQLite DB is empty (total_count()==0)
+CREATES|ROOT + CP1-CP6 + ID1-ID14 + RM_AKIEN/LEAH/CLAUDE/IGOR_DW + PROC1-PROC10 + 9 new PROC seeds = 44 total
 SOURCE|brainstem/core_patterns.py:initialize_genesis()
+GUARD|main.py checks total_count()==44 to detect first boot
+VERIFY|GENESIS_CP_NARRATIVES dict: all 44 narratives verified at boot; mismatch → alert + refuse operation
 NOTE|genesis memories have highest inertia; last to be modified by Igor
 
 # ── Memory Types ───────────────────────────────────────────────────────────────
@@ -123,7 +126,8 @@ TERM|NE|Narrative Engine
 FULLNAME|NarrativeEngine
 DESC|wild_igor/igor/cognition/narrative_engine.py; background daemon thread
 ROLE|reads TWM observations; integrates into narrative; promotes to LTM; runs every ~60s
-MODEL|llama3.2:1b via Ollama (local, free)
+MODEL|Llama-3.2-1B-Instruct-Q4_K_M-GGUF via KoboldCpp (all 4 cluster machines); falls back to Ollama gemma3:1b if KoboldCpp unavailable
+SORT|reads TWM sorted by urgency*salience descending
 NOTE|generates synthesis narrative even for trivial observations — can be noisy
 
 TERM|AMM|Attentional Memory Manager
@@ -135,10 +139,10 @@ NOTE|diagnostics only; no modification of memories
 # ── Cognition Terms ────────────────────────────────────────────────────────────
 
 TERM|preparse
-DESC|Local Ollama pass on user input before sending to Claude API
+DESC|Local pass on user input before sending to Claude API; via KoboldCpp-first or Ollama fallback
 PURPOSE|intent extraction, tone analysis, keyword extraction — cheap preprocessing
 TOGGLE|/ollama command at runtime; IGOR_OLLAMA=false in .env to disable
-MODEL|llama3.2:1b
+MODEL|Llama-3.2-1B-Instruct-Q4_K_M-GGUF via KoboldCpp; Ollama gemma3:1b legacy fallback
 
 TERM|spreading_activation
 DESC|PLANNED, NOT IMPLEMENTED — intended retrieval method
@@ -148,8 +152,9 @@ SEE_ALSO|ID1 references this; not yet built
 
 TERM|push_source
 DESC|BasePushSource subclass; deposits observations into TWM proactively without being called by reasoner
-TIMER_BASED|MemorySurfacer (120s), TimerSentinel (300s), MachinesWatcher (30s), InboxWatcher (5s)
-EXPLICIT|UserInputSource.push_message() — called on each message arrival, not timer-based
+TIMER_BASED|MemorySurfacer (120s, urg:0.1), HeartbeatSource (300s, urg:0.3), MachinesWatcher (30s, urg:0.8), InboxWatcher (5s, urg:0.9)
+EXPLICIT|UserInputSource.push_message() (urg:0.7) — called on each message arrival, not timer-based
+NOTE|HeartbeatSource was TimerSentinel; checks budget+arbiter+inbox; Discord alert on CRITICAL budget
 
 TERM|surfacer
 FULLNAME|MemorySurfacer
@@ -165,13 +170,14 @@ SOURCE|cognition/interruptors.py; called from main.py after each _process() call
 
 TERM|action_impulse
 DESC|TWM observation type for planned actions Igor intends to take
-DISCREPANCY|pushed to TWM but no consumer reads or executes them; architectural gap
+FLOW|NE._apply_output() pushes to TWM → Igor._drain_action_impulses() reads each tick → is_irreversible_impulse()? → arbiter.submit() else _process(synthetic)
 
 # ── Reasoning ─────────────────────────────────────────────────────────────────
 
 TERM|reasoner
-DESC|cognition/reasoners/ module; wraps a model API; base.py defines interface
-IMPLEMENTATIONS|anthropic.py (Claude API), ollama_reasoner.py (local Ollama)
+DESC|cognition/reasoners/ module; wraps a model API; base.py defines two-level hierarchy
+HIERARCHY|base: LocalReasoner (KoboldCpp, Ollama) | APIReasoner (Anthropic, OpenRouter) | BrowserReasoner; subgroups: ModelFamily | ClaudeFamily
+IMPLEMENTATIONS|anthropic.py (APIReasoner/ClaudeFamily), openrouter_reasoner.py (APIReasoner), koboldcpp_reasoner.py (LocalReasoner), ollama_reasoner.py (LocalReasoner)
 INTERFACE|reason(messages, tools, ...) → generator of response chunks
 
 TERM|tool_loop
@@ -180,10 +186,11 @@ FLOW|prompt → Claude response → if tool_use: call tool → append result →
 TOOLS_DEFINED|tools/__init__.py:get_tool_definitions()
 
 TERM|LocalOllamaPool
-DESC|wild_igor/igor/cognition/local_pool.py; round-robin LAN Ollama cluster
-SOURCE|reads machines.csv for online machine IPs
+DESC|wild_igor/igor/cognition/local_pool.py; local reasoning pool; tries KoboldCpp first (port 5001), then Ollama round-robin
+SOURCE|reads machines.csv for online machine IPs; PRIORITY_ORDER: realtime > main_loop > background > batch
 FALLBACK|localhost if all machines unreachable
-PURPOSE|distribute NE + preparse load across LAN hardware
+PURPOSE|distribute NE + preparse load across LAN hardware; adaptive latency routing via RoutingWeights
+ROUTING|RoutingWeights (cost/speed signals, CLAMP [0.2,0.8], STEP 0.05); _estimate_latency() raises if >LATENCY_BUDGET_SECONDS
 
 TERM|haiku_mode
 DESC|Self-edit + debug calls use claude-haiku-4-5-20251001 regardless of IGOR_MODEL setting
@@ -266,7 +273,7 @@ USE|when patch cannot express the change
 
 TERM|inertia_gate
 DESC|validate_against_core() in brainstem/core_patterns.py; called before response delivery
-STATUS|STUB — currently returns (True, "OK") always; planned: LLM semantic check against CP1-CP6
+STATUS|IMPLEMENTED — Haiku semantic check against CP1-CP6; violation → ring(ethics_gate) + arbiter.submit(ethics_flag, urgency=0.9)
 
 # ── Key Paths ──────────────────────────────────────────────────────────────────
 
@@ -282,6 +289,69 @@ TERM|budget_db|wild_igor/data/claude_budget.db — token/cost tracking SQLite da
 
 TERM|claude-sonnet-4-6|Default Igor reasoning model; set via IGOR_MODEL env var
 TERM|claude-haiku-4-5-20251001|Self-edit/debug model; cheaper; auto-selected for patch_source_file
-TERM|llama3.2:1b|Local NE + preparse model; Ollama; free; fast; low quality; default Ollama model
-TERM|nomic-embed-text|Planned universal embedding model; all cluster machines; semantic search
-TERM|gemma3:270M|Planned reasoning model for Ollama cluster; NE orchestration target; not yet deployed
+TERM|gemma3:1b|Ollama legacy fallback model; only used if KoboldCpp unavailable; all 4 cluster machines now run KoboldCpp instead
+TERM|Llama-3.2-1B-Instruct-Q4_K_M-GGUF|KoboldCpp model; hugging-quants quantization; set via KOBOLDCPP_MODEL env
+TERM|nomic-embed-text|Universal embedding model; all cluster machines; semantic search via cosine similarity
+
+# ── New Terms (2026-03-02) ──────────────────────────────────────────────────
+
+TERM|KoboldCpp
+DESC|Local LLM inference server; port 5001 (KOBOLDCPP_PORT env); serves Llama-3.2-1B-Instruct-Q4_K_M-GGUF
+ROLE|First-choice LocalReasoner for NE and preparse; KoboldCppReasoner.is_healthy() probed at boot and by _call_local()
+FILES|cognition/reasoners/koboldcpp_reasoner.py
+LOGS|koboldcpp_calls.log
+
+TERM|urgency
+DESC|Time-sensitivity dimension on TWM observations; float 0.0-1.0; separate from salience
+MEANING|0.0=background/not time-sensitive, 0.5=moderate, 0.9=act now; default=0.2
+EFFECT|NE sorts TWM by urgency*salience; anthropic.py flags urgency≥0.7 obs distinctly in context
+DISTINCT_FROM|salience = relevance/importance; urgency = time-sensitivity
+
+TERM|twm_extend_ttl
+DESC|cortex.twm_extend_ttl(obs_id, extension_seconds, reason): adds time to a TWM observation's TTL
+PURPOSE|keep actively-relevant observations alive past their default TTL
+SIGNALS|A: NE promotes obs to LTM; B: positive response valence (≥0.3); C: high relevance_score (≥0.6) in cortex.search()
+DEFAULT_EXTENSION|TWM_TTL_EXTENSION_SECONDS = 1800s
+
+TERM|Signal_A
+DESC|TWM TTL extension trigger: NE promotes a TWM observation to LTM via _apply_output()
+EFFECT|observation stays alive in TWM for another 1800s; reasoning_cache also extended
+
+TERM|Signal_B
+DESC|TWM TTL extension trigger: positive response valence (≥0.3) from AnthropicReasoner post-response
+EFFECT|TWM observations that contributed to the response get extended TTL; source obs extended 1800s
+
+TERM|Signal_C
+DESC|TWM TTL extension trigger: high relevance_score (≥0.6) on a memory returned by cortex.search()
+EFFECT|related TWM observations extended 1800s; keeps hot memories accessible
+
+TERM|code_ref
+DESC|Metadata field on PROC memories; links a procedural habit node to its Python tool implementation
+FORMAT|"module/path.py:function_name" e.g. "tools/runner.py:run_bash"
+RESOLUTION|_find_habit() in main.py: extracts function_name → registry.get(tool_name) → executes directly
+PURPOSE|allows genesis PROC nodes to serve as first-tier habits without NE compilation step
+
+TERM|PROC_HABIT_COMPILER
+DESC|Genesis PROC memory (CP2 parent, valence=0.8); the primitive that drives habit learning
+METADATA|primitive=True, seeds=["observe","record","compare","compile"], trigger="pattern_detection"
+ROLE|structural root for habit compilation; seeds point to sibling PROC primitives
+
+TERM|warm_context
+DESC|Serialized session state saved at shutdown; reloaded at next boot to resume continuity
+PATH|~/.TheIgors/igor_{id}/warm_context.{0,1}.json; rotation .0→.1; archived on TTL expiry
+FIELDS|timestamp, instance_id, session_summary, ne_state, current_job, ring_tail (last 20), twm_contents (up to 50)
+TTL|WARM_CONTEXT_TTL_HOURS (default 4h); expired context archived, not loaded
+USAGE|_load_warm_context() returns ctx → passed to build_boot_message() for boot orientation
+
+TERM|build_boot_message
+DESC|cognition/system_prompt.py:build_boot_message(cortex, instance_id, warm_context) → str
+PURPOSE|synthetic first-turn message Igor sends himself at boot; orients before any external input
+DELIVERS|warm context (session_summary, in-progress, ring_tail); IDENTITY MAP (SOUL.md/IDENTITY.md paths); fact-finding hierarchy; background task; boot_notes.md reference
+INJECTED|write_ring(category=session_control) + twm_push(sal:0.9, urg:0.9, ttl:1800) in Igor.__init__()
+
+TERM|boot_notes.md
+DESC|Static operational guidance file read by Igor at every boot via boot message
+SOURCE|wild_igor/igor/cognition/boot_notes.md (in source tree)
+INSTALLED|copied to ~/.TheIgors/igor_{id}/boot_notes.md on first boot by _export_portable_identity()
+CONTENT|memory ops protocol, fact-finding hierarchy, self-edit protocol, arbiter protocol, tool use notes, change coordination, productization notes, cluster info, clan/identity paths
+DISTINCT_FROM|system_prompt.py (safety-critical notes); boot_notes.md = routine operational guidance

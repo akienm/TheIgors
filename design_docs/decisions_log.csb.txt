@@ -1,6 +1,85 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-01|latest=D024
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-02|latest=D031
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D031 — Routing Logic Groundwork: PROC_ROUTING_* in Genesis ────────────────
+
+DECISION|id=D031|topic=routing-groundwork|status=implemented|date=2026-03-02
+TITLE|Routing decisions recorded as PROCEDURAL genesis seeds + EPISODIC audit trail
+CONTEXT|Routing logic (6-tier ladder) is hardcoded Python. D001 (everything-is-memory) says routing preferences should emerge from the graph over time, not be permanently fixed in code. But migrating routing fully in one pass risks breakage on a critical control path.
+DECISION|Add PROC_ROUTING_LOCAL + PROC_ROUTING_ESCALATE to genesis with trigger="routing_decision" and provenance="genesis". Record tier_hint, complexity_score, and routing_proc_id in every EPISODIC memory. Add proc_id to log_routing_decision() forensic output.
+RATIONALE|Genesis seeds establish the vocabulary and intent. EPISODIC data accumulates the evidence. When enough routing EPISODICs cluster consistently (trigger for PROC_HABIT_COMPILER), the routing rule can compile into a real PROCEDURAL habit — replacing the hardcoded Python incrementally.
+RATIONALE|Adding proc_id to the forensic log creates a direct link between observed routing behavior and the governing PROC memory, enabling future audit and refinement.
+ALTERNATIVES|Rejected: full migration now (too risky; routing is on critical path; no habit compiler yet); ignored (no audit trail means routing can never be learned)
+TRADEOFFS|EPISODIC metadata grows slightly per turn; negligible cost for the audit value; proc_id field in forensic log is additive (existing consumers unaffected)
+
+# ── D030 — Tool-to-Habit-Node Migration: runner.py POC ────────────────────────
+
+DECISION|id=D030|topic=tool-habit-migration|status=implemented-poc|date=2026-03-02
+TITLE|PROC_RUN_BASH + PROC_RUN_PYTHON in genesis with code_ref metadata; _find_habit() resolves to registry
+CONTEXT|Tools are hardcoded Python functions, not graph nodes. D001 says tools should be habits: persistent, versioned, trust-tracked, compiled from patterns. runner.py chosen as POC: low inertia (0.30), self-contained, no external dependencies.
+DECISION|Add PROC_RUN_BASH and PROC_RUN_PYTHON to genesis with code_ref="tools/runner.py:run_bash" and "run_python" respectively, plus provenance="builtin", trust_level=0.8, execution_permissions=[]. _find_habit() docs the code_ref resolution pattern. _process_inner() executes via registry.get(tool_name) when code_ref present.
+RATIONALE|code_ref creates a semantic link between the PROCEDURAL description (when/why to use this tool) and its Python implementation (how). The graph node gives the tool a place in the memory hierarchy: discoverable, activatable, inertia-tracked.
+RATIONALE|provenance="builtin" distinguishes genesis-seeded tools from akien_approved, igor_compiled, or genesis provenance — enabling different trust tiers as the security model evolves.
+SECURITY_MODEL|trust_level float + execution_permissions list in metadata. Trust tiers: genesis/builtin (0.8), akien_approved (0.9), igor_compiled (0.5 initial). Capability boundary remains at OS/tool level regardless of metadata. Full enforcement is future work.
+ALTERNATIVES|Rejected: migrate all tools now (too broad; each tool needs individual security review); keep tools code-only (no path to habit compilation; violates D001)
+TRADEOFFS|POC only — argument extraction from user input not yet implemented; code_ref tools fall back to informational response rather than full execution until argument parsing is added
+
+# ── D029 — PROC_HABIT_COMPILER + 4 Primitive Seeds in Genesis ─────────────────
+
+DECISION|id=D029|topic=habit-compiler|status=implemented-seeds|date=2026-03-02
+TITLE|Plant PROC_HABIT_COMPILER and its four primitive seeds in genesis so every Igor inherits the intent to compile habits
+CONTEXT|Habit auto-compilation is deferred to future work (no pattern-detection algorithm yet). But the *intent* and *primitives* can be planted now. Per D013 (ID13), Igor's operational wisdom belongs in genesis so every new Igor inherits it.
+DECISION|Add PROC_HABIT_COMPILER (parent CP2, valence 0.8, primitive=True, seeds=[observe,record,compare,compile]) plus PROC_OBSERVE, PROC_RECORD, PROC_COMPARE, PROC_COMPILE (parent CP2) to genesis. Trigger for PROC_HABIT_COMPILER: 3+ EPISODICs sharing intent+context, or 3+ consistent arbiter approvals of same action_type.
+RATIONALE|Planting the seeds in genesis means the memory graph already knows what habit compilation is, why it matters, and what operations it requires. When the algorithm is implemented, it finds its own description in LTM and can retrieve the primitives by activation search.
+RATIONALE|valence=0.8 on PROC_HABIT_COMPILER (higher than typical 0.7 PROCs) reflects that this is a meta-capability — the thing that enables all other habits to become self-improving.
+ALTERNATIVES|Rejected: implement detection now (requires defining intent+context schema; premature without more EPISODICs accumulated); skip seeds (genesis should encode every capability Igor is designed for, even future ones)
+TRADEOFFS|Seeds have no execution logic yet — they are documentation nodes. The risk is they match incorrectly as habits; mitigated by specific trigger strings unlikely to appear in casual user input.
+
+# ── D028 — Urgency Field on TWM Observations ─────────────────────────────────
+
+DECISION|id=D028|topic=twm-urgency|status=implemented|date=2026-03-02
+TITLE|Add urgency column to twm_observations; distinct from salience; represents time-sensitivity
+CONTEXT|TWM salience represented one dimension (importance/relevance). But some observations need action within seconds (new inbox file), while others are background context (memory surfacing). Sorting by salience alone mixed time-critical alerts with ambient noise.
+DECISION|Add urgency REAL column (default 0.2, range 0.0-1.0) to twm_observations via idempotent ALTER TABLE migration. twm_push() gains urgency param. NE sorts by urgency*salience. _build_session_context() flags urgency>=0.7 obs distinctly at top of context block. Assigned values: InboxWatcher=0.8, UserInput=0.7, Ethics=0.9, MachinesWatcher=0.5, HeartbeatSource=0.3, MemorySurfacer=0.1, NE_impulses=0.6.
+RATIONALE|urgency and salience are orthogonal: a memory-surfacing hit can be highly relevant (salience 0.6) but not time-sensitive (urgency 0.1). An inbox file arrival may be low-relevance in isolation (salience 0.5) but time-critical (urgency 0.8). The product urgency*salience correctly prioritizes urgent+relevant first.
+RATIONALE|idempotent migration means existing instances upgrade silently on next boot; no schema reset required.
+ALTERNATIVES|Rejected: urgency as part of salience (conflates two independent properties; cannot tune separately); separate urgency queue (premature; TWM is already the observation sandbox)
+TRADEOFFS|urgency*salience sort changes NE processing order; observations with high salience and low urgency may be deprioritized — this is correct behavior but may require tuning values per source
+
+# ── D027 — TWM TTL: Confirmed Relevance Extension ────────────────────────────
+
+DECISION|id=D027|topic=twm-ttl-extension|status=implemented|date=2026-03-02
+TITLE|Extend TWM TTL on confirmed relevance, not on mere retrieval — three signals
+CONTEXT|Original TWM TTL was fixed; observations expired on schedule regardless of whether they proved useful. Noise that happened to be read persisted as long as signal that contributed to a response.
+DECISION|Add twm_extend_ttl(obs_id, extension_seconds, reason) to Cortex. TTL_EXTENSION_SECONDS=1800 (env override). Three signals trigger extension: Signal A — NE promotes obs to LTM (importance>=0.7); Signal B — AnthropicReasoner uses obs in context AND response valence>=0.3; Signal C — relevance_score>=0.6 during cortex.search() Phase 2 rerank.
+RATIONALE|The critical distinction: extension fires on confirmed usefulness, not mere access. Reading a TWM obs to consider it and reject it should NOT extend TTL. Only observations that demonstrably contributed to a good outcome (A: worth storing in LTM; B: valence-positive response; C: embedding-confirmed relevance) earn more time.
+RATIONALE|MAX(current, new) semantics prevent extension from ever reducing TTL; idempotent and safe to call multiple times.
+ALTERNATIVES|Rejected: extend on every read (amplifies noise equally with signal; defeats purpose); fixed TTL only (cannot distinguish useful from useless observations)
+TRADEOFFS|Signal B (valence check) uses a keyword heuristic rather than a full valence model — cheap but imprecise; positive-skewed responses in low-valence situations could trigger false extensions; acceptable for this pass
+
+# ── D026 — Reasoner Class Hierarchy ──────────────────────────────────────────
+
+DECISION|id=D026|topic=reasoner-hierarchy|status=implemented|date=2026-03-02
+TITLE|Two-level reasoner hierarchy: transport base classes + model family failover
+CONTEXT|All reasoners were direct subclasses of BaseReasoner with no type-level distinction between local (free, no tools) and API (cost, budget tracking, reliable tools). Adding failover required duplicating logic. BrowserReasoner had nowhere to fit.
+DECISION|Level 1: LocalReasoner(BaseReasoner), APIReasoner(BaseReasoner), BrowserReasoner(BaseReasoner) — each declaring capability flags (supports_tools, response_format, cost_model, reliability, supports_context_param). Level 2: ModelFamily(BaseReasoner) groups channels and handles failover; ClaudeFamily(ModelFamily) covers Anthropic+OpenRouter+Browser. Concrete: OllamaReasoner→LocalReasoner, KoboldCppReasoner→LocalReasoner, AnthropicReasoner→APIReasoner. BrowserReasoner declared only (NotImplementedError).
+RATIONALE|Transport base classes encode the structural differences that are stable across all future models: does this cost money? does it support tools? is it reliable? These should be typed, not inferred.
+RATIONALE|ModelFamily.reason() tries channels in order and falls back cleanly; budget-exhausted raises propagate up and trigger next channel. ClaudeFamily provides a single handle for "ask Claude" regardless of which channel is available.
+ALTERNATIVES|Rejected: flat hierarchy (no type safety; failover logic duplicated in each reasoner); trait/mixin approach (Python MRO complexity; no clear benefit)
+TRADEOFFS|BrowserReasoner is declared but not implemented; it exists to reserve the interface and document where session-based AI access fits in the hierarchy
+
+# ── D025 — KoboldCpp Adoption ─────────────────────────────────────────────────
+
+DECISION|id=D025|topic=koboldcpp|status=implemented|date=2026-03-02
+TITLE|Adopt KoboldCpp as primary local inference engine; retain Ollama as fallback
+CONTEXT|Ollama provides per-request context sizing only via non-standard parameters. Visibility into inference progress is limited. llama.cpp (which KoboldCpp wraps) provides OpenAI-compatible endpoint, per-request context_size in the payload, and better inference visibility.
+DECISION|KoboldCppReasoner(LocalReasoner) in cognition/reasoners/koboldcpp_reasoner.py. Default port 5001. context_size per-call (env KOBOLDCPP_CONTEXT_SIZE default 8192 — conservative start). OpenAI-compat endpoint /v1/chat/completions. Logs to koboldcpp_calls.log. boot_check.py probes /api/v1/info. LocalOllamaPool._refresh() tries KoboldCpp first when koboldcpp_port present in machines.csv row; Ollama retained as fallback. NarrativeEngine._call_local() tries KOBOLDCPP_HOST env first.
+RATIONALE|Per-request context_size is the primary advantage: Igor can allocate more context to complex tasks and less to preparse/NE without reconfiguring the server. Ollama requires server restart or non-standard options to change context window.
+RATIONALE|llama.cpp foundation gives Igor visibility into eval_count, tokens/sec, and other inference metadata that Ollama abstracts away — needed for the adaptive routing benchmarking (D023).
+RATIONALE|Keeping Ollama as fallback allows incremental migration without breaking existing instances; machines without koboldcpp_port in CSV continue using Ollama unchanged.
+ALTERNATIVES|Rejected: replace Ollama immediately (breaks machines not yet running KoboldCpp); use native KoboldCpp API (OpenAI-compat is more transferable; easier to maintain alongside other APIReasoner subclasses)
+TRADEOFFS|Additional dependency (KoboldCpp must be running); boot_check probes add slight startup time; context_size defaults conservatively (8192) — users can raise via env var once they verify memory headroom
 
 # ── D024 — observe() Self-Instrumentation Primitive ──────────────────────────
 

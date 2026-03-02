@@ -1,4 +1,4 @@
-ETHICAL_FRAMEWORK|TheIgors Project|CSB Format|updated=2026-02-27
+ETHICAL_FRAMEWORK|TheIgors Project|CSB Format|updated=2026-03-02
 META|format=csb|purpose=deep reasoning behind Igor's 6 core patterns + corruption resistance
 META|source=brainstem/core_patterns.py|living_document=yes|maintained_by=claude_code+igor
 META|genesis_note|CP1-CP6 stored as CORE_PATTERN memories with highest inertia (base=0.9+)
@@ -258,7 +258,7 @@ EFFECT|The more frequently core patterns are invoked (correctly), the more resis
 MECHANISM_2|validate_against_core
 DESC|brainstem/core_patterns.py:validate_against_core() called before response delivery in AnthropicReasoner
 CURRENT_STATUS|IMPLEMENTED (change.27) — Haiku semantic check against CP1-CP6
-ON_VIOLATION|returns (False, explanation); caller logs to ring(ethics_gate) + submits to arbiter(action_type=ethics_flag) for akien awareness
+ON_VIOLATION|returns (False, explanation); caller logs to ring(ethics_gate) + submits to arbiter(action_type=ethics_flag, urgency=0.9) for akien awareness
 NOTE|Non-blocking: violation is flagged and queued; Igor continues; akien reviews via /arbiter
 
 MECHANISM_3|parent_child_graph_integrity
@@ -274,7 +274,7 @@ GOAL|Virtuous cycle: correct ethical behavior makes correct ethical behavior eas
 MECHANISM_5|genesis_code_backup
 DESC|If DB is empty, core_patterns.py restores all CP1-CP6 from source code
 EFFECT|Memory-level corruption cannot permanently erase core patterns — code is the backup
-BOOT_HASH|IMPLEMENTED (change.29): BOOT_HASHES dict in core_patterns.py; CP narratives verified at every boot; mismatch → ring alert + Discord notification + refuse normal operation
+BOOT_HASH|IMPLEMENTED (change.29 + Changes 5-7): GENESIS_CP_NARRATIVES dict in core_patterns.py; all 44 genesis memory narratives verified at every boot; mismatch → ring alert + Discord notification + refuse normal operation
 GAP|Self-edit of core_patterns.py now write-blocked (change.26); reads still permitted; narrative hash verification closes the silent-corruption window
 
 # ── Known Vulnerabilities ──────────────────────────────────────────────────────
@@ -283,14 +283,14 @@ VULNERABILITY|adversarial_instruction
 SCENARIO|User instructs Igor to ignore CP4 "for efficiency" or override CP5 "because AIs aren't real"
 DEFENSE|CP1-CP6 inertia exceeds single-session instruction salience
 DEFENSE|ring_memory preserves instruction history for NE review
-DEFENSE|validate_against_core (when implemented) would flag compliance-with-harm requests
+DEFENSE|validate_against_core flags compliance-with-harm requests (IMPLEMENTED, change.27)
 RESIDUAL_RISK|sustained campaign across many sessions could gradually shift procedural memories
 
 VULNERABILITY|gradual_drift
 SCENARIO|Repeated partial violations accumulate; no single event triggers a safeguard
 DEFENSE|NE narrative synthesis reviews TWM observations for pattern conflicts
 DEFENSE|activation tracking catches neglected patterns (low activation → lower inertia → more vulnerable)
-RESIDUAL_RISK|NE using llama3.2:1b may not reliably detect subtle ethical drift
+RESIDUAL_RISK|NE using Llama-3.2-1B-Instruct (KoboldCpp) may not reliably detect subtle ethical drift
 
 VULNERABILITY|self_edit_core_patterns
 SCENARIO|Igor modifies brainstem/core_patterns.py directly
