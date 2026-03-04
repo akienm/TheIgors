@@ -14,7 +14,7 @@ FILE|wild_igor/igor/main.py|inertia:MEDIUM(0.50)|lines:~1100
     _process_inner(user_input, is_impulse): routing signal detect → arbiter_intercept → thalamus → preparse → habit||reason → store → ring → dashboard → stamp _last_response_time
     _drain_network(): polls net_listener.incoming; routes by source; web replies via web_server.send()
     _drain_action_impulses(): reads TWM for NE action_impulses; is_irreversible_impulse() → arbiter or _process()
-    _pre_compaction_flush(): summarize_session via Ollama → INTERPRETIVE memory + changes.log; fires once at URGENT_AT=30
+    _pre_compaction_flush(): summarize_session via ollama_reasoner → INTERPRETIVE memory + changes.log; fires once at URGENT_AT=30
     _run_ne_background(): fires NarrativeEngine in daemon thread; skips if still running
     _find_habit(parsed) → Memory|None: text-match trigger against PROCEDURAL memories
     _handle_command(command, raw): dispatches /commands
@@ -74,9 +74,10 @@ FILE|wild_igor/igor/brainstem/amm_diagnostics.py|inertia:HIGH(0.95)|lines:194
   get_logger(name) → Diagnostics
   STATUS: not wired into Igor's main path; standalone debug utility
 
-FILE|wild_igor/igor/cognition/thalamus.py|inertia:MEDIUM(0.50)|lines:91
+FILE|wild_igor/igor/cognition/thalamus.py|inertia:MEDIUM(0.50)|lines:~100
+  class Thalamus: __init__ creates LocalKoboldPool + selects preparse_host; instantiated once as Igor.thalamus
+    process(raw_input) → ParsedInput: parses intent/keywords/tone/command
   @dataclass ParsedInput: raw|intent|keywords|tone|is_command|command
-  process(raw_input) → ParsedInput
   _extract_keywords(text) → list[str]: stop-word filtered; 3+ char words
   _classify_intent(text, keywords) → str: regex/string matching; 7 categories
   _detect_tone(text) → str: keyword matching; 5 categories
@@ -338,8 +339,8 @@ FILE|wild_igor/web_ui/|Svelte 4 + Vite frontend
 
 FLOW|user_message (REPL)
   stdin → _stdin_reader → stdin_queue → Igor.run() [stdin checked FIRST] → Igor._process()
-  → arbiter_intercept [if pending + approve/deny word] || thalamus.process()
-  → [preparse(Ollama)] → [habit_match || pfc.reason(Anthropic||Ollama)]
+  → arbiter_intercept [if pending + approve/deny word] || Igor.thalamus.process()
+  → [preparse(KoboldCpp)] → [habit_match || pfc.reason(Anthropic||KoboldCpp)]
   → console.print(response) → cortex.store(EPISODIC) → cortex.write_ring() → dashboard.render()
 
 FLOW|user_message (web)

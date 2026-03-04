@@ -70,7 +70,8 @@ inertia:MEDIUM (0.50-0.75)
 
 MODULE|cognition/thalamus.py
   purpose: parse raw text input → ParsedInput; intent classification; keyword extraction; tone detection
-  key_fn: process(raw_input) → ParsedInput(raw,intent,keywords,tone,is_command,command)
+  class Thalamus: holds LocalKoboldPool + preparse_host; instantiated once as Igor.thalamus in __init__
+  key_fn: Thalamus.process(raw_input) → ParsedInput(raw,intent,keywords,tone,is_command,command)
   intent_values: greeting|meta_question|factual_question|action_request|memory_instruction|general|command
   tone_values: urgent|curious|frustrated|friendly|neutral
   DISCREPANCY: intent classification is simple string matching, not LLM; docstring says "improve with LLM later"

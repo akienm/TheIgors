@@ -1,6 +1,41 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-02|latest=D031
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-04|latest=D034
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D034 — Speed Optimizations: Fast-path Preparse, Parallel I/O, Keep-alive ──
+
+DECISION|id=D034|topic=speed-optimizations|status=implemented|date=2026-03-04
+TITLE|Three-layer latency reduction: fast-path preparse, parallel preparse+search, HTTP keep-alive
+CONTEXT|Measured sources of per-turn latency: (1) LLM preparse call for greetings/commands/habit-match inputs where structural routing is unnecessary; (2) serial cortex.search() after preparse completes (2 sequential LLM-dependent round-trips); (3) TCP handshake per KoboldCpp HTTP call (especially visible on wired LAN with ~1ms RTT but repeated 3-5x per turn).
+DECISION|Fast-path: detect greeting/command/habit-match in Thalamus (pure Python, <1ms) and skip LLM preparse entirely — generate rule-based CSB immediately. Parallel I/O: for inputs that do need LLM preparse, run preparse and cortex.search() concurrently via ThreadPoolExecutor(max_workers=2). HTTP keep-alive: http.client.HTTPConnection pooled per host (_conn_pool dict, _conn_lock), reused across calls with one retry on stale connection.
+RATIONALE|Fast-path eliminates the most common case (greetings, /commands) from LLM overhead entirely. Parallel I/O cuts latency for complex inputs from (preparse + search) serial to max(preparse, search) — typically cuts ~800ms. Keep-alive eliminates TCP overhead on local-network KoboldCpp; especially valuable for NE which calls preparse every cycle.
+RATIONALE|NE yields to interactive: _ne_worker polls self._is_processing up to 10s before executing. Prevents NE from saturating the local KoboldCpp connection while a human is mid-query.
+ALTERNATIVES|Rejected: async/await rewrite (deep architectural change; would invalidate all existing synchronous tool calls); connection pooling library (adds dependency; http.client solution is stdlib with same result)
+TRADEOFFS|ThreadPoolExecutor adds thread overhead (~0.5ms); only engaged for non-fast-path turns. Keep-alive pool is process-global; concurrent use from NE thread + main thread possible — protected by _conn_lock at pool-mutation points but individual connections are not thread-safe (each host has exactly one connection; NE and main use different hosts in practice via select_preparse_host vs reason host).
+CLUSTER_NOTE|wired-first sort in _parse_online_machines() (within same priority tier) ensures lowest-latency KoboldCpp host selected first; akiendelllinux and akiendell (wired) preferred over wifi laptops.
+
+# ── D033 — CSB Structured Preparse: Replacing Unstructured LLM Routing ────────
+
+DECISION|id=D033|topic=csb-preparse|status=implemented|date=2026-03-04
+TITLE|Preparse returns structured [PARSED_INPUT] CSB block; cloud reasoners receive it as context prefix
+CONTEXT|Prior preparse returned an unstructured dict parsed from LLM free-text. This was fragile (hallucinated fields, format drift) and the routing data was discarded after local use — cloud reasoners had no visibility into the structured intent/complexity analysis. A consistent schema is needed that both routing logic and cloud models can consume.
+DECISION|_PREPARSE_PROMPT generates a fixed-schema [PARSED_INPUT] CSB block (intent, tone, complexity, entities, requires_tools, memory_hints, habit_id, should_escalate). LLM returns the block verbatim; _rule_based_csb() generates the same schema in pure Python as fallback. parse_preparse_csb() extracts routing dict from the block. All cloud reasoners (Anthropic, OpenRouter) prepend the CSB string to their user content: preparse_csb + "\n\n" + user_input.
+RATIONALE|CSB schema is the project's canonical data format — using it for preparse aligns preparse with the broader design language. Forwarding the full block to cloud models gives them structured intent analysis without re-parsing free text, reducing hallucination risk in tool-selection and routing decisions.
+RATIONALE|Fallback generates identical schema, so routing code path is identical regardless of whether LLM or rules produced the block. This means LLM preparse can be toggled off without changing routing logic.
+RATIONALE|max_tokens=120 + timeout=8s for preparse: designed to complete within human perception threshold (~2s typical) while bounding worst-case latency.
+ALTERNATIVES|Rejected: keep unstructured dict (fragile schema; no cloud visibility); separate preparse call per cloud model (doubles LLM calls; adds cost); skip forwarding to cloud (cloud models lack context that local preparse already computed)
+TRADEOFFS|CSB block adds ~200 chars to cloud context per turn (~$0.00003 at claude-sonnet-4-6 pricing — negligible). Local 1B model may produce malformed CSB occasionally; _rule_based_csb() fallback ensures routing always has a valid dict.
+
+# ── D032 — Cloud-Cheap-First Interactive: Retiring Local 1B from Interactive ───
+
+DECISION|id=D032|topic=cloud-cheap-interactive|status=planned|date=2026-03-04
+TITLE|For interactive human turns, cloud-cheap (gpt-4o-mini) is better default than local 1B; local 1B reserved for NE/preparse/batch
+CONTEXT|Tier escalation ladder: tier.2 = local 1B (KoboldCpp/Llama-3.2-1B). For low-complexity human turns (should_escalate=False), tier.2 was used to minimize cost. In practice on 4 Intel laptops (no GPU): local 1B generates ~5-8 tok/s, yielding ~15-40s response latency for a 150-token answer. gpt-4o-mini at $0.00015/1K in is ~$0.001/turn and responds in ~2s. Quality gap on instruction following is significant for a 1B vs 4o-mini.
+DECISION|Retire tier.2 (local 1B) from interactive reasoning for human turns. New ladder for interactive: tier.1 habit → tier.2 KoboldCpp/preparse-only (still used for NE/narrative/preparse) → tier.3 OR gpt-4o-mini (new default for low-complexity interactive) → tier.4 OR claude-sonnet-4-6 → tier.5 Anthropic direct → tier.6 arbiter. Local 1B remains the sole provider for NE daemon and preparse (where 8s timeout acceptable). Tracked as GitHub issue #28.
+RATIONALE|The cluster has no GPU; CPU-only 1B inference is too slow for conversational UX. Cloud-cheap cost is negligible (~$0.001/turn) relative to latency improvement (40s → 2s). D001 (biology) is not violated — NE (hippocampal consolidation) still runs locally; interactive reasoning (prefrontal) delegates to a more capable resource when local is insufficient.
+RATIONALE|This maps to biology: humans also "outsource" to tools and external references when working memory is insufficient. Outsourcing interactive reasoning to cloud-cheap while keeping consolidation local is a valid architectural split.
+ALTERNATIVES|Rejected: keep local 1B for interactive (unacceptable latency on no-GPU hardware); use local 7B for interactive (requires dedicated hardware not yet provisioned; see D035 when 7B deployed); replace NE local inference with cloud (NE runs continuously — cloud cost would compound; latency less critical for background)
+TRADEOFFS|Dependency on internet connectivity for interactive turns. Mitigated by: local fallback still available (slower), arbiter queue for offline accumulation. Cost: ~$0.001/low-complexity turn × N turns/day — acceptable given hardware constraints. Implementation deferred (issue #28) until routing refactor is ready.
 
 # ── D031 — Routing Logic Groundwork: PROC_ROUTING_* in Genesis ────────────────
 
