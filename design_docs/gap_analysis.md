@@ -36,11 +36,8 @@ known deferred items from session notes, and architecture review.
 
 ### Tier 1: High Impact, Relatively Contained
 
-**G1 — threshold-X modulated by milieu.dominance** *(~2h)*
-`milieu.py` docstring and GitHub issue both say: low dominance → escalate sooner (lower
-threshold-X before routing to upstream). The arousal/valence hooks are wired; dominance isn't
-consumed yet. Wire `milieu.dominance` into the prefrontal_cortex routing decision.
-→ Issue: #59
+**G1 — threshold-X modulated by milieu.dominance** ~~*(~2h)*~~
+**RESOLVED** — main.py: dominance < 0.0 bumps `_skip_to` one tier; dominance < -0.3 bumps two (capped at tier.4). Issue #59 closed 2026-03-05.
 
 **G2 — context window cap in prefrontal_cortex** ~~*(~2h)*~~
 **RESOLVED** — Added `CONTEXT_HARD_CAP_CHARS=150_000` and `_trim_messages()` to base.py.
@@ -57,11 +54,8 @@ job_manager.py exists but isn't wired to the main loop's response path. Igor sho
 to say "I've started that, I'll let you know when it's done" and return immediately.
 → Issue: #27
 
-**G5 — prediction signal (dopamine analog) in TWM** *(~3h)*
-Issue #42. When Igor expects a specific outcome and it happens/doesn't happen, that should
-produce a valence/arousal signal stronger than the base interaction signal. Currently all
-outcomes are weighted equally. Adds a "surprise" dimension to milieu updates.
-→ Issue: #42
+**G5 — prediction signal (dopamine analog) in TWM** ~~*(~3h)*~~
+**RESOLVED** — `milieu.ingest_surprise(predicted_tier, actual_tier)`: escalation surprise → dominance erosion + arousal spike; prediction met → dominance restoration. Called after every interactive turn. Issue #42 closed 2026-03-05.
 
 ---
 
@@ -109,7 +103,7 @@ requires G7 (response-habits), G4 (async jobs), plus a training pipeline. Milieu
 ganglia are the foundation.
 → Issue: #45
 
-**G12 — emotional milieu decay: asymmetric chemical analog** *(~3h)*
+**G12 — emotional milieu decay: asymmetric chemical analog** ~~*(~3h)*~~ **RESOLVED** — DECAY_VALENCE=0.96, DECAY_AROUSAL=0.97, DECAY_DOMINANCE=0.99. Issue #55 closed 2026-03-05.
 Issue #55. Current decay is a simple ×0.98 per tick applied uniformly. A more accurate model
 would have different decay curves per dimension (valence decays faster than arousal, arousal
 faster than dominance). Also: refractory period after a spike before next activation is counted.
