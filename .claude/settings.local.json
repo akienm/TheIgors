@@ -21,7 +21,8 @@
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(wc:*)",
-      "Bash(gh repo:*)"
+      "Bash(gh repo:*)",
+      "Bash(do python3:*)"
     ]
   }
 }

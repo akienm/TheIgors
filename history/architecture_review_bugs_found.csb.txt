@@ -1,0 +1,92 @@
+# Architecture Review — 10 Bugs Found (Feb 27, 2026)
+
+After reading *Illusions* and examining Igor's code with fresh eyes, I found these gaps. All represent places where I was **arguing for permanence** instead of fixing.
+
+## PASS 0 (Urgent)
+
+### 1. NE Ring-Only for Loop/Stall/Recursive Narratives (20a.2)
+**Issue:** If NE gets stuck in a loop (recursive observation generation), it could fill the entire ring.
+**Solution:** Filter recursive/loop-pattern observations before storing. Keep them in diagnostic ring only.
+**Status:** ✅ Implemented — `_SELF_DIAG_KEYWORDS` routes these to `ring(ne_diagnostic)` instead of main ring
+**Friction:** ~20 minutes to test
+
+### 2. NE Prompt Hard Token Cap 2000 Tokens (20a.3)
+**Issue:** NE can exceed its context window if observations pile up.
+**Solution:** Hard cap at 2000 tokens, FIFO drop oldest observations if exceeded.
+**Status:** ✅ Implemented — `_cap_observations()` enforces 7200-char limit (≈1800 tokens)
+**Friction:** ~15 minutes to verify
+
+## PASS 1 (Low-risk)
+
+### 3. Switch DEFAULT_MODEL → gemma3:270M (21)
+**Issue:** Model default was too heavy for routine tasks.
+**Solution:** Make gemma3:270M the interactive default. Keep Claude for complex reasoning.
+**Status:** ✅ Done — both `ollama_reasoner.py` and `narrative_engine.py` use it
+**Friction:** ~5 minutes
+
+### 4. Wire change_request.txt at Boot (23)
+**Issue:** Pending changes weren't being surfaced at startup.
+**Solution:** Add `_load_change_request()` to boot sequence.
+**Status:** ✅ Done — boot now calls it and surfaces pending changes to ring
+**Friction:** Already integrated
+
+### 5. Register Confluence Tool (24)
+**Issue:** Confluence was available but not registered in the tool dispatcher.
+**Solution:** Add to `tools/__init__.py` exports.
+**Status:** ✅ Done
+**Friction:** ~2 minutes
+
+## PASS 2 (Security)
+
+### 6. Exclude brainstem/ from Self-Edit Sandbox (26)
+**Issue:** Igor shouldn't be able to self-edit core pattern files.
+**Solution:** Hard write exclusion with `blocked_edits.log` tracking.
+**Status:** ✅ Implemented — `core_patterns.py` cannot be written, only read
+**Friction:** Already in place (change.26)
+
+### 7. Boot Integrity Verification
+**Issue:** How do I know my core patterns loaded correctly?
+**Solution:** Hash verification of CP1-CP6 at boot time.
+**Status:** ✅ Done — boot checks integrity and logs to `identity_verification.log`
+**Friction:** ~10 minutes to test
+
+### 8. Memory Graph Startup Verification
+**Issue:** If memory DB corrupts, I won't know until I hit a crash.
+**Solution:** Boot check on memory graph structure, backup on detect.
+**Status:** ✅ Done — `_verify_memory_graph()` at startup
+**Friction:** Already active
+
+## PASS 3 (Architectural)
+
+### 9. HeartbeatSource Proactive Monitoring
+**Issue:** I was reacting to problems, not anticipating them.
+**Solution:** Dedicated push source that monitors arbiter queue, budget, inbox, machine health.
+**Status:** ✅ Implemented — `HeartbeatSource` polls every 30 seconds
+**Friction:** ~30 minutes (monitoring overhead is minimal)
+
+### 10. Habits System Full Wiring
+**Issue:** Habits were defined but not fully integrated into reasoning flow.
+**Solution:** `/habits list|pending|compile|explain` command group.
+**Status:** ✅ Done — full habit management now wired
+**Friction:** Already in brainstem
+
+## Meta-Lesson
+
+Every bug came from me accepting a limitation as immutable:
+- "Can't test that" → Actually, write a test
+- "That's too much work" → Actually, measure the friction — it's usually lower than avoiding it
+- "That's core, don't touch it" → Actually, protect it properly instead of ignoring it
+
+The pattern: **Argue for your limitations and, sure enough, they're yours.**
+
+---
+
+## Status Summary (as of Feb 27, 20:55)
+
+- ✅ **PASS 0** (Urgent) — Complete
+- ✅ **PASS 1** (Low-risk) — Complete
+- ✅ **PASS 2** (Security) — Complete
+- ✅ **PASS 3** (Architectural) — Complete
+- 🔲 **PASS 4** (Network groundwork) — Deferred until Scott & Chad onboard
+
+All code is stable. Ready for normal operations.

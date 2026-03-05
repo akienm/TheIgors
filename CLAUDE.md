@@ -1,22 +1,55 @@
-## Project: Igor-Style Arrangement Logic
-**Core Philosophy:** Contrast "ugly" distorted textures with sophisticated Jazz/Soul harmony.
+# TheIgors — Claude Code Working Conventions
 
-### 1. Harmonic Constraints
-* **The "Igor" Palette:** Frequent use of Major 7ths, Minor 9ths, and diminished passing chords.
-* **Voice Leading:** Keep internal voices static while the bass moves chromatically.
-* **Tension:** Do not resolve every cadence. Leave "air" in the arrangement for vocal samples.
+## What This Project Is
+Igor is a Python AI agent with persistent SQLite memory, running on akiendelllinux.
+- Repo: https://github.com/akienm/TheIgors
+- Main agent code: `wild_igor/igor/`
+- DB: `wild_igor/data/wild-0001.db` (SQLite, ~1400+ memories)
+- venv: `venv/` (Python 3.12)
+- Launch: `igor` bash alias (loops on exit code 42 = restart)
 
-### 2. Sound Design & Texture
-* **Lead Synths:** Mono-synth logic. Use glide/portamento frequently.
-* **Percussion:** High-compression, "blown-out" drum sounds. Syncopated, slightly off-grid (humanized).
-* **Vocal Stacks:** Pitch-shifted layers. Formant shifting is preferred over standard harmony.
+## Developer Conventions
 
-### 3. Structural Rules
-* **Abrupt Transitions:** Use "hard cuts" instead of long crossfades between sections.
-* **The "Finished Product" Standard:** Do not provide placeholders (e.g., "[Insert solo here]").
-* **Logic:** Every MIDI note must have a velocity variance of at least 10% to avoid "robotic" playback.
+### Before editing
+- Read the file first. Never overwrite blindly.
+- Check inertia level — HIGH files need strong justification.
+- Check `design_docs/` for relevant architecture decisions.
 
-### 4. Technical Specs
-* **Sample Rate:** 44.1kHz / 24-bit.
-* **DAW Target:** [Insert your DAW here, e.g., Ableton/Logic/FL].
-* **MIDI Mapping:** Track 1: Bass | Track 2: Lead | Track 3: Pads | Track 4: Perc.
+### Inertia levels (self-edit resistance)
+| Level | Files | Convention |
+|---|---|---|
+| HIGH (0.90+) | `brainstem/`, `memory/models.py`, `cognition/reasoners/base.py` | Require arbiter approval; never edit casually |
+| MEDIUM | `cognition/`, `memory/cortex.py`, `anthropic.py`, `main.py` | Discuss before editing |
+| LOW | `tools/`, `dashboard/`, `thalamus.py` | Freely improvable |
+
+### Commit policy
+- Claude Code edits do NOT auto-commit — commit manually at logical checkpoints.
+- Igor's own self-edits DO auto-commit+push via `self_edit.py`.
+- Never `--no-verify` or force-push main.
+
+### Instance data location
+All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
+- `jobs/` — background job state
+- `arbiter/` — pending arbiter queue
+- `warm_context.*.json` — session context
+- `logs/` — forensic logs
+- `inbox/`, `outbox/`, `workspace/` — instance working dirs
+
+### Key env vars (in `wild_igor/.env`)
+- `IGOR_DB_PATH` — defaults to `memory/igor.db` relative to CWD (wild_igor/)
+- `OPENROUTER_API_KEY` — primary cloud inference
+- `KOBOLDCPP_HOST` / `KOBOLDCPP_PORT` — local inference
+- `IGOR_SELF_EDIT_ENABLED` — gates source file writes
+
+### Reference docs
+- `design_docs/` — architecture, decisions log, ethical framework, mission
+- `history/` — research notes, early design conversations, archives
+- `claudecode/CONTEXT.md` — fuller onboarding context for new sessions
+- `wild_igor/igor/memory/models.py` — Memory dataclass, MemoryType enum
+- `wild_igor/igor/cognition/` — thalamus, NE, milieu, interruptors, job_manager
+
+### Do not
+- Move or rename `brainstem/` contents without Akien review
+- Store credentials in memory (use `.env` + CREDENTIAL_REF memory pattern — see #71)
+- Delete `wild_igor/data/wild-0001.db` — that's the live DB
+- Delete `wild_igor/memory/claude_budget.db` — that's the spend history

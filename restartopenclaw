@@ -1,5 +1,0 @@
-#!/bin/bash
-systemctl --user stop openclaw-gateway.service
-openclaw config validate
-systemctl --user start openclaw-gateway.service
-openclaw dashboard

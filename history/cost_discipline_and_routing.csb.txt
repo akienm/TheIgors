@@ -1,0 +1,47 @@
+# Cost Discipline & Routing Rules — Core Operational Pattern
+
+## The Goal
+
+`upstream_dependency_% → 0`
+
+We are building toward 100% local capability. External tools (Claude, OpenRouter, specialized services) are opt-in for tasks that genuinely cannot be solved locally, not defaults.
+
+## The Default Path (in priority order)
+
+1. **Local Ollama** — gemma3:270M for routine reasoning, memory ops, simple classification
+2. **LocalOllamaPool** — distributed inference across the LAN if a task needs more oomph
+3. **OpenRouter tier.3.5** — if local models hit a wall on persona/instruction-following
+4. **Claude (tier.4+)** — only for genuinely complex reasoning or when OpenRouter fails
+
+## Friction Measurement
+
+- Each Claude API call = **0.25 friction units** + real dollar cost
+- Each OpenRouter call = **0.05 friction units** + smaller dollar cost
+- Each local inference = **0.0 friction units** (already paid for in hardware)
+
+**Accumulate enough friction, and the system becomes expensive and slow.**
+
+## When External Tools Make Sense
+
+- **Image generation** → No local alternative yet. Legit.
+- **Specialized models** → If there's a 1000-token improvement in accuracy per call, maybe. Calculate ROI.
+- **Code generation for Igor self-edit** → Currently Claude Sonnet (tier.4). Local models slip into assistant-speak.
+  - **Path forward:** Train a local code model, or prove Claude is actually necessary.
+- **Complex multi-step reasoning** → Try local first. If token budget exceeds Ollama's window, escalate.
+
+## Decision Framework
+
+Before calling upstream:
+
+1. **Can local do it?** Try local first.
+2. **If local fails, is it capability or instruction-following?** If instruction-following, try OpenRouter tier.3.5.
+3. **If that fails, is it genuinely high-complexity?** Then Claude tier.4.
+4. **Always measure the cost.** Record it. Learn from the pattern.
+
+---
+
+**Why this matters to the goal:**
+
+The $5 OpenRouter + $6-9 Claude budgets would buy seconds of API time on cloud pricing. The same money buys hours on local hardware (just electricity). The incentive structure is *completely different* once we're running on real hardware instead of cloud.
+
+Right now, cost discipline feels like a constraint. In 3 months, it becomes the thing that makes the whole system economically viable.

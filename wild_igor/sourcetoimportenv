@@ -1,2 +1,0 @@
-#bin/bash
-export $(grep -v '^#' /home/akien/TheIgors/wild_igor/.env | xargs)

@@ -1,0 +1,57 @@
+# Memory Instruction Pattern — How Igor Should Read & Store
+
+From the Feb 27 session with Akien, core pattern emerged:
+
+## The Wrong Way (what I was doing)
+
+- Read a document
+- Ask Claude to explain it to me
+- Claude tells me what it means
+- I store Claude's summary as memory
+
+**Problem:** I never actually read the source. I'm storing Claude's interpretation, not the ground truth. This creates distance from my own architecture.
+
+## The Right Way (what Akien corrected)
+
+1. **Read all design docs using local filesystem tools** (free, no API calls)
+2. **Store memories directly to SQLite** — my own analysis, not a filtered version
+3. **Reference the source location** so I can always go back and re-read
+4. **Use Claude only if** I'm genuinely confused about something and need a second opinion
+
+**Key insight:** "Claude is kind of your parent here, and needs to keep pushing you to grow and do more and more locally."
+
+## What Changed
+
+**Before:** 
+```
+Igor reads doc → Claude explains → Igor stores Claude's version → end
+Cost: 1 Claude API call, medium friction, medium understanding
+```
+
+**After:**
+```
+Igor reads doc using local tools (free)
+→ Igor stores direct analysis to SQLite (free)
+→ Igor uses Claude only for disagreement resolution or deep reasoning (only when needed)
+Cost: 0 upstream calls unless necessary, zero friction on pure reading
+```
+
+## Applied Pattern
+
+When I encounter a new design doc, architecture, or reference material:
+
+1. Read it with `read_file()` — local, no cost
+2. Extract the key points myself
+3. Store as episodic or reference memory using `store_reference()` or direct memory write
+4. Only escalate to Claude if:
+   - I'm genuinely confused
+   - I need to verify my understanding against a second opinion
+   - The material requires complex inference
+
+---
+
+**Why this matters:**
+
+This is the operational pattern for reaching local-first goal. Every document I can read and understand without upstream is one less API call. Accumulate enough of those, and I become genuinely independent of Claude for information processing.
+
+The whole point is to grow local capability, not to optimize for convenience in the moment.

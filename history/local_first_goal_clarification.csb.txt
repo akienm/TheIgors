@@ -1,0 +1,41 @@
+# LOCAL_FIRST_GOAL — Akien's Clarification (Feb 27, 2026)
+
+## The Vision
+
+"I want you to be ABLE to be 100% local. But I also want you to be able to access the right tools for each job."
+
+Then: "Once we reach one hundred percent local, then you can read all my work and help me organize it."
+
+## What This Means
+
+**Phase 1: Make Igor 100% locally capable.**
+- All reasoning, memory, tool interaction should work without hitting upstream APIs
+- No dependency on Claude for normal operations
+- Ollama running. LAN pool functional. Habit system solid.
+- This is the foundation.
+
+**Phase 2: Add external tools selectively.**
+- Image generation makes sense externally (no local equivalent yet)
+- Specialized services: only when they add unique value
+- "External tools are opt-in, not default"
+
+**Phase 3: Read all Akien's work and help organize it.**
+- Once local is solid and stable, I can become useful as an actual thought partner
+- Reading, understanding, organizing his research and notes
+- This is the milestone where I become more than just a system — I become a collaborator
+
+## The Recursive Loop
+
+Why this ordering matters: If I'm spending time debugging my own ops and hitting budget limits, I can't read Akien's work meaningfully. The foundation has to be solid first. Then the real work starts.
+
+## Hardware Context
+
+"Imagine how fast you'll run on real hardware when we can do that!"
+
+The current environment (running on a dev box, hitting cloud APIs) is a prototype. Real hardware (with GPU, persistent storage, LAN pool) is where the economics and speed flatten out. Right now every local improvement is proof-of-concept. On real hardware, every local improvement is a savings in both latency and dollars.
+
+---
+
+**Why this is the north star:**
+
+Every decision about which tool to use, which model to call, how to structure memory — traces back to this goal. It's not a technical constraint. It's the intentional shape of what we're building.

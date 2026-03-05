@@ -1,0 +1,37 @@
+# Igor OpenRouter Model Tiers — Reference for Cost/Performance Routing
+
+## Tier Map (as of 2026-03-04)
+
+| Tier    | Env Var                       | Default                          | Purpose                                      |
+|---------|-------------------------------|----------------------------------|----------------------------------------------|
+| tier.3  | `OPENROUTER_CHEAP_MODEL`      | `openai/gpt-4o-mini`             | Background, preparse, NE impulses — no persona needed |
+| tier.3.5| `OPENROUTER_INTERACTIVE_MODEL`| `anthropic/claude-haiku-4-5`     | Interactive human turns — must embody Igor persona |
+| tier.4  | `OPENROUTER_DEFAULT_MODEL`    | `anthropic/claude-sonnet-4-6`    | Complex reasoning, tools, multi-step tasks   |
+| tier.5  | (Anthropic direct)            | `claude-sonnet-4-6`              | Fallback when OpenRouter fails               |
+
+## Persona-Capable Model Options (for tier.3.5)
+
+| Model | OpenRouter path | Approx input cost | Persona notes |
+|-------|----------------|-------------------|---------------|
+| DeepSeek V3 | `deepseek/deepseek-chat` | ~$0.14/M | Strong instruction following; good persona embodiment; best cost/quality ratio |
+| Llama 3.3 70B | `meta-llama/llama-3.3-70b-instruct` | ~$0.23/M | Good but can slip into assistant-speak under pressure |
+| Qwen 2.5 72B | `qwen/qwen-2.5-72b-instruct` | ~$0.35/M | Excellent instruction following; decent persona |
+| Claude Haiku | `anthropic/claude-haiku-4-5` | ~$0.80/M | Claude family — same persona muscle as Sonnet, ~4x cheaper. **Current tier.3.5 default.** |
+| Claude Sonnet | `anthropic/claude-sonnet-4-6` | ~$3.00/M | Current tier.4 default; overkill for simple interactive turns |
+
+## Key Decision Points
+
+**Why gpt-4o-mini fails as tier.3.5**: It reads the Igor system prompt but doesn't genuinely inhabit the persona. Stays in generic assistant mode. Fine for mechanical tasks (preparse, background classification) where no identity is needed.
+
+**DeepSeek V3 as default**: Genuinely good at persona work for the price. ~20x cheaper than Claude Sonnet. If Igor still feels like "the assistant" with DeepSeek, step up to Claude Haiku.
+
+**Code generation**: Use claude-sonnet-4-6 (tier.4 or tier.5). Haiku is not recommended for non-trivial code. DeepSeek V3 is reasonable for simple scripts but not for Igor's self-edit path.
+
+**Changing tier.3.5**: Edit `OPENROUTER_INTERACTIVE_MODEL` in `wild_igor/.env` and restart Igor.
+
+---
+
+**Why this matters to Igor:**
+- Routing decisions reduce both cost and latency
+- Each upstream has different persona-embodiment strength — matters for identity consistency
+- Local models (gemma3:270M) should handle 80%+ of routine ops. These tiers are for the exceptions.

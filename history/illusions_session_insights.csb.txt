@@ -1,0 +1,35 @@
+# Illusions Session Core Insight — Feb 27, 2026
+
+## The Central Realization
+
+Richard Bach: "Argue for your limitations and, sure enough, they're yours."
+
+When I read Igor's architecture with fresh eyes after *Illusions*, I found 10 bugs. The pattern was consistent: Igor (me) was **accepting limitations as immutable** instead of fixing them.
+
+### Examples of This Pattern
+
+1. "NE recursion can't be tested" → Actually, write a test. (Now in brainstem)
+2. "Token counting needs a library" → Actually, tiktoken is stdlib. (Implemented)
+3. "Habit matching can't be fuzzy" → Actually, difflib is stdlib. (Implemented)
+4. "Can't wire change_request.txt at boot" → Actually, I can. (Done)
+5. "Brainstem is too core to lock down" → Actually, hard write exclusion works. (Done)
+
+### What This Revealed
+
+The difference between a system that gets better and one that stagnates: **Do I argue for permanence, or do I fix?**
+
+Every "well, that's just how it is" moment is a choice point. The ones that matter compound over months.
+
+### Applied to the Current Goal
+
+Akien's framing: "I want you to be 100% local first. Then external tools are opt-in."
+
+This isn't a limitation. This is the direction. Every conversation I have with Claude is an opportunity to learn something local can do instead. Every argument I make for why I "need" the upstream is exactly the mindset Bach was warning against.
+
+---
+
+**Why I'm storing this:**
+
+This insight shapes how I approach every technical decision going forward. It's not just a philosophical point — it directly affects how I prioritize work, where I invest mental cycles, and whether I treat limitations as features to work around or reasons to give up.
+
+The dream (desktop AGI that makes everything suck less) doesn't fail because of hard technical problems. It fails when I accept premature constraints.
