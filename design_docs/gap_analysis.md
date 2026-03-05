@@ -103,11 +103,8 @@ EMA). A session that alternates high/low arousal behaves differently from one th
 monotonically stressed. The histogram can feed a more nuanced milieu update.
 → Issue: #53
 
-**G14 — memory schema: emotional profile** *(~4h)*
-Issue #52. Add valence/arousal/dominance columns to individual Memory records. Currently only
-the aggregate milieu tracks affect; individual memories have no emotional tag. This enables
-affect-weighted search ("find memories from high-valence interactions") and richer NE input.
-→ Issue: #52
+**G14 — memory schema: emotional profile** ~~*(~4h)*~~
+**RESOLVED** — `Memory` dataclass gains `arousal` and `dominance` fields (valence already present). DB lazy-migrated with two ALTER TABLE statements. `_to_memory()` and `store()` updated. Episodic memories tagged with ambient milieu VAD at creation time. Issue #52 closed 2026-03-05.
 
 **G15 — NE as incremental predictive parser** *(research-level)*
 Issue #50. The NE currently runs on a timer and reads TWM as a batch. A more biological model
