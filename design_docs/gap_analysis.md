@@ -67,12 +67,8 @@ Issue #47. Currently PROC habits only trigger on input phrases. First-class ques
 responses that bypass the LLM for known situations) would dramatically reduce cloud calls.
 → Issue: #47
 
-**G8 — identity-threat detection and output suspension** *(~4h)*
-Issue #48. During network thrash or long API timeouts, the NE may generate output that
-contradicts stable identity (CP1-CP6). Need a fast semantic gate that suspends output if the
-proposed text significantly contradicts core patterns. Existing ethics gate is the model;
-needs broader coverage.
-→ Issue: #48
+**G8 — identity-threat detection and output suspension** ~~*(~4h)*~~
+**RESOLVED** — `fast_identity_check(text)` in core_patterns.py: keyword-based, no API call, runs on all output paths. Covers CP1/CP2/CP5/CP6 violation phrases (e.g. "I'm just an AI", "I cannot learn"). Suppresses output and pushes IDENTITY_THREAT to TWM+ring. Issue #48 closed 2026-03-05.
 
 **G9 — spreading activation** ~~*(explicitly deferred in design docs)*~~
 **RESOLVED** — `cortex._spread_activation()` traverses parent_id/children_ids/link_ids after search(). Neighbors get `relevance_score * 0.4`; already-activated neighbors get a small boost. Called after both Phase 2 (embedding) and Phase 1 (text fallback). Issue #60 closed 2026-03-05.
