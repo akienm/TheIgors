@@ -48,11 +48,8 @@ Both Anthropic and OpenRouter reasoners now hard-trim at 150K chars. Issue #26 c
 KoboldCpp uses: `"Answer briefly and directly. Use the context provided. Say 'I don't know' when uncertain."`
 Issue #41 closed 2026-03-05.
 
-**G4 — background job execution with async completion** *(~4h)*
-Issue #27. Long-running tools (web search, bash commands) block the interaction loop.
-job_manager.py exists but isn't wired to the main loop's response path. Igor should be able
-to say "I've started that, I'll let you know when it's done" and return immediately.
-→ Issue: #27
+**G4 — background job execution with async completion** ~~*(~4h)*~~
+**RESOLVED** — `job_manager.submit_background()` runs multi-unit jobs in daemon threads; `_job_completions` deque + `_announce_completed_jobs()` loop drains results into TWM as ACTION_IMPULSE. Multi-unit jobs (complexity>0.6 && is_multi_unit) now return immediately with job ID. Issue #27 closed 2026-03-05.
 
 **G5 — prediction signal (dopamine analog) in TWM** ~~*(~3h)*~~
 **RESOLVED** — `milieu.ingest_surprise(predicted_tier, actual_tier)`: escalation surprise → dominance erosion + arousal spike; prediction met → dominance restoration. Called after every interactive turn. Issue #42 closed 2026-03-05.
@@ -86,11 +83,8 @@ a decay-weighted partial activation boost. This creates emergent "topic bubbles"
 memory. cortex.py has the adjacency graph; the traversal logic isn't written.
 → Issue: #60
 
-**G10 — rich Live status bar (terminal UX)** *(~3h)*
-Issue #35. The terminal shows a static header. A `rich.Live` panel showing reasoner tier,
-TWM depth, NE status, milieu state (v/a/d), and current habit would dramatically improve
-observability during development and demo.
-→ Issue: #35
+**G10 — rich Live status bar (terminal UX)** ~~*(~3h)*~~
+**RESOLVED** — `dashboard/terminal.py` render() extended with milieu VAD bars (▓▓▓░░), TWM depth, active jobs count, last tier used. Both boot and post-interaction dashboard calls updated. Issue #35 closed 2026-03-05.
 
 ---
 
