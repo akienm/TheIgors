@@ -40,7 +40,7 @@ known deferred items from session notes, and architecture review.
 `milieu.py` docstring and GitHub issue both say: low dominance → escalate sooner (lower
 threshold-X before routing to upstream). The arousal/valence hooks are wired; dominance isn't
 consumed yet. Wire `milieu.dominance` into the prefrontal_cortex routing decision.
-→ Issue: none filed yet
+→ Issue: #59
 
 **G2 — context window cap in prefrontal_cortex** *(~2h)*
 Issue #26. The `CONTEXT_WARN_CHARS=100k` constant exists in base.py but nothing enforces it
@@ -93,7 +93,7 @@ needs broader coverage.
 When a memory is activated (surfaced in search or TWM), its graph neighbors should receive
 a decay-weighted partial activation boost. This creates emergent "topic bubbles" in working
 memory. cortex.py has the adjacency graph; the traversal logic isn't written.
-→ No issue filed
+→ Issue: #60
 
 **G10 — rich Live status bar (terminal UX)** *(~3h)*
 Issue #35. The terminal shows a static header. A `rich.Live` panel showing reasoner tier,
@@ -172,6 +172,7 @@ Relay module (cognition/relay.py) exists for Claude Code IPC; needs the orchestr
 **G20 — design docs: update for milieu + basal_ganglia** *(~1h)*
 decisions_log is current through D034. milieu (Phase I) and basal_ganglia (Phase II) are
 not yet documented there. Add D035 (milieu) and D036 (basal_ganglia).
+→ Issue: #61
 
 **G21 — thoughts folder distillation** *(~2h, Igor's task)*
 Issue #38. The thoughts/ folder has 19 files including large chat logs. Igor should read,
