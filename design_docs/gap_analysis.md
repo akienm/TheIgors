@@ -42,17 +42,14 @@ threshold-X before routing to upstream). The arousal/valence hooks are wired; do
 consumed yet. Wire `milieu.dominance` into the prefrontal_cortex routing decision.
 → Issue: #59
 
-**G2 — context window cap in prefrontal_cortex** *(~2h)*
-Issue #26. The `CONTEXT_WARN_CHARS=100k` constant exists in base.py but nothing enforces it
-before sending to the LLM. Add a hard truncation/summary gate so Igor never silently sends a
-context that will fail or degrade quality.
-→ Issue: #26
+**G2 — context window cap in prefrontal_cortex** ~~*(~2h)*~~
+**RESOLVED** — Added `CONTEXT_HARD_CAP_CHARS=150_000` and `_trim_messages()` to base.py.
+Both Anthropic and OpenRouter reasoners now hard-trim at 150K chars. Issue #26 closed 2026-03-05.
 
-**G3 — local reasoner: stripped system prompt for tier.2** *(~3h)*
-Issue #41. When routing to KoboldCpp/Llama-1B, the full 4000-token system prompt is sent.
-A 1B model can't use most of it and it wastes context. Strip to a task-only instruction for
-local pre-parse and NE calls.
-→ Issue: #41
+**G3 — local reasoner: stripped system prompt for tier.2** ~~*(~3h)*~~
+~~Issue #41.~~ **RESOLVED** — Already implemented in `koboldcpp_reasoner.py` lines 350-352.
+KoboldCpp uses: `"Answer briefly and directly. Use the context provided. Say 'I don't know' when uncertain."`
+Issue #41 closed 2026-03-05.
 
 **G4 — background job execution with async completion** *(~4h)*
 Issue #27. Long-running tools (web search, bash commands) block the interaction loop.
@@ -169,10 +166,8 @@ Relay module (cognition/relay.py) exists for Claude Code IPC; needs the orchestr
 
 ### Documentation / Housekeeping
 
-**G20 — design docs: update for milieu + basal_ganglia** *(~1h)*
-decisions_log is current through D034. milieu (Phase I) and basal_ganglia (Phase II) are
-not yet documented there. Add D035 (milieu) and D036 (basal_ganglia).
-→ Issue: #61
+**G20 — design docs: update for milieu + basal_ganglia** ~~*(~1h)*~~
+**RESOLVED** — D036 (milieu) and D037 (basal_ganglia) added to decisions_log. Issue #61 closed 2026-03-05.
 
 **G21 — thoughts folder distillation** *(~2h, Igor's task)*
 Issue #38. The thoughts/ folder has 19 files including large chat logs. Igor should read,

@@ -1,6 +1,32 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-04|latest=D035
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-05|latest=D037
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D037 — Basal Ganglia: Parallel Habit Scoring with Lateral Inhibition ────────
+
+DECISION|id=D037|topic=basal-ganglia-habit-scoring|status=implemented|date=2026-03-05
+TITLE|Replace first-match-wins _find_habit() with parallel scored evaluation and milieu-modulated threshold
+CONTEXT|_find_habit() was a labeled placeholder ("Placeholder for basal ganglia") that iterated habits in DB order and returned the first whose trigger appeared in the input. With 19 genesis PROCs plus learned habits, first-match-wins is arbitrary: if two habits have matching triggers, the one returned first from get_habits() always wins regardless of relevance, usage history, or quality. No confidence signal was produced.
+DECISION|New cognition/basal_ganglia.py: score = trigger_score(1.0 if trigger in input, else 0.0 — required) + keyword_bonus(≤0.15, narrative word overlap with parsed.keywords) + activation_bonus(≤0.15, frequently-used habits preferred) + inertia_bonus(≤0.10, stable habits preferred) + valence_bonus(≤0.10, positive-valence habits preferred). Threshold modulated by milieu state: BASE=0.50; high arousal lowers threshold (more reactive); low dominance raises it (less confident). Clamped [0.30, 0.70]. Lateral inhibition: max scorer wins; tiebreak by activation_count. Compile-phrase pre-check fires PROC_HABIT_COMPILER at confidence 0.95. HABIT_EXEC ring entries now include score= field.
+RATIONALE|Biological basal ganglia does exactly this: parallel pathway activation → lateral inhibition → winner-take-all above threshold. The model is neurobiologically motivated. Milieu modulation closes the emotional feedback loop: repeated failure (low dominance) makes Igor more cautious about firing habits without solid evidence; high arousal makes him more reactive.
+RATIONALE|Compile-phrase pre-check preserved verbatim from old _find_habit() — this is a correct shortcut that doesn't need scoring.
+RATIONALE|score= in HABIT_EXEC ring entries creates an audit trail: over many interactions, low-scoring habit fires indicate triggers that are too broad; high-scoring fires indicate well-matched habits. Future training can use this signal.
+ALTERNATIVES|Rejected: keep first-match-wins (arbitrary, no auditability); sort by activation_count only (ignores input relevance); LLM-only habit matching (expensive for a structural decision that can be scored in microseconds)
+TRADEOFFS|Adding 5 bonus terms increases scoring time from O(n) string search to O(n * narrative_length) set intersection — negligible at n≤50 habits. Threshold modulation requires milieu to be initialized; gracefully degrades to BASE_THRESHOLD if milieu is None.
+REFERENCE|cognition/basal_ganglia.py|main.py: _find_habit() removed|gap_analysis.md G1 (threshold-X via dominance, planned extension)
+
+# ── D036 — Milieu: Ambient 3D Emotional State ──────────────────────────────────
+
+DECISION|id=D036|topic=milieu-ambient-emotional-state|status=implemented|date=2026-03-05
+TITLE|Add persistent 3D affect vector (valence, arousal, dominance) that drifts slowly and shapes cognitive thresholds
+CONTEXT|Interaction-level affect signals (valence from pfc.assess_valence, friction from pfc.measure_friction, roi from pfc.calculate_roi) were computed per-interaction but discarded after logging. No accumulating emotional state existed across interactions. The NE produced internal_state {valence, arousal} but it was thrown away. Cognitive thresholds (habit firing, escalation) were flat constants.
+DECISION|New cognition/milieu.py: MilieuState(valence [-1,1], arousal [-1,1], dominance [-1,1], tick, last_update). Asymmetric EMA: α_up=0.25 (fast rise toward new signal), α_down=0.05 (slow fall — mood persists). Natural decay ×0.98 per tick(); dominance decays toward +0.3 baseline (default competent). update(valence, friction, roi) maps friction→arousal (high friction=activated), friction inverse→dominance, roi→dominance secondary. ingest_ne_state(ne_state) integrates NE's self-assessment at softer alphas (0.10/0.03). Persisted to ~/.TheIgors/igor_{id}/milieu.json. MilieuSource: 60s timer push to TWM (salience=0.4, urgency=0.3, ttl=600). MilieuInterruptor: fires on arousal>0.70 or valence<-0.50 with 10-tick cooldown. Module singleton: milieu_mod.init()/get().
+RATIONALE|Milieu bridges individual interactions into a continuous emotional thread. Without it, every interaction resets from neutral — Igor cannot build up frustration from repeated failures or sustained positive flow from productive sessions. The asymmetric EMA models biological affect: emotions spike quickly but fade slowly. Dominance starting at +0.3 (slightly positive) models default competence without overconfidence.
+RATIONALE|Three consumers wire milieu into cognition: (1) basal_ganglia uses arousal+dominance for habit threshold; (2) MilieuInterruptor alerts NE when affect reaches extremes; (3) MilieuSource keeps TWM aware of current mood. Future: threshold-X escalation modulated by dominance (G1, #59).
+RATIONALE|JSON persistence is essential: mood should survive restarts. A session of repeated failures should not reset to neutral just because Igor restarted.
+ALTERNATIVES|Rejected: per-interaction affect only (no accumulation, no memory); single-dimension valence (loses arousal/dominance distinctions important for routing); database storage (JSON is simpler for a single floating-point record, atomic writes sufficient)
+TRADEOFFS|Milieu persists failures as well as successes — a bad session can leave dominance depressed for the next session. Mitigated by natural decay (×0.98/tick, dominance floors at +0.3 baseline). ingest_ne_state() uses softer alphas so NE's self-read doesn't dominate the signal from direct interaction data.
+REFERENCE|cognition/milieu.py|cognition/push_sources.py MilieuSource|cognition/interruptors.py MilieuInterruptor|main.py milieu_mod.init()/update()/ingest_ne_state()
 
 # ── D035 — Tier.3.5: Persona-Capable Model for Interactive Human Turns ─────────
 
