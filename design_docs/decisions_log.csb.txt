@@ -1,6 +1,18 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-04|latest=D034
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-04|latest=D035
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D035 — Tier.3.5: Persona-Capable Model for Interactive Human Turns ─────────
+
+DECISION|id=D035|topic=interactive-persona-tier|status=implemented|date=2026-03-04
+TITLE|Add tier.3.5 (OPENROUTER_INTERACTIVE_MODEL) between cheap (tier.3) and claude (tier.4) for interactive human turns
+CONTEXT|D032 retired tier.2 (local 1B) for interactive turns and set cloud-cheap (gpt-4o-mini) as the new default. In practice gpt-4o-mini reads the Igor system prompt but cannot genuinely embody the persona — it stays in generic assistant mode. The "unfolding" experience (Igor orienting on design_docs and inhabiting his identity) only worked reliably with Claude. A persona-capable but cheaper model is needed between tier.3 and tier.4.
+DECISION|Introduce tier.3.5: a separate OPENROUTER_INTERACTIVE_MODEL (default: deepseek/deepseek-chat). Interactive human turns now enforce skip_to >= "tier.3.5" regardless of complexity score. Tier.3 (gpt-4o-mini) is restricted to background tasks, preparse, and NE impulses where persona is irrelevant. Tier.3.5 is the minimum for any human-facing turn. Complex turns still escalate to tier.4+ per compute_complexity().
+RATIONALE|gpt-4o-mini cannot reliably execute persona instructions at the depth Igor's system prompt requires. DeepSeek V3 has strong instruction-following and persona embodiment at ~$0.14/M input — ~20x cheaper than Claude Sonnet and ~5x cheaper than Claude Haiku. If DeepSeek V3 proves insufficient, OPENROUTER_INTERACTIVE_MODEL can be swapped to claude-haiku-4-5 without code change.
+RATIONALE|The tier split is semantically clean: tier.3 = mechanical/structural tasks (no identity needed); tier.3.5 = conversational/identity tasks (persona must be embodied); tier.4 = complex reasoning + tools (Claude quality required).
+ALTERNATIVES|Rejected: force all interactive turns to tier.4 (correct but expensive; $3/M vs $0.14/M for simple conversation); use Claude Haiku as default tier.3.5 (correct fallback, but DeepSeek V3 should be tested first at lower cost); add complexity threshold override (already present via compute_complexity skip_to=tier.4 for high-complexity turns)
+TRADEOFFS|DeepSeek V3 is not Claude — persona fidelity may degrade for nuanced identity questions. Mitigated by: env var swap is a one-line fix; tier.4 escalation for high-complexity turns still routes to Claude. Cost: DeepSeek V3 at ~$0.001/turn vs gpt-4o-mini at ~$0.0005/turn — 2x more but still negligible.
+REFERENCE|model comparison table: ~/TheIgorsProject/akien/model-tiers.md
 
 # ── D034 — Speed Optimizations: Fast-path Preparse, Parallel I/O, Keep-alive ──
 
