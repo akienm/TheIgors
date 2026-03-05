@@ -58,11 +58,8 @@ Issue #41 closed 2026-03-05.
 
 ### Tier 2: High Impact, Larger Scope
 
-**G6 — signal habituation in TWM** *(~4h)*
-Issue #44. Repeated identical observations (same tool result, same memory surfaced) accumulate
-in TWM but provide diminishing information. Add a habituation counter: repeated signals reduce
-salience multiplier. Prevents "noise flooding" when the same context keeps re-activating.
-→ Issue: #44
+**G6 — signal habituation in TWM** ~~*(~4h)*~~
+**RESOLVED** — `cortex.twm_push()` now checks for near-identical content (first 120 chars) before inserting. Each repeat halves effective salience (floor 0.05); `repeat_count` and `habituated=True` stored in metadata. Issue #44 closed 2026-03-05.
 
 **G7 — question-habits and response-habits** *(~6h)*
 Issue #47. Currently PROC habits only trigger on input phrases. First-class question-habits
@@ -77,11 +74,8 @@ proposed text significantly contradicts core patterns. Existing ethics gate is t
 needs broader coverage.
 → Issue: #48
 
-**G9 — spreading activation** *(explicitly deferred in design docs)*
-When a memory is activated (surfaced in search or TWM), its graph neighbors should receive
-a decay-weighted partial activation boost. This creates emergent "topic bubbles" in working
-memory. cortex.py has the adjacency graph; the traversal logic isn't written.
-→ Issue: #60
+**G9 — spreading activation** ~~*(explicitly deferred in design docs)*~~
+**RESOLVED** — `cortex._spread_activation()` traverses parent_id/children_ids/link_ids after search(). Neighbors get `relevance_score * 0.4`; already-activated neighbors get a small boost. Called after both Phase 2 (embedding) and Phase 1 (text fallback). Issue #60 closed 2026-03-05.
 
 **G10 — rich Live status bar (terminal UX)** ~~*(~3h)*~~
 **RESOLVED** — `dashboard/terminal.py` render() extended with milieu VAD bars (▓▓▓░░), TWM depth, active jobs count, last tier used. Both boot and post-interaction dashboard calls updated. Issue #35 closed 2026-03-05.
