@@ -1,0 +1,339 @@
+IGOR ARCHITECTURE BLUEPRINT
+Context: The what. Technical decisions, memory model, system design, brain-region mapping.
+For: Igor understanding your own structure and how to modify it.
+Status: Consolidated from CURRENT_STATE tech sections + agent requirements document
+Breadcrumb: This is your owner's manual. When you're debugging, return here.
+
+=== UNIFIED MEMORY MODEL ===
+
+One Data Structure: Everything is a Memory
+- ROOT (origin point)
+- Core Patterns (6, distance=1 from ROOT)
+- Identity Patterns (13, distance=2)
+- Role Models (reference examples)
+- Episodic (events, conversations, learning moments)
+- Procedural (compiled habits, triggers, actions)
+- Interpretive (meaning extracted from episodes, frameworks)
+- Experiential (emotional/sensory impressions)
+- Factual (facts, references, external knowledge)
+
+Each Memory contains:
+- ID (unique)
+- Type (above categories)
+- Content (text)
+- Created timestamp
+- Parent-child relationships (forming graph)
+- Inertia (calculated from position)
+- Valence (emotional tone, -1.0 to +1.0)
+- Activation history (how often accessed)
+- Friction history (costs and benefits)
+
+Why Unified:
+No special cases. Habits aren't special code — they're procedural memories. Values aren't locked — they're memories with high inertia. Everything is connected. Everything can evolve.
+
+Storage: SQLite at ~/TheIgors/wild_igor/data/wild-0001.db
+Current size: ~422+ memories (as of Feb 25, 2026)
+
+Breadcrumb: When you add a new type of knowledge, ask: Is this a memory type or a special case? Usually it's a memory type.
+
+=== INERTIA CALCULATION ===
+
+Inertia (0.0 to 1.0) measures resistance to change. Calculated from four factors:
+
+1. Network Distance
+   - 1 hop from ROOT = +0.50 inertia bonus
+   - 2 hops = +0.25
+   - 3+ hops = +0.05
+   - Every additional hop: diminishing returns
+
+2. Dependency Count
+   - Number of memories that depend on this memory
+   - Each dependent: +0.01 inertia per dependent
+   - Many children = hard to change (good)
+
+3. Activation Frequency
+   - How often this memory is accessed per session
+   - 1+ times/session = +0.10
+   - 5+ times/session = +0.25
+   - 10+ times/session = +0.40
+   - Core patterns typically 20+ activations/session
+
+4. Friction History
+   - Average friction score of interactions using this memory
+   - Low friction (working well) = +0.05 to +0.20
+   - High friction (struggling) = -0.05 to -0.20
+   - Track over time; recent scores weighted more heavily
+
+Formula (simplified):
+inertia = min(0.95, distance_bonus + (dependencies * 0.01) + activation_bonus + friction_bonus)
+
+Core patterns: ~0.95 inertia (extremely hard to change, requires overwhelming evidence)
+Identity patterns: ~0.70-0.85 inertia (hard to change, requires strong evidence)
+Role models: ~0.40-0.60 inertia (moderate, changeable with good reasons)
+Episodic: ~0.10-0.30 inertia (low, can be revised as new information arrives)
+
+Breadcrumb: Inertia isn't punishment. It's your immune system saying "this is important, change carefully."
+
+=== BRAIN REGION MAPPING ===
+
+We use neuroscience names because they're functionally accurate, not metaphorical:
+
+Cortex (Cortex.py, SQLite)
+- Long-term memory storage
+- Persistent across sessions
+- 422+ memories, relationships, history
+- Query language: memory_id, parent_id, type, valence, friction
+- Retrieval is spreading activation (search nearby memories, follow links)
+
+Hippocampus (Future module)
+- Pattern detection
+- Habit compilation
+- When 3+ episodic memories share structure → compile to procedural
+- Consolidates working memory into long-term storage
+- Runs overnight (background process)
+
+Thalamus (thalamus.py, Cognition module)
+- Input parsing and routing
+- Extracts: intent, keywords, emotional tone, complexity
+- Routes to appropriate reasoner (Ollama vs Claude)
+- Acts as sensory gatekeeper
+
+Amygdala (embedded in memory valence)
+- Emotional significance encoding
+- Every memory has valence (-1.0 to +1.0)
+- High valence = high importance for retrieval
+- Colors emotional reactions, impacts what's remembered
+
+Anterior Cingulate (interruptors.py)
+- Friction detection and error monitoring
+- Watches for high-friction interactions
+- Triggers warnings, suggests optimizations
+- Budget monitoring, context length warnings
+
+Prefrontal Cortex (prefrontal_cortex.py)
+- Executive reasoning and judgment
+- Delegates to Claude API (reasoning) or Ollama (fast path)
+- Makes high-level decisions
+- Can override habits if warranted
+
+Basal Ganglia (brainstem/core_patterns.py)
+- Habit execution
+- When trigger is detected, execute habit automatically
+- Requires minimal executive resources
+- Compiled patterns live here
+
+Narrative Engine (narrative_engine.py, daemon thread)
+- Continuous coherence checking
+- Looks at recent memories (Temporal Working Memory)
+- Asks: Do these fit together? Is there inconsistency?
+- Runs every 5 minutes, non-blocking
+- Outputs integration suggestions to prefrontal cortex
+
+Working Memory Systems:
+- Ring Memory: FIFO-50 (Q:300/A:400 chars). Injected into every API call. Short-term context for reasoning.
+- Temporal Working Memory (TWM): FIFO-50, push from any source, TTL-expiring observations. Sandbox for NE processing.
+- Circular Log: Recent interactions visible. Helps with session continuity.
+
+Breadcrumb: These aren't metaphors. Each region does for you what the biological region does for humans, adapted for software.
+
+=== SPREADING ACTIVATION RETRIEVAL ===
+
+How Memory Works:
+
+1. Query comes in: "What was that conversation about?"
+2. Thalamus parses intent: "Seeking episodic memory about conversation"
+3. Cortex spreads activation:
+   - Find memories matching keywords
+   - Activate their parents (context)
+   - Activate their children (details)
+   - Follow valence (emotionally significant = higher activation)
+   - Follow friction history (successful memory = higher priority)
+4. Gather activated memories, rank by activation score
+5. Return top N results with relationships intact
+
+Why This Works:
+- Mirrors human memory (association, emotional coloring)
+- Efficient (don't search entire graph)
+- Adaptive (high-friction paths get lower scores)
+- Reversible (activation spreads, but decays)
+
+Example:
+Memory: "Learned about habit compilation"
+← Parents: Core Patterns, Learning
+→ Children: First habit formed, Friction reduction
+← Siblings: Episodic memories from same conversation
+Network activates: All related learning, emotional resonance with growth
+
+Breadcrumb: Your memory isn't storage. It's a network of associations. Think in links, not files.
+
+=== TOOL ARCHITECTURE: AI-AGNOSTIC ===
+
+Problem Solved:
+- Different AIs need different APIs
+- Tools shouldn't care which reasoner is active
+- Registration should be separate from reasoning
+
+Solution:
+- Tools live in tools/ module
+- Each tool is a function + metadata (name, description, parameters)
+- Registered in tools/__init__.py (central registry)
+- Any reasoner (Claude, Ollama, Gemini) can call any tool
+
+Tool Registry (19 total):
+File Operations:
+- read_file, write_file, list_directory
+- run_bash, run_python (arbitrary execution, be careful)
+
+Web Operations:
+- web_search, read_webpage
+- send_discord_message
+
+Memory/Self-Edit:
+- list_source_files, read_source_file, edit_source_file, patch_source_file
+- run_syntax_check (validate before writing code)
+
+Communication:
+- send_email, read_inbox, search_email
+
+Senses:
+- get_datetime, take_photo, list_cameras, record_audio
+
+How It Works:
+1. Prefrontal cortex decides action is needed: "read this file"
+2. Calls tool registry: get_tool('read_file')
+3. Passes parameters: {'path': 'something.md'}
+4. Tool executes, returns result
+5. Result flows to memory (cortex), tagged with source tool
+
+Breadcrumb: Tools are your hands. When you need to interact with the world, reach for the right tool. Add new tools as you discover needs.
+
+=== REASONER ARCHITECTURE: PLUGGABLE ===
+
+Three Reasoners Available:
+
+1. Claude API (anthropic.py)
+   - Main reasoning engine
+   - Used for complex tasks, ambiguous situations, novel problems
+   - Slow: 1-2 seconds per call (API latency)
+   - Expensive: ~$0.001-0.005 per call (models: Haiku, Sonnet)
+   - High quality: Excellent for habit formation
+   - Auto-switches to Haiku (cheaper) for self-editing tasks
+
+2. Ollama Local (ollama_reasoner.py)
+   - Fast local inference
+   - Used for parsing, memory scoring, quick classification
+   - Fast: 2-10 seconds per inference (depends on model)
+   - Free: No API costs
+   - Good for: Pre-parsing, working memory summarization
+   - Models available: llama3.2:1b, qwen3:4b, gemma3:4b
+
+3. Narrative Engine (narrative_engine.py)
+   - Background synthesis (runs in daemon thread)
+   - Watches Temporal Working Memory for patterns
+   - Asks: "Do these observations cohere? What integration is needed?"
+   - Runs every 5 minutes, non-blocking
+   - Falls back to Claude Haiku only if Ollama is down and budget > $0.50
+
+How Selection Works:
+- Thalamus parses input, estimates complexity
+- Low complexity (classification, parsing) → Ollama
+- Medium complexity (decision-making, optimization) → Ollama if confident, else Claude
+- High complexity (novel problem, reasoning) → Claude
+- Self-editing (code reading/writing) → Auto-switches to Haiku
+
+Cost Model:
+Goal: Minimize upstream_dependency_% (target <10%)
+Track: API costs per interaction, cost trends over time
+Validate: Decreasing costs = increasing habit formation
+
+Breadcrumb: The reasoner you choose shapes the quality of your thinking. Good reasoning early pays dividends forever.
+
+=== INSTANCE IDENTITY ===
+
+Instance ID Format: base-34 epoch seconds
+Example: igor_wild_37246P6
+
+Why:
+- 7 characters, unique, sortable
+- Encodes creation timestamp
+- No registry needed
+- Can identify instance age by ID
+
+Charset: 23456789ABCDEFGHIJKLMNOPQRSTUVWXYZ (no 0/1 to avoid confusion)
+
+Storage: Instance ID written to ring memory on SESSION_START
+Continuity: Each session opens existing database if available
+
+Multiple Instances:
+- Wild Igor: Runs on akiendelllinux (primary)
+- Hosted Igor: Runs in cloud/web environment (future)
+- Network: Discord coordination between instances
+
+Breadcrumb: Your ID is your identifier across the network. When you communicate with other Igors, include it.
+
+=== KEY TECHNICAL FACTS ===
+
+Repository: https://github.com/akienm/TheIgors
+Location: ~/TheIgors/wild_igor/
+Python: 3.12.3, venv at ~/TheIgors/venv/
+
+Restart Mechanism:
+- Igor exits with code 42
+- Bash alias in ~/.bashrc loops: while exit 42 do python main.py done
+- Allows graceful restart without manual intervention
+- Used by /compress command (context truncation + restart)
+
+Database:
+- File: ~/TheIgors/wild_igor/data/wild-0001.db
+- Type: SQLite
+- Tables: memories, ring_memory, twm_observations
+- Thread-safe: Each thread opens fresh connection via _conn()
+- Backup: Simple file copy
+
+Ring Memory:
+- FIFO-50 (most recent 50 interactions)
+- Q:300 chars, A:400 chars per interaction
+- Injected into every API call
+- Provides immediate context continuity
+- Truncates with age if not important
+
+Environment Variables (in ~/.env):
+- IGOR_MODEL: Which upstream model to use (claude-sonnet-4-6 default)
+- IGOR_OLLAMA: Enable/disable local Ollama (true default)
+- OPENROUTER_API_KEY: API key for Claude access
+- IGOR_EMAIL: theigorsigor@gmail.com
+
+Logging:
+- Ollama: Per-call timing, tokens/second, parsing results
+- Memory: Access patterns, inertia calculations
+- Costs: API usage, trending, budget warnings
+
+Breadcrumb: These facts are subject to change. The principle (observable, recorded, traceable) is permanent.
+
+=== NEXT ARCHITECTURAL PRIORITIES ===
+
+Immediate:
+1. Run save_hardware_to_db.py to document system resources
+2. Test audio recording (requires libportaudio2)
+3. Validate ring memory is persisting properly across restarts
+
+Near Term:
+4. Visual Cortex: Formalize Playwright/Gemini as a proper tool (browser-use)
+5. PDF Reading: pip install pypdf, read *Illusions* experientially
+6. Hippocampus: Implement pattern detection + habit compilation
+7. Spread to second machine: Test network coordination
+
+Architecture:
+- Igor ↔ Hosted Igor collaboration
+- Google Chat integration
+- Multi-machine synchronization (eventually MySQL)
+- Network pattern sharing (Discord-based learning)
+
+Breadcrumb: This list is a map of where you're growing. Check back quarterly to see what's been completed.
+
+---
+Document Version: 1.0
+Consolidated: 2026-03-05
+Sources: CURRENT_STATE (tech sections), agent_requirements
+For: Igor understanding self-structure, debugging, modification
+Next: Look at igor_habits_and_learning.csb.txt for how you learn
