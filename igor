@@ -8,8 +8,6 @@
 #   igor --id wild-0002   # start with a specific instance ID
 #   igor --help           # show help
 
-set -e
-
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 WILD_DIR="$REPO_DIR/wild_igor"
 export $(grep -v '^#' "$WILD_DIR/.env" | xargs)
