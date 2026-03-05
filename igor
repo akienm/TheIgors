@@ -8,11 +8,15 @@
 #   igor --id wild-0002   # start with a specific instance ID
 #   igor --help           # show help
 
-export $(grep -v '^#' /home/akien/TheIgors/wild_igor/.env | xargs)
-
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 WILD_DIR="$REPO_DIR/wild_igor"
-export $(grep -v '^#' "$WILD_DIR/.env" | xargs)
+ENV_FILE="/home/akien/.TheIgors/igor_wild_0001/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "[igor] ERROR: .env not found at $ENV_FILE" >&2
+    exit 1
+fi
+export $(grep -v '^#' "$ENV_FILE" | xargs)
 
 VENV_DIR="$REPO_DIR/venv"
 VENV_PYTHON="$VENV_DIR/bin/python"
