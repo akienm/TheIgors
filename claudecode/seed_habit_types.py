@@ -3,10 +3,11 @@
 seed_habit_types.py — Seed question-habits and proactive habits into Igor's DB.
 
 Seeds:
-  PROC_QUESTION_FRUSTRATION   — detect frustration → ask clarifying question (no LLM)
-  PROC_QUESTION_UNCERTAINTY   — detect uncertainty → ask "what outcome are you aiming for?"
-  PROC_PROACTIVE_CONFLUENCE   — session_start: go absorb new Confluence content
-  PROC_PROACTIVE_RING_REVIEW  — interval:3600: review ring buffer for patterns
+  PROC_QUESTION_FRUSTRATION    — detect frustration → ask clarifying question (no LLM)
+  PROC_QUESTION_UNCERTAINTY    — detect uncertainty → ask "what outcome are you aiming for?"
+  PROC_PROACTIVE_CONFLUENCE    — session_start: absorb Confluence + emit habit candidates
+  PROC_PROACTIVE_RING_REVIEW   — interval:3600: review ring buffer for patterns
+  PROC_PROACTIVE_HABIT_REVIEW  — interval:1800: review recent memories, emit habit candidates
 
 Run once per instance. Safe to re-run — cortex.store() is idempotent on existing IDs.
 
@@ -103,7 +104,11 @@ HABITS = [
                 "Read Akien's Confluence space for new or updated pages since "
                 "last session. Store key findings as FACTUAL or EPISODIC memories "
                 "tagged with confluence_source. Note anything directly relevant to "
-                "current projects in the ring."
+                "current projects in the ring. "
+                "When done, review the memories you just stored: identify any recurring "
+                "patterns, procedures, or behaviors worth compiling into habits, and emit "
+                "habit compilation triggers for each candidate using the format: "
+                "'build a habit for: [description] — whenever [trigger], [action]'."
             ),
             "provenance": "seed_habit_types",
             "why": (
@@ -135,6 +140,37 @@ HABITS = [
             "why": (
                 "Automated ring review surfaces habit candidates without requiring "
                 "the cloud escalation nudge path. Closer to the predictor network goal."
+            ),
+        },
+    ),
+    Memory(
+        id="PROC_PROACTIVE_HABIT_REVIEW",
+        narrative=(
+            "Periodically review recently stored memories and ask the upstream to "
+            "identify habit compilation candidates. Bridges training exercises and "
+            "habit formation without requiring interactive turns. Placeholder for "
+            "future memory consolidation system."
+        ),
+        memory_type=MemoryType.PROCEDURAL,
+        parent_id="CP2",
+        valence=0.7,
+        metadata={
+            "habit_type": "proactive",
+            "schedule": "interval:1800",
+            "trigger": "habit_review",
+            "action": (
+                "Look at the 20 most recently stored memories. For each cluster of "
+                "related memories (same topic, same tool, same error pattern), ask: "
+                "is there a repeatable procedure here? If yes, emit a habit compilation "
+                "trigger: 'build a habit for: [description] — whenever [trigger], [action]'. "
+                "Focus on patterns that appeared in more than one memory. "
+                "This is a learning consolidation pass — be concise, not exhaustive."
+            ),
+            "provenance": "seed_habit_types",
+            "why": (
+                "Training exercises load memories but the upstream only sees habit "
+                "candidates during interactive turns. This review pass closes that gap "
+                "and will eventually be absorbed into the consolidation system."
             ),
         },
     ),
