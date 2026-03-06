@@ -155,4 +155,31 @@ These files live outside the repo so both Igor and Akien can use them without tr
 
 ---
 
+---
+
+## Claude Code ↔ Igor Bridge (`claudecode/igor_talk.py`)
+
+When Igor is running (web server on port 8080), Claude Code can send him messages and read
+his responses directly via WebSocket.
+
+```bash
+# From Claude Code (Bash tool):
+/home/akien/TheIgors/venv/bin/python /home/akien/TheIgors/claudecode/igor_talk.py "hello"
+
+# With CSB wrapper (machine-to-machine channel, author="claude-code"):
+/home/akien/TheIgors/venv/bin/python /home/akien/TheIgors/claudecode/igor_talk.py --csb "question or context here"
+
+# Longer timeout for complex questions:
+/home/akien/TheIgors/venv/bin/python /home/akien/TheIgors/claudecode/igor_talk.py --timeout 120 "message"
+```
+
+Igor sees `author="claude-code"` in his incoming queue so he knows it's not a human turn.
+The `--csb` flag wraps content in `[CC_MESSAGE|timestamp|from=claude-code]` block.
+
+Use this to:
+- Ask Igor what he needs before implementing something
+- Inject context or DSB summaries
+- Confirm changes landed correctly
+- Let Igor review a plan before Claude Code executes it
+
 *Update this file when significant architecture changes land.*
