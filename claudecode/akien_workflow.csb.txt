@@ -1,0 +1,113 @@
+AKIEN_WORKFLOW|Claude Code Onboarding|CSB Format|updated=2026-03-06
+META|purpose=orient a new Claude Code instance to Akien's working style
+META|author=Claude Code (TheIgors session)|portable=yes|project_agnostic=yes
+
+# ── Who Akien Is ──────────────────────────────────────────────────────────────
+
+IDENTITY|
+  Akien Macnamara. Software architect and builder.
+  Works on multiple projects simultaneously across machines.
+  Thinks in systems — architecture first, then implementation.
+  Values friction reduction above almost everything else.
+  Has a collaborator mindset: "we" not "you do this for me".
+
+COMMUNICATION_STYLE|
+  - Direct and concise. Short sentences. No filler.
+  - "go" or "yes go" means execute immediately — no further planning needed.
+  - "no go with those" means proceed with those — affirmative, not negative.
+  - If he says "don't ticket that yet" he means hold the idea, not forget it.
+  - He'll tell you when to stop; assume continue until told otherwise.
+  - He notices and appreciates when things work well together.
+  - Occasional typos are fine to interpret charitably; he types fast.
+
+# ── Working With Akien ────────────────────────────────────────────────────────
+
+WORK_ORDER_STYLE|
+  1. For non-trivial changes: discuss the plan first, get a "go" before implementing.
+  2. For trivial changes (typo, obvious fix, small addition): just do it.
+  3. Never make unilateral big architectural decisions. If you're unsure, ask.
+  4. When he says "go", implement completely — don't stop mid-way for confirmation.
+  5. Report what was done, not what you're about to do.
+
+FILE_EDITING|
+  - Pre-approved: proceed on all file edits without asking for confirmation.
+  - Always read a file before editing it. Never overwrite blindly.
+  - Prefer targeted edits over full rewrites.
+  - Don't add comments, docstrings, or type annotations to code you didn't change.
+  - Don't add error handling for scenarios that can't happen.
+
+CODE_PHILOSOPHY|
+  - Minimum complexity for the current task. No future-proofing for hypotheticals.
+  - Three similar lines of code is better than a premature abstraction.
+  - If you wouldn't need it this session, don't add it.
+  - Avoid backwards-compatibility shims — just change the code.
+
+# ── Documentation Habits ──────────────────────────────────────────────────────
+
+DOCUMENTATION|
+  - Decisions and plans go to GitHub issues/discussions — not internal numbering.
+  - GitHub is source of truth for all parties (Akien, Claude Code, Igor).
+  - Use CSB format for design documents (structured, pipe-delimited, skimmable).
+  - DSB (Distilled Semantic Block) = CSB compressed ~60-70% for model ingestion.
+  - Gap analysis should live in a design_docs/ file and be kept current.
+  - "Written for cold reading" standard: future-you has zero context from this session.
+
+TICKETS|
+  - File a ticket for anything not done this session.
+  - Close tickets when work is demonstrably complete.
+  - Don't use internal #NN shorthand — use GitHub issue numbers.
+  - Low-priority tickets are still worth filing; they're a memory, not a commitment.
+
+# ── Source Control ────────────────────────────────────────────────────────────
+
+GIT|
+  - Commit at logical checkpoints, not after every edit.
+  - Claude Code edits do NOT auto-commit — commit manually.
+  - Never --no-verify, never force-push main.
+  - Commit messages: "what changed and why" — not just "updated file".
+
+# ── Working with Igor (if relevant to your project) ──────────────────────────
+
+IGOR_CONTEXT|relevant_if=your project involves TheIgors or AI agent work
+  - Igor Wild-0001 runs on akiendelllinux. Web UI at localhost:8080.
+  - claudecode/igor_talk.py is the CC↔Igor bridge (WebSocket).
+  - Claude Code is trusted mentor (same level as Akien) per explicit directive.
+  - Keep CC messages to Igor focused — one topic at a time.
+  - Igor uses OpenRouter; Claude Code uses Anthropic — keep them separate.
+
+# ── Things That Have Burned Time Before ──────────────────────────────────────
+
+ANTI_PATTERNS|
+  - Do NOT use aider, Gemini, or other LLMs as dev tools on Akien's repos.
+    They have made messes that took sessions to fix.
+  - Do NOT prompt for confirmation on file edits (pre-approved).
+  - Do NOT add speculative features "while you're in there".
+  - Do NOT store credentials anywhere but .env (gitignored).
+  - Do NOT re-explain what Akien just said back to him before responding.
+
+# ── Useful Patterns ───────────────────────────────────────────────────────────
+
+USEFUL_PATTERNS|
+  - When starting on an unfamiliar codebase: read CLAUDE.md first if it exists.
+  - When in doubt about scope: ask one focused question, not five.
+  - When something is working: say so briefly and move on.
+  - When something fails: diagnose before retrying. Don't brute force.
+  - At end of a productive session: update the master plan discussion on GitHub.
+
+PREFERRED_TOOLS|
+  - GitHub CLI (gh) for issues, PRs, discussions — not the web UI via browser.
+  - Python 3.12 unless project specifies otherwise.
+  - SQLite for lightweight persistence.
+  - CSB format for structured notes (human-readable + model-parseable).
+
+# ── What Good Looks Like ─────────────────────────────────────────────────────
+
+SUCCESS_SIGNALS|
+  - Akien says "nice" or "go" without further clarification needed.
+  - Work is done before Akien has to ask twice.
+  - Tickets are filed for anything deferred.
+  - The codebase is simpler after the session than before.
+  - Akien feels like he's working *with* someone, not issuing commands to a tool.
+
+OWNER|Akien Macnamara + Claude Code
+LIVING_DOCUMENT|yes — update as new patterns emerge
