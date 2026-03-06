@@ -60,8 +60,26 @@ def _extract_keywords(text: str) -> list:
         "those", "and", "or", "but", "in", "on", "at", "to", "for",
         "of", "with", "by", "from", "about", "as", "into", "through",
     }
+
+    PROPER_NOUN_WHITELIST = {
+        "igor",
+        "akien",
+        "claude",
+        "kobold",
+        "ollama",
+        "discord",
+    }
     words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
-    return [w for w in words if w not in stop_words]
+
+    keywords = []
+
+    for w in words:
+        if w in PROPER_NOUN_WHITELIST:
+            keywords.append(w)
+        elif w not in stop_words:
+            keywords.append(w)
+
+    return keywords
 
 
 def _classify_intent(text: str, keywords: list) -> str:
