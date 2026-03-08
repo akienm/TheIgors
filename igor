@@ -16,7 +16,6 @@ if [ ! -f "$ENV_FILE" ]; then
     echo "[igor] ERROR: .env not found at $ENV_FILE" >&2
     exit 1
 fi
-export $(grep -v '^#' "$ENV_FILE" | xargs)
 
 VENV_DIR="$REPO_DIR/venv"
 VENV_PYTHON="$VENV_DIR/bin/python"
@@ -46,11 +45,13 @@ if [[ ! " $* " =~ " --id " ]]; then
 fi
 
 # Restart loop: exit code 42 means "please restart"
+# .env is re-read on every restart so env changes take effect immediately.
 while true; do
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
     python -m igor.main "${IGOR_ARGS[@]}"
     EXIT_CODE=$?
     if [ $EXIT_CODE -eq 42 ]; then
-        echo "[igor] Restarting..."
+        echo "[igor] Restarting (re-reading .env)..."
     else
         break
     fi
