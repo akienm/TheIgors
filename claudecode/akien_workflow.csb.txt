@@ -5,7 +5,7 @@ META|author=Claude Code (TheIgors session)|portable=yes|project_agnostic=yes
 # ── Who Akien Is ──────────────────────────────────────────────────────────────
 
 IDENTITY|
-  Akien Macnamara. Software architect and builder.
+  Akien Maciain. Software architect and builder.
   Works on multiple projects simultaneously across machines.
   Thinks in systems — architecture first, then implementation.
   Values friction reduction above almost everything else.

@@ -22,7 +22,24 @@
       "Bash(grep:*)",
       "Bash(wc:*)",
       "Bash(gh repo:*)",
-      "Bash(do python3:*)"
+      "Bash(do python3:*)",
+      "Bash(ls:*)",
+      "Bash(/home/akien/TheIgors/venv/bin/python:*)",
+      "Bash(systemctl:*)",
+      "Bash(alias:*)",
+      "Bash(venv/bin/python:*)",
+      "WebSearch",
+      "WebFetch(domain:openrouter.ai)",
+      "Bash(gh discussion:*)",
+      "Bash(__NEW_LINE_264120634c5aa5a9__ gh:*)",
+      "Bash(sort:*)",
+      "Bash(done)",
+      "Bash(printenv:*)",
+      "Bash(sqlite3:*)",
+      "Bash(claude:*)",
+      "Bash(pgrep:*)",
+      "Bash(chmod +x:*)",
+      "Bash(/home/akien/.TheIgors/igor_wild_0001/cc_pending.txt:*)"
     ]
   }
 }

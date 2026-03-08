@@ -75,12 +75,28 @@ async def _talk(message: str, timeout: int, url: str = WS_URL) -> int:
                 if msg.get("type") == "message" and msg.get("author") in ("user", "claude-code"):
                     continue
 
-                # Igor's response
+                # Igor's response — collect all messages until quiet for 5s
                 if msg.get("type") == "message":
                     author = msg.get("author", "Igor")
                     content = msg.get("content", "")
                     ts = msg.get("ts", "")
                     print(f"[{author}|{ts}]\n{content}")
+                    # Keep reading for up to 5 more seconds in case more follows
+                    while True:
+                        try:
+                            raw2 = await asyncio.wait_for(ws.recv(), timeout=5.0)
+                            msg2 = json.loads(raw2)
+                            if msg2.get("type") == "activity":
+                                continue
+                            if msg2.get("type") == "message" and msg2.get("author") in ("user", "claude-code"):
+                                continue
+                            if msg2.get("type") == "message":
+                                a2 = msg2.get("author", "Igor")
+                                c2 = msg2.get("content", "")
+                                t2 = msg2.get("ts", "")
+                                print(f"\n[{a2}|{t2}]\n{c2}")
+                        except (asyncio.TimeoutError, json.JSONDecodeError):
+                            break
                     return 0
 
     except (OSError, ConnectionRefusedError, websockets.exceptions.InvalidURI,
