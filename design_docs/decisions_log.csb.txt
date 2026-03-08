@@ -1,6 +1,18 @@
-DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-05|latest=D037
+DECISIONS_LOG|TheIgors Project|CSB Format|updated=2026-03-08|latest=D038
 META|format=csb|purpose=record key architectural decisions and rationale|new entries prepend
 META|maintained_by=claude_code+igor|living_document=yes|format_note=newest decisions at top
+
+# ── D038 — Training Corpus: Staged Text Ingestion for Word Graph ─────────────
+
+DECISION|id=D038|topic=training-corpus|status=implemented|date=2026-03-08
+TITLE|Staged training corpus for word graph enrichment: fetch → train → evict
+CONTEXT|Word graph built only from habit triggers and narratives — limited vocabulary and co-occurrence patterns. WO#138 calls for Gutenberg/Shakespeare benchmarking. Need to ingest large texts without eating all disk space.
+DECISION|~/.TheIgors/training_corpus/ as staged area. Books stored while training; evicted when complete or disk tight. Status: pending→in_progress→complete. Eviction priority: complete first (served purpose), in_progress second (cursor checkpointed), pending last (re-fetchable). Disk governor checks before each fetch and after each training run. Local source: ~/TheIgorsProject/ (Akien's writings + readings). Gutenberg URL list at ~/TheIgorsProject/akien/Readings/gutenberg.org_top_100_vocabulary_expanding_books.txt. Training: split on \n\n, index paragraphs ≥60 chars as corpus_{book_id}_{i} docs. Cap 800 paras/book (IGOR_TRAINING_MAX_PARAS). Cursor in index.json for resumability.
+RATIONALE|Corpus doc_ids don't pollute habit scoring: score() filters to provided doc_id list (habit IDs). Co-occurrence graph (_cooccur) enriched → better predict_next() and word graph breadth for habit pattern matching.
+RATIONALE|Fetch-store-evict preferred over pure streaming: resumability after restart without re-fetch. Small cursor file (index.json) is all state needed — not the full book.
+RATIONALE|~/TheIgorsProject/ as local source supports Akien's own writings as training material — personal vocabulary, not just literary English.
+ALTERNATIVES|Rejected: pure stream-and-discard (no resumability); always persist (disk exhaustion); store in blob store (wrong tool — blobs are for reference docs, not transient training data)
+REFERENCE|cognition/training_corpus.py|tools/training.py|design_docs/training_corpus.csb.txt
 
 # ── D037 — Basal Ganglia: Parallel Habit Scoring with Lateral Inhibition ────────
 

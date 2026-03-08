@@ -66,6 +66,10 @@ def _call_claude(prompt: str, log: logging.Logger) -> str | None:
     try:
         import os
         env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+        # cc.sh pattern: Igor's env uses REAL_ANTHROPIC_API_KEY to avoid
+        # conflicts with the outer CC session; bridge must map it back.
+        if "REAL_ANTHROPIC_API_KEY" in env:
+            env["ANTHROPIC_API_KEY"] = env["REAL_ANTHROPIC_API_KEY"]
         result = subprocess.run(
             [CLAUDE_BIN, "-p", prompt],
             capture_output=True,
