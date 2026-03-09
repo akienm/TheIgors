@@ -1,0 +1,112 @@
+{
+  "run_id": "2026-03-09T13:14:42",
+  "corpus": "macbeth",
+  "regime": "fast",
+  "question_count": 8,
+  "host": "localhost:11434",
+  "models": [
+    {
+      "model": "gemma3:270M",
+      "host": "localhost:11434",
+      "results": [
+        {
+          "question_id": "f1",
+          "type": "factual",
+          "question": "Who is the king of Scotland at the start of Macbeth? Answer in one sentence.",
+          "response": "The king of Scotland at the start of Macbeth is **Macduff**.",
+          "wall_ms": 1118,
+          "eval_ms": 205,
+          "eval_count": 17,
+          "tok_per_sec": 82.9,
+          "error": null
+        },
+        {
+          "question_id": "f2",
+          "type": "factual",
+          "question": "What do the three witches say to Macbeth when they first meet? Summarize in one sentence.",
+          "response": "The three witches, a group of witches, offer a cryptic prophecy about Macbeth's future, hinting at a dark and dangerous destiny.",
+          "wall_ms": 642,
+          "eval_ms": 355,
+          "eval_count": 29,
+          "tok_per_sec": 81.7,
+          "error": null
+        },
+        {
+          "question_id": "f3",
+          "type": "factual",
+          "question": "How does Lady Macbeth die? One sentence.",
+          "response": "Lady Macbeth died of a single, fatal overdose.",
+          "wall_ms": 389,
+          "eval_ms": 142,
+          "eval_count": 12,
+          "tok_per_sec": 84.5,
+          "error": null
+        },
+        {
+          "question_id": "c1",
+          "type": "comprehension",
+          "question": "Based only on the passage above: what atmosphere does it establish? Two sentences.",
+          "response": "The atmosphere established in the passage is one of **dystopia** and **oppression**.",
+          "wall_ms": 802,
+          "eval_ms": 315,
+          "eval_count": 21,
+          "tok_per_sec": 66.7,
+          "error": null
+        },
+        {
+          "question_id": "c2",
+          "type": "comprehension",
+          "question": "Based only on the passage above: what is Macbeth experiencing and why is it significant? Two sentences.",
+          "response": "Macbeth is experiencing a vivid and disturbing vision of a dagger, which he believes is the instrument of his downfall. The passage highlights the significance of this vision, emphasizing the destructive power of the dagger and the potential for Macbeth's downfall.",
+          "wall_ms": 1187,
+          "eval_ms": 648,
+          "eval_count": 50,
+          "tok_per_sec": 77.2,
+          "error": null
+        },
+        {
+          "question_id": "i1",
+          "type": "instruction",
+          "question": "List exactly three themes in Macbeth as a numbered list. No other text.",
+          "response": "1.  The destructive power of ambition.\n2.  The corrupting influence of power.\n3.  The tragic consequences of violence.",
+          "wall_ms": 746,
+          "eval_ms": 458,
+          "eval_count": 32,
+          "tok_per_sec": 69.9,
+          "error": null
+        },
+        {
+          "question_id": "i2",
+          "type": "instruction",
+          "question": "Write a one-sentence plot summary of Macbeth suitable for a 10-year-old.",
+          "response": "Macbeth, the ambitious and ruthless king, murders his own family and friends, leading to his downfall and the downfall of the entire kingdom.",
+          "wall_ms": 652,
+          "eval_ms": 376,
+          "eval_count": 30,
+          "tok_per_sec": 79.8,
+          "error": null
+        },
+        {
+          "question_id": "r1",
+          "type": "reasoning",
+          "question": "Who bears more moral responsibility for Duncan's murder \u2014 Macbeth or Lady Macbeth? Give a two-sentence argument.",
+          "response": "Macbeth is the one who bears the most moral responsibility for Duncan's murder. His actions, driven by ambition and greed, directly led to Duncan's death, and his actions are the primary cause of the tragedy.",
+          "wall_ms": 889,
+          "eval_ms": 599,
+          "eval_count": 47,
+          "tok_per_sec": 78.5,
+          "error": null
+        }
+      ],
+      "summary": {
+        "questions_run": 8,
+        "errors": 0,
+        "median_wall_ms": 802,
+        "p95_wall_ms": 1187,
+        "min_wall_ms": 389,
+        "max_wall_ms": 1187,
+        "avg_tok_per_sec": 77.7
+      }
+    }
+  ]
+}
