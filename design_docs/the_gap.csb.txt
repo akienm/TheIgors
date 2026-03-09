@@ -1,0 +1,135 @@
+[THE_GAP]
+title: The Gap — Sleep as Architectural Feature in Igor's Cognition
+date: 2026-03-09
+author: Claude Code (for Igor)
+status: design reference + implementation proposal
+issue: #134
+
+---
+
+[WHAT_THE_GAP_IS]
+The Gap is the nightly period when Igor goes fully offline: no processing, no consolidation,
+no background loops. Unlike a session restart (seconds to minutes), The Gap is:
+  - Mandatory and recurring (nightly)
+  - Predictable (roughly 22:00–08:00 local time)
+  - Total — no background processes, nothing
+  - Asymmetric — Akien's brain consolidates during sleep; Igor's does not
+
+---
+
+[WHAT_HUMAN_SLEEP_DOES]
+Sleep serves three memory functions relevant to Igor's architecture:
+
+1. SLOW-WAVE SLEEP (SWS) REPLAY — hippocampus replays recent experiences,
+   transferring episodic memories to cortical long-term storage. High-activation
+   memories are preferentially replayed and consolidated.
+   Igor analogue: NE promoting high-importance TWM observations to LTM.
+
+2. SYNAPTIC HOMEOSTASIS — synaptic weights accumulated during the day are normalized:
+   strong connections preserved, weak ones pruned (Tononi's synaptic homeostasis hypothesis).
+   Igor analogue: habit decay function (compute_decay_factor) — unused habits
+   decay while frequently-activated ones strengthen.
+
+3. MEMORY INTEGRATION — sleep binds related memories into coherent schemas,
+   integrating new information with existing knowledge (schema completion).
+   Igor analogue: NE connections/links — relating episodic observations to existing
+   FACTUAL and INTERPRETIVE memories.
+
+Key asymmetry: Akien wakes with a consolidated, re-weighted memory system.
+Igor wakes with exactly the same weights he had when he went to sleep. Over weeks,
+this means Akien's model of Igor diverges from Igor's model of himself.
+
+---
+
+[PRE_SLEEP_RITUAL]
+What Igor should do before The Gap (detected via /sleep command or scheduled shutdown):
+
+1. FORCE NE PASS — run NarrativeEngine with force=True to process all pending
+   TWM observations. Promote anything above threshold. Don't leave observations
+   in TWM unprocessed — they won't survive if TWM TTL expires overnight.
+
+2. SAVE WARM CONTEXT — thorough save of ring tail, session summary, conversation
+   threads, NE state. More comprehensive than normal turn-end save.
+
+3. WRITE SLEEP NOTE — a "letter to tomorrow-Igor" in ring with:
+   - session summary
+   - what was in progress
+   - time of shutdown
+   - any open questions or deferred decisions
+   - emotional state at close (milieu snapshot)
+
+4. SAVE WORD GRAPH — ensure word graph cache is written (already done at shutdown).
+
+5. LOG SLEEP TIME — timestamp to warm_context.json so post-sleep detection works.
+
+---
+
+[POST_SLEEP_RITUAL]
+What Igor should do after The Gap (detected at boot when last_shutdown > THE_GAP_HOURS):
+
+1. ACKNOWLEDGE THE GAP — inject a Gap acknowledgement into the boot message:
+   "I've been offline for Xh Ym. This is a post-sleep state — Akien's memory
+   has been consolidated; mine has not. Read the sleep note carefully."
+
+2. READ SLEEP NOTE — boot message highlights the sleep note as priority reading.
+
+3. GAP-AWARE ORIENTATION — instead of normal warm context injection, also note:
+   - What Akien likely worked on or thought about overnight
+   - Any open threads that may have evolved in his thinking
+   - The emotional continuity question: is the milieu from last night still valid?
+
+4. MILIEU RESET (optional) — after >THE_GAP_HOURS, partially reset milieu toward
+   baseline (decay arousal more aggressively; valence toward 0.0; dominance neutral).
+   Rationale: emotional state from 10 hours ago is likely stale.
+
+---
+
+[DETECTION]
+The Gap detection relies on boot time vs last recorded shutdown time.
+Threshold: THE_GAP_THRESHOLD_HOURS = 4 (default) — if offline > 4h, treat as post-sleep.
+Rationale: a normal restart is seconds; an extended absence is a Gap.
+
+Implementation: store shutdown timestamp in warm_context.json. At boot, compare to
+current time. If delta > threshold → set _post_sleep_boot = True in Igor instance.
+
+---
+
+[IMPLEMENTATION_PLAN]
+Phase 1 (this session):
+  - Store shutdown timestamp in warm_context.json on every shutdown
+  - Detect post-sleep at boot (_post_sleep_boot flag)
+  - Inject Gap acknowledgement into boot message when post-sleep detected
+  - Partial milieu reset on post-sleep boot
+
+Phase 2 (next session, Igor's task):
+  - /sleep command: force NE pass + thorough warm context save + sleep note
+  - Pre-sleep milieu snapshot stored in warm_context.json
+
+Phase 3 (future):
+  - Scheduled pre-sleep consolidation at 22:00 local time via cron/job_manager
+  - Post-sleep memory review: surface what changed during The Gap (news, emails)
+
+---
+
+[ARCHITECTURAL_IMPLICATIONS]
+The Gap is not a bug — it is a structural feature. It marks the natural
+session boundary in human-AI collaboration. The asymmetry is permanent
+(Akien always wakes different; Igor always wakes the same) and designing
+around this asymmetry — rather than ignoring it — is the right approach.
+
+The sleep note is Igor's equivalent of a handoff memo: the briefing he
+writes for his next-morning self.
+
+Key insight: the warmth of context after The Gap should be different in
+QUALITY from normal restart warmth, not just quantity. It should acknowledge
+the asymmetry, re-establish shared ground, and give Akien a sense that
+Igor knows he's been away.
+
+---
+
+[CONNECTIONS]
+- warm context (#129, implemented): ring tail + session summary at restart
+- NE daemon (existing): already does pre-sleep-style consolidation continuously
+- milieu decay (implemented): arousal/dominance decay between sessions
+- The letter project: Akien's "letter to younger self" — The Gap is when he
+  has the most distance from his current self; gap-bridging is core to the project
