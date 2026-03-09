@@ -283,14 +283,26 @@ input, produces 2-3 sentence synthesis (80 tokens, zero cloud cost). IGOR_TWO_PH
 
 **Housekeeping closes:** #54 (tiebreaker done), #116 (subsumed by #128). #140 P2 deferred.
 
+**G16 (#56) — global milieu sync** ~~RESOLVED~~ *(2026-03-09d)*
+milieu.py: tick() blends local state toward global every 10 ticks (alpha=0.02).
+_read_global() reads ~/.TheIgors/milieu_global.json; optionally GETs from IGOR_GLOBAL_MILIEU_URL.
+_push_to_remote() fires on spike events (POST to remote). server.py: GET /api/milieu/global +
+POST /api/milieu/contribute registered. Single-instance today; cluster-ready. Commit: 201782c.
+
+**G11 (#45) — link reinforcement loop** ~~Phase 1 RESOLVED~~ *(2026-03-09d)*
+`cortex.reinforce_links(memory_id, co_active_ids, delta)`: adjusts outgoing link weights.
+NE `record_actual()`: correct prediction → +0.05 to predicted habit→TWM seeds;
+wrong prediction → −0.10 to predicted habit→seeds, +0.05 to actual habit→seeds.
+The "meaning from prediction" loop. Links strengthen from co-activation, weaken on misfire.
+Commit: 23c5de1. Remaining: habit training pipeline (>90% habit coverage), response-habits.
+
 ### Still Open (priority order for next sessions)
 
-1. **G11 (#45)** — inference-free core: habits handle >90% of turns (long-term, requires training pipeline)
+1. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
 2. **#145 Step 5** — local reply: when RTX 4090 arrives
-3. **G16 (#56)** — global milieu sync across instances
-4. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-5. **G22 (#22)** — /compress session summary quality
-6. **G21 (#38)** — thoughts folder distillation (ongoing)
+3. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
+4. **G22 (#22)** — /compress session summary quality
+5. **G21 (#38)** — thoughts folder distillation (ongoing)
 
 ### Gates to enable when data collected
 - `IGOR_NE_ROUTING=true` — enable after seeing NE prediction logs
