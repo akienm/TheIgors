@@ -270,12 +270,18 @@ _think_call(): gpt-4o-mini scratchpad from user_input + memories + milieu + ring
 Logged to ring (think_trace). Injected as [THINK_CONTEXT] into reply call.
 Gate: IGOR_TWO_PHASE_CALLS=true (default false — enable to A/B test).
 
+**#145 Step 3 — Python-built think context** ~~RESOLVED~~ *(2026-03-09d)*
+`_build_think_context()`: pure Python, zero cost, always on. Assembles [THINK_CONTEXT]
+from already-computed components: parsed intent/complexity/tone, milieu VAD, word graph
+activated concepts, top relevant memories, NE prediction, near-miss habits. No LLM call.
+IGOR_TWO_PHASE_CALLS now adds optional LLM scratchpad on top. Commit: 817e0ea.
+
 **Housekeeping closes:** #54 (tiebreaker done), #116 (subsumed by #128). #140 P2 deferred.
 
 ### Still Open (priority order for next sessions)
 
 1. **G11 (#45)** — inference-free core: habits handle >90% of turns (long-term, requires training pipeline)
-2. **#145 Step 3** — think phase decomposition: move TWM read, word graph activation, cortex.search, habit evaluation to Python one by one
+2. **#145 Step 4** — local think: think phase fully in Python, only reply hits cloud
 3. **G16 (#56)** — global milieu sync across instances
 4. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
 5. **G22 (#22)** — /compress session summary quality
