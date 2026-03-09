@@ -250,17 +250,43 @@ D (user_turn ring entry preserves raw input before habit fires), C (topic-keyed 
 thread breadcrumbs in warm context, TTL-gated), A (milieu gate suppresses question-habits
 during engaged conversation). Conversation threads survive /exit+restart.
 
+### Resolved this session (2026-03-09c)
+
+**KoboldCpp → Ollama migration** ~~RESOLVED~~
+ollama_reasoner.py: CSB preparse (12-intent), is_healthy(), parse_preparse_csb() added.
+LocalKoboldPool → OllamaReasoner instances. boot_check adds llama3.2:1b to REQUIRED_MODELS.
+Igor can now self-manage models via `ollama pull/list`. OLLAMA_LOCAL_MODEL env var.
+
+**G15 P2 (#50)** ~~RESOLVED~~
+NE prediction mismatch (predicted habit confidence >= 0.6, no habit fired) → bump skip_to
+one tier. Ambiguity signal: NE and thalamus disagree. Gate: IGOR_NE_ROUTING=true.
+
+**G28 P2 (#136)** ~~RESOLVED~~
+thread_id wired through _process() → _process_inner() → write_ring(). stdin="stdin:main",
+network messages pass _thread_id from _process_message(). user_turn + Q|A ring tagged.
+
+**#145 Step 2 — two-phase cognition separate calls** ~~RESOLVED~~
+_think_call(): gpt-4o-mini scratchpad from user_input + memories + milieu + ring context.
+Logged to ring (think_trace). Injected as [THINK_CONTEXT] into reply call.
+Gate: IGOR_TWO_PHASE_CALLS=true (default false — enable to A/B test).
+
+**Housekeeping closes:** #54 (tiebreaker done), #116 (subsumed by #128). #140 P2 deferred.
+
 ### Still Open (priority order for next sessions)
 
 1. **G11 (#45)** — inference-free core: habits handle >90% of turns (long-term, requires training pipeline)
-2. **G15 P2 (#50)** — NE predictions influence intent routing (not just memory retrieval)
-3. **G28 P2 (#136)** — ring memory per-thread isolation (add thread_id column to ring_memory)
-4. **G13 (#53)** — session emotional histogram feeding milieu shape decisions
-5. **G16 (#56)** — global milieu sync across instances
-6. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-7. **G22 (#22)** — /compress session summary quality
-8. **G21 (#38)** — thoughts folder distillation (ongoing)
+2. **#145 Step 3** — think phase decomposition: move TWM read, word graph activation, cortex.search, habit evaluation to Python one by one
+3. **G16 (#56)** — global milieu sync across instances
+4. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
+5. **G22 (#22)** — /compress session summary quality
+6. **G21 (#38)** — thoughts folder distillation (ongoing)
+
+### Gates to enable when data collected
+- `IGOR_NE_ROUTING=true` — enable after seeing NE prediction logs
+- `IGOR_TWO_PHASE_CALLS=true` — enable to A/B test think+reply latency
+- `IGOR_LATENCY_ADAPTIVE=true` — enable after 5+ sessions of data
+- `IGOR_HABIT_TIEBREAKER=true` — enable after seeing near_miss logs
 
 ---
 
-*Updated: 2026-03-09 by Claude Code.*
+*Updated: 2026-03-09c by Claude Code.*
