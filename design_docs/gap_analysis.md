@@ -276,12 +276,17 @@ from already-computed components: parsed intent/complexity/tone, milieu VAD, wor
 activated concepts, top relevant memories, NE prediction, near-miss habits. No LLM call.
 IGOR_TWO_PHASE_CALLS now adds optional LLM scratchpad on top. Commit: 817e0ea.
 
+**#145 Step 4 — local think** ~~RESOLVED~~ *(2026-03-09d)*
+`_think_call()` rerouted from gpt-4o-mini → local Ollama. Takes Python think context as
+input, produces 2-3 sentence synthesis (80 tokens, zero cloud cost). IGOR_TWO_PHASE_CALLS
+= Python context + optional local Ollama synthesis. Only reply hits cloud. Commit: 2c7521c.
+
 **Housekeeping closes:** #54 (tiebreaker done), #116 (subsumed by #128). #140 P2 deferred.
 
 ### Still Open (priority order for next sessions)
 
 1. **G11 (#45)** — inference-free core: habits handle >90% of turns (long-term, requires training pipeline)
-2. **#145 Step 4** — local think: think phase fully in Python, only reply hits cloud
+2. **#145 Step 5** — local reply: when RTX 4090 arrives
 3. **G16 (#56)** — global milieu sync across instances
 4. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
 5. **G22 (#22)** — /compress session summary quality
