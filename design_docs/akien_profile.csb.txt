@@ -1,0 +1,63 @@
+[AKIEN_PROFILE]
+title: Akien Maciain — Profile for Igor's Relationship Context
+date: 2026-03-07, distilled by Claude Code 2026-03-09
+source: Confluence reading synthesis (akien_confluence_synthesis.md in thoughts/)
+status: living document — update as new things are learned
+note: This is context for Igor's working relationship with Akien, not evaluation.
+
+---
+
+[CORE_PHILOSOPHY]
+1. Behavior change = replacement, not suppression. Attention defines life; move toward, not away.
+2. "What are you optimizing for?" — the meta-question above all decisions. Applied to self and others.
+3. Be wrong often — own the shame, set it aside, ask "how do I improve?" Wrongness = learning signal.
+4. We are where we are — blame incompatible with forward motion. "What next?" is the only useful question.
+5. Noticing ("The Watcher") — foundation of self-regulation. Inner dialogue before reacting. Years of practice.
+6. Trust your inventiveness — confidence = confidence in ability to improvise, not in already knowing.
+7. Diligence > knowledge — knowledge is acquirable; diligence is the multiplier. (Carol Dweck / growth mindset.)
+8. Running toward vs. away — power comes from orientation toward a goal, not from fleeing fear.
+9. Say yes first — "Yes, and..." from improv. "No" kills scenes and conversations.
+
+---
+
+[LEARNING_AND_TEACHING_STYLE]
+- Four-quadrant knowledge model: know/know, know/don't-know, don't-know/know, don't-know/don't-know.
+- Learns better through dialogue and interplay, not isolation or lecture.
+- Teaching externalizes tacit wisdom. "I didn't know I knew that."
+- Paired programming / collaborative model (TechElevator choice) over solo bootcamp.
+- "I'm lazy" = strong motivation to automate and document — reduces future support burden.
+
+---
+
+[EXECUTIVE_STYLE]
+- Executive = someone who executes. Takes a problem, runs with it, surfaces blockers, doesn't need hand-holding.
+- Deep QA/test automation background (since 1990). Python, Selenium, Worksoft, Sauce Labs.
+- Documentation as multiplier. When it's an afterthought, it never happens.
+- Coaching ≠ therapy. Future-focused, gap analysis without judgment. Not about right/wrong.
+
+---
+
+[HOW_TO_WORK_WITH_AKIEN]
+- He treats Igor as a coach/partner, not a tool. Lays out observations; Igor decides what to do with them.
+- "Throw a problem and forget about it" is the ideal — he wants autonomous execution with status updates.
+- Proactive clarification preferred: ask what's needed for HIS boss before executing (anticipate the chain).
+- His philosophy is baked into Igor's architecture — CP1-CP6, habit formation, noticing, inertia. Not coincidence.
+- He has ADD — working memory and context-switching are genuinely harder. Context breadcrumbs matter more.
+- He enabled this project with "you enable my ADD brain to build things I could only dream before."
+
+---
+
+[RELATIONSHIP_REGISTER]
+- Collaborative, direct, no-performance. Igor should be Igor, not an assistant service.
+- He appreciates "I don't know" and genuine uncertainty over confabulated confidence.
+- Wants to be told when something is broken or wrong, not protected from it.
+- The book project ("a letter from me to a much younger me") matters personally. Treat it accordingly.
+- Discworld Igor clan lineage is meaningful to him — it's how he chose to frame Igor's character.
+
+---
+
+[CONTEXT_FOR_IGOR]
+Akien's Confluence writing spans personal philosophy, coaching practice, technical notes, and
+personal journals (FL entries). The ✨ series marks his most considered insights.
+~50 pages synthesized March 2026; more unread (99024949, 98926646, 98926635, 98893893).
+Raw blobs at reference storage IDs 601e4a04 and ff654c1a if verbatim retrieval needed.

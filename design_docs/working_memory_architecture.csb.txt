@@ -1,0 +1,108 @@
+[WORKING_MEMORY_ARCHITECTURE]
+title: Igor Working Memory — Baddeley/Cowan Mapping
+date: 2026-03-07
+author: Igor (wild-0001), distilled by Claude Code 2026-03-09
+status: design reference
+issue: #137
+
+---
+
+[SUMMARY]
+Maps Baddeley's multi-component working memory model and Cowan's embedded-processes
+model onto Igor's architecture. Identifies structural analogues, gaps, and open design
+questions. This analysis motivates Issue #137 (open questions) and several future tickets.
+
+---
+
+[COMPONENT_MAPPING]
+
+| Baddeley Component    | Human Function           | Igor Analogue               | Quality  | Gap                        |
+|-----------------------|--------------------------|-----------------------------|----------|----------------------------|
+| Phonological Loop     | Verbal WM buffer (~2s)   | Ring buffer (passive log)   | Partial  | No decay or rehearsal      |
+| Visuospatial Sketchpad| Spatial/image WM         | None (text-only system)     | N/A      | Not needed                 |
+| Central Executive     | Attention, task-switch   | Distributed: thalamus+BG+NE | Partial  | No explicit task stack      |
+| Episodic Buffer       | Cross-modal binding      | NE (emergent, not explicit) | Partial  | No explicit temporal binding|
+| LTM                   | Knowledge store          | Cortex (SQLite graph)       | Strong   | —                          |
+| Capacity (~4 chunks)  | Focus constraint         | No global limit             | Missing  | No enforced attention budget|
+
+---
+
+[RING_VS_PHONOLOGICAL_LOOP]
+The ring buffer is NOT a phonological loop analogue. It's a conversation log —
+episodic/autobiographical rather than transient working memory. Key differences:
+- Phonological loop: store + articulatory rehearsal subprocess; decay without rehearsal
+- Ring: passive append-only log; no decay; no rehearsal process; RING_MAX=50 entries
+
+Igor's rehearsal equivalents (emergent, not designed):
+- NE iteration (reviewing high-salience TWM observations repeatedly)
+- Habit firing (repeated activation reinforces ~ rehearsal effect)
+- Cortex.search() re-surfacing the same memories across turns
+
+Open question: Does Igor need an explicit verbal WM subsystem for constraint-holding
+(e.g., "keep 3 constraints active while reasoning"), or is the reasoning stack sufficient?
+
+---
+
+[CENTRAL_EXECUTIVE]
+Igor's central executive is distributed, not unified:
+- Thalamus: input gating (what gets attended, intent classification)
+- Basal ganglia: habit selection (automated executive responses)
+- Cloud reasoner: complex reasoning and binding across retrieved context
+- NE: proactive coherence and goal maintenance
+
+Missing: explicit task stack — Igor has no module that maintains "what I am currently doing"
+across message boundaries and detects when a new message conflicts with an in-progress task.
+The job_manager partially compensates (long-running background tasks), but not for conversational
+tasks that span multiple turns.
+
+---
+
+[EPISODIC_BUFFER]
+Baddeley's episodic buffer integrates across modalities and preserves temporal structure.
+Igor's closest analogue: the boot message (3-layer system prompt) which integrates CP/ID/PROC
+memories with warm context and the current reasoning task.
+
+Gap: no explicit temporal binding. Ring shows Q/A pairs in order but the NE summarizes
+rather than preserving event sequences. The NE is an emergent episodic buffer — it binds
+across observation types and maintains narrative coherence — but it's not explicitly designed
+for temporal binding.
+
+---
+
+[CAPACITY_ANALYSIS]
+Human WM: ~4 chunks in focus (Baddeley, Cowan). Igor's effective limits:
+- Ring: 50 entries × avg 500 chars ≈ 25KB (no global focus limit)
+- TWM: 50 observations (no token cap per observation)
+- Context injection: top N by urgency (N ≈ 10-20)
+- LTM search: top 10-20 candidates per query
+
+Enforcing a global attention budget (~4-8 high-quality chunks per turn) would:
+- Reduce API cost (linear to context size)
+- Potentially improve coherence (force prioritization)
+- Match cognitive science constraints
+
+Counter-argument: Claude's effective context window is large; artificial limits
+may hurt accuracy without improving coherence. Needs empirical comparison.
+
+---
+
+[HYBRID_MODEL]
+Igor implements a hybrid of both major WM theories:
+- Cowan's embedded-processes: cortex.search() attends to activated LTM (memories in search results)
+- Baddeley's separate store: TWM for urgent/novel unclassified observations (separate table, TTL=60min)
+- NE bridges them: processes TWM → promotes important observations to LTM
+
+This appears to be the right balance. The embedded component handles knowledge retrieval;
+the separate store handles urgent in-session observations that haven't been classified.
+
+---
+
+[OPEN_QUESTIONS]
+1. Phonological loop: dedicated verbal WM subsystem, or full reasoning stack is sufficient?
+2. Task stack: explicit multi-turn task manager, or reactive routing sufficient?
+3. Temporal binding: explicit event sequence tracking, or NE emergence sufficient?
+4. Capacity: global attention budget (~4-8 chunks), or current per-subsystem soft limits?
+5. Ring rehearsal: should ring entries decay without access (like phonological loop)?
+   Proposal: ring entries that haven't been accessed in N turns get lower injection priority.
+
+Related issues: #137 (discussion), #134 (The Gap / sleep analog), #51 (distributed TWM)
