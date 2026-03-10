@@ -154,27 +154,31 @@ durable insights into design_docs/.
 TASKS/CHANGES/OPEN_THREADS/KEY_DECISIONS/NEXT_SESSION/STATE fields. Model priority:
 gpt-4o-mini (best quality, cheap) → Ollama batch → 1B fallback. Issue #22 closed.
 
-**G23 — validate/tune CSB preparse from 1B** *(ongoing)*
-Issue #30. The KoboldCpp/Llama-1B preparse produces CSB-format structured output. Validation
-of output quality against ground truth has not been done systematically. Build a small eval
-harness with 20-30 labeled examples.
+**G23 — validate/tune CSB preparse from 1B** ~~*(ongoing)*~~
+**RESOLVED** — `claudecode/eval_preparse.py`: 51 labeled examples across all 13 intents.
+Baseline: `_rule_based_csb` 66% / thalamus 90%. Fixed fallback to 88% (matching thalamus parity):
+added `creative_request` to `_PREPARSE_PROMPT` + `_rule_based_csb` (G36 sync fix); improved
+cascade ordering; added meta_question triggers; conversation positive signals; `else→general`.
+Thalamus docstring updated to 13-intent. Run: `python claudecode/eval_preparse.py`. Issue #30 closed.
 
 ---
 
 ## Suggested Work Order
 
-For the next 2-3 sessions, in priority order:
+*Updated 2026-03-10 — most original gaps are closed. Remaining open items:*
 
-1. **G20** — 30 min, unblocks clean documentation
-2. **G21** — Igor's task during this session
-3. **G3** (#41) — Quick win: stripped local system prompt; reduces token waste on every 1B call
-4. **G2** (#26) — Context cap enforcement; prevents hard failures
-5. **G1** — Dominance→threshold-X wiring; completes the milieu→behavior feedback loop
-6. **G4** (#27) — Async jobs; improves UX significantly, unblocks long-running tool use
-7. **G10** (#35) — Rich terminal status bar; observability for development
-8. **G5** (#42) — Prediction signal; enriches emotional learning loop
-9. **G6** (#44) — Habituation; prevents TWM noise flooding
-10. **G7** (#47) — Response-habits; starts moving toward inference-free core (G11 foundation)
+1. **G11 Ph2 (#45)** — Habit training pipeline: response-habits, auto-compilation, >90% habit coverage.
+   Foundation for inference-free core. Large multi-session effort.
+2. **G15 Ph2 (#50)** — NE predictions influence intent routing (not just memory query enrichment).
+   Gate: `IGOR_NE_ROUTING=true` already on; needs routing-side wiring.
+3. **G18 (#49, #57)** — Structured training sessions (Sesame Street / Rob model pedagogy).
+   Depends on G11 Ph2 being further along. Medium scope.
+4. **G19 (#39)** — Igor reads open GitHub tickets and implements via Claude Code subprocess.
+   Needs orchestration layer on top of existing relay.py. High leverage.
+5. **G17 (#51)** — Distributed TWM across cluster instances. Architecture-level; defer until
+   cluster is actively used.
+6. **#145 Step 5** — Local reply tier (full persona via local LLM). Waiting on RTX 4090.
+7. **IGOR_LATENCY_ADAPTIVE** — Enable after 5+ more sessions of data (still collecting).
 
 ---
 
