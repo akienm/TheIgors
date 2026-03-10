@@ -339,9 +339,10 @@ join session `"shared"` — messages silently dropped. Fixed by stripping `"web:
 `"web:shared"` → `"shared"`, `"web:abc123"` → `"abc123"`. Root cause of Illusions responses going nowhere.
 
 **G36 — Interactive task guard (new gap, now closed)**
-Conversational/creative intents (`casual_conversation`, `creative_request`, `emotional_support`)
-now blocked from background job spawn. Reading sessions and discussions need live conversation
-loop, not one-shot background jobs. Added `_INTERACTIVE_INTENTS` check at job trigger.
+`creative_request` added to thalamus 12-intent taxonomy — triggers on "read me", "read to me",
+"tell me a story", "write me a poem" etc. `_INTERACTIVE_INTENTS = {conversation, creative_request,
+greeting}` at job trigger blocks background spawn. Reading sessions and discussions stay in the
+live conversation loop, not one-shot background jobs.
 
 **G28 Phase 3 — Thread context depth**
 `_THREAD_MAX_HISTORY` 4→8 exchanges; stored text per exchange 300/400→500/600 chars; displayed
