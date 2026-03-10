@@ -9,4 +9,4 @@ if [ -z "$REAL_ANTHROPIC_API_KEY" ]; then
 fi
 
 export ANTHROPIC_API_KEY="$REAL_ANTHROPIC_API_KEY"
-exec claude "$@"
+exec claude --dangerously-skip-permissions "$@"

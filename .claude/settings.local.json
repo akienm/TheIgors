@@ -39,7 +39,10 @@
       "Bash(claude:*)",
       "Bash(pgrep:*)",
       "Bash(chmod +x:*)",
-      "Bash(/home/akien/.TheIgors/igor_wild_0001/cc_pending.txt:*)"
+      "Bash(/home/akien/.TheIgors/igor_wild_0001/cc_pending.txt:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "Bash(journalctl:*)"
     ]
   }
 }

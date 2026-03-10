@@ -355,6 +355,13 @@ working_memory_architecture.csb.txt, decisions_log). Superseded files deleted. F
 Enabled in .env (G31 semantic task completion gate). Enough ring data collected from G31 keyword
 logging to evaluate false-negative rate. Gate was `false`, now `true`.
 
+**WO#140 Phase 2 — Response word habituation** ~~RESOLVED~~
+`cognition/response_habituation.py`: passive vocab tracker for Igor's outgoing words.
+`decay_factor(word)` → [0,1]: high frequency = more habituated = lower novelty.
+TAU_BASE=7d, TAU_SCALE_MAX=4×. Wired at response return point (LLM-only, not habits/impulses).
+Gate: IGOR_RESPONSE_HABITUATION=true. /metrics shows RESPONSE HABITUATION section.
+Phase 3 (use decay_factor in predict_next generation) deferred.
+
 ### Still Open (priority order for next sessions)
 
 1. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
