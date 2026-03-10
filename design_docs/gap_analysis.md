@@ -375,14 +375,33 @@ TAU_BASE=7d, TAU_SCALE_MAX=4×. Wired at response return point (LLM-only, not ha
 Gate: IGOR_RESPONSE_HABITUATION=true. /metrics shows RESPONSE HABITUATION section.
 Phase 3 (use decay_factor in predict_next generation) deferred.
 
+**G37 — Asymmetric dual word graphs (Issue #160)** ~~Phase 1 RESOLVED 2026-03-10~~
+Akien's insight: cognition uses two different word graphs — one shaped by successful parsing
+(recognition) and one shaped by comprehension feedback (generation = Voice). The generation
+graph is the residue of what produced response in the listener over thousands of iterations.
+Four sub-features, all gated by env vars (default false — observe then enable):
+- `IGOR_DUAL_WORD_GRAPHS`: boot `WordGraph(name="generation_graph")` separately; index Igor's
+  replies only (not user input); save to `~/.TheIgors/generation_graph.json`.
+- `IGOR_COMPREHENSION_SIGNAL`: on next user turn, if positive/neutral tone + non-correction,
+  call `generation_graph.reinforce_text(_last_reply, boost=0.05)`. Voice emerges from what works.
+- `IGOR_MILIEU_TILT`: pass milieu `{arousal,valence,dominance}` to `predict_next(milieu_state=)`.
+  High arousal → steeper gradient (more decisive). Field stays the same; effective landscape shifts.
+- `IGOR_NPASS_REPLY`: log `gradient_flatness()` after every reply to metrics forensic log.
+  Infrastructure for future n-pass termination (flatness threshold stops generation loop).
+New methods on `WordGraph`: `predict_next(milieu_state=None)`, `gradient_flatness()`,
+`reinforce_text()`. `default_cache_path(name)` parameterized.
+Seed script: `claudecode/seed_generation_graph.py` — extracts Igor's ring_memory replies +
+reasoning_calls.log to bootstrap generation graph from actual historical voice.
+Phase 2 (active n-pass loop, per-audience graph, meta-cognitive observer): future.
+
 ### Still Open (priority order for next sessions)
 
-1. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
-2. **#145 Step 5** — local reply: when RTX 4090 arrives
-3. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-4. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting)
-5. **IGOR_TWO_PHASE_CALLS** — already enabled 2026-03-09c
+1. **G37 Phase 2** — enable IGOR_DUAL_WORD_GRAPHS + collect data; enable comprehension signal after 5+ sessions; n-pass active termination loop
+2. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
+3. **#145 Step 5** — local reply: when RTX 4090 arrives
+4. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
+5. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting)
 
 ---
 
-*Updated: 2026-03-09f by Claude Code.*
+*Updated: 2026-03-10 by Claude Code.*
