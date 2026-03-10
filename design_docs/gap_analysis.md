@@ -331,16 +331,38 @@ Keyword set pre-computed outside per-row loop. Short stop-words (< 3 chars) filt
 
 *(none identified this session)*
 
+### Resolved this session (2026-03-09f)
+
+**Bug fix: background job completion → wrong web session**
+`_announce_completed_jobs()` was routing to `"web:shared"` (the thread_id) but web clients
+join session `"shared"` — messages silently dropped. Fixed by stripping `"web:"` prefix:
+`"web:shared"` → `"shared"`, `"web:abc123"` → `"abc123"`. Root cause of Illusions responses going nowhere.
+
+**G36 — Interactive task guard (new gap, now closed)**
+Conversational/creative intents (`casual_conversation`, `creative_request`, `emotional_support`)
+now blocked from background job spawn. Reading sessions and discussions need live conversation
+loop, not one-shot background jobs. Added `_INTERACTIVE_INTENTS` check at job trigger.
+
+**G28 Phase 3 — Thread context depth**
+`_THREAD_MAX_HISTORY` 4→8 exchanges; stored text per exchange 300/400→500/600 chars; displayed
+text 120/160→200/300 chars. Prevents reading/discussion sessions from losing framing after 4 turns.
+
+**G21 (#38) — Thoughts folder distillation** ~~RESOLVED~~
+All 5 thoughts/ files reviewed. 4 already fully captured in design_docs/ (akien_profile.csb.txt,
+working_memory_architecture.csb.txt, decisions_log). Superseded files deleted. Folder now empty.
+
+**IGOR_TASK_COMPLETION_SEMANTIC enabled**
+Enabled in .env (G31 semantic task completion gate). Enough ring data collected from G31 keyword
+logging to evaluate false-negative rate. Gate was `false`, now `true`.
+
 ### Still Open (priority order for next sessions)
 
 1. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
 2. **#145 Step 5** — local reply: when RTX 4090 arrives
 3. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-4. **G21 (#38)** — thoughts folder distillation (Igor's task)
-5. **IGOR_TASK_COMPLETION_SEMANTIC** — enable after keyword+ring data collected; evaluate false neg rate
-6. **IGOR_TWO_PHASE_CALLS** — enable to A/B test think+reply latency
-7. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data
+4. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting)
+5. **IGOR_TWO_PHASE_CALLS** — already enabled 2026-03-09c
 
 ---
 
-*Updated: 2026-03-09e by Claude Code.*
+*Updated: 2026-03-09f by Claude Code.*
