@@ -296,20 +296,51 @@ wrong prediction → −0.10 to predicted habit→seeds, +0.05 to actual habit�
 The "meaning from prediction" loop. Links strengthen from co-activation, weaken on misfire.
 Commit: 23c5de1. Remaining: habit training pipeline (>90% habit coverage), response-habits.
 
+### Resolved this session (2026-03-09d)
+
+**#153 — The Master's Notebook** ~~RESOLVED~~
+Per-user SQLite notebook (chats/<slug>/notebook.db). Chunk+embed+semantic search. PROC_NOTEBOOK_SAVE habit (0.93). Auto-context injection. /notebook list|search|remove command.
+
+**#154/#156 — Tier.0 pure-Python responses** ~~RESOLVED~~
+`output_complexity` field on ParsedInput; thalamus classifies "low" for greetings, acks, status, help, lookups. Tier.0 gate bypasses all LLM calls. OR kwargs NameError fixed.
+
+**#158 — Per-thread TWM + TASK_SET (attention nexus)** ~~RESOLVED~~
+thread_id + category columns on twm_observations. action_request → TASK_SET (urgency=0.92, ttl=1800s). Completion keywords clear it. thread_id wired through all reasoners.
+
+**#159 — Background job completion → originating thread** ~~RESOLVED~~
+Job dataclass has thread_id. _announce_completed_jobs() routes via web_server.send() to right session.
+
+### Resolved this session (2026-03-09e)
+
+**G31 — TASK_SET completion detection** ~~RESOLVED~~
+`_check_task_completion_semantic()` added — gpt-4o-mini YES/NO classifier, gate `IGOR_TASK_COMPLETION_SEMANTIC` (default false). Keyword fast-path kept; semantic runs as augment when fast-path misses. Expanded signals list (wrapped up, handled, addressed, fixed, etc.). All clear/no-clear decisions now logged to ring with method (keyword/semantic/none) + task summary.
+
+**G32 — Tier.0 memory lookups skip cortex** ~~RESOLVED~~
+tier.0 recall path already used `cortex.search()` (gap description was stale). Improved: `limit=1→3` with relevance gate (subject terms must appear in narrative), ring fallback via new `cortex.search_ring_text()` for session context not yet in LTM, memory type label in response. Added `"do you know about"` as trigger phrase.
+
+**G33 — Notebook keyword fallback** ~~RESOLVED~~
+Keyword set pre-computed outside per-row loop. Short stop-words (< 3 chars) filtered. `row["content"].lower()` now consistent. Simpler and correct.
+
+**G34 — NE routing telemetry** ~~RESOLVED~~
+`IGOR_NE_ROUTING=true` was already set in .env. Added ring trace on every fire: `NE_ROUTING|predicted=...|conf=...|tier_before=...|tier_after=...`, category `ne_routing`.
+
+**G35 — Habit tiebreaker telemetry** ~~RESOLVED~~
+`IGOR_HABIT_TIEBREAKER=true` was already set in .env. Added `TIEBREAKER|declined` ring entry when tiebreaker returns REASON or unknown ID — completes the telemetry loop (resolves + declines both logged).
+
+### New Gaps (identified 2026-03-09e)
+
+*(none identified this session)*
+
 ### Still Open (priority order for next sessions)
 
 1. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
 2. **#145 Step 5** — local reply: when RTX 4090 arrives
 3. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-4. ~~**G22 (#22)**~~ — /compress is Claude Code's built-in compression; not Igor code. Handled by Claude Code memory hygiene (MEMORY.md + sessions.md). Closed.
-5. **G21 (#38)** — thoughts folder distillation (ongoing)
-
-### Gates to enable when data collected
-- `IGOR_NE_ROUTING=true` — enable after seeing NE prediction logs
-- `IGOR_TWO_PHASE_CALLS=true` — enable to A/B test think+reply latency
-- `IGOR_LATENCY_ADAPTIVE=true` — enable after 5+ sessions of data
-- `IGOR_HABIT_TIEBREAKER=true` — enable after seeing near_miss logs
+4. **G21 (#38)** — thoughts folder distillation (Igor's task)
+5. **IGOR_TASK_COMPLETION_SEMANTIC** — enable after keyword+ring data collected; evaluate false neg rate
+6. **IGOR_TWO_PHASE_CALLS** — enable to A/B test think+reply latency
+7. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data
 
 ---
 
-*Updated: 2026-03-09c by Claude Code.*
+*Updated: 2026-03-09e by Claude Code.*
