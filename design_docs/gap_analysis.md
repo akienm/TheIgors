@@ -394,13 +394,47 @@ Seed script: `claudecode/seed_generation_graph.py` — extracts Igor's ring_memo
 reasoning_calls.log to bootstrap generation graph from actual historical voice.
 Phase 2 (active n-pass loop, per-audience graph, meta-cognitive observer): future.
 
+**G38 — Backchannel layer (Issue #161)** ~~RESOLVED 2026-03-10~~
+Three-level immediate acknowledgment before full reply: sub-verbal nods (nod / nod_think),
+quick verbal (Indeed. / Interesting. / Hm.), n-pass (deferred). Fires after thalamus+milieu,
+before BG/LLM. Forms stored as PROC_BACKCHANNEL_* habits (Igor owns, revisable).
+Gate: `IGOR_BACKCHANNEL=false` (seeded but gated). Seed: `claudecode/seed_backchannel_habits.py`.
+
+**G39 — Local load awareness (Issue #164)** ~~RESOLVED 2026-03-10~~
+Phase 1: `check_resource_load()` tool in `tools/filesystem.py` — reports CPU/RAM/swap/RSS,
+ok/warn/critical verdict. Hard gate in `training_corpus.fetch()` — aborts at RAM≥92%/swap≥75%/CPU≥95%.
+Also added 1MB document cap (IGOR_TRAINING_MAX_CHARS) after OOM crash from 5.1MB fetch.
+Phase 2: PROC_RESOURCE_GATE + PROC_RESOURCE_AWARENESS habits seeded — Igor understands the WHY,
+can apply the principle to new bulk operations, not just the training corpus code path.
+Seed: `claudecode/seed_resource_gate_habits.py`.
+
+**Thalamus false positive fixes** ~~RESOLVED 2026-03-10~~
+Three false-positive intent classifications fixed: `"start "` removed from action_request triggers
+(matched mid-sentence "start with"); `"remember"` → `"remember that"/"remember this"` in
+memory_instruction (matched conversational "if you remember"); `"review"` → `"review "` in
+analysis_task (matched "reviews" conjugated). Also added `"general"` to `_INTERACTIVE_INTENTS`
+as belt-and-suspenders: unclassified messages never background.
+
+**Background job fixes (session 2026-03-10)** ~~RESOLVED~~
+Three bugs: (1) `<think>` block leaking into job completion banner — `_bg_reason()` wasn't calling
+`_split_think_reply()`. (2) Thread context `[Web message from akien]` appearing in job title —
+was using full synthetic input; fixed to `parsed.core_input[:80]`. (3) Job result truncated at
+500 chars in banner — full result now sent to user.
+
+**OR reasoner MAX_TURNS None** ~~RESOLVED 2026-03-10~~
+`while True` loop had `break` at MAX_TURNS but no `return` after it — implicit `None` caused
+`cannot unpack non-iterable NoneType` at tier.3.5. Fixed: added fallback return after loop.
+Recurring TIER_FAIL since 2026-03-08. Commit: 8fd99f3.
+
 ### Still Open (priority order for next sessions)
 
 1. **G37 Phase 2** — enable IGOR_DUAL_WORD_GRAPHS + collect data; enable comprehension signal after 5+ sessions; n-pass active termination loop
-2. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
-3. **#145 Step 5** — local reply: when RTX 4090 arrives
-4. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-5. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting)
+2. **G40 (#165)** — Cluster load awareness: poll remote boxes before delegating; needs G39 complete
+3. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
+4. **#145 Step 5** — local reply: when RTX 4090 arrives
+5. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
+6. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting)
+7. **Code→data migration** — hardcoded decisions (intent rules, routing thresholds, tier ladder) → learnable data/habits as Igor matures
 
 ---
 
