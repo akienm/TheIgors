@@ -93,11 +93,11 @@ would have different decay curves per dimension (valence decays faster than arou
 faster than dominance). Also: refractory period after a spike before next activation is counted.
 → Issue: #55
 
-**G13 — session emotional histogram → milieu shaping** *(~4h)*
-Issue #53. Track the distribution of emotional signals within a session (not just the running
-EMA). A session that alternates high/low arousal behaves differently from one that's
-monotonically stressed. The histogram can feed a more nuanced milieu update.
-→ Issue: #53
+**G13 — session emotional histogram → milieu shaping** ~~*(~4h)*~~
+**RESOLVED** — `milieu.session_histogram()`: per-dim (min/max/mean/std/bins) + session_character
+classification (bouncy/stressed/focused/calm). Samples accumulated on every `update()` call.
+Logged to `cognition_metrics.log` at session exit. Wired into tier routing in main.py:
+`stressed` → bump skip_to one tier; `focused` → ease skip_to one tier. Issue #53 effectively complete.
 
 **G14 — memory schema: emotional profile** ~~*(~4h)*~~
 **RESOLVED** — `Memory` dataclass gains `arousal` and `dominance` fields (valence already present). DB lazy-migrated with two ALTER TABLE statements. `_to_memory()` and `store()` updated. Episodic memories tagged with ambient milieu VAD at creation time. Issue #52 closed 2026-03-05.
@@ -149,10 +149,10 @@ Issue #38. The thoughts/ folder has 19 files including large chat logs. Igor sho
 distill, and reorganize into structured knowledge files — removing raw logs, extracting
 durable insights into design_docs/.
 
-**G22 — session summary quality** *(~2h)*
-Issue #22. The /compress command produces a summary that loses too much context. Improve
-the summary prompt to preserve key decisions, state, and open threads rather than just
-a narrative overview.
+**G22 — session summary quality** ~~*(~2h)*~~
+**RESOLVED** — `summarize_session()` in ollama_reasoner.py: structured prompt with
+TASKS/CHANGES/OPEN_THREADS/KEY_DECISIONS/NEXT_SESSION/STATE fields. Model priority:
+gpt-4o-mini (best quality, cheap) → Ollama batch → 1B fallback. Issue #22 closed.
 
 **G23 — validate/tune CSB preparse from 1B** *(ongoing)*
 Issue #30. The KoboldCpp/Llama-1B preparse produces CSB-format structured output. Validation
@@ -175,6 +175,14 @@ For the next 2-3 sessions, in priority order:
 8. **G5** (#42) — Prediction signal; enriches emotional learning loop
 9. **G6** (#44) — Habituation; prevents TWM noise flooding
 10. **G7** (#47) — Response-habits; starts moving toward inference-free core (G11 foundation)
+
+---
+
+**G24 — Confluence read rate limiting** ~~*(~2h)*~~
+**RESOLVED** — `confluence.py`: module-level `_throttle_page_fetch()` enforces delay =
+`max(IGOR_CONFLUENCE_MIN_DELAY_S=3, last_page_words / IGOR_CONFLUENCE_READ_WPM=250 * 60)`
+before every `confluence_get_page` call. Word count estimated from stripped HTML after each
+fetch. 2026-03-10.
 
 ---
 
