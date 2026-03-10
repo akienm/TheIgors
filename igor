@@ -47,7 +47,7 @@ fi
 # Restart loop: exit code 42 means "please restart"
 # .env is re-read on every restart so env changes take effect immediately.
 while true; do
-    export $(grep -v '^#' "$ENV_FILE" | xargs)
+    set -a; source "$ENV_FILE"; set +a
     python -m igor.main "${IGOR_ARGS[@]}"
     EXIT_CODE=$?
     if [ $EXIT_CODE -eq 42 ]; then

@@ -301,7 +301,7 @@ Commit: 23c5de1. Remaining: habit training pipeline (>90% habit coverage), respo
 1. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
 2. **#145 Step 5** — local reply: when RTX 4090 arrives
 3. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-4. **G22 (#22)** — /compress session summary quality
+4. ~~**G22 (#22)**~~ — /compress is Claude Code's built-in compression; not Igor code. Handled by Claude Code memory hygiene (MEMORY.md + sessions.md). Closed.
 5. **G21 (#38)** — thoughts folder distillation (ongoing)
 
 ### Gates to enable when data collected
