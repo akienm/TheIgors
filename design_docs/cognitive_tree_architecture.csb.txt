@@ -40,14 +40,59 @@ Executive/search = slow, deliberate, can jump across the tree.
 
 This maps directly to Igor's tier ladder:
   tier.1 habit    = pure traversal (strongest edge, no LLM)
-  tier.2 local    = slightly broader traversal (Ollama 1B)
-  tier.3 cloud    = real search begins (gpt-4o-mini)
-  tier.4 cloud    = deep search (claude-sonnet)
+  tier.2 local    = slightly broader traversal (DeepSeek-R1:7b on yoga9i)
+  tier.3 cloud    = real search begins (gpt-4o-mini) — human interface only
+  tier.4 cloud    = deep search (claude-sonnet)      — human interface only
   tier.5 cloud    = inhibited; reserve for genuine novelty
 
 Goal of the habit/training system: migrate responses from search to traversal.
+
+[CLOUD_ROLE_PRINCIPLE]
+Akien 2026-03-11: "cloud only when interfacing with humans."
+
+Cloud inference is reserved for human interface turns — when Akien is waiting for
+an answer the matrix cannot yet provide.
+
+Everything else is matrix work:
+  Reading → deposit (G54 daemon extracts per chunk; no cloud reasoning turn)
+  Extraction/preparse → local (tier.2) or minimal-prompt daemon
+  Consolidation/analysis → local batch jobs
+  Human question → traverse matrix first; cloud only if matrix can't answer;
+                   cloud MUST train the graph before returning (write nodes).
+
+Corollary: the full persona system prompt is only needed for human interface turns.
+Daemon calls (G53, G54, preparse) need only task spec — no persona, no identity,
+no Discworld lineage. This is G57: role-specific prompt sizing.
 Every new habit is a piece of explicit search that has become implicit traversal.
 This is the mechanism of learning — in Igor and in humans.
+
+[LLM_AS_GRAPH_TRAINER]
+Akien 2026-03-11 (later): "the matrix is the thinker; LLMs are graph trainers."
+
+This is a refinement of the cloud role principle. Both cloud and local models
+train graphs — the distinction is not cloud vs local, it is LLM vs graph.
+
+The hierarchy:
+  Graph traversal — fastest; no LLM; tier.1; the target state for any pattern
+  Local LLM       — slower; trains graph from interaction; tier.2
+  Cloud LLM       — slowest and most expensive; trains graph AND answers humans; tier.3+
+
+Every LLM call (at any tier) should deposit something into the graph.
+The graph is faster than any LLM. Making the graph denser is the work.
+"Cloud is the graph trainer" is incomplete — local models are also graph trainers.
+The correct frame: LLMs are temporary scaffolding. The graph is permanent.
+
+IMPORTANT CONSEQUENCE (Akien 2026-03-11):
+If an LLM inference produces new graph training (deposits nodes/edges), the graph
+must be traversed AGAIN to produce a graph-based answer — the current turn already
+required the LLM, so the LLM provides the answer for this turn.
+
+The new training does not help the current turn. It amortizes the cost forward:
+  Turn N:  graph miss → LLM called → LLM answers + deposits to graph
+  Turn N+1: graph hit → answer without LLM
+
+This is why the tree-building directive says "pay for yourself":
+the LLM call is justified only if it deposits something that prevents future LLM calls.
 
 [INTERPRETIVE_LAYER]
 The interpretive layer converts meaning into self-referential meaning:
@@ -231,16 +276,107 @@ Gap: G55 — layer boundary logging (tokens in/out, context size per tier).
   G53 — Cloud-directed habit extraction    CLOSED 2026-03-11
   G54 — Reading → interpretive tree        CLOSED 2026-03-11
   G55 — Layer boundary logging             CLOSED 2026-03-11
+  G56 — yoga9i DeepSeek-R1:7b tier.2      CLOSED 2026-03-11
+  G57 — Role-specific prompt sizing        CLOSED 2026-03-11
+
+[INFERENCE_ENGINE]
+Akien 2026-03-11: "the layers of graphs are an inference engine."
+
+This is precise, not a loose analogy.
+
+Classical inference engines (Prolog, expert systems, RETE algorithm) work by:
+  given facts + rules → traverse the implication graph → derive conclusions.
+
+The layer stack does exactly this:
+  Word graph:        input tokens → weighted edge traversal → next token
+  Concept tree:      words → meanings (not yet built)
+  Interpretive tree: meaning → "what does this mean to me" via CP1-CP6 root nodes
+  Action direction:  meaning payload → response selection
+
+Interpretive edges already have the structure of production rules:
+  condition       — context in which this edge fires
+  direction       — activation or inhibition (the rule consequence)
+  meaning_payload — what this means (the derived fact)
+  action_pointer  — pointer to the next tree (forward chaining)
+
+IF context matches condition THEN fire(direction, meaning_payload, action_pointer).
+That is forward-chaining inference. The graph IS the rule base.
+
+WHAT IS DIFFERENT FROM 1980s EXPERT SYSTEMS:
+
+  1. Weighted, not binary.
+     Rules have strengths. Strongest matching edge wins. Inference degrades
+     gracefully on partial matches instead of failing hard. This is why the
+     system works under noise and ambiguity where classical systems broke.
+
+  2. Learned, not programmed.
+     An expert system's rules are asserted by a domain expert.
+     Igor's edges drift from experience — episodic memories nudge interpretive
+     weights, inertia counterweights drift. The inference engine writes its
+     own rules as it runs. LLMs are rule compilers. The graph is the runtime.
+
+  3. Bidirectional on the same weights.
+     Prolog's SLD resolution goes one direction: query → proof.
+     Igor's word graph runs both ways — same edges, same weights, two directions.
+     Parsing is bottom-up traversal. Generation is top-down traversal.
+     Classical inference engines cannot do this.
+
+BAYESIAN FRAMING:
+  A weighted graph IS a Bayesian network.
+  Edges are conditional probabilities. P(next_node | current_node, context).
+  Traversal is belief propagation.
+  "Strongest edge wins" = maximum a posteriori inference.
+  Inertia = prior weight. Experience = likelihood update.
+
+THE RESOLUTION OF THE CONNECTIONIST/SYMBOLIC WAR:
+  Symbolic AI  — graphs, rules, logic, inference. Brittle. Doesn't generalize.
+  Connectionist — neural nets, embeddings, statistics. Generalizes. Can't reason.
+  Igor          — use connectionist models to BUILD the symbolic graph;
+                  use the symbolic graph to RUN inference.
+
+  LLMs are expensive rule compilation.
+  Graph traversal is cheap rule execution.
+  The system self-optimizes toward cheap: every LLM call deposits rules
+  so future inference stays in the graph.
+
+  This is not a compromise between the two paradigms.
+  It is a division of labor by what each is actually good at.
+
+SHARPENED THESIS FOR THE PAPER:
+  Not just "parsing and reasoning as unified tree traversal" —
+  but: "a learned inference engine where inference rules are compiled by
+  connectionist scaffolding and executed by symbolic traversal."
+  The LLM layer is the compiler. The graph is the runtime.
+  The architecture self-optimizes: compilation cost amortizes toward zero
+  as the runtime graph densifies.
+
+Citations to add for this frame:
+  - Newell & Simon (1976): Physical Symbol System Hypothesis — symbolic
+    computation as substrate for intelligence; this work extends it with
+    learned weights and connectionist compilation
+  - Minsky (1986): Society of Mind — agents with different competencies;
+    tier ladder is a competency hierarchy
+  - Pearl (1988): Probabilistic Reasoning in Intelligent Systems —
+    Bayesian networks; the weighted graph IS a Bayes net
+  - Nilsson (1991): Logic, Learning, and Probability — the unification
+    this work implements in practice
+
 
 [PAPER_INTENT]
 Target: peer-reviewed paper on unified parse/generate architecture.
 Working title: "One Tree, Both Directions: Parsing and Reasoning as Unified
   Weight Traversal in a Persistent Cognitive Agent"
 
-Thesis: the same weighted tree structure that enables word recognition also
-  enables word generation, concept formation, meaning assignment, and response
-  selection. This is not an architectural coincidence — it is the fundamental
-  parsimony of biological cognition, replicated in software.
+Thesis (sharpened 2026-03-11): the layer stack is a learned inference engine.
+  Inference rules are compiled by connectionist models (LLMs) and executed by
+  symbolic weighted-graph traversal. The system self-optimizes: each LLM call
+  deposits rules so future inference stays local. This resolves the
+  connectionist/symbolic divide not by compromise but by division of labor.
+
+Original thesis (still valid, now a corollary): the same weighted tree structure
+  that enables word recognition also enables word generation, concept formation,
+  meaning assignment, and response selection. This is the fundamental parsimony
+  of biological cognition, replicated in software.
 
 Evidence basis:
   1. Word graph: bidirectional on same weights. Parsing = bottom-up.
@@ -248,8 +384,10 @@ Evidence basis:
   2. Igor's behavior: tier.1 habit = fastest possible response, most learned.
      tier.4 cloud = general search when traversal fails. This mirrors
      System 1 / System 2 (Kahneman), but grounded in tree structure.
-  3. The interpretive layer: CP1-CP6 as root nodes with bidirectional edges —
-     when implemented, should demonstrate same traversal in both directions.
+  3. The interpretive layer: CP1-CP6 as root nodes with production-rule edges —
+     when fully implemented, demonstrates inference engine structure explicitly.
+  4. The tier ladder: LLM call + graph deposit = rule compilation + caching.
+     Measurable prediction: cloud call frequency decreases as graph densifies.
 
 Citations to develop:
   - Kahneman (2011): Thinking Fast and Slow — System 1/2 maps to traversal/search
@@ -263,5 +401,8 @@ Citations to develop:
     graph is a structural analog with bidirectionality added
   - Lashley (1951): "The Problem of Serial Order in Behavior" — the tree
     structure of language production; directly anticipates this work
+  - Newell & Simon (1976): Physical Symbol System Hypothesis
+  - Pearl (1988): Probabilistic Reasoning — Bayesian network framing
+  - Nilsson (1991): Logic, Learning, and Probability — the unification
 
 *Updated: 2026-03-11 by Claude Code + Akien Maciain*
