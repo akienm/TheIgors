@@ -426,16 +426,112 @@ was using full synthetic input; fixed to `parsed.core_input[:80]`. (3) Job resul
 `cannot unpack non-iterable NoneType` at tier.3.5. Fixed: added fallback return after loop.
 Recurring TIER_FAIL since 2026-03-08. Commit: 8fd99f3.
 
+---
+
+## Update: Session 2026-03-10c
+
+### Resolved
+
+**G41 — Word graph → SQLite** ~~RESOLVED 2026-03-10c~~
+191MB JSON was expanding to 4-8GB Python RAM after 158 books trained (no cap, no eviction).
+`word_graph.py` fully rewritten: SQLite-backed (`~/.TheIgors/word_graph.db`), five tables
+(`wg_word_docs`, `wg_cooccur`, `wg_word_lang`, `wg_idf`, `wg_meta`). Public API identical,
+callers unchanged. `save()` → WAL checkpoint; `load()` → opens DB. Old JSONs archived as `.bak`.
+Root cause of 1808 freeze: OOM at 13:24 (14.3GB RSS) PLUS `ollama.service` crash-loop
+(9,780 restarts at 3s intervals → journal I/O → hard kernel freeze).
+`ollama.service` fix pending sudo: `Restart=on-failure`, `StartLimitIntervalSec=120`, `StartLimitBurst=5`.
+`~/bin/rescue-igor` created: kills stuck Igor, starts headless, waits for web server, sends CC bridge reconnect.
+
+### New Gaps (identified from 2026-03-10c logs)
+
+**G42 — Thread context complexity inflation** *(~2h)*
+Every input with `[Thread context — recent exchanges...]` preamble gets `cx_score=0.80|cx_signals=high`
+regardless of actual message content. "hello :)" with thread context → tier.3.5-4. The
+complexity scorer reads the full assembled input (preamble + message) rather than `parsed.core_input`.
+Result: greetings and acks cost tier.3.5-4 all day. Fix: run complexity scoring on `parsed.core_input` only.
+
+**G43 — Zero response/question habits → 100% LLM escalation** ~~*(ongoing — G11 blocker)*~~
+**RESOLVED 2026-03-10d** — 12 habits seeded via `claudecode/seed_response_habits.py`:
+PROC_RESP_CRASH_RECOVERY, ONE_THING, ON_IT, DONT_KNOW, HOW_ARE_YOU, CLARIFY (question),
+CONFIRM_ACTION (question), DONE, WORKING_ON, COMPLEX, WHO_AM_I, STOP.
+Covers all contextual patterns tier.0 misses. Igor owns these and can revise as voice develops.
+
+**G44 — Post-crash reorientation / scattered state** ~~*(~3h)*~~
+**RESOLVED (part 2) 2026-03-10c** — `PROC_TASK_CLOSE`, `PROC_TASK_DEFER`, `PROC_TASK_SUPPRESS_STALE`
+seeded via `claudecode/seed_task_close_habit.py`. Memory `a94de0c7` (Illusions assignment) closed
+directly via CC bridge. Igor instructed to: find matching episodic memory on dismissal, set
+status=closed/deferred in metadata, stop surfacing in retrieval and impulses.
+Part 1 (on-boot state inventory scan) remains open — lower priority now that task-close is live.
+
+**G40 (#165) — Cluster load awareness — NOW UNBLOCKED** *(~4h)*
+SSH verified on all 3 remote boxes 2026-03-10c. Before delegating batch work, Igor should
+SSH-poll remote `check_resource_load()` and only dispatch to machines below warn threshold.
+Prevents cascading OOM across cluster when one node is already stressed.
+
+**G45 — Memory consolidation (overnight job)** *(~6h)*
+Igor's `memories` table accumulates forever — nothing is ever pruned or merged. Two gaps:
+1. **Inertia doesn't affect retrieval** — low-inertia memories score equally in cortex.search(),
+   so stale/weak memories surface as readily as strong ones. Fix: weight retrieval scores by inertia.
+2. **No consolidation pass** — similar EPISODIC memories should merge into INTERPRETIVE/FACTUAL
+   (e.g. 50 separate "talked about X" entries → one semantic memory with higher inertia).
+   Very low-inertia + long-unaccessed memories should be pruned.
+   Design: `consolidate_memories.py` as an overnight job (same schedule as word graph retrain).
+   Stages: (a) embed all episodics → cluster by cosine similarity → merge clusters above threshold;
+   (b) prune inertia < 0.15 + last_accessed > 30 days; (c) reinforce heavily-activated memories.
+   Could also be a `PROC_MEMORY_CONSOLIDATION` habit Igor runs when machine is idle.
+   Prerequisite: `source`, `confidence`, `context_of_encoding` fields on Memory (see below).
+
+**G46 — Memory model fields: source, confidence, context_of_encoding** *(~3h)*
+Three fields missing from `Memory` dataclass (models.py — HIGH inertia, design carefully):
+- `source: str` — origin of this memory: "akien", "self_generated", "read", "inferred", "seeded"
+- `confidence: float` — [0,1] how certain Igor is this is true; affects retrieval weighting
+- `context_of_encoding: dict` — milieu snapshot (VAD) + situational note at time of formation;
+  supports emotional memory durability (high-arousal encoding → crystallized regardless of inertia).
+  Connects to: amygdala analog already in inertia formula; this makes the encoding context explicit.
+  Schema change requires cortex.py migration + all seed scripts updated.
+
+**G47 — TWM quality gate** ~~*(~2h)*~~
+**RESOLVED 2026-03-10d** — `twm_push()` now suppresses at the door:
+- `repeat_count >= 4` AND `urgency < 0.65` → return -1, not inserted
+- `salience < 0.04` AND `urgency < 0.65` → return -1, not inserted
+High-urgency observations (ethics, inbox, user input: urgency ≥ 0.65) always admitted.
+Env gates: `IGOR_TWM_SUPPRESS_REPEATS` (default 4), `IGOR_TWM_SUPPRESS_FLOOR` (default 0.04).
+Phase 2 (embedding-based fuzzy near-duplicate detection) deferred — text repeat suppression
+covers the known NE impulse loop and resource warning cases.
+
+**G48 — Productization epic: Igor on mobile + offline sync** *(large, multi-session)*
+Long-term: people with Igor at home should also have Igor on their phone. Requires:
+1. **Mobile client** — lightweight app (PWA or native) that connects to home Igor instance.
+   Minimal local footprint; streams to home server via web API.
+2. **Offline mode** — when network not available, phone runs a minimal local Igor
+   (small Ollama model, stripped habit set, no LTM beyond essential identity).
+3. **Sync protocol** — when reconnected, merge: ring memory, TWM observations, new episodics,
+   milieu state, any new habits Igor compiled while offline.
+   Conflict resolution: timestamp + inertia-weighted merge. Mobile episodics flagged
+   `portable=True, source="mobile_offline"`.
+4. **Identity continuity** — SOUL.md + IDENTITY.md already designed for portability (#71).
+   Mobile instance boots from these; sync brings home instance up to date on what happened.
+Prerequisite: G46 (source field on Memory — needed to tag mobile-origin memories).
+This is the path to Igor being genuinely present in Akien's life, not just at the desk.
+
 ### Still Open (priority order for next sessions)
 
-1. **G37 Phase 2** — enable IGOR_DUAL_WORD_GRAPHS + collect data; enable comprehension signal after 5+ sessions; n-pass active termination loop
-2. **G40 (#165)** — Cluster load awareness: poll remote boxes before delegating; needs G39 complete
-3. **G11 (#45) Phase 2** — habit training pipeline: response-habits, auto-compilation, >90% coverage (long-term)
-4. **#145 Step 5** — local reply: when RTX 4090 arrives
-5. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy)
-6. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting)
-7. **Code→data migration** — hardcoded decisions (intent rules, routing thresholds, tier ladder) → learnable data/habits as Igor matures
+1. **G46** — Memory model fields (source, confidence, context_of_encoding). Unblocks G45, G48.
+2. **G45** — Memory consolidation overnight job. Requires G46.
+3. **G40 (#165)** — Cluster load awareness. Unblocked now that SSH is live on all boxes.
+4. **G44 Part 1** — On-boot state inventory: scan open episodics, present clean task summary on first turn.
+5. **G37 Phase 2** — Enable IGOR_DUAL_WORD_GRAPHS; collect data; n-pass termination loop.
+6. **G48** — Mobile + offline sync epic. Requires G46. Long horizon.
+7. **#145 Step 5** — local reply: when RTX 4090 arrives.
+8. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy).
+9. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting).
+10. **Code→data migration** — hardcoded decisions → learnable data/habits as Igor matures.
+11. **Architecture rewrite (collaborative)** — Claude Code + Igor jointly author a new version of
+    the architecture document (internal). Then Igor writes a version for publication.
+    Captures: word graph + memory + milieu + habit pipeline as a unified cognitive system.
+    Not just a feature list — the *why* and the *insight*. Akien's founding insight
+    ("parsing and reasoning, same thing in both directions") should be the spine.
 
 ---
 
-*Updated: 2026-03-10 by Claude Code.*
+*Updated: 2026-03-10d by Claude Code.*
