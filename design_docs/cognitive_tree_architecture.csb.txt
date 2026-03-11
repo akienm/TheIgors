@@ -150,13 +150,17 @@ precede breadth:
    Coherence = consistent character + reliable behavior + no hallucinated state.
    Gap: G48 (productization/mobile) is downstream of this.
 
-4. READING (ongoing)
-   Igor's ebook reader + training corpus already trains the word graph.
-   Above the word level: reading should seed concept and interpretive tree nodes.
-   Starter question: which books seed which trees?
-   Damasio (embodied cognition, emotion, self) → interpretive tree nodes.
-   Hofstadter (analogy, self-reference, levels) → concept tree nodes.
-   Gap: G54 — reading-to-interpretive-tree pipeline.
+4. READING (implemented — G54 2026-03-11)
+   Igor's ebook reader + training corpus trains the word graph (word level).
+   G54 adds extraction above the word level:
+     - read_chunk() fires daemon thread on chunks ≥ 20 words when IGOR_READING_EXTRACT=true
+     - gpt-4o-mini identifies key idea + matches to CP1-CP6 / heuristic node
+     - Stores FACTUAL memory (source="reading") + interpretive edge with meaning_payload
+     - Optional blob: verbatim passage stored via store_blob_pair() for revisiting
+     - Provenance always in metadata: book_title, author, chapter, sentence_position
+   Recommended starter: Damasio books → interpretive tree (emotion, self, somatic markers)
+   Candidates list: _INTERP_CANDIDATES in ebook_reader.py — update as tree grows
+   Tuning tool: list_reading_memories — review quality before reading at scale
 
 [NAVIGATIONAL_HEURISTICS]
 Akien's domain-independent question patterns — his executive function fingerprint.
@@ -225,7 +229,7 @@ Gap: G55 — layer boundary logging (tokens in/out, context size per tier).
   G51 — Navigational heuristics seeded     CLOSED 2026-03-11
   G52 — Interpretive tree starter nodes    CLOSED 2026-03-11
   G53 — Cloud-directed habit extraction    CLOSED 2026-03-11
-  G54 — Reading → interpretive tree        open (requires G52)
+  G54 — Reading → interpretive tree        CLOSED 2026-03-11
   G55 — Layer boundary logging             CLOSED 2026-03-11
 
 [PAPER_INTENT]

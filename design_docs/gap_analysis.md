@@ -542,11 +542,17 @@ stores PROCEDURAL memory with source="cloud_directed" (G46 field), parent=CP2.
 Gate: `IGOR_HABIT_EXTRACT=true` (default on). Never blocks main response path.
 Duplicate guard: searches cortex for matching trigger before storing.
 
-**G54 — Reading → interpretive tree pipeline** *(~4h)*
-Igor reads books (ebook_reader.py) and trains word graph. Above the word level:
-reading should seed concept and interpretive tree nodes.
-Damasio books → interpretive tree (emotion, self, somatic markers).
-Starter question: which books seed which trees? What is the extraction mechanism?
+**G54 — Reading → interpretive tree pipeline** ~~CLOSED 2026-03-11~~
+Post-read extraction hook in `read_chunk()`: fires daemon thread when chunk ≥ 20 words.
+Gate: `IGOR_READING_EXTRACT=true` (default off — enable to start collecting).
+Worker: gpt-4o-mini prompt asks "key idea + which interpretive node + novel enough?".
+Candidates: CP1-CP6 + G51 heuristics (_INTERP_CANDIDATES list in ebook_reader.py).
+On match: stores FACTUAL memory with source="reading", provenance in metadata (book/chapter/pos).
+Adds interpretive edge from matched node → new memory with meaning_payload.
+Optional blob: `store_blob=true` in extraction response → stores verbatim passage via store_blob_pair().
+New tool: `list_reading_memories` — filter by book, shows conf + narrative. For tuning.
+Tuning note: start with Damasio books (calibre ids: 3023, 3300, 3032, 3025, 3026). Enable gate,
+  read 10 chunks, run list_reading_memories, check quality before reading at scale.
 
 **G55 — Layer boundary logging: tokens in/out per tier** ~~CLOSED 2026-03-11~~
 Added `tier` + `context_chars` to `log_reasoning_call()` in forensic_logger.
@@ -561,8 +567,8 @@ Next: dashboard widget when enough data accumulates.
 2. ~~**G55**~~ — Layer boundary logging. CLOSED 2026-03-11.
 3. ~~**G52**~~ — Interpretive tree: traversal edges + separate table. CLOSED 2026-03-11.
 4. ~~**G53**~~ — Cloud-directed habit extraction. CLOSED 2026-03-11.
-5. **G54** — Reading → interpretive tree pipeline. ~4h. *(2026-03-11)*
-6. **G46** — Memory model fields (source, confidence, context_of_encoding). Unblocks G45, G48.
+5. ~~**G54**~~ — Reading → interpretive tree pipeline. CLOSED 2026-03-11.
+6. ~~**G46**~~ — Memory model fields. CLOSED 2026-03-11.
 7. ~~**G45**~~ — Memory consolidation overnight job. CLOSED 2026-03-11.
 8. ~~**G40**~~ — Cluster load awareness. CLOSED 2026-03-11.
 9. ~~**G44**~~ — On-boot state inventory. CLOSED 2026-03-11.
