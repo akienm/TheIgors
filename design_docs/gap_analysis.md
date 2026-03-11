@@ -456,30 +456,29 @@ PROC_RESP_CRASH_RECOVERY, ONE_THING, ON_IT, DONT_KNOW, HOW_ARE_YOU, CLARIFY (que
 CONFIRM_ACTION (question), DONE, WORKING_ON, COMPLEX, WHO_AM_I, STOP.
 Covers all contextual patterns tier.0 misses. Igor owns these and can revise as voice develops.
 
-**G44 — Post-crash reorientation / scattered state** ~~*(~3h)*~~
-**RESOLVED (part 2) 2026-03-10c** — `PROC_TASK_CLOSE`, `PROC_TASK_DEFER`, `PROC_TASK_SUPPRESS_STALE`
-seeded via `claudecode/seed_task_close_habit.py`. Memory `a94de0c7` (Illusions assignment) closed
-directly via CC bridge. Igor instructed to: find matching episodic memory on dismissal, set
-status=closed/deferred in metadata, stop surfacing in retrieval and impulses.
-Part 1 (on-boot state inventory scan) remains open — lower priority now that task-close is live.
+**G44 — Post-crash reorientation / scattered state** ~~FULLY CLOSED 2026-03-11~~
+**Part 2 (2026-03-10c)**: `PROC_TASK_CLOSE`, `PROC_TASK_DEFER`, `PROC_TASK_SUPPRESS_STALE` seeded.
+**Part 1 (2026-03-11)**: `_push_state_inventory()` added to Igor.__init__() boot sequence in main.py.
+Scans EPISODIC memories accessed in last 30 days with status NOT in (closed/deferred/done/dismissed).
+Pushes compact inventory to TWM (salience=0.6, ttl=3600s) and ring on first boot.
+At most 5 items surfaced. Never crashes boot (wrapped in try/except).
 
-**G40 (#165) — Cluster load awareness — NOW UNBLOCKED** *(~4h)*
-SSH verified on all 3 remote boxes 2026-03-10c. Before delegating batch work, Igor should
-SSH-poll remote `check_resource_load()` and only dispatch to machines below warn threshold.
-Prevents cascading OOM across cluster when one node is already stressed.
+**G40 (#165) — Cluster load awareness** ~~CLOSED 2026-03-11~~
+`get_cluster_loads()` + `_cluster_load_report()` added to `cluster_ssh.py`.
+SSH-polls each online machine via psutil one-liner; same thresholds as local IGOR_LOAD_* env vars.
+60s cache prevents SSH storm. `cluster_load` Igor tool exposes it to cloud calls.
+`BatchPool._refresh()` in `local_pool.py` now skips machines with verdict=warn/critical;
+logs why a machine was skipped. Falls back to local Ollama if all remotes are stressed.
 
-**G45 — Memory consolidation (overnight job)** *(~6h)*
-Igor's `memories` table accumulates forever — nothing is ever pruned or merged. Two gaps:
-1. **Inertia doesn't affect retrieval** — low-inertia memories score equally in cortex.search(),
-   so stale/weak memories surface as readily as strong ones. Fix: weight retrieval scores by inertia.
-2. **No consolidation pass** — similar EPISODIC memories should merge into INTERPRETIVE/FACTUAL
-   (e.g. 50 separate "talked about X" entries → one semantic memory with higher inertia).
-   Very low-inertia + long-unaccessed memories should be pruned.
-   Design: `consolidate_memories.py` as an overnight job (same schedule as word graph retrain).
-   Stages: (a) embed all episodics → cluster by cosine similarity → merge clusters above threshold;
-   (b) prune inertia < 0.15 + last_accessed > 30 days; (c) reinforce heavily-activated memories.
-   Could also be a `PROC_MEMORY_CONSOLIDATION` habit Igor runs when machine is idle.
-   Prerequisite: `source`, `confidence`, `context_of_encoding` fields on Memory (see below).
+**G45 — Memory consolidation (overnight job)** ~~CLOSED 2026-03-11~~
+1. **Inertia-weighted retrieval**: `_apply_recency_frequency_boost()` in cortex.py now applies
+   `score *= (0.90 + 0.15 * inertia)` and `score *= (0.90 + 0.10 * confidence)` to all search results.
+   Low-inertia episodics (0.20) get -10%; high-inertia CPs (0.95) get +4%. Conservative, non-disruptive.
+2. **Overnight consolidation job**: `claudecode/consolidate_memories.py` — 3 stages:
+   (A) Embed EPISODIC memories → cluster by cosine ≥ 0.88 → merge clusters ≥ 3 into FACTUAL.
+   (B) Prune inertia < 0.12 + last_accessed > 45 days (never ROOT/CP/ID/RM or memories with children).
+   (C) Reinforce heavily-activated (>50x) but stale memories → refresh last_accessed.
+   Run: `python claudecode/consolidate_memories.py [--dry-run] [--stage A|B|C|all]`
 
 **G46 — Memory model fields: source, confidence, context_of_encoding** *(~3h)*
 Three fields missing from `Memory` dataclass (models.py — HIGH inertia, design carefully):
@@ -514,19 +513,66 @@ Long-term: people with Igor at home should also have Igor on their phone. Requir
 Prerequisite: G46 (source field on Memory — needed to tag mobile-origin memories).
 This is the path to Igor being genuinely present in Akien's life, not just at the desk.
 
+**G49 — SSH cluster health habit** ~~CLOSED 2026-03-11~~
+`PROC_CLUSTER_SSH_CHECK` seeded. Seed script: `claudecode/seed_cluster_ssh_habit.py`
+
+**G50 — TWM attractor concept** ~~CLOSED 2026-03-11~~
+`attractor_weight REAL DEFAULT 0.0` added to `twm_observations`. Three new cortex methods:
+`twm_set_attractor()`, `twm_get_attractor()`, `twm_decay_attractor()`. Auto-attractor on urgency≥0.8.
+UserInputSource.push_message() sets attractor on every user push. HeartbeatSource.push() decays
+by factor=0.90 each tick. attractor_weight included in twm_read() output for NE/context use.
+
+**G51 — Navigational heuristics seeded** ~~CLOSED 2026-03-11~~
+7 INTERPRETIVE heuristics seeded: PROC_HEURISTIC_HOW_MUST, FIRST_RESPONSE, ALIGNMENT,
+FITS_HERE, WORKAROUND, LEVER, MONKEY_PROOF. Seed script: `claudecode/seed_navigational_heuristics.py`
+
+**G52 — Interpretive tree: traversal edges + separate table** ~~CLOSED 2026-03-11~~
+New `interpretive_edges` table in cortex.py with 4-part edge semantics:
+  direction (activation|inhibition), condition_csb, meaning_payload, action_pointer, weight.
+Three cortex methods: `add_interpretive_edge()`, `get_interpretive_edges()`, `interpretive_traverse()`.
+Three Igor tools: `add_interpretive_edge`, `interpretive_traverse`, `get_interpretive_edges`.
+Seed script: `claudecode/seed_interpretive_edges.py` — 15 edges wired from CP1-CP6 → G51 heuristics.
+Traversal: BFS from seed nodes, respects inhibition edges, depth/weight caps.
+Note: edges stored in separate table from memories — different dynamics preserved. Prerequisite for G54.
+
+**G53 — Cloud-directed habit extraction** ~~CLOSED 2026-03-11~~
+Post-call daemon thread fires on tier.3/3.5/4 responses. Uses `_HABIT_EXTRACT_PROMPT` to ask
+gpt-4o-mini "is there a habitizable pattern here?". Returns JSON or SKIP. If JSON with confidence≥0.6,
+stores PROCEDURAL memory with source="cloud_directed" (G46 field), parent=CP2.
+Gate: `IGOR_HABIT_EXTRACT=true` (default on). Never blocks main response path.
+Duplicate guard: searches cortex for matching trigger before storing.
+
+**G54 — Reading → interpretive tree pipeline** *(~4h)*
+Igor reads books (ebook_reader.py) and trains word graph. Above the word level:
+reading should seed concept and interpretive tree nodes.
+Damasio books → interpretive tree (emotion, self, somatic markers).
+Starter question: which books seed which trees? What is the extraction mechanism?
+
+**G55 — Layer boundary logging: tokens in/out per tier** ~~CLOSED 2026-03-11~~
+Added `tier` + `context_chars` to `log_reasoning_call()` in forensic_logger.
+Anthropic (tier.5) and OpenRouter (tier.3/3.5/4) now log context_chars + tier.
+OllamaReasoner.reason() (tier.2) now calls log_reasoning_call() → unified reasoning_calls.log.
+metrics.py: new LAYER BOUNDARY section in /metrics report showing avg ctx/in/out per tier.
+Next: dashboard widget when enough data accumulates.
+
 ### Still Open (priority order for next sessions)
 
-1. **G46** — Memory model fields (source, confidence, context_of_encoding). Unblocks G45, G48.
-2. **G45** — Memory consolidation overnight job. Requires G46.
-3. **G40 (#165)** — Cluster load awareness. Unblocked now that SSH is live on all boxes.
-4. **G44 Part 1** — On-boot state inventory: scan open episodics, present clean task summary on first turn.
-5. **G37 Phase 2** — Enable IGOR_DUAL_WORD_GRAPHS; collect data; n-pass termination loop.
-6. **G48** — Mobile + offline sync epic. Requires G46. Long horizon.
-7. **#145 Step 5** — local reply: when RTX 4090 arrives.
-8. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy).
-9. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting).
-10. **Code→data migration** — hardcoded decisions → learnable data/habits as Igor matures.
-11. **Architecture rewrite (collaborative)** — Claude Code + Igor jointly author a new version of
+1. ~~**G50**~~ — TWM attractor concept. CLOSED 2026-03-11.
+2. ~~**G55**~~ — Layer boundary logging. CLOSED 2026-03-11.
+3. ~~**G52**~~ — Interpretive tree: traversal edges + separate table. CLOSED 2026-03-11.
+4. ~~**G53**~~ — Cloud-directed habit extraction. CLOSED 2026-03-11.
+5. **G54** — Reading → interpretive tree pipeline. ~4h. *(2026-03-11)*
+6. **G46** — Memory model fields (source, confidence, context_of_encoding). Unblocks G45, G48.
+7. ~~**G45**~~ — Memory consolidation overnight job. CLOSED 2026-03-11.
+8. ~~**G40**~~ — Cluster load awareness. CLOSED 2026-03-11.
+9. ~~**G44**~~ — On-boot state inventory. CLOSED 2026-03-11.
+10. **G37 Phase 2** — Enable IGOR_DUAL_WORD_GRAPHS; collect data; n-pass termination loop.
+11. **G48** — Mobile + offline sync epic. Requires G46. Long horizon.
+12. **#145 Step 5** — local reply: when RTX 4090 arrives.
+13. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy).
+14. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting).
+15. **Code→data migration** — hardcoded decisions → learnable data/habits as Igor matures.
+16. **Architecture rewrite (collaborative)** — Claude Code + Igor jointly author a new version of
     the architecture document (internal). Then Igor writes a version for publication.
     Captures: word graph + memory + milieu + habit pipeline as a unified cognitive system.
     Not just a feature list — the *why* and the *insight*. Akien's founding insight
@@ -534,4 +580,4 @@ This is the path to Igor being genuinely present in Akien's life, not just at th
 
 ---
 
-*Updated: 2026-03-10d by Claude Code.*
+*Updated: 2026-03-11b by Claude Code.*

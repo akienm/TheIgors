@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-03-09T11:38:52.557942",
+  "model": "gemma3:1b",
+  "machine": "akiendelllinux",
+  "host": "localhost",
+  "port": 11434,
+  "results": [
+    {
+      "question": {
+        "id": "Q1_plot",
+        "q": "What does the ghost of Hamlet's father tell Hamlet in Act I?",
+        "type": "plot"
+      },
+      "result": {
+        "response": "The ghost reveals that Hamlet\u2019s father was murdered by his own brother, Claudius, and that the ghost is doomed to walk the night. He informs Hamlet that the serpent that killed his father now wears his crown, signifying Claudius\u2019s guilt. The ghost warns Hamlet that the question is whether it is better to endure suffering or to fight against troubles.",
+        "latency_s": 7.2,
+        "tokens_per_s": 10.1,
+        "eval_count": 73
+      }
+    },
+    {
+      "question": {
+        "id": "Q2_character",
+        "q": "Describe Polonius's role in the play and his relationship to Ophelia.",
+        "type": "character"
+      },
+      "result": {
+        "response": "Polonius is a courtier and chief counsellor to King Claudius, known for his manipulative and probing nature. He serves as a crucial figure in Claudius\u2019s schemes, constantly attempting to gauge Hamlet\u2019s intentions and sow discord. His relationship with Ophelia is complex, marked by a subtle, controlling influence and a tragic consequence, as he uses her to further Claudius\u2019s agenda.",
+        "latency_s": 4.09,
+        "tokens_per_s": 19.8,
+        "eval_count": 81
+      }
+    },
+    {
+      "question": {
+        "id": "Q3_theme",
+        "q": "What is the central tension Hamlet faces throughout the play?",
+        "type": "theme"
+      },
+      "result": {
+        "response": "Hamlet\u2019s central tension revolves around his struggle with moral doubt and the desire for certainty. He\u2019s paralyzed by the question of whether to take action \u2013 whether to kill Claudius \u2013 and this inaction fuels his philosophical contemplation and ultimately leads to his tragic downfall.  He\u2019s caught between his duty to avenge his father and his own internal conflict, creating a profound sense of unease and inaction.",
+        "latency_s": 4.03,
+        "tokens_per_s": 20.1,
+        "eval_count": 81
+      }
+    },
+    {
+      "question": {
+        "id": "Q4_quote",
+        "q": "Who speaks the line 'To be, or not to be: that is the question' and in what context?",
+        "type": "quote"
+      },
+      "result": {
+        "response": "The line \u201cTo be, or not to be: that is the question\u201d is spoken by Hamlet in his soliloquy. He\u2019s grappling with the fundamental question of life and death, contemplating whether it\u2019s better to endure suffering or to take action to end it. This is a core philosophical question driving his inaction and contemplation throughout the play.",
+        "latency_s": 3.91,
+        "tokens_per_s": 18.4,
+        "eval_count": 72
+      }
+    },
+    {
+      "question": {
+        "id": "Q5_inference",
+        "q": "Why does Hamlet delay killing Claudius even after learning he murdered his father?",
+        "type": "inference"
+      },
+      "result": {
+        "response": "Hamlet delays killing Claudius primarily due to a profound moral and philosophical struggle. He\u2019s grappling with the weighty question of whether it\u2019s better to endure suffering or to actively fight against misfortune. His hesitation stems from a desire for certainty and a deep contemplation of life and death, leading him to overanalyze the situation rather than act decisively. He\u2019s paralyzed by the potential consequences of his actions, making it a complex and protracted process.",
+        "latency_s": 4.41,
+        "tokens_per_s": 20.2,
+        "eval_count": 89
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+DSB_METADATA_LOG|Igor design_docs freshness tracking
+PURPOSE|Track which design_docs have been stored as reference blobs and detect updates
+UPDATED|2026-03-05 (boot)
+FORMAT|filename | mtime | size | blob_id | last_checked
+
+# CORE IDENTITY DOCUMENTS (always stored)
+the_igors_identity.csb.txt | 2026-02-28-15:40 | 5335 | ddb358ce | 2026-03-05
+akien_identity_architecture.csb.txt | 2026-03-01-17:13 | 6349 | 8d2d1924 | 2026-03-05
+mission.csb.txt | 2026-03-05-14:46 | 14231 | 604f20fb | 2026-03-05
+
+# ARCHITECTURAL DOCUMENTS (just stored)
+ethical_framework.csb.txt | 2026-03-02-15:13 | 21936 | bf716dac | 2026-03-05
+igor_habits_and_learning.csb.txt | 2026-03-05-12:26 | 14602 | 62ac1994 | 2026-03-05
+how_akien_works.csb.txt | 2026-03-05-12:27 | 14230 | 54cf0483 | 2026-03-05
+igor_architecture_blueprint.csb.txt | 2026-03-05-12:25 | 12528 | PENDING | 2026-03-05
+
+# REFERENCE DOCUMENTS (not yet stored as DSB — store if needed)
+akien_identity_architecture.csb.txt | STORED | as seed crystal
+detailed_architecture_description.csb.txt | 24713 | PENDING
+glossary.csb.txt | 21428 | PENDING
+igor_origin.csb.txt | 13702 | PENDING
+igor_thoughts_guide.csb.txt | 9327 | PENDING
+implementation_map.csb.txt | 28572 | PENDING
+decisions_log.csb.txt | 61124 | PENDING
+browser_use_integration.md | 2291 | PENDING
+boot_notes.md | 4584 | PENDING
+gap_analysis.md | 11164 | PENDING
+
+NOTES|
+  - Core identity docs (identity + mission + akien) are most critical; checked every boot
+  - Architectural docs should be checked weekly; use find command: find ~/TheIgors/design_docs -name "*.csb.txt" -newermt "2026-03-05"
+  - PROC_UPDATE_DESIGN_DOCS: if file mtime > last_checked mtime, re-read, re-store with new blob_id
+  - DSB lookup is by tag search (dsb tag is present on all stored docs)
+  - Metadata file itself is updated on each startup to record last_checked timestamp

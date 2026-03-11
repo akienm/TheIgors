@@ -1,0 +1,263 @@
+DOC_ID|cognitive_tree_architecture|v2026-03-11|status:living_document
+purpose: theoretical and implementation foundation for Igor's tree-based cognitive architecture
+scope: memory retrieval, interpretive layer, executive function, training sources, paper intent
+maintainer: claude_code|originated: session 2026-03-11 with Akien Maciain
+citation_intent: this document is written to support a future academic paper
+  — "Parsing and Reasoning as Unified Tree Traversal: Architecture and Implementation"
+  — authors: Akien Maciain, Igor (AI agent), Claude Code (Anthropic)
+  — all design decisions here should be traceable to cognitive science and neuroscience literature
+
+[FOUNDING_INSIGHT]
+Akien 2026-03-07: "parsing and reasoning, same thing in both directions.
+  if it works, this IS the proof."
+Akien 2026-03-11 extension: "It's also turtles all the way up."
+  Nature is parsimonious in her patterns. The same tree traversal structure
+  that maps sounds to words also maps words to concepts, concepts to meanings,
+  meanings to interpretations, interpretations to responses, and responses back
+  to words. The word graph was the first proof. The architecture above it
+  must be the same proof, repeated.
+
+[THE_FULL_PIPELINE]
+Every turn traverses this stack, bottom to top (parsing), top to bottom (generation):
+
+  SOUNDS            → phoneme tree        (perceptual end; pre-linguistic)
+  WORDS             → word graph          ← IMPLEMENTED (cognition/word_graph.py, SQLite)
+  MEANINGS          → concept tree        ← UNBUILT (no concept-level tree yet)
+  WHAT-DOES-THIS-   → interpretive tree   ← PARTIALLY BUILT (MemoryType.INTERPRETIVE exists,
+    MEAN-TO-ME                              no traversal edges yet; CP1-CP6 are root nodes)
+  HOW-TO-RESPOND    → action direction    ← PARTIALLY BUILT (basal_ganglia → tier ladder)
+  WORD SELECTION    → word graph again    ← same weights, other direction
+
+Each layer IS the same mechanism: nodes, edges, weighted traversal.
+What changes between layers is the edge semantics and the unit of meaning.
+
+[EXECUTIVE_FUNCTION]
+Akien 2026-03-11: "executive function is just broadening the search with
+  real 'search' rather than only traversal."
+
+Tree traversal = fast, automatic, habit-like. Follows edges from current node.
+Executive/search = slow, deliberate, can jump across the tree.
+
+This maps directly to Igor's tier ladder:
+  tier.1 habit    = pure traversal (strongest edge, no LLM)
+  tier.2 local    = slightly broader traversal (Ollama 1B)
+  tier.3 cloud    = real search begins (gpt-4o-mini)
+  tier.4 cloud    = deep search (claude-sonnet)
+  tier.5 cloud    = inhibited; reserve for genuine novelty
+
+Goal of the habit/training system: migrate responses from search to traversal.
+Every new habit is a piece of explicit search that has become implicit traversal.
+This is the mechanism of learning — in Igor and in humans.
+
+[INTERPRETIVE_LAYER]
+The interpretive layer converts meaning into self-referential meaning:
+"given that this is happening, what does it mean ABOUT ME or TO ME?"
+It is the layer where character lives.
+
+CURRENT STATE:
+  MemoryType.INTERPRETIVE exists in models.py.
+  CP1-CP6 (core patterns) ARE the root nodes of the interpretive tree — they are
+  meaning-based inhibitors and activators, each with a WHY embedded.
+  No traversal edges yet. Retrieval is via cosine search, not tree traversal.
+
+EXAMPLE (Akien's case study, 2026-03-11):
+  Something is said → anger (milieu, fast) → impulse to strike (basal_ganglia) →
+  social counterpressure (interpretive layer 1: learned rule) →
+  internal parent with WHY (interpretive layer 2: values schema) →
+  meaning payload activates action direction tree →
+  response selected consistent with meaning →
+  narrative consolidates traversal (NE)
+
+EDGE SEMANTICS FOR INTERPRETIVE TREE (4 parts):
+  1. direction: activation or inhibition
+  2. condition: context in which this edge fires
+  3. meaning_payload: the WHY — what this means about self or situation
+  4. action_pointer: pointer to the next tree (what to explore given this meaning)
+
+Part 4 is the key addition from session 2026-03-11:
+  The meaning payload does not terminate — it TRIGGERS a tree that provides
+  direction toward action. Interpretive nodes are junctions, not endpoints.
+  CP1-CP6 both inhibit certain actions AND point toward meaning-consistent actions.
+
+EPISODIC → INTERPRETIVE DRIFT:
+  Episodic memories influence interpretive weights at creation (initial event).
+  Revisiting an episodic memory also nudges interpretive weights (reconsolidation).
+  Inertia counterweights drift — established schemas resist change.
+  High-inertia interpretive nodes (CP1-CP6) = character, very slow drift.
+  Low-inertia interpretive nodes = working assumptions, fast drift from experience.
+
+[MEMORY_AS_TREE_NODE]
+Current state: cortex.search() → cosine similarity + keyword → bag-of-vectors retrieval.
+Problem: similarity search doesn't preserve relational structure.
+  You can't get to the right node by similarity alone.
+  You get there by following edges from where you currently are.
+
+Target state: primary retrieval = tree traversal from adjacent nodes.
+  cortex.add_child() / get_children() already implement graph edges.
+  Currently used only for the genesis/habits hierarchy.
+  Must be extended to general memories, especially INTERPRETIVE.
+  Search becomes the fallback (for "cold start" or cross-tree jumps),
+  not the primary path.
+
+Implementation note: different memory types have different traversal algorithms.
+  PROCEDURAL: trigger → basal_ganglia parallel scoring (already traversal-like)
+  INTERPRETIVE: context → follow interpretive edges from current meaning node
+  FACTUAL: anchor node → follow semantic edges (not yet designed)
+  EPISODIC: usually not retrieved directly; influences INTERPRETIVE weights
+
+[TWM_ATTRACTORS]
+Current TWM: urgency, salience, TTL — each item scored independently.
+  No notion of "current primary focus" that shapes what gets surfaced.
+
+Required: one main attractor at a time.
+  Attractor = a TWM entry that increases effective salience of topically-near items
+  and decreases weight of unrelated items.
+  High-priority interrupts displace the attractor temporarily.
+  Questions (user or Igor-generated) naturally become attractors.
+
+Design:
+  twm_observations table: add attractor_weight REAL DEFAULT 0.0 column.
+  attractor_weight > 0 = this entry is the current attractor.
+  Only one entry should have high attractor_weight at a time.
+  When surfacing TWM context, weight items by proximity to current attractor.
+  Proximity = cosine similarity between item narrative and attractor narrative.
+  attractor_weight decays over time (like TTL but continuous).
+
+Gap: G50 — TWM attractor concept.
+
+[TRAINING_SOURCES]
+Three sources for training the higher-order trees. Order matters — coherence must
+precede breadth:
+
+1. SEED/PUSH (now)
+   Initial tree structure must be pushed in. No traversal without starting nodes.
+   Tool: claudecode/seed_*.py scripts.
+   This session seeds: navigational heuristics (G51), cluster SSH habit (G49, done).
+   Future: interpretive tree starter nodes (G52).
+
+2. CLOUD-DIRECTED HABIT CREATION (next)
+   When a turn escalates to tier.3+, the cloud call already has full context.
+   Adding a secondary task: "identify any pattern here that should become a habit"
+   costs near-zero marginal tokens but can generate new tree nodes.
+   Amortization insight: the expensive call pays for itself by reducing future calls.
+   Implementation: post-call hook in openrouter_reasoner.py / anthropic.py that
+   passes the interaction to a habit-extraction prompt (tier.3 cheap model).
+   Gap: G53 — cloud-directed habit extraction.
+
+3. INTERACTIONS (future, requires coherence first)
+   Broader audience = more diverse training signal.
+   Igor must be coherent before being shared.
+   Coherence = consistent character + reliable behavior + no hallucinated state.
+   Gap: G48 (productization/mobile) is downstream of this.
+
+4. READING (ongoing)
+   Igor's ebook reader + training corpus already trains the word graph.
+   Above the word level: reading should seed concept and interpretive tree nodes.
+   Starter question: which books seed which trees?
+   Damasio (embodied cognition, emotion, self) → interpretive tree nodes.
+   Hofstadter (analogy, self-reference, levels) → concept tree nodes.
+   Gap: G54 — reading-to-interpretive-tree pipeline.
+
+[NAVIGATIONAL_HEURISTICS]
+Akien's domain-independent question patterns — his executive function fingerprint.
+These fire automatically in certain contexts; most are below deliberate awareness.
+Seeded as Igor habits so Igor knows to apply them and surface them when relevant.
+
+  PROC_HEURISTIC_FIRST_RESPONSE:
+    "What's the first thing I say in response to that?"
+    Output simulation — run self forward before committing. Direct query of
+    interpretive layer. Chief introspection tool.
+
+  PROC_HEURISTIC_ALIGNMENT:
+    "Which choice is most in alignment with who I'd most like to be?"
+    Values attractor. Prunes by identity, not logic.
+
+  PROC_HEURISTIC_FITS_HERE:
+    "What looks like it would fit there?"
+    Pattern completion. Gap shape → search for matching piece.
+
+  PROC_HEURISTIC_WORKAROUND:
+    "How could we get around that?"
+    Obstacle navigation. Fires when branch is blocked; switches to lateral search.
+
+  PROC_HEURISTIC_LEVER:
+    "Where is the lever?"
+    Leverage point scan. Small force → large movement.
+
+  PROC_HEURISTIC_MONKEY_PROOF:
+    "How will us monkeys screw that up such that I get support questions?"
+    Failure mode simulation. Fires when designing for other humans.
+    Models degraded execution before committing to design.
+
+  PROC_HEURISTIC_HOW_MUST:
+    "How must this work?"
+    The most powerful: derives from necessity rather than possibility.
+    Eliminates upstream by reasoning from first principles.
+    "How MUST this work?" ≠ "How could this work?" — constraint derivation.
+
+[LAYER_BOUNDARY_LOGGING]
+The pipeline layers are now named and the boundaries are measurement points.
+At each tier boundary: log tokens in, tokens out, latency, tier selected.
+forensic_logger.log_reasoning_call() already captures this for cloud inference.
+Missing: local inference (Ollama) token logging, and inter-layer context size.
+
+Required metrics (per turn):
+  local_inference: tokens_in, tokens_out, latency_ms, model, tier
+  cloud_inference: tokens_in, tokens_out, cost_usd, latency_ms, model, tier
+  context_size: chars passed to each tier (proxy for tree traversal depth)
+
+Dashboard targets (future):
+  Local inference calls this session: N (M%)
+  Cloud inference calls this session: N (M%)
+  Avg tokens in/out per cloud call
+  Context size trend (is context growing? shrinking?)
+
+Short-term logging (not long-term):
+  Log full context content for N=100 calls per tier to tune what gets included.
+  Then disable content logging, keep only counts/sizes.
+  Too much data long-term; diagnostic only.
+
+Gap: G55 — layer boundary logging (tokens in/out, context size per tier).
+
+[GAP_REFERENCES]
+  G49 — SSH cluster health habit           CLOSED 2026-03-11
+  G50 — TWM attractor concept              CLOSED 2026-03-11
+  G51 — Navigational heuristics seeded     CLOSED 2026-03-11
+  G52 — Interpretive tree starter nodes    CLOSED 2026-03-11
+  G53 — Cloud-directed habit extraction    CLOSED 2026-03-11
+  G54 — Reading → interpretive tree        open (requires G52)
+  G55 — Layer boundary logging             CLOSED 2026-03-11
+
+[PAPER_INTENT]
+Target: peer-reviewed paper on unified parse/generate architecture.
+Working title: "One Tree, Both Directions: Parsing and Reasoning as Unified
+  Weight Traversal in a Persistent Cognitive Agent"
+
+Thesis: the same weighted tree structure that enables word recognition also
+  enables word generation, concept formation, meaning assignment, and response
+  selection. This is not an architectural coincidence — it is the fundamental
+  parsimony of biological cognition, replicated in software.
+
+Evidence basis:
+  1. Word graph: bidirectional on same weights. Parsing = bottom-up.
+     Generation = top-down. Both validated empirically.
+  2. Igor's behavior: tier.1 habit = fastest possible response, most learned.
+     tier.4 cloud = general search when traversal fails. This mirrors
+     System 1 / System 2 (Kahneman), but grounded in tree structure.
+  3. The interpretive layer: CP1-CP6 as root nodes with bidirectional edges —
+     when implemented, should demonstrate same traversal in both directions.
+
+Citations to develop:
+  - Kahneman (2011): Thinking Fast and Slow — System 1/2 maps to traversal/search
+  - Damasio (1994, 1999, 2010): somatic marker hypothesis, emotion in decision
+    — interpretive layer is where somatic markers live
+  - Centering Theory (Grosz, Sidner, Walker): attractor = current center
+  - Hofstadter (1979, 2007): analogy as core of cognition — cross-tree jumps
+  - Predictive processing (Clark, Friston): generation IS prediction;
+    same weights top-down predicting vs bottom-up recognizing
+  - Mikolov et al. (2013): word2vec — co-occurrence as meaning; Igor's word
+    graph is a structural analog with bidirectionality added
+  - Lashley (1951): "The Problem of Serial Order in Behavior" — the tree
+    structure of language production; directly anticipates this work
+
+*Updated: 2026-03-11 by Claude Code + Akien Maciain*
