@@ -576,8 +576,12 @@ Next: dashboard widget when enough data accumulates.
     Includes: interpretive tree wiring, affect retrieval, time layer, forking Mode B, mull loop,
     boredom monitor, The Wait, investment weights, questions as traversal programs,
     milieu-weighted traversal, episodic consolidation daemon.
-11. **#176 Mode A** — Competitive forking (parallel paths + judge). After Mode B validated.
-12. **#172** — Traversal-first retrieval. Only after graph is dense enough. Long horizon.
+11. ~~**#176 Mode A**~~ — Competitive forking implemented 2026-03-12. Gate: IGOR_FORK_A_ENABLED (default false).
+12. ~~**#174**~~ — NE+consolidation telemetry CLOSED 2026-03-12. /metrics: NE + consolidation sections; /sleep runs both.
+13. ~~**#183**~~ — Reading speed + stew cache CLOSED 2026-03-12. IGOR_READING_CHUNK_SIZE + TWM stew TTL.
+14. ~~**#152**~~ — /hygiene command CLOSED 2026-03-12. Junk habit + dup episodic detection, log size report.
+15. ~~**#154/#156**~~ — Tier.0 (Python responses) CONFIRMED DONE 2026-03-12.
+16. **#172** — Traversal-first retrieval. Only after graph is dense enough. Long horizon.
 13. **G37 Phase 2** — Enable IGOR_DUAL_WORD_GRAPHS; collect data; n-pass termination loop.
 14. **G48** — Mobile + offline sync epic. Requires G46. Long horizon.
 15. **#145 Step 5** — local reply: when RTX 4090 arrives.
