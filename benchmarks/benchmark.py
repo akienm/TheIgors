@@ -160,6 +160,245 @@ _REGIMES: dict[str, list[dict]] = {
     "overnight": _Q_OVERNIGHT,
 }
 
+# ── Preparse benchmark (#191) ──────────────────────────────────────────────────
+# Ground truth derived from thalamus._classify_intent() + _assess_complexity() rules.
+# Intent taxonomy (13): greeting | meta_question | explanation_request | factual_question |
+#   memory_instruction | action_request | code_task | analysis_task |
+#   complaint | conversation | command | creative_request | general
+# Complexity: low (≤6 words or greeting/command) | high (≥2 high signals) | medium (default)
+
+_PREPARSE_INTENTS = (
+    "greeting", "meta_question", "explanation_request", "factual_question",
+    "memory_instruction", "action_request", "code_task", "analysis_task",
+    "complaint", "conversation", "command", "creative_request", "general",
+)
+
+_Q_PREPARSE: list[dict] = [
+    {"id": "p01",  "input": "hello there",
+     "intent": "greeting",            "complexity": "low"},
+    {"id": "p02",  "input": "how do you work?",
+     "intent": "meta_question",       "complexity": "low"},
+    {"id": "p03",  "input": "remember that I prefer concise replies",
+     "intent": "memory_instruction",  "complexity": "low"},
+    {"id": "p04",  "input": "write code to sort a list",
+     "intent": "code_task",           "complexity": "low"},
+    {"id": "p05",  "input": "explain how neural networks work",
+     "intent": "explanation_request", "complexity": "low"},
+    {"id": "p06",  "input": "what is the capital of France?",
+     "intent": "factual_question",    "complexity": "medium"},
+    {"id": "p07",  "input": "analyze the patterns in my recent conversations",
+     "intent": "analysis_task",       "complexity": "medium"},
+    {"id": "p08",  "input": "run the benchmark now",
+     "intent": "action_request",      "complexity": "low"},
+    {"id": "p09",  "input": "this code is not working correctly",
+     "intent": "complaint",           "complexity": "low"},
+    {"id": "p10",  "input": "what do you think about consciousness?",
+     "intent": "conversation",        "complexity": "low"},
+    {"id": "p11",  "input": "/help",
+     "intent": "command",             "complexity": "low"},
+    {"id": "p12",  "input": "tell me a story about a magical forest",
+     "intent": "creative_request",    "complexity": "medium"},
+    {"id": "p13",  "input": "what is the best way to learn Python?",
+     "intent": "factual_question",    "complexity": "medium"},
+    {"id": "p14",  "input": "compare themes in three Shakespeare plays, first identify key motifs then explain their modern relevance",
+     "intent": "analysis_task",       "complexity": "high"},
+    {"id": "p15",  "input": "debug this function and implement a complete fix, step by step",
+     "intent": "code_task",           "complexity": "high"},
+    {"id": "p16",  "input": "good morning",
+     "intent": "greeting",            "complexity": "low"},
+    {"id": "p17",  "input": "search for the latest AI news",
+     "intent": "action_request",      "complexity": "low"},
+    {"id": "p18",  "input": "things seem wrong and the output looks broken",
+     "intent": "complaint",           "complexity": "medium"},
+    {"id": "p19",  "input": "summarize the meeting notes and identify action items",
+     "intent": "analysis_task",       "complexity": "medium"},
+    {"id": "p20",  "input": "yes please",
+     "intent": "general",             "complexity": "low"},
+]
+
+_PREPARSE_PROMPT_TPL = """\
+You are an intent classifier for an AI assistant. Classify the user message below.
+
+Valid intents: greeting | meta_question | explanation_request | factual_question | \
+memory_instruction | action_request | code_task | analysis_task | \
+complaint | conversation | command | creative_request | general
+
+Complexity rules:
+  low    — 6 words or fewer, greeting, or a single slash command
+  high   — multi-step instruction, analytical depth keywords, or over 40 words
+  medium — everything else
+
+Respond ONLY in this exact format (two lines, no other text):
+intent: <intent>
+complexity: <low|medium|high>
+
+User message: {input}"""
+
+
+def _parse_preparse_response(text: str) -> tuple[str, str]:
+    """Extract (intent, complexity) from a model's preparse response."""
+    intent = "unknown"
+    complexity = "unknown"
+    for line in text.lower().splitlines():
+        line = line.strip()
+        if line.startswith("intent:"):
+            val = line[7:].strip().strip('"\'')
+            for known in _PREPARSE_INTENTS:
+                if known in val:
+                    intent = known
+                    break
+        elif line.startswith("complexity:"):
+            val = line[11:].strip().strip('"\'')
+            if "high" in val:
+                complexity = "high"
+            elif "low" in val:
+                complexity = "low"
+            elif "medium" in val:
+                complexity = "medium"
+    return intent, complexity
+
+
+def run_preparse_model(host: str, model: str, timeout: int = 60) -> dict:
+    """#191 Part 1: benchmark intent classification accuracy for one Ollama model."""
+    print(f"\n  ── {model} (preparse) ──")
+    results = []
+    correct_intent = 0
+    correct_both = 0
+
+    for q in _Q_PREPARSE:
+        sys.stdout.write(f"    [{q['id']}] preparse  ")
+        sys.stdout.flush()
+        prompt = _PREPARSE_PROMPT_TPL.format(input=q["input"])
+        try:
+            r = ollama_generate(host, model, prompt, timeout=timeout)
+            pred_intent, pred_complexity = _parse_preparse_response(r["response"])
+            intent_ok = pred_intent == q["intent"]
+            both_ok = intent_ok and pred_complexity == q["complexity"]
+            if intent_ok:
+                correct_intent += 1
+            if both_ok:
+                correct_both += 1
+            results.append({
+                "id":                   q["id"],
+                "input":                q["input"],
+                "expected_intent":      q["intent"],
+                "expected_complexity":  q["complexity"],
+                "predicted_intent":     pred_intent,
+                "predicted_complexity": pred_complexity,
+                "intent_correct":       intent_ok,
+                "both_correct":         both_ok,
+                "wall_ms":              r["wall_ms"],
+                "tok_per_sec":          r["tok_per_sec"],
+                "error":                None,
+            })
+            status = "✓" if both_ok else ("~" if intent_ok else "✗")
+            print(f"{r['wall_ms']:>6}ms  {status}  "
+                  f"intent={pred_intent}/{q['intent']}  "
+                  f"c={pred_complexity}/{q['complexity']}")
+        except Exception as exc:
+            results.append({
+                "id": q["id"], "input": q["input"],
+                "expected_intent": q["intent"], "expected_complexity": q["complexity"],
+                "predicted_intent": "error", "predicted_complexity": "error",
+                "intent_correct": False, "both_correct": False,
+                "wall_ms": None, "tok_per_sec": 0.0, "error": str(exc),
+            })
+            print(f"  ERROR: {exc}")
+
+    n = len(_Q_PREPARSE)
+    intent_acc = round(correct_intent / n * 100, 1) if n else 0.0
+    both_acc   = round(correct_both   / n * 100, 1) if n else 0.0
+    latencies  = sorted(r["wall_ms"] for r in results if r["wall_ms"] is not None)
+    tok_rates  = [r["tok_per_sec"] for r in results if r["tok_per_sec"]]
+    print(f"    intent={intent_acc}%  intent+complexity={both_acc}%")
+    return {
+        "model":   model,
+        "host":    host,
+        "regime":  "preparse",
+        "results": results,
+        "summary": {
+            "intent_accuracy_pct": intent_acc,
+            "both_accuracy_pct":   both_acc,
+            "correct_intent":      correct_intent,
+            "correct_both":        correct_both,
+            "questions_run":       n,
+            "errors":              sum(1 for r in results if r["error"]),
+            "median_wall_ms":      _percentile(latencies, 50),
+            "avg_tok_per_sec":     round(sum(tok_rates) / len(tok_rates), 1) if tok_rates else 0.0,
+        },
+    }
+
+
+def run_preparse_or_model(model: str, api_key: str, timeout: int = 60) -> dict:
+    """#191: preparse benchmark for one OpenRouter model."""
+    print(f"\n  ── {model} (preparse/cloud) ──")
+    results = []
+    correct_intent = 0
+    correct_both = 0
+
+    for q in _Q_PREPARSE:
+        sys.stdout.write(f"    [{q['id']}] preparse  ")
+        sys.stdout.flush()
+        prompt = _PREPARSE_PROMPT_TPL.format(input=q["input"])
+        try:
+            r = or_generate(model, prompt, api_key, timeout=timeout)
+            pred_intent, pred_complexity = _parse_preparse_response(r["response"])
+            intent_ok = pred_intent == q["intent"]
+            both_ok = intent_ok and pred_complexity == q["complexity"]
+            if intent_ok:
+                correct_intent += 1
+            if both_ok:
+                correct_both += 1
+            results.append({
+                "id":                   q["id"],
+                "input":                q["input"],
+                "expected_intent":      q["intent"],
+                "expected_complexity":  q["complexity"],
+                "predicted_intent":     pred_intent,
+                "predicted_complexity": pred_complexity,
+                "intent_correct":       intent_ok,
+                "both_correct":         both_ok,
+                "wall_ms":              r["wall_ms"],
+                "tok_per_sec":          r["tok_per_sec"],
+                "error":                None,
+            })
+            status = "✓" if both_ok else ("~" if intent_ok else "✗")
+            print(f"{r['wall_ms']:>6}ms  {status}  "
+                  f"intent={pred_intent}/{q['intent']}  "
+                  f"c={pred_complexity}/{q['complexity']}")
+        except Exception as exc:
+            results.append({
+                "id": q["id"], "input": q["input"],
+                "expected_intent": q["intent"], "expected_complexity": q["complexity"],
+                "predicted_intent": "error", "predicted_complexity": "error",
+                "intent_correct": False, "both_correct": False,
+                "wall_ms": None, "tok_per_sec": 0.0, "error": str(exc),
+            })
+            print(f"  ERROR: {exc}")
+
+    n = len(_Q_PREPARSE)
+    intent_acc = round(correct_intent / n * 100, 1) if n else 0.0
+    both_acc   = round(correct_both   / n * 100, 1) if n else 0.0
+    latencies  = sorted(r["wall_ms"] for r in results if r["wall_ms"] is not None)
+    tok_rates  = [r["tok_per_sec"] for r in results if r["tok_per_sec"]]
+    print(f"    intent={intent_acc}%  intent+complexity={both_acc}%")
+    return {
+        "model":   model,
+        "host":    "openrouter",
+        "regime":  "preparse",
+        "results": results,
+        "summary": {
+            "intent_accuracy_pct": intent_acc,
+            "both_accuracy_pct":   both_acc,
+            "correct_intent":      correct_intent,
+            "correct_both":        correct_both,
+            "questions_run":       n,
+            "errors":              sum(1 for r in results if r["error"]),
+            "median_wall_ms":      _percentile(latencies, 50),
+            "avg_tok_per_sec":     round(sum(tok_rates) / len(tok_rates), 1) if tok_rates else 0.0,
+        },
+    }
+
 # ── OpenRouter client ─────────────────────────────────────────────────────────
 
 def or_generate(model: str, prompt: str, api_key: str,
@@ -418,6 +657,69 @@ def print_summary(run: dict):
                 print(f"    {m['model'][:28]:<28}  {ratio:.2f}x  {bar}")
     print()
 
+# ── #191 Part 2: model promotion ──────────────────────────────────────────────
+
+def promote_winner(run: dict, machines_json: Path) -> str | None:
+    """
+    #191 Part 2: After a preparse benchmark run, write the winning model
+    (highest intent_accuracy_pct) to machines.json for this hostname.
+    """
+    import socket
+    hostname = socket.gethostname()
+    preparse_models = [m for m in run.get("models", []) if m.get("regime") == "preparse"]
+    if not preparse_models:
+        print("  --promote-winner: no preparse results to promote.")
+        return None
+    winner = max(preparse_models, key=lambda m: m["summary"].get("intent_accuracy_pct", 0))
+    winning_model = winner["model"]
+    accuracy = winner["summary"]["intent_accuracy_pct"]
+    if not machines_json.exists():
+        print(f"  --promote-winner: machines.json not found at {machines_json}")
+        return None
+    try:
+        data = json.loads(machines_json.read_text(encoding="utf-8"))
+        matched = False
+        for machine in data.get("machines", []):
+            if machine.get("hostname") == hostname:
+                machine["ollama_model"] = winning_model
+                machine["ollama_model_winner_accuracy"] = accuracy
+                machine["ollama_model_winner_date"] = datetime.now().isoformat(timespec="seconds")
+                matched = True
+                break
+        if not matched:
+            print(f"  --promote-winner: hostname '{hostname}' not found in machines.json")
+            return None
+        machines_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        print(f"  Promoted {winning_model} ({accuracy}% accuracy) → {machines_json}/{hostname}")
+        return winning_model
+    except Exception as exc:
+        print(f"  WARNING: could not update machines.json: {exc}")
+        return None
+
+
+def print_preparse_summary(run: dict) -> None:
+    """Print accuracy table for a preparse benchmark run."""
+    models = run["models"]
+    if not models:
+        return
+    print(f"\n{'─'*80}")
+    print(f"Preparse benchmark  regime=preparse  questions={len(_Q_PREPARSE)}")
+    print(f"{'─'*80}")
+    print(f"  {'Model':<32}  {'Intent%':>8}  {'Both%':>8}  {'Median':>8}  {'tok/s':>7}  Errors")
+    print(f"  {'─'*32}  {'─'*8}  {'─'*8}  {'─'*8}  {'─'*7}  {'─'*6}")
+    for m in models:
+        s = m["summary"]
+        def _fmt(v):
+            return f"{v}ms" if v is not None else "n/a"
+        print(f"  {m['model'][:32]:<32}  "
+              f"{s['intent_accuracy_pct']:>7.1f}%  "
+              f"{s['both_accuracy_pct']:>7.1f}%  "
+              f"{_fmt(s['median_wall_ms']):>8}  "
+              f"{s['avg_tok_per_sec']:>7.1f}  "
+              f"{s['errors']}")
+    print()
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -427,8 +729,8 @@ def main():
     )
     ap.add_argument("--models", nargs="+", default=None,
                     help="Ollama model tags (default: auto-discover from host)")
-    ap.add_argument("--regime", choices=list(_REGIMES), default="fast",
-                    help="Question set: fast (8q) or overnight (25q)")
+    ap.add_argument("--regime", choices=list(_REGIMES) + ["preparse"], default="fast",
+                    help="Question set: fast (8q), overnight (25q), or preparse (20q accuracy)")
     ap.add_argument("--host", default="localhost:11434",
                     help="Ollama host:port")
     ap.add_argument("--output", type=Path, default=RESULTS_DIR,
@@ -444,6 +746,11 @@ def main():
     ap.add_argument("--or-models", nargs="+", default=None,
                     metavar="MODEL",
                     help="OpenRouter model IDs to include (uses OPENROUTER_API_KEY env var)")
+    ap.add_argument("--promote-winner", action="store_true",
+                    help="After preparse run, write best model to machines.json for this host")
+    ap.add_argument("--machines-json", type=Path,
+                    default=Path.home() / ".TheIgors/local/machines.json",
+                    help="Path to machines.json (used with --promote-winner)")
     args = ap.parse_args()
 
     if args.list_models:
@@ -471,35 +778,54 @@ def main():
     fetch_corpus(_GUTENBERG_MACBETH, corpus_path, skip_fetch=args.no_fetch)
     corpus_label = corpus_path.stem if corpus_path else "macbeth"
 
-    questions = _REGIMES[args.regime]
-    print(f"\nStarting benchmark: regime={args.regime} ({len(questions)} questions), "
-          f"host={args.host}, models={len(models)}")
-
     run: dict = {
-        "run_id":         datetime.now().isoformat(timespec="seconds"),
-        "corpus":         corpus_label,
-        "regime":         args.regime,
-        "question_count": len(questions),
-        "host":           args.host,
-        "models":         [],
+        "run_id": datetime.now().isoformat(timespec="seconds"),
+        "regime": args.regime,
+        "host":   args.host,
+        "models": [],
     }
 
-    for model in models:
-        run["models"].append(run_model(args.host, model, questions, args.timeout))
-
-    # Cloud models via OpenRouter
-    if args.or_models:
-        import os as _os
-        or_key = _os.getenv("OPENROUTER_API_KEY", "")
-        if not or_key:
-            print("WARNING: --or-models specified but OPENROUTER_API_KEY not set — skipping cloud.")
-        else:
-            for model in args.or_models:
-                run["models"].append(run_or_model(model, or_key, questions, args.timeout))
-
-    out_path = save_results(run, args.output)
-    print(f"\nResults saved → {out_path}")
-    print_summary(run)
+    if args.regime == "preparse":
+        # #191: accuracy benchmark — no corpus needed
+        print(f"\nStarting preparse benchmark ({len(_Q_PREPARSE)} questions), "
+              f"host={args.host}, models={len(models)}")
+        run["question_count"] = len(_Q_PREPARSE)
+        run["corpus"] = "preparse_ground_truth"
+        for model in models:
+            run["models"].append(run_preparse_model(args.host, model, args.timeout))
+        if args.or_models:
+            import os as _os
+            or_key = _os.getenv("OPENROUTER_API_KEY", "")
+            if not or_key:
+                print("WARNING: --or-models specified but OPENROUTER_API_KEY not set — skipping.")
+            else:
+                for model in args.or_models:
+                    run["models"].append(run_preparse_or_model(model, or_key, args.timeout))
+        out_path = save_results(run, args.output)
+        print(f"\nResults saved → {out_path}")
+        print_preparse_summary(run)
+        if args.promote_winner:
+            promote_winner(run, args.machines_json)
+    else:
+        questions = _REGIMES[args.regime]
+        print(f"\nStarting benchmark: regime={args.regime} ({len(questions)} questions), "
+              f"host={args.host}, models={len(models)}")
+        run["question_count"] = len(questions)
+        run["corpus"] = corpus_label
+        for model in models:
+            run["models"].append(run_model(args.host, model, questions, args.timeout))
+        # Cloud models via OpenRouter
+        if args.or_models:
+            import os as _os
+            or_key = _os.getenv("OPENROUTER_API_KEY", "")
+            if not or_key:
+                print("WARNING: --or-models specified but OPENROUTER_API_KEY not set — skipping cloud.")
+            else:
+                for model in args.or_models:
+                    run["models"].append(run_or_model(model, or_key, questions, args.timeout))
+        out_path = save_results(run, args.output)
+        print(f"\nResults saved → {out_path}")
+        print_summary(run)
 
 
 if __name__ == "__main__":

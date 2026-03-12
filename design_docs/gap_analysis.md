@@ -596,4 +596,38 @@ Next: dashboard widget when enough data accumulates.
 
 ---
 
+## Update: Session 2026-03-12m/n — Performance + Temporal Context
+
+### Resolved
+
+**G56 — Cloud training mode gate (#194)** ~~CLOSED 2026-03-12m~~
+`cognition/cloud_mode.py`: 3-condition gate (IGOR_CLOUD_TRAINING_ENABLED + OR balance ≥ floor + daytime 06:00–22:59). 5-min cache. Gates: NE `_call_local()`, winnow `local_first`, two-phase Ollama, `OllamaReasoner.reason()` (tier.2), preparse path. Root cause of 3-minute turn latency was yoga9i blocking — gate fixes this.
+
+**G57 — NE idle gate + double-fire lock** ~~CLOSED 2026-03-12m~~
+TWM fingerprint (`twm_count()` + `twm_max_id()`) — NE skips if unchanged AND < 2min cooldown. `threading.Lock` prevents double-fire. Both added to main.py `_run_ne_background()`. Eliminates wasteful NE runs when nothing changed.
+
+**G58 — Preparse short-input skip** ~~CLOSED 2026-03-12m~~
+`_short_input = len(user_input.split()) <= 6` added to `_skip_llm_preparse` conditions. Greetings and one-liners skip Ollama preparse entirely; also gated by `_cloud_mode_active`.
+
+**G59 — Console timestamps** ~~CLOSED 2026-03-12m~~
+`cts()` in `cognition/forensic_logger.py` returns `HHmmss ` prefix. Imported in `main.py` and `narrative_engine.py`. All `[dim]` console prints prefixed. Dashboard has 4-section redesign: Graph / Inference / Performance / How-he's-doing; `inference_data: dict` parameter carries tier/tokens/cost/latency per turn.
+
+**G60 — Tier model inversion fix** ~~CLOSED 2026-03-12m~~
+Bug: `openrouter_interactive_reasoner` was using `OPENROUTER_INTERACTIVE_MODEL=sonnet`. Both tier.3.5 and tier.4 were sonnet. Fixed: tier.3.5 → `OPENROUTER_DEFAULT_MODEL=haiku`; tier.4 → `OPENROUTER_INTERACTIVE_MODEL=sonnet`. Result: $0.014-0.016/turn (was $0.05-0.24).
+
+**G61 — NE narrative as temporal thread anchor (#195)** ~~CLOSED 2026-03-12n~~
+NE tags narrative `write_ring()` with active `thread_id` (most common in obs_list). `_build_session_context()` finds most recent `narrative` ring entry (≤10 min) for current thread, emits `[Thread arc: {summary}]` as anchor, then only ≤5 delta ring entries since anchor. Falls back to 10-entry block if no anchor. Effect: 3-6× less context per turn once NE has run.
+
+### Still Open
+
+- **#192** — InferenceGateway: unified routing abstraction
+- **#193** — Active jobs surface via TWM
+- **#189/#190** — Remote Igor instances
+- **#187** — Igor's own GitHub identity
+- **G37 Phase 2** — dual word graphs
+- **G48** — Mobile + offline sync epic
+- **G46** — Memory model fields: source, confidence, context_of_encoding (HIGH inertia, design carefully)
+
+---
+
 *Updated: 2026-03-12 by Claude Code.*
