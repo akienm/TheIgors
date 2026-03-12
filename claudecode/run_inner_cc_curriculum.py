@@ -15,8 +15,6 @@ Run:
   python claudecode/run_inner_cc_curriculum.py --run      # actually call + deposit
   python claudecode/run_inner_cc_curriculum.py --run --model openai/gpt-4o-mini
   python claudecode/run_inner_cc_curriculum.py --resume   # skip already-deposited
-
-Akien's icing goes at the bottom of this file in CUSTOM_CURRICULUM.
 """
 
 import argparse
@@ -34,18 +32,6 @@ from igor.tools.inner_cc import CURRICULUM, call_inner_cc
 
 db_path = os.environ["IGOR_DB_PATH"]
 cortex = Cortex(Path(db_path))
-
-
-# ── Akien's icing — add custom questions here ─────────────────────────────────
-# These run AFTER the base curriculum. Add anything specific to how YOU think
-# about code and architecture. These become Igor's personalized reasoning substrate.
-
-CUSTOM_CURRICULUM = [
-    # Examples — replace / extend with your own:
-    # ("architecture", "What is Akien's 'How must this work?' heuristic and when does it fire?"),
-    # ("pattern", "What is the pattern for designing a system that degrades gracefully under resource pressure?"),
-    # ("architecture", "How does Igor's interpretive layer connect values (CP1-CP6) to code decisions?"),
-]
 
 
 def already_deposited(question: str) -> bool:
@@ -122,15 +108,9 @@ def main():
     parser.add_argument("--resume", action="store_true", help="Skip questions already deposited")
     parser.add_argument("--model",  default=os.getenv("INNER_CC_MODEL", "openai/gpt-4o-mini"),
                         help="Model to use (default: INNER_CC_MODEL env or gpt-4o-mini)")
-    parser.add_argument("--custom-only", action="store_true",
-                        help="Run only CUSTOM_CURRICULUM (Akien's icing), skip base")
     args = parser.parse_args()
 
-    questions = []
-    if not args.custom_only:
-        questions.extend(CURRICULUM)
-    if CUSTOM_CURRICULUM:
-        questions.extend(CUSTOM_CURRICULUM)
+    questions = list(CURRICULUM)
 
     run_curriculum(
         questions=questions,
