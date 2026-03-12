@@ -18,3 +18,19 @@
 #
 # Priority: LOW — defer until Igor is stable for a few days.
 # Do not interrupt Igor for this. Review at next optimization pass.
+
+# G59 — Per-tree inference metrics on dashboard
+# Filed: 2026-03-11  Status: DEFERRED (needs instrumentation + definition work)
+#
+# Dashboard currently shows action tree % (tier.1 habit fires — no LLM).
+# Eventually show a % for each of the three trees:
+#   Action tree %:    habit fires / total turns (already live)
+#   Meaning tree %:   interpretive_traverse() calls that contributed — needs counter
+#   Knowledge tree %: cortex search hits that enriched context — definition is fuzzy
+#                     (knowledge tree participates in every LLM call, so "handled by"
+#                     needs a threshold or a new framing before we can count it)
+#
+# Watch the action tree % climb first as habits compound.
+# That will build intuition for what the other two metrics should mean.
+#
+# Priority: LOW — revisit after a few days of stable operation.
