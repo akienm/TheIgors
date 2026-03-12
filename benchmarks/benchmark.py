@@ -160,6 +160,87 @@ _REGIMES: dict[str, list[dict]] = {
     "overnight": _Q_OVERNIGHT,
 }
 
+# ── OpenRouter client ─────────────────────────────────────────────────────────
+
+def or_generate(model: str, prompt: str, api_key: str,
+                timeout: int = 60) -> dict[str, Any]:
+    """Call OpenRouter /chat/completions. Returns timing + response."""
+    payload = json.dumps({
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.0,
+        "max_tokens": 512,
+    }).encode()
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+    )
+    t0 = time.time()
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        data = json.loads(resp.read())
+    wall_ms = int((time.time() - t0) * 1000)
+    text = data["choices"][0]["message"]["content"].strip()
+    usage = data.get("usage", {})
+    return {
+        "response":    text,
+        "eval_count":  usage.get("completion_tokens", 0),
+        "eval_ms":     wall_ms,
+        "wall_ms":     wall_ms,
+        "tok_per_sec": round(usage.get("completion_tokens", 0) / (wall_ms / 1000), 1) if wall_ms > 0 else 0.0,
+        "done":        True,
+    }
+
+
+def run_or_model(model: str, api_key: str, questions: list[dict],
+                 timeout: int = 60) -> dict:
+    """Run all questions against one OpenRouter model."""
+    print(f"\n  ── {model} (cloud) ──")
+    results = []
+    for q in questions:
+        sys.stdout.write(f"    [{q['id']:3s}] {q['type'][:6]:6s}  ")
+        sys.stdout.flush()
+        try:
+            r = or_generate(model, build_prompt(q), api_key, timeout=timeout)
+            results.append({
+                "question_id": q["id"],
+                "type":        q["type"],
+                "question":    q["text"][:120],
+                "response":    r["response"][:600],
+                "wall_ms":     r["wall_ms"],
+                "eval_ms":     r["eval_ms"],
+                "eval_count":  r["eval_count"],
+                "tok_per_sec": r["tok_per_sec"],
+                "error":       None,
+            })
+            print(f"{r['wall_ms']:>6}ms  {r['tok_per_sec']:>6.1f} tok/s  "
+                  f"{r['response'][:60].replace(chr(10),' ')}")
+        except Exception as exc:
+            results.append({
+                "question_id": q["id"], "type": q["type"],
+                "question": q["text"][:120], "response": "",
+                "wall_ms": None, "eval_ms": None, "eval_count": 0,
+                "tok_per_sec": 0.0, "error": str(exc),
+            })
+            print(f"  ERROR: {exc}")
+
+    latencies = sorted(r["wall_ms"] for r in results if r["wall_ms"] is not None)
+    tok_rates  = [r["tok_per_sec"] for r in results if r["tok_per_sec"]]
+    summary = {
+        "questions_run":   len(results),
+        "errors":          sum(1 for r in results if r["error"]),
+        "median_wall_ms":  _percentile(latencies, 50),
+        "p95_wall_ms":     _percentile(latencies, 95),
+        "min_wall_ms":     latencies[0]  if latencies else None,
+        "max_wall_ms":     latencies[-1] if latencies else None,
+        "avg_tok_per_sec": round(sum(tok_rates) / len(tok_rates), 1) if tok_rates else 0.0,
+    }
+    return {"model": model, "host": "openrouter", "results": results, "summary": summary}
+
+
 # ── Ollama client ─────────────────────────────────────────────────────────────
 
 def ollama_generate(host: str, model: str, prompt: str,
@@ -360,6 +441,9 @@ def main():
                     help="Per-question timeout seconds (default 120)")
     ap.add_argument("--list-models", action="store_true",
                     help="Print available models on --host and exit")
+    ap.add_argument("--or-models", nargs="+", default=None,
+                    metavar="MODEL",
+                    help="OpenRouter model IDs to include (uses OPENROUTER_API_KEY env var)")
     args = ap.parse_args()
 
     if args.list_models:
@@ -402,6 +486,16 @@ def main():
 
     for model in models:
         run["models"].append(run_model(args.host, model, questions, args.timeout))
+
+    # Cloud models via OpenRouter
+    if args.or_models:
+        import os as _os
+        or_key = _os.getenv("OPENROUTER_API_KEY", "")
+        if not or_key:
+            print("WARNING: --or-models specified but OPENROUTER_API_KEY not set — skipping cloud.")
+        else:
+            for model in args.or_models:
+                run["models"].append(run_or_model(model, or_key, questions, args.timeout))
 
     out_path = save_results(run, args.output)
     print(f"\nResults saved → {out_path}")
