@@ -83,13 +83,13 @@ for h in habits:
         id=h["id"],
         narrative=h["narrative"],
         memory_type=MemoryType.PROCEDURAL,
-        importance=h["score"],
-        inertia=h["score"],
+        confidence=h["score"],
+        parent_id=h.get("parent_id", "CP1"),
         metadata={
             "trigger": h.get("trigger", ""),
             "habit_type": h.get("habit_type", "cognitive"),
-            "parent_id": h.get("parent_id", "CP1"),
             "score": h["score"],
+            "source": "user_seeded",
         },
     )
     stored = cortex.store(mem)
