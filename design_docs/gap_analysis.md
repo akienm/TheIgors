@@ -572,13 +572,19 @@ Next: dashboard widget when enough data accumulates.
 7. ~~**G45**~~ — Memory consolidation overnight job. CLOSED 2026-03-11.
 8. ~~**G40**~~ — Cluster load awareness. CLOSED 2026-03-11.
 9. ~~**G44**~~ — On-boot state inventory. CLOSED 2026-03-11.
-10. **G37 Phase 2** — Enable IGOR_DUAL_WORD_GRAPHS; collect data; n-pass termination loop.
-11. **G48** — Mobile + offline sync epic. Requires G46. Long horizon.
-12. **#145 Step 5** — local reply: when RTX 4090 arrives.
-13. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy).
-14. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting).
-15. **Code→data migration** — hardcoded decisions → learnable data/habits as Igor matures.
-16. **Architecture rewrite (collaborative)** — Claude Code + Igor jointly author a new version of
+10. ~~**#168-#181**~~ — Architecture batch (Damasio + multilayer graph). ALL CLOSED 2026-03-12.
+    Includes: interpretive tree wiring, affect retrieval, time layer, forking Mode B, mull loop,
+    boredom monitor, The Wait, investment weights, questions as traversal programs,
+    milieu-weighted traversal, episodic consolidation daemon.
+11. **#176 Mode A** — Competitive forking (parallel paths + judge). After Mode B validated.
+12. **#172** — Traversal-first retrieval. Only after graph is dense enough. Long horizon.
+13. **G37 Phase 2** — Enable IGOR_DUAL_WORD_GRAPHS; collect data; n-pass termination loop.
+14. **G48** — Mobile + offline sync epic. Requires G46. Long horizon.
+15. **#145 Step 5** — local reply: when RTX 4090 arrives.
+16. **G18 (#49, #57)** — structured training sessions (Rob model pedagogy).
+17. **IGOR_LATENCY_ADAPTIVE** — enable after 5+ sessions of data (still collecting).
+18. **Code→data migration** — hardcoded decisions → learnable data/habits as Igor matures.
+19. **Architecture rewrite (collaborative)** — Claude Code + Igor jointly author a new version of
     the architecture document (internal). Then Igor writes a version for publication.
     Captures: word graph + memory + milieu + habit pipeline as a unified cognitive system.
     Not just a feature list — the *why* and the *insight*. Akien's founding insight
@@ -586,4 +592,4 @@ Next: dashboard widget when enough data accumulates.
 
 ---
 
-*Updated: 2026-03-11b by Claude Code.*
+*Updated: 2026-03-12 by Claude Code.*
