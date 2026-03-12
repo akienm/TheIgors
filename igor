@@ -11,6 +11,9 @@
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 WILD_DIR="$REPO_DIR/wild_igor"
 ENV_FILE="/home/akien/.TheIgors/igor_wild_0001/.env"
+if [ -e $REPO_DIR/pause.wait ]; then
+    rm $REPO_DIR/pause.wait
+fi
 
 if [ ! -f "$ENV_FILE" ]; then
     echo "[igor] ERROR: .env not found at $ENV_FILE" >&2
@@ -48,6 +51,9 @@ fi
 # .env is re-read on every restart so env changes take effect immediately.
 while true; do
     set -a; source "$ENV_FILE"; set +a
+    while [ -e $REPO_DIR/pause.wait ]; do
+        sleep 1
+    done
     python -m igor.main "${IGOR_ARGS[@]}"
     EXIT_CODE=$?
     if [ $EXIT_CODE -eq 42 ]; then

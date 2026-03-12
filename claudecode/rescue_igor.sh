@@ -40,8 +40,8 @@ fi
 sleep 1
 
 # ── Step 2: Check if Igor is already up (maybe it restarted itself) ────────────
-if curl -sf "http://localhost:$WEB_PORT/api/health" > /dev/null 2>&1; then
-    echo "[rescue] Igor already running on port $WEB_PORT — skipping start."
+if pgrep -f "python.*igor.main" > /dev/null 2>&1; then
+    echo "[rescue] Igor already running (pgrep match) — skipping start."
 else
     # ── Step 3: Start Igor in background ──────────────────────────────────────
     echo "[rescue] Starting Igor in background..."
@@ -69,20 +69,20 @@ else
     IGOR_PID=$!
     echo "[rescue] Igor started with PID $IGOR_PID. Log: $LOG_FILE"
 
-    # ── Step 4: Wait for web server ───────────────────────────────────────────
-    echo "[rescue] Waiting for Igor web server on port $WEB_PORT..."
+    # ── Step 4: Wait for Igor process ────────────────────────────────────────
+    echo "[rescue] Waiting for Igor process to start..."
     WAITED=0
-    while ! curl -sf "http://localhost:$WEB_PORT/api/health" > /dev/null 2>&1; do
+    while ! pgrep -f "python.*igor.main" > /dev/null 2>&1; do
         sleep 2
         WAITED=$((WAITED + 2))
         if [ $WAITED -ge $MAX_WAIT ]; then
-            echo "[rescue] TIMEOUT: Igor web server did not come up after ${MAX_WAIT}s."
+            echo "[rescue] TIMEOUT: Igor process did not start after ${MAX_WAIT}s."
             echo "[rescue] Check log: $LOG_FILE"
             exit 1
         fi
         echo "[rescue]   ... waiting (${WAITED}s / ${MAX_WAIT}s)"
     done
-    echo "[rescue] Igor web server up after ${WAITED}s."
+    echo "[rescue] Igor process up after ${WAITED}s."
 fi
 
 # ── Step 5: Send CC bridge message ────────────────────────────────────────────
