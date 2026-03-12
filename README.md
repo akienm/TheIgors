@@ -4,7 +4,7 @@
 
 **An AI agent that learns from experience, explains its reasoning, and optimizes for all life.**
 
-Discord: https://discord.gg/gNMkM29h
+Discord: [https://discord.com/channels/1473757915851657221]
 This document attempts to explain the vision for The Igors, not the current status. 
 
 ---
