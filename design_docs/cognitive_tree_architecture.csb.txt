@@ -262,37 +262,59 @@ Akien's domain-independent question patterns — his executive function fingerpr
 These fire automatically in certain contexts; most are below deliberate awareness.
 Seeded as Igor habits so Igor knows to apply them and surface them when relevant.
 
-  PROC_HEURISTIC_FIRST_RESPONSE:
-    "What's the first thing I say in response to that?"
-    Output simulation — run self forward before committing. Direct query of
-    interpretive layer. Chief introspection tool.
+QUESTIONS AS TRAVERSAL PROGRAMS (Akien 2026-03-12, #181):
+  "Different questions create different entry points into the matrix as a whole."
 
-  PROC_HEURISTIC_ALIGNMENT:
-    "Which choice is most in alignment with who I'd most like to be?"
-    Values attractor. Prunes by identity, not logic.
+  A question is not a content query. It is a traversal instruction:
+    Entry point:  which layer or node to start from
+    Direction:    down (constrain), wide (search), lateral (route), up (leverage)
+    Exit cond:    when necessity established, candidates found, path clears
+    Return type:  constraints, candidate set, route, immediate response
 
-  PROC_HEURISTIC_FITS_HERE:
-    "What looks like it would fit there?"
-    Pattern completion. Gap shape → search for matching piece.
+  The question form IS the traversal program. The thalamus classifies intent;
+  it should also classify traversal_strategy. #181 adds this field.
 
-  PROC_HEURISTIC_WORKAROUND:
-    "How could we get around that?"
-    Obstacle navigation. Fires when branch is blocked; switches to lateral search.
-
-  PROC_HEURISTIC_LEVER:
-    "Where is the lever?"
-    Leverage point scan. Small force → large movement.
-
-  PROC_HEURISTIC_MONKEY_PROOF:
-    "How will us monkeys screw that up such that I get support questions?"
-    Failure mode simulation. Fires when designing for other humans.
-    Models degraded execution before committing to design.
+  Each heuristic question is a proof of concept for this principle:
 
   PROC_HEURISTIC_HOW_MUST:
     "How must this work?"
-    The most powerful: derives from necessity rather than possibility.
-    Eliminates upstream by reasoning from first principles.
-    "How MUST this work?" ≠ "How could this work?" — constraint derivation.
+    Strategy: CONSTRAIN — enter at current position, traverse DOWN.
+    Derives necessity, not possibility. Eliminates options that fail constraints.
+    No broad search. Deepens and narrows within the current tree.
+    Functional module: mull loop (#177) with constraint flavor.
+
+  PROC_HEURISTIC_FITS_HERE:
+    "What looks like it would fit there?"
+    Strategy: SEARCH_WIDE then DESCEND — the search→traversal cycle.
+    1. Enter at gap shape. Launch broad executive search (Mode A fork, #176).
+    2. Candidates returned. Each candidate re-enters tree for analysis (Mode B).
+    3. Selection layer picks best fit.
+    This is the most expensive heuristic — broad search + per-candidate deepening.
+
+  PROC_HEURISTIC_WORKAROUND:
+    "How could we get around that?"
+    Strategy: LATERAL — enter at blocked node, move sideways same level.
+    Fires when a branch is blocked. Mode B fork to a different sub-tree.
+
+  PROC_HEURISTIC_LEVER:
+    "Where is the lever?"
+    Strategy: UPWARD — enter at current position, traverse UP to high-weight node.
+    Looking for where small force = large movement. Finds leverage above current depth.
+
+  PROC_HEURISTIC_MONKEY_PROOF:
+    "How will us monkeys screw that up?"
+    Strategy: ADVERSARIAL FORK — Mode A parallel branches, each a failure scenario.
+    Exit: failure modes enumerated. Return: risk set.
+
+  PROC_HEURISTIC_FIRST_RESPONSE:
+    "What's the first thing I say in response to that?"
+    Strategy: IMMEDIATE — no traversal. Enter at habit/word layer, return instantly.
+    Direct query of automatic layer. No search, no mull. Tier.1 equivalent.
+
+  PROC_HEURISTIC_ALIGNMENT:
+    "Which choice is most in alignment with who I'd most like to be?"
+    Strategy: VALUES_FILTER — enter at CP5 specifically.
+    Interpretive tree from that root. Prunes by identity, not logic.
 
 [LAYER_BOUNDARY_LOGGING]
 The pipeline layers are now named and the boundaries are measurement points.
