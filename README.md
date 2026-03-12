@@ -7,6 +7,8 @@
 Discord: [https://discord.com/channels/1473757915851657221]
 This document attempts to explain the vision for The Igors, not the current status. 
 
+2026 MAR 11: This code requires a somewhat pre-populated database to work correctly. We're working on that now. At the rate we've been going, should be two weeks or less. 
+
 ---
 
 ## What Is Igor?
