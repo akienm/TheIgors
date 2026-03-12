@@ -1,4 +1,4 @@
-DOC_ID|cognitive_tree_architecture|v2026-03-11|status:living_document
+DOC_ID|cognitive_tree_architecture|v2026-03-12|status:living_document
 purpose: theoretical and implementation foundation for Igor's tree-based cognitive architecture
 scope: memory retrieval, interpretive layer, executive function, training sources, paper intent
 maintainer: claude_code|originated: session 2026-03-11 with Akien Maciain
@@ -22,14 +22,36 @@ Every turn traverses this stack, bottom to top (parsing), top to bottom (generat
 
   SOUNDS            → phoneme tree        (perceptual end; pre-linguistic)
   WORDS             → word graph          ← IMPLEMENTED (cognition/word_graph.py, SQLite)
+  TIME              → temporal layer      ← PARTIALLY BUILT (timestamp/last_accessed exist;
+                                            temporal edges not yet a traversal dimension — #175)
   MEANINGS          → concept tree        ← UNBUILT (no concept-level tree yet)
-  WHAT-DOES-THIS-   → interpretive tree   ← PARTIALLY BUILT (MemoryType.INTERPRETIVE exists,
-    MEAN-TO-ME                              no traversal edges yet; CP1-CP6 are root nodes)
-  HOW-TO-RESPOND    → action direction    ← PARTIALLY BUILT (basal_ganglia → tier ladder)
-  WORD SELECTION    → word graph again    ← same weights, other direction
+  WHAT-DOES-THIS-   → interpretive tree   ← BUILT (#170 done: CP→INTERPRETIVE edges wired;
+    MEAN-TO-ME                              auto-connect hook in cortex.store())
+  SELECTION         → executive function  ← PARTIALLY BUILT (basal_ganglia → tier ladder;
+                                            confidence threshold + mulling not yet — #177)
+  OUTPUT            → output graph        ← PARTIALLY BUILT (word graph serves this role;
+                                            not yet modeled as separate layer from WORDS)
 
 Each layer IS the same mechanism: nodes, edges, weighted traversal.
 What changes between layers is the edge semantics and the unit of meaning.
+
+PERSONALITY AS INTERFERENCE PATTERN (Akien 2026-03-12):
+  Output is its own graph — not the same invocation as the word graph at the bottom,
+  even if it shares weights. Selection (what to say) and Output (how to say it) are
+  distinct layers. Personality is the interference pattern between them.
+  A 'Radically Honest' personality: Selection weights accuracy nodes; Output graph
+  doesn't filter for diplomacy nodes. The personality is not a layer — it is what
+  emerges when those two layers interact.
+
+  Reference: Gemini conversation 2026-03-12 with Akien; Global Workspace Theory —
+  personality as interference pattern rather than as a stored property.
+
+TIME AS THREADING SOLUTION (Akien 2026-03-12):
+  Time as a layer solves the forking/threading problem. Parallel inference paths
+  (see #176) don't need complex thread management if each fork gets a temporal
+  coordinate. The time layer naturally disambiguates concurrent traversals —
+  the judge selects the path with best weight × time coherence.
+  This is why time must be a layer, not just metadata.
 
 [EXECUTIVE_FUNCTION]
 Akien 2026-03-11: "executive function is just broadening the search with
@@ -170,6 +192,34 @@ Design:
 
 Gap: G50 — TWM attractor concept.
 
+QUESTIONS AS ATTRACTOR → MULL/FORK TRIGGERS (Akien 2026-03-12):
+  A question entering TWM as an attractor is exactly what triggers a mull loop (#177)
+  or a downward fork (#176). The question sets attractor_weight, which biases the next
+  traversal toward that topic. Then:
+
+    Low confidence on that topic  → mull fires (#177)
+    Milieu shift on that topic    → downward fork fires (#176 Mode B)
+    Both                          → fork spawns its own mull loop
+
+  Full flow:
+    question arrives (user or Igor-generated)
+      → TWM attractor set (attractor_weight elevated)
+        → traversal biased toward question topic
+          → low confidence OR milieu shift detected
+            → mull (#177): re-traverse with decay until novelty gate exits
+            → fork (#176 Mode B): branch sent down to lower layer for deeper resolution
+              → result injected back up to selection as enriched context
+
+  The attractor is the *why* that justifies the cost of mulling or forking.
+  Without an attractor, mull and fork are undirected. With one, they are purposeful.
+
+  This also means: attractor_weight decay rate should be tuned to match mull/fork
+  resolution time — the attractor should still be active when the branch result
+  bubbles back up.
+
+  Cross-references: #175 (time layer — attractor has a temporal position),
+    #176 (forking), #177 (mulling), G50 (attractor implementation).
+
 [TRAINING_SOURCES]
 Three sources for training the higher-order trees. Order matters — coherence must
 precede breadth:
@@ -268,6 +318,52 @@ Short-term logging (not long-term):
 
 Gap: G55 — layer boundary logging (tokens in/out, context size per tier).
 
+[FUNCTIONAL_MODULES]
+Akien/Gemini conversation 2026-03-12: some architectural capabilities are not layers
+but functional modules that sit beside the layer stack.
+
+These four were identified as needed but not yet ticketed in the original work plan:
+
+1. LOOPING / MULLING (#177)
+   Selection → [confidence threshold check] → (if below threshold) → re-inject to Inference → Selection
+   This is internal monologue. Igor thinks before speaking.
+   Each re-pass decays previously-traversed paths slightly (bias toward fresh paths).
+   EXIT CONDITIONS (either triggers exit):
+     1. Delta novelty gate: if pass N+1 results overlap >70% with pass N → "no new consequence" → exit
+     2. Hard cap: IGOR_MULL_MAX_PASSES reached regardless of novelty
+   Gates: IGOR_MULL_THRESHOLD, IGOR_MULL_MAX_PASSES, IGOR_MULL_NOVELTY_THRESHOLD.
+   Distinct from tier escalation — mulling stays at the same tier, varies the traversal.
+
+2. FORKING (#176)
+   Two modes:
+   Mode A (competitive): parallel paths A/B/C, judge picks winner by systemic coherence.
+     Tie-breaker: milieu (affect state tips the scale); fallback: state both (CP1 honesty).
+   Mode B (contextual deepening, primary): main path continues; fork branch independently
+     mulls a sub-question, then injects result DOWN into a lower layer as added context.
+     That lower layer re-traverses; result bubbles back up to selection.
+     Appellate judge pattern (Akien 2026-03-12): "here's something more to consider."
+     Mostly downward — higher selection layer sends question down for specific resolution.
+   Triggers: milieu shift mid-traversal; confidence dip at emotional inflection point.
+   Each fork branch runs its own mull loop (#177) independently.
+   Dependency: #175 (time layer) — time coordinates disambiguate parallel traversals
+   without complex thread management. Time as layer SOLVES threading.
+
+3. BOREDOM MONITOR (#178)
+   Track traversal frequency per node per time window.
+   When a path is traversed too often: temporarily increase edge resistance (weight penalty).
+   Forces exploration of less-used paths and wider vocabulary.
+   Resets on novel input or time window expiry.
+   May surface as milieu signal (low novelty → slight negative valence).
+   Can trigger reading behavior when boredom threshold is reached with no user input.
+
+4. THE WAIT (#179)
+   Brief configurable pause between input receipt and inference begin.
+   During the wait: TWM processes, milieu updates, ring_memory settles, time layer aligns.
+   Longer for high-complexity inputs (thalamus complexity score drives wait duration).
+   Distinct from #169 (consolidation daemon = hours-scale); this is per-turn (ms to seconds).
+   In human terms: the half-second between stimulus and conscious awareness (Libet).
+   Gate: IGOR_WAIT_MS (default 0 = disabled).
+
 [GAP_REFERENCES]
   G49 — SSH cluster health habit           CLOSED 2026-03-11
   G50 — TWM attractor concept              CLOSED 2026-03-11
@@ -278,6 +374,13 @@ Gap: G55 — layer boundary logging (tokens in/out, context size per tier).
   G55 — Layer boundary logging             CLOSED 2026-03-11
   G56 — yoga9i DeepSeek-R1:7b tier.2      CLOSED 2026-03-11
   G57 — Role-specific prompt sizing        CLOSED 2026-03-11
+
+Work orders added 2026-03-12 (from Gemini/Akien multilayer conversation):
+  #175 — Time as a graph layer (temporal traversal dimension; solves forking/threading)
+  #176 — Forking (parallel inference paths + judge layer; depends on #175)
+  #177 — Looping/Mulling (recursive inference with confidence threshold)
+  #178 — Boredom monitor (path resistance on over-traversal → novelty forcing)
+  #179 — The Wait (per-turn incubation; Libet half-second analog)
 
 [INFERENCE_ENGINE]
 Akien 2026-03-11: "the layers of graphs are an inference engine."
