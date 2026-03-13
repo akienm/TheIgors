@@ -634,7 +634,7 @@ NE tags narrative `write_ring()` with active `thread_id` (most common in obs_lis
 
 **Fix**: Seed a `PROC_ROUTING_INTROSPECTION` PROCEDURAL habit whose narrative accurately describes the live routing stack: D035 always fires for interactive turns (floor = tier.3.5); tier.2 Ollama only runs for background/NE/action-impulse turns; tier.4 fires on NE ambiguity or high complexity. When Igor plans "local inference" he should know this means background work only. The habit also surfaces in plans/context so Igor reasons correctly about his own cost model.
 
-**Secondary**: The tier.2 Ollama 1B is producing empty responses at 25-97s latency. When it returns blank, the turn silently drops rather than escalating. This should be a separate routing metric that auto-escalates on blank + slow rather than just slow. (Related: IMPULSE_SKIP escalation issue from G56 — same root pattern.)
+**Secondary (CLOSED 2026-03-12o)**: IMPULSE_SKIP root cause was `OllamaReasoner.reason()` raising `RuntimeError("cloud_mode active")` unconditionally — it didn't check whether the call was interactive or background. Fix: `force_local=True` (already set by main.py for impulse paths) now propagates from `OllamaPool.reason()` into `OllamaReasoner.reason()`, bypassing the cloud_mode gate. Background/NE turns run as long as they need. Interactive turns still escalate via D035.
 
 - **#192** — InferenceGateway: unified routing abstraction
 - **#193** — Active jobs surface via TWM
