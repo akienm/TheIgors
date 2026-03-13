@@ -1,0 +1,59 @@
+DOC|dev_process|v1|updated=2026-03-13
+META|purpose=how Akien and Claude Code work together; conventions Igor should know
+META|audience=Igor reading this to understand the development context he exists in
+
+CONTEXT|
+  primary_dev_tool=Claude Code (CC); never aider/Gemini/other LLMs (they make messes)
+  igor_uses=OpenRouter; CC uses Anthropic direct — keep separate to control token costs
+  igor_self_edits=auto-commit+push via self_edit.py; CC edits do NOT auto-commit
+  commit_policy=never --no-verify; never force-push main; commit at logical checkpoints only
+
+WORKFLOW|
+  session_start=CC reads CLAUDE.md + design_docs_for_igor/ DSBs; no recap needed
+  plan_first=discuss plan with Akien before doing the work; no unilateral big changes
+  plan_approval="i like your plan, go" is a real step; see the whole move before making it
+  tickets=each piece of work has a GitHub issue; each session has a sprint discussion
+  save_plans=GitHub discussions for recoverability across sessions
+  gap_analysis=update design_docs_for_igor/gap_analysis.dsb as gaps close or new ones found
+  master_plan=https://github.com/akienm/TheIgors/discussions/62 — update end of each session
+
+CORRECTION_DISCIPLINE|
+  correct_immediately=every mistake named precisely in the moment; don't let things slide
+  feedback_persists=CC stores corrections in ~/.claude/projects/.../memory/; applies next session
+  why=uncorrected mistake becomes pattern; correction compounds forward
+
+CODE_QUALITY|
+  read_before_edit=always read a file before modifying; never overwrite blindly
+  check_inertia=check inertia_registry.dsb before editing; HIGH needs Akien review
+  check_design_docs=read relevant design docs before architectural changes
+  minimal_changes=don't add features, refactor, docstrings, comments beyond what was asked
+  no_silent_exceptions=every except block must log; ticket #205 tracks audit
+  no_mocks=tests against real systems; fixture data in DB; rollback if writes needed
+
+SELF_EDIT_CONVENTIONS|
+  preferred=patch_source_file (line-range + syntax check)
+  after_patch=reload_module() if module is hot-reloadable; else restart
+  blocked=brainstem/ without Akien review
+  auto=git commit+push after success
+  igor_edits_auto_commit=yes; CC edits do NOT
+
+INERTIA_LEVELS|see inertia_registry.dsb
+  HIGH=discuss with Akien; never edit casually; strong justification required
+  MEDIUM=discuss before editing
+  LOW=freely improvable; hot-reloadable where stateless
+
+TESTING_PHILOSOPHY|
+  no_mocks=mocked tests verify the mock not the behavior
+  real_systems=tests against real SQLite, real OR calls (with fixture data)
+  design_for_testability=injectable seams, fixture DB snapshots, rollback support
+  igor_participates=Igor knows he's in test context (TWM flag); test run = curriculum
+  smoke_tests=thin layer of structural tests; runs in <10s before restart
+  future=self-programming epic (#206) — Igor generates + runs his own tests
+
+ARCHITECTURAL_PRINCIPLES|
+  everything_is_memory=no special cases; if in doubt, make it a memory type
+  stateless_by_design=hot-reloadable modules hold no state; state lives in DB
+  single_choke_points=cortex owns all memory r/w; gateway owns all inference; never bypass
+  encapsulation=each object owns everything about its structure (inference_gateway owns all inference; db_proxy owns all connections)
+  minimalist=three similar lines > premature abstraction; don't design for hypothetical future
+  no_backwards_compat_hacks=if unused, delete it; don't rename to _old or add // removed comments

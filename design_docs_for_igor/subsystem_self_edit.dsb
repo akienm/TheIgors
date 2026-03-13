@@ -1,0 +1,40 @@
+DOC|subsystem_self_edit|v1|updated=2026-03-13
+META|inertia=LOW(tools)|parent=architecture_root.dsb
+META|files=tools/self_edit.py,tools/hot_reload.py,cognition/forensic_logger.py
+
+DESIGN_POINTS|
+  DP1|patch_source_file preferred: line-range replacement + syntax check before write; fails safe
+  DP2|edit_source_file: full rewrite; more dangerous; use only when patch can't express the change
+  DP3|IGOR_SELF_EDIT_ENABLED gates all source file writes
+  DP4|brainstem/ writes blocked regardless of gate (change.26)
+  DP5|auto-commit+push after successful edit (Igor's edits only; CC edits do NOT)
+  DP6|hot_reload: reload_module() after patch if module is stateless/hot-reloadable; else restart
+  DP7|inertia_gate: validate_against_core() before response delivery; catches CP violations
+  DP8|PROC_RELOAD_AFTER_EDIT habit (pending #207): self_edit TWM signal → habit fires reload
+
+SELF_EDIT_FLOW|
+  1=check inertia_registry.dsb for target module
+  2=read file before editing (never overwrite blindly)
+  3=check design_docs for relevant decisions
+  4=patch_source_file (preferred) or edit_source_file
+  5=run_syntax_check if not auto-run
+  6=reload_module() if hot-reloadable; else schedule restart
+  7=auto-commit+push
+
+HOT_RELOAD|
+  file=tools/hot_reload.py
+  tools=reload_module(module_name),list_loaded_modules()
+  blocked=brainstem/,memory/models.py,memory/cortex.py,reasoners/base.py,tools/registry.py,hot_reload.py itself
+  auto_reregister=tool modules re-execute registry.register() calls on reload; no extra step needed
+  shortname=accepts partial names; resolves if unambiguous
+  pending=PROC_RELOAD_AFTER_EDIT habit (#207 comment); self_edit→TWM signal→habit fires
+
+FORENSIC_LOGGING|
+  file=cognition/forensic_logger.py
+  channels=reasoning_calls,ne_runs,self_edit,tool_calls,memory_ops,metrics,reading_progress
+  format=prepend (newest at TOP); never truncate
+  path=~/.TheIgors/logs/
+  key_fns=log_pipeline_step(),log_error(),log_anomaly(),get_turn_id()
+
+DECISIONS|D012,D024,D040,D041
+KNOWN_FAILURES|F006(gateway-attr-error) — example of what bad self-edit looks like

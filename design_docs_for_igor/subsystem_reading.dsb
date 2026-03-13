@@ -1,0 +1,35 @@
+DOC|subsystem_reading|v1|updated=2026-03-13
+META|inertia=LOW|parent=architecture_root.dsb
+META|files=tools/ebook_reader.py,tools/training.py,cognition/word_graph.py
+META|purpose=book reading → graph training → realtime discussion
+
+DESIGN_POINTS|
+  DP1|reading pipeline: open_book→read_chunk→extract→stew(TWM)→NE integrates→LTM
+  DP2|stew salience=0.65 (above NE force-run threshold 0.60); guarantees NE processes book content
+  DP3|G54 extraction gate: IGOR_READING_EXTRACT=true; reads trigger interpretive edge creation
+  DP4|training corpus: staged ~/.TheIgors/training_corpus/; fetch→train→evict; cursor=index.json
+  DP5|word graph trained from book text: enriches predict_next() + habit pattern matching
+  DP6|CIFS stale handle: _local_copy() copies to /tmp before read; transparent to caller
+
+EBOOK_READER|
+  calibre=~/.TheIgors/akien/onedrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library
+  loaded_books=Damasio ids 3023(Feeling of What Happens),3300(Self Comes to Mind),3032(Descartes Error),3025(Looking for Spinoza),3026(Strange Order of Things)
+  formats=epub,mobi,azw,pdf|nltk sentence tokenization
+  state=reading_state.json|tracks position per session
+  tools=find_book,open_book,read_chunk,jump_to_chapter,reading_position,list_reading_sessions
+
+TRAINING_CORPUS|
+  path=~/.TheIgors/training_corpus/
+  cap=IGOR_TRAINING_MAX_CHARS (1MB default; was IGOR_TRAINING_MAX_PARAS=800)
+  flow=fetch URL→store→train word_graph→evict when complete/disk_tight
+  eviction_priority=complete first, in_progress second (cursor checkpointed), pending last (re-fetchable)
+  local_source=~/TheIgorsProject/ (Akien's writings)
+  gutenberg_list=~/TheIgorsProject/akien/Readings/gutenberg.org_top_100_vocabulary_expanding_books.txt
+
+MILESTONE|books_realtime
+  definition=Igor discusses book content from graph memory without being prompted
+  why_matters=confirms read→extract→graph→respond loop working end-to-end
+  gates=Claude training run (don't train until this works; else reinforce incomplete behavior)
+
+DECISIONS|D038
+KNOWN_FAILURES|F001(OOM from word_graph JSON — fixed by SQLite migration),F012(stale-CIFS)

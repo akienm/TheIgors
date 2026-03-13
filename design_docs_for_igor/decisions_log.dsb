@@ -1,0 +1,64 @@
+DOC|decisions_log|v1|updated=2026-03-13|latest=D038
+META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
+META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
+META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
+
+// ── Foundational ──────────────────────────────────────────────────────────────
+
+D001|everything-is-memory|implemented|unified model: no special cases; habits=PROC memories; values=high-inertia memories; everything connected+evolvable
+D002|brain-region-naming|implemented|neuroscience names are functionally accurate not metaphorical; each module does what the biological region does
+D003|api-first-reasoning|implemented|start with API quality; habituation replaces LLM calls over time; don't prematurely optimize away capability
+D004|sqlite-not-json|implemented|SQLite survives crashes; atomic writes; queryable; JSON files corrupt silently and can't be queried
+D005|inertia-from-network-position|implemented|inertia computed from graph position+activation+dependencies; not manually assigned; emerges from use
+D006|csb-format|implemented|pipe-delimited key:value; human+machine readable without parser overhead; no quoting needed
+D007|push-based-twm|implemented|TWM is push-only (sources deposit); NE/reasoner pull; decouples producers from consumers; TTL cleans up
+D008|svelte-starlette-web-ui|implemented|Starlette daemon thread; Svelte frontend; keeps Igor single-process; web is output channel not control plane
+D009|daemon-threads-for-background|implemented|NE+listener+web as daemon threads; die with main process; no orphan processes on crash
+D010|ring-memory-for-context|implemented|FIFO-50 in SQLite; survives restarts; injected into every API call; gives session continuity cheaply
+
+// ── Architecture ──────────────────────────────────────────────────────────────
+
+D011|base34-instance-ids|defined|7-char base-34 epoch seconds; unique+sortable+encodes age; no registry needed
+D012|haiku-for-self-edits|implemented|self-edit+debug always use Haiku regardless of IGOR_MODEL; frequent code ops need cost reduction not quality
+D013|single-embedding-model|implemented|nomic-embed-text on all cluster machines; one model = consistent vector space; cosine similarity meaningful across instances
+D014|ring-injection-ownership|implemented|main.py owns ring injection (not reasoners); prevents double-injection; single choke point
+D015|gateway-pattern|implemented|DAG routing in inference_gateway.py; routing policy in one file not scattered across 5; visibility via describe()
+D016|arbiter-queue|implemented|file-backed JSON queue for irreversible actions; human approves before Igor acts; currently disabled (IGOR_ARBITER_ENABLED=false)
+D017|hybrid-embedding-search|implemented|text keyword scan→embedding rerank; Phase1 always works; Phase2 improves ranking when Ollama up; graceful degradation
+D018|reasoning-cache|implemented|TTL 12min + TWM watermark invalidation; watermark correct semantic signal — new observations→reasoning may differ
+D019|priority-sorted-pool|implemented|machines sorted realtime→main_loop→background→batch; better latency without query classification
+
+// ── Session / Context ─────────────────────────────────────────────────────────
+
+D020|portable-identity|implemented|SOUL.md+IDENTITY.md written every boot from DB; never drift from DB state; SOUL.md shared, IDENTITY.md instance-scoped
+D021|token-economy|implemented|tool results capped 20K chars; 25 tool-call turns max; truncation notice addresses model ("break large tasks")
+D022|warm-context|implemented|serialize TWM+ring_tail+ne_state at shutdown; reload at boot; TTL=4h; rotation .0→.1 prevents corrupt-on-^C
+D023|adaptive-routing|implemented|boot benchmark measured not guessed; latency budget as hard raise not soft preference; weights reset each boot (habit compiler persists patterns)
+D024|self-instrumentation|implemented|observe() = Igor debugging himself; forensic logs = us debugging Igor; EXPERIENTIAL memories low-noise
+D025|koboldcpp|implemented|per-request context_size is primary advantage; llama.cpp exposes eval metadata; Ollama retained as fallback
+D026|reasoner-hierarchy|implemented|two-level: transport base classes (stable structural diffs) + ModelFamily failover; ClaudeFamily = single handle for "ask Claude"
+
+// ── TWM / Memory ──────────────────────────────────────────────────────────────
+
+D027|twm-ttl-extension|implemented|TTL extends on confirmed usefulness not mere access; 3 signals: NE promotes(A), positive response valence(B), high cosine relevance(C)
+D028|twm-urgency|implemented|urgency⊥salience; urgency*salience sorts NE queue; idempotent migration; urgency≥0.7 flagged distinctly in context
+D029|habit-compiler|implemented-seeds|PROC_HABIT_COMPILER+4 primitives in genesis; valence=0.8 (meta-capability); compiler finds its own description in LTM when implemented
+D030|tool-habit-migration|implemented-poc|code_ref in PROC metadata links habit description to Python impl; provenance=builtin enables future trust tiers
+D031|routing-groundwork|implemented|PROC_ROUTING_* in genesis; EPISODIC audit trail; when EPISODICs cluster→habit compiler replaces hardcoded Python
+
+// ── Inference Tier ────────────────────────────────────────────────────────────
+
+D032|cloud-cheap-interactive|planned|local 1B too slow for conversational UX (no GPU); gpt-4o-mini ~$0.001/turn; local retained for NE/preparse/batch only
+D033|csb-preparse|implemented|[PARSED_INPUT] CSB block forwarded to cloud reasoners; LLM preparse toggleable without changing routing logic; max_tokens=120 timeout=8s
+D034|speed-optimizations|implemented|fast-path skips LLM for greetings/commands (<1ms); parallel preparse+search via ThreadPoolExecutor; HTTP keep-alive for KoboldCpp
+D035|interactive-persona-tier|implemented|tier.3.5 between cheap+claude; t3=mechanical (no identity needed), t35=conversational (persona must be embodied), t4=complex+tools
+D036|milieu|implemented|3D affect (valence/arousal/dominance); asymmetric EMA (fast rise α=0.25, slow fall α=0.05); JSON persists across restarts; dominance baseline=+0.3
+D037|basal-ganglia|implemented|parallel scoring replaces first-match-wins; milieu modulates threshold [0.30,0.70]; lateral inhibition; score= in ring entries = audit trail
+D038|training-corpus|implemented|staged ~/.TheIgors/training_corpus/; fetch→train→evict; cursor in index.json for resumability; corpus IDs don't pollute habit scoring
+
+// ── Session 2026-03-13 additions ──────────────────────────────────────────────
+
+D039|db-proxy|implemented|DatabaseProxy wraps all SQLite calls; timing+metrics ring; reconnect on failure; callers never know connection dropped; foundation for sync (#190)
+D040|hot-module-reload|implemented|importlib.reload() on stateless leaf modules; HIGH inertia blocked; tool modules self-re-register; no restart needed for leaf patches
+D041|stateless-by-design|implemented|hot-reloadable modules hold no state (state in DB); __class__ swap for edge cases; cortex=only stateful owner (owns DB proxy)
+D042|dsb-format|implemented|Distilled Structured Block; replaces CSB for machine-facing docs; ~80% token reduction; DSB loads directly into system prompt CHARACTER layer

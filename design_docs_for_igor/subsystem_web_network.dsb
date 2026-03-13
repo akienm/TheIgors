@@ -1,0 +1,33 @@
+DOC|subsystem_web_network|v1|updated=2026-03-13
+META|inertia=LOW|parent=architecture_root.dsb
+META|files=web/server.py,network/listener.py,network/discord_bot.py
+
+DESIGN_POINTS|
+  DP1|web server is output channel not control plane; Igor pulls from queue; server pushes to browser
+  DP2|per-client asyncio.Queue fan-out: _broadcast() → loop.call_soon_threadsafe(q.put_nowait) for each client
+  DP3|CC bridge: POST /api/cc_send {"content":"..."} injects as author=claude-code
+  DP4|all network messages normalized to NetworkMessage dataclass before entering main loop
+  DP5|thread workers: each network turn runs in thread; exception caught by worker; web_server.send() must not be in try block that swallows exceptions
+
+WEB_SERVER|
+  file=web/server.py|Starlette+uvicorn|port=IGOR_WEB_PORT=8080
+  endpoints=GET /(chat UI)|WS /ws|POST /api/cc_send|POST /api/upload|GET /api/outbox[/{file}]|GET /api/dashboard
+  public_api=web_server.send(text,thread_id)|web_server.broadcast_activity(state)
+  activity_state=current_action,current_tier,memory_count,habit_count,milieu_state
+  fallback=embedded HTML when Svelte dist/ not built
+
+LISTENER|
+  file=network/listener.py|unified incoming queue
+  polling=0.5s idle loop|drains Discord+web queues into shared incoming Queue
+  thread=daemon thread with own asyncio loop
+
+DISCORD|
+  file=network/discord_bot.py
+  events=on_message,slash commands
+  queues=NetworkMessage to incoming queue
+
+PATHS|
+  inbox=~/.TheIgors/igor_wild_0001/inbox/|InboxWatcher detects new files every 5s|salience=0.9
+  outbox=~/.TheIgors/igor_wild_0001/outbox/|Igor writes files here for download
+
+KNOWN_FAILURES|F008(web-no-response),F011(web-no-response-general)

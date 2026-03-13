@@ -1,0 +1,64 @@
+DOC|inertia_registry|v1|updated=2026-03-13
+META|purpose=every module with inertia level + reason; load before any self-edit
+META|levels=HIGH(0.9+),MEDIUM(0.5-0.7),LOW(0.2-0.4)
+META|rule=HIGH requires Akien review; MEDIUM discuss before editing; LOW freely improvable
+
+// ── HIGH — never modify without overwhelming justification + Akien review ─────
+
+HIGH|wild_igor/igor/brainstem/core_patterns.py|genesis init + CP1-CP6 narratives; corruption here = identity destruction
+HIGH|wild_igor/igor/brainstem/amm_diagnostics.py|memory graph health; wrong diagnostics → wrong self-edit decisions
+HIGH|wild_igor/igor/memory/models.py|Memory dataclass + MemoryType enum; isinstance breaks on reload; all seeds depend on this
+HIGH|wild_igor/igor/cognition/reasoners/base.py|transport hierarchy; wrong base = all reasoners broken
+HIGH|wild_igor/igor/memory/db_proxy.py|owns all SQLite connections; corruption here = data loss
+
+// ── MEDIUM — discuss with Akien before editing ────────────────────────────────
+
+MEDIUM|wild_igor/igor/main.py|main loop + turn processing; changes affect every turn
+MEDIUM|wild_igor/igor/memory/cortex.py|all memory r/w; wrong change = corrupted graph
+MEDIUM|wild_igor/igor/cognition/inference_gateway.py|all inference routing; wrong change = silent tier failures
+MEDIUM|wild_igor/igor/cognition/thalamus.py|intent classification; wrong change = misrouted turns
+MEDIUM|wild_igor/igor/cognition/prefrontal_cortex.py|deliberate reasoning + validate_against_core gate
+MEDIUM|wild_igor/igor/cognition/narrative_engine.py|LTM promotion + NE daemon; wrong change = memory corruption
+MEDIUM|wild_igor/igor/cognition/basal_ganglia.py|habit scoring + lateral inhibition; wrong change = habit chaos
+MEDIUM|wild_igor/igor/cognition/milieu.py|emotional state + persistence; affects habit thresholds everywhere
+MEDIUM|wild_igor/igor/cognition/system_prompt.py|CHARACTER layer; wrong change = identity violation
+MEDIUM|wild_igor/igor/cognition/cloud_mode.py|3-condition gate; wrong change = silent cloud disable or runaway spend
+MEDIUM|wild_igor/igor/cognition/reasoners/anthropic.py|tier.5 direct spend; wrong change = runaway cost
+MEDIUM|wild_igor/igor/cognition/reasoners/openrouter_reasoner.py|tiers 3/3.5/4; primary inference path
+
+// ── LOW — freely improvable; hot-reloadable ──────────────────────────────────
+
+LOW|wild_igor/igor/tools/filesystem.py|sandboxed file r/w; LOW risk; hot-reloadable
+LOW|wild_igor/igor/tools/self_edit.py|self-edit mechanics; LOW (gate=IGOR_SELF_EDIT_ENABLED)
+LOW|wild_igor/igor/tools/hot_reload.py|reload tool; LOW; hot-reloadable (ironic but safe)
+LOW|wild_igor/igor/tools/runner.py|bash+python exec; LOW; gate=run permissions
+LOW|wild_igor/igor/tools/web_search.py|external search; LOW; no state
+LOW|wild_igor/igor/tools/ebook_reader.py|reading pipeline; LOW; CIFS handle via _local_copy()
+LOW|wild_igor/igor/tools/budget.py|spend tracking; LOW; wrong change = incorrect budget only
+LOW|wild_igor/igor/tools/metrics.py|/metrics output; LOW; cosmetic
+LOW|wild_igor/igor/tools/word_graph.py|word graph tools; LOW; graph is self-healing
+LOW|wild_igor/igor/tools/senses.py|camera/audio; LOW; no state
+LOW|wild_igor/igor/tools/interpretive.py|interpretive edge tools; LOW
+LOW|wild_igor/igor/tools/notebook.py|notes; LOW
+LOW|wild_igor/igor/tools/training.py|corpus training; LOW; gate=disk governor
+LOW|wild_igor/igor/tools/registry.py|tool registry|LOW — but do NOT reload registry itself; only modules that register into it
+LOW|wild_igor/igor/cognition/word_graph.py|word graph engine; LOW; SQLite-backed; self-healing
+LOW|wild_igor/igor/cognition/backchannel.py|nod/think/full; LOW; gate=IGOR_BACKCHANNEL
+LOW|wild_igor/igor/cognition/response_habituation.py|vocab frequency; LOW; passive tracker
+LOW|wild_igor/igor/web/server.py|web UI; LOW; daemon thread; restart to change
+LOW|wild_igor/igor/thalamus.py|alias to cognition/thalamus.py if exists; LOW
+LOW|wild_igor/igor/dashboard/|UI components; LOW; cosmetic
+
+// ── HOT-RELOAD ELIGIBLE (stateless, safely reloadable without restart) ────────
+
+RELOADABLE|wild_igor/igor/tools/*.py (except registry.py)|re-registers on reload automatically
+RELOADABLE|wild_igor/igor/cognition/word_graph.py|stateless logic; SQLite owns state
+RELOADABLE|wild_igor/igor/cognition/thalamus.py|pure classification logic; no live state
+RELOADABLE|wild_igor/igor/cognition/backchannel.py|pure logic; no live state
+RELOADABLE|wild_igor/igor/cognition/inference_gateway.py|DAG is data; tier reasoners re-init
+
+NOT_RELOADABLE|wild_igor/igor/memory/cortex.py|owns live DB proxy
+NOT_RELOADABLE|wild_igor/igor/memory/models.py|dataclass defs; isinstance breaks
+NOT_RELOADABLE|wild_igor/igor/brainstem/|HIGH inertia; never
+NOT_RELOADABLE|wild_igor/igor/web/server.py|live uvicorn loop
+NOT_RELOADABLE|wild_igor/igor/cognition/narrative_engine.py|live daemon thread

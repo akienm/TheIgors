@@ -1,0 +1,41 @@
+DOC|subsystem_tools|v1|updated=2026-03-13
+META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
+META|files=tools/*.py,tools/registry.py
+
+DESIGN_POINTS|
+  DP1|AI-agnostic: tools know nothing about which AI calls them; reasoner adapters convert to protocol
+  DP2|self-registration: each module calls registry.register(Tool(...)) at module level on import
+  DP3|schema normalization: to_openai_schema() wraps shorthand params in {"type":"object","properties":{}} for gpt-4o-mini
+  DP4|hot-reloadable: reload_module() re-executes registration; registry updated automatically
+  DP5|reactive habits: code_ref+twm_ttl_seconds in PROC metadata → tool auto-dispatch + TWM result
+
+REGISTRY|
+  class=Tool(name,description,parameters,fn)|execute(**kwargs)→str
+  to_anthropic_schema()|to_openai_schema()|to_text_description()
+  registry.execute(name,kwargs)|returns error string on unknown tool (never raises)
+  load=tools/__init__.py imports all modules; hot_reload.py added 2026-03-13
+
+KEY_TOOLS|
+  self_edit|patch_source_file(preferred),edit_source_file|gate=IGOR_SELF_EDIT_ENABLED|auto-commit+push
+  hot_reload|reload_module(module_name),list_loaded_modules|HIGH inertia blocked|#207
+  filesystem|read_file,write_file,list_directory,read_system_file|sandboxed to /home/akien
+  runner|run_bash,run_python,get_current_time,restart_self(note="")|restart exits code 42
+  senses|take_photo,record_audio,list_cameras
+  web_search|web_search(query)
+  budget|get_budget_status,set_spending_cap,check_openrouter_balance,is_cloud_blocked
+  ebook_reader|find_book,open_book,read_chunk,jump_to_chapter,reading_position,list_reading_sessions
+  word_graph|index_text_into_word_graph,query_word_graph_stats,analyze_word_graph,train_word_graph
+  interpretive|add_interpretive_edge,get_interpretive_edges,interpretive_traverse
+  metrics|get_metrics_report — /metrics slash command output
+  filesystem_extra|check_resource_load,check_disk_usage,evaluate_threshold_habits
+  arbiter|arbiter_submit|gate=IGOR_ARBITER_ENABLED=false
+
+EBOOK_READER|
+  calibre_library=~/.TheIgors/akien/onedrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library
+  formats=epub,mobi,azw,pdf|tokenization=nltk sentences
+  stale_handle=_local_copy() copies to /tmp before read (handles CIFS drops)
+  state=reading_state.json
+  damasio_books=ids 3023,3300,3032,3025,3026
+
+KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
+DECISIONS|D030

@@ -1,0 +1,110 @@
+DOC|architecture_root|v1|updated=2026-03-13
+META|inertia=MEDIUM|purpose=system orientation + subsystem index|load=every session
+META|see_also=glossary.dsb,igor_identity_master.dsb,decisions_log.dsb
+META|subsystem_detail=subsystem_*.dsb files
+
+THESIS|
+  everything_is_memory=nodes with edges; habits=memories whose edges fire automatically
+  LLMs=graph trainers; graph=thinker; graph faster than any LLM
+  meaning=residue of successful prediction; repeated access→habituation=proxy for predictive success
+  code=scaffolding for undertrained graph; scaffolding comes down as graph densifies
+  layers_of_graphs=inference engine (learned rules compiled by LLMs, executed by symbolic traversal)
+
+INSTANCE|
+  id=igor_wild_0001|host=akiendelllinux|db=~/.TheIgors/igor_wild_0001/wild-0001.db
+  launch=igor bash alias|loops on exit_code=42 (restart)|env re-read every restart
+  source=~/TheIgors/wild_igor/igor/|runtime=~/.TheIgors/igor_wild_0001/
+  venv=~/TheIgors/venv/|python=3.12.3
+
+MEMORY_GRAPH|
+  storage=SQLite via DatabaseProxy → Cortex|all r/w through cortex.py only
+  tables=memories,ring_memory,twm_observations,interpretive_edges,word_graph
+  genesis=44 seeds (1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC genesis + 9 new PROC)
+  guard=total_count()==44 at boot; mismatch→alert
+  integrity=integrity_check() verifies CP1-CP6 at boot
+  portable=get_portable() excludes EPISODIC+CREDENTIAL_REF+portable=False
+  soul_export=~/.TheIgors/SOUL.md (CP1-CP6) + IDENTITY.md (ID1-ID14) written every boot
+
+MAIN_LOOP|
+  order=stdin FIRST → _drain_network → background → _drain_action_impulses
+  thread_workers=per-thread worker catches exceptions; web_server.send() on completion
+  boot_sequence=DB init → integrity_check → embed backfill (if not cloud_mode) → banner → main loop
+  boot_banner=═══ IGOR {id} — BOOT COMPLETE ═══ with memory/habit/web counts
+
+SUBSYSTEMS|
+  brainstem|HIGH inertia|genesis init + AMM diagnostics|never modify casually
+  cortex|memory/cortex.py|all SQLite r/w|owns DatabaseProxy|search=text→cosine rerank
+  db_proxy|memory/db_proxy.py|connection lifecycle|timing+metrics ring|reconnect on failure
+  thalamus|intent classification|13-category|complexity=low/medium/high→skip_to
+  basal_ganglia|parallel habit scoring|milieu-modulated threshold [0.30,0.70]|PROC_HABIT_COMPILER@0.95
+  NE|narrative_engine.py|daemon thread|reads TWM|integrates→LTM|~60s cycle
+  milieu|3D affect (valence/arousal/dominance)|~/.TheIgors/milieu_global.json|shared across instances
+  word_graph|SQLite-backed two-tier (words+bigrams)|same weights=parse+generate|~/.TheIgors/word_graph.db
+  inference_gateway|ALL inference routing|DAG-based|from_env() at boot|reason() only entry point
+  system_prompt|SHA-256 cached|3 layers: CHARACTER/ORIENTATION_POINTER/SAFETY_CRITICAL
+  backchannel|3-level nod/nod_think/full|fires after thalamus+milieu|gate=IGOR_BACKCHANNEL
+  push_sources|ResourceMonitorSource 60s|threshold habits|short-TTL TWM entries
+  forensic_logger|prepend logs newest-at-TOP|~/.TheIgors/logs/|channels=reasoning,ne,self_edit,tool_calls,memory_ops,metrics,reading
+
+INFERENCE_LADDER|
+  t1|habit|BG score ≥ threshold|no LLM call
+  t2|Ollama qwen2.5:7b|interactive timeout|cloud_mode gates
+  t2_batch|Ollama quality priority|background impulses
+  t3|OR gpt-4o-mini|OPENROUTER_CHEAP_MODEL
+  t35|OR haiku claude-haiku-4.5|OPENROUTER_DEFAULT_MODEL
+  t4|OR sonnet claude-sonnet-4-6|OPENROUTER_INTERACTIVE_MODEL
+  t5|Anthropic direct|inhibited IGOR_TIER5_ENABLED=false
+  t6|arbiter alert|all inference exhausted
+  routing=InferenceGateway.reason(level,skip_to)|level=background|background_batch|interactive
+  skip_to=computed from preparse complexity + milieu dominance|passed to gateway
+
+CLOUD_MODE_GATE|
+  file=cognition/cloud_mode.py|cached 5min
+  conditions=IGOR_CLOUD_TRAINING_ENABLED=true AND OR_balance≥floor AND daytime(06:00-22:59)
+  when_active=prefers cloud inference|NE uses OR|winnow uses OR|Ollama suppressed
+  balance_unknown=-1.0 sentinel|network error→assume funded (not silently disabled)
+
+PIPELINE_PER_TURN|
+  1=backchannel check (thalamus+milieu)
+  2=preparse (gateway.call preparse purpose)
+  3=cortex.search (text→cosine rerank)
+  4=winnow (gpt-4o-mini; gate IGOR_CONTEXT_WINNOW)
+  5=expand_blob_memories (relevance≥0.5)
+  6=gateway.reason (tier cascade)
+  7=ring_push + episodic store + TWM push (igor_said)
+  8=web_server.send
+
+TOOLS|
+  registry=tools/registry.py|Tool dataclass|to_anthropic_schema()|to_openai_schema() normalizes shorthand
+  load=tools/__init__.py imports all modules; each self-registers at module level
+  hot_reload=tools/hot_reload.py|reload_module()+list_loaded_modules()|HIGH inertia blocked
+  key_tools=self_edit,patch_source_file,reload_module,get_current_time,check_resource_load,ebook_reader
+  reactive_habit=code_ref+twm_ttl_seconds in PROC metadata→tool auto-dispatch+TWM result
+
+WEB|
+  server=web/server.py|Starlette+uvicorn|port=IGOR_WEB_PORT=8080
+  cc_bridge=POST /api/cc_send {"content":"..."}|injects as author=claude-code
+  websocket=/ws|per-client asyncio.Queue|fan-out broadcast
+
+SELF_EDIT|
+  gate=IGOR_SELF_EDIT_ENABLED
+  preferred=patch_source_file (line-range + syntax check before write)
+  auto=git commit+push after success
+  blocked=brainstem/ without Akien review
+  hot_reload=reload_module() after patch; HIGH inertia modules require restart
+  inertia_levels=HIGH:brainstem/,memory/models.py,reasoners/base.py | MEDIUM:cognition/,anthropic.py,main.py | LOW:tools/,dashboard/
+
+SECURITY|
+  validate_against_core=Haiku semantic check before response delivery|violation→ring+arbiter urgency=0.9
+  GENESIS_CP_NARRATIVES=verified at boot|mismatch→refuse operation
+  arbiter=IGOR_ARBITER_ENABLED=false|queue at ~/.TheIgors/igor_wild_0001/arbiter/pending.json
+
+KEY_ENV|
+  IGOR_DB_PATH|OPENROUTER_API_KEY|KOBOLDCPP_HOST/PORT|OLLAMA_LOCAL_MODEL
+  IGOR_SELF_EDIT_ENABLED|IGOR_TIER5_ENABLED|IGOR_ARBITER_ENABLED
+  IGOR_CLOUD_TRAINING_ENABLED|IGOR_CLOUD_BUDGET_FLOOR_USD
+  IGOR_CONTEXT_WINNOW|IGOR_BACKCHANNEL|IGOR_SKIP_PREPARSE_ON_CONFIDENT
+  OPENROUTER_CHEAP_MODEL|OPENROUTER_DEFAULT_MODEL|OPENROUTER_INTERACTIVE_MODEL
+
+OPEN_GAPS|see gap_analysis.dsb
+  G40|G44p1|G45|G46|G37ph2|G48|architecture_rewrite

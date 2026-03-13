@@ -1,0 +1,27 @@
+DOC|subsystem_cluster|v1|updated=2026-03-13
+META|inertia=LOW|parent=architecture_root.dsb
+META|files=~/.TheIgors/local/machines.json,tools/cluster_ssh.py,cognition/local_pool.py
+
+MACHINES|
+  akiendelllinux|role=main_loop|this instance
+  akienyoga9i|role=realtime|batch pool port 5002|Qwen2.5-14B-Q4
+  akiendell|role=background
+  akienyogai7|role=batch
+
+PRIORITY_ORDER|realtime→main_loop→background→batch
+  // highest priority tried first; better latency without query classification
+
+LOCAL_POOL|
+  class=LocalKoboldPool+BatchKoboldPool in brainstem/local_pool.py
+  routing=RoutingWeights(cost=0.60,speed=0.40); ±0.05 per session; reset each boot
+  slow_detection=rolling 5-call avg > BATCH_SLOW_THRESHOLD_SECS → prefer OR fallback
+  benchmark=_run_benchmark() at boot; 3 short prompts; cached 24h per machine
+  latency_budget=hard raise if estimated>LATENCY_BUDGET_SECONDS; triggers cloud escalation
+
+REQUIRED_MODELS|
+  all_machines=nomic-embed-text (embeddings only)
+  main_loop=qwen2.5:7b (OLLAMA_LOCAL_MODEL)
+  yoga9i_batch=qwen2.5-14b-Q4 via KoboldCpp port 5002
+
+DECISIONS|D019,D023,D025
+KNOWN_FAILURES|F002(ollama-crash-loop — ollama.service override needed)

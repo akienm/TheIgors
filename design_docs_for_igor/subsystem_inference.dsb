@@ -1,0 +1,46 @@
+DOC|subsystem_inference|v1|updated=2026-03-13
+META|inertia=MEDIUM|parent=architecture_root.dsb
+META|files=cognition/inference_gateway.py,cognition/cloud_mode.py,cognition/reasoners/
+
+DESIGN_POINTS|
+  DP1|single entry point: InferenceGateway.reason() is the ONLY call site for all inference; no tier strings leak to callers
+  DP2|from_env() instantiates all tier reasoners at boot; stored on Igor as self._gateway
+  DP3|DAG routing for pipeline calls (preparse/winnow/NE/think) via gateway.call(purpose_id)
+  DP4|tier cascade for interactive/background via gateway.reason(level, skip_to)
+  DP5|cloud_mode gate: 3 conditions (env+balance+daytime); 5-min cache; _BALANCE_UNKNOWN sentinel prevents silent disable
+  DP6|on_tier callback: fires at each tier attempt; main.py uses for activity broadcast
+  DP7|skip_to computed by caller (milieu dominance + complexity); passed to gateway; phase 2 will move inside gateway
+  DP8|local_only parameter: gateway returns graceful message without hitting any API
+
+TIER_ROUTING|
+  level=background_batch → pool.reason_batch() (local quality priority); return empty on fail
+  level=background → cloud_active→t3/impulse else t2/impulse; return empty on fail (never blocks)
+  level=interactive → cascade from skip_to: t3→t35→t4→t5(inhibited)→t6(arbiter)
+
+SKIP_TO_SIGNALS|
+  tier.3=low complexity + low milieu dominance
+  tier.3.5=medium complexity OR all interactive (D035 floor)
+  tier.4=high complexity OR milieu dominance escalation OR NE ambiguity
+
+DAG_PURPOSES|preparse,winnow,ne,think
+  preparse|local_preferred→ollama_preparse[fallback→or_preparse]|cloud_preferred→or_preparse
+  winnow|local_preferred→ollama_winnow[fallback→or_winnow]|cloud_preferred→or_winnow
+  ne|cloud_training→or_ne|ne_local_ok→ollama_ne[fallback→or_ne]
+  think|always→ollama_think (no cloud fallback)
+
+REASONERS|
+  t2=OllamaReasoner(qwen2.5:7b)|OLLAMA_LOCAL_MODEL
+  t3=OpenRouterReasoner(gpt-4o-mini)|OPENROUTER_CHEAP_MODEL
+  t35=OpenRouterReasoner(claude-haiku-4.5)|OPENROUTER_DEFAULT_MODEL
+  t4=OpenRouterReasoner(claude-sonnet-4-6)|OPENROUTER_INTERACTIVE_MODEL
+  t5=AnthropicReasoner|IGOR_TIER5_ENABLED=false (inhibited)
+
+CLOUD_MODE|
+  file=cognition/cloud_mode.py|cached 5min|invalidate_cache() on .env reload
+  condition1=IGOR_CLOUD_TRAINING_ENABLED=true
+  condition2=OR balance≥IGOR_CLOUD_BUDGET_FLOOR_USD(default $10)
+  condition3=local hour 06:00-22:59
+  balance_unknown=-1.0 sentinel; network error→assume funded; never silently disable
+
+KNOWN_FAILURES|F003(IMPULSE_SKIP),F004(cloud-mode-disabled),F005(tier-model-inversion),F006(gateway-attr-error)
+DECISIONS|D015,D023,D025,D026,D031,D032,D033,D034,D035,D039,D040,D041

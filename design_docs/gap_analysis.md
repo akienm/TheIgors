@@ -662,4 +662,48 @@ NE tags narrative `write_ring()` with active `thread_id` (most common in obs_lis
 
 ---
 
-*Updated: 2026-03-12 by Claude Code.*
+## Update: Session 2026-03-13a — Non-blocking concurrent turn processing
+
+### Resolved
+
+**#200 — Non-blocking network dispatch** ~~CLOSED 2026-03-13a~~
+
+**Observed**: `_process()` is synchronous. Web messages were buffered 3s (DEBOUNCE_SECS) before dispatch, then blocked the main loop for the full LLM call duration (~30-120s). A second message arriving while LLM in-flight would also wait 3s + be serialized behind the first.
+
+**Root cause**: Single-threaded model where all inference ran in the main loop. `_drain_network()` buffered messages into `_net_debounce` dict; `_flush_debounced_network()` processed them inline.
+
+**Fix**:
+1. **Removed** `_net_debounce`, `_flush_debounced_network()`.
+2. **Added** per-thread-id `queue.Queue` + daemon worker thread (`_thread_queues`, `_thread_workers`).
+3. **`_drain_network()`** now dispatches immediately via `_enqueue_network_msg()` for regular messages. CC bridge and slash commands still processed inline (fast, ordering-critical).
+4. **`_thread_worker(thread_id, q)`**: drains queue sequentially; exits after 5s idle; restarted on next message. LLM calls happen here, never in the main loop.
+5. **Stdin debounce** reduced from 3000ms to 500ms (handles multi-line pastes; terminal only).
+
+**Result**: Web messages dispatched within one main loop tick (≤0.5s). LLM inference in worker threads. Main loop keeps running during inference. Second message arrives while LLM in-flight → queued, processed sequentially after. G64 cross-turn self-repair still works via ring_memory.
+
+---
+
+## Update: Session 2026-03-13a (continued) — Tiered log hierarchy (#201/#202/#203)
+
+### Resolved
+
+**#201 — interaction.log** ~~CLOSED 2026-03-13a~~
+
+One line per non-impulse turn appended to `interaction.YYYYMMDD.log`. Format: `timestamp|turn_id|thread_id|tier|elapsed_ms|$cost|IN:preview|OUT:preview`. Daily rotation, 7-day retention. The first log to read — `turn_id` is the join key to all others.
+
+**#202 — startup.log** ~~CLOSED 2026-03-13a~~
+
+One structured block per boot appended to `startup.log`. Contains: memory count, habit count, word graph size, component health (ollama, openrouter), warm context status. Keeps last 50 boots (trims oldest on write). Immediate answer to "was the boot clean?"
+
+**#203 — turn_trace.YYYYMMDD.log** ~~CLOSED 2026-03-13a~~
+
+Full TurnContext dict (JSON) per turn. `threading.local` dict built up by `log_pipeline_step()` (dual-use — no new call sites for existing stages) + new `init_turn_ctx` / `finalize_turn_ctx` bookends in `_process_inner()`. Daily rotation, 2-day retention. Gate: `IGOR_TURN_TRACE` (default true). `/trace N` command prints last N traces.
+
+**Triage workflow:**
+1. `tail interaction.log` → spot bad turn + turn_id
+2. `grep <turn_id> inference_io.log` → see raw LLM I/O
+3. `grep <turn_id> turn_trace.log` → see full state machine (thalamus/routing/habit/cost)
+
+---
+
+*Updated: 2026-03-13 by Claude Code.*

@@ -1,0 +1,96 @@
+DOC|failure_modes|v1|updated=2026-03-13
+META|purpose=known failure modes + root causes + fixes — load when debugging anomalies
+META|format=ID|category|symptom|root_cause|fix|detection
+
+// ── OOM / Memory ──────────────────────────────────────────────────────────────
+
+F001|OOM|igor-killed-by-kernel|date=2026-03-10-13:24
+  symptom=Igor OOM-killed mid-session; restarted silently
+  root_cause=word_graph JSON grew to 191MB (~4-8GB in Python after 158 books trained) + bulk training corpus fetch concurrent
+  fix=word_graph migrated to SQLite (G41 closed 2026-03-10c); 1MB training cap IGOR_TRAINING_MAX_CHARS in training_corpus.py
+  detection=check RSS before training; /metrics shows word_graph node count
+  note=SQLite-backed word_graph is the permanent fix; JSON format is gone
+
+F002|HARD-FREEZE|system-unresponsive|date=2026-03-10-17:59
+  symptom=full system hard freeze requiring power cycle
+  root_cause=ollama.service with Restart=always + no burst limit → 9771 restarts → "address already in use" → 20+ journal writes/min → journal I/O overwhelmed disk
+  fix=ollama.service override: Restart=on-failure, RestartSec=10, StartLimitIntervalSec=120, StartLimitBurst=5; sudo systemctl daemon-reload
+  status=fix needs sudo — may not be applied yet; verify with systemctl cat ollama.service
+  detection=journalctl -u ollama.service | grep "Started" | wc -l (should be low)
+
+// ── Inference Routing ─────────────────────────────────────────────────────────
+
+F003|IMPULSE_SKIP|background-turns-silently-dropped|date=2026-03-12
+  symptom=IMPULSE_SKIP logged; NE/background habits produce no output
+  root_cause=OllamaReasoner.reason() raised RuntimeError("cloud_mode active") unconditionally; didn't check force_local flag
+  fix=force_local=True propagates from OllamaPool → OllamaReasoner, bypassing cloud_mode gate for background turns
+  status=fixed G62/2026-03-12o
+  note=if IMPULSE_SKIP reappears at daytime: check cloud_mode sentinel (F004)
+
+F004|CLOUD-MODE-DISABLED|cloud-silently-off-during-daytime|date=2026-03-13
+  symptom=cloud_mode returns False despite env enabled + daytime; OR calls fail or not attempted
+  root_cause=_or_balance() returned 0.0 on network error; cloud_mode interpreted as "balance=zero=disabled"
+  fix=_BALANCE_UNKNOWN=-1.0 sentinel; network error → assume funded (log warning, don't disable)
+  status=fixed 2026-03-13a
+  detection=check cloud_mode.py _or_balance() — must return _BALANCE_UNKNOWN not 0.0 on exception
+
+F005|TIER-MODEL-INVERSION|both-t35-and-t4-using-sonnet|date=2026-03-12
+  symptom=cost $0.05-0.24/turn; expected $0.014-0.016/turn
+  root_cause=OPENROUTER_INTERACTIVE_MODEL=sonnet used for both t3.5 and t4; t3.5 should use OPENROUTER_DEFAULT_MODEL=haiku
+  fix=t3.5→OPENROUTER_DEFAULT_MODEL; t4→OPENROUTER_INTERACTIVE_MODEL; two different env vars
+  status=fixed G60/2026-03-12m
+  detection=/metrics shows per-tier cost; t3.5 cost should be ~haiku not ~sonnet
+
+F006|GATEWAY-ATTR-ERROR|AttributeError-from_env|date=2026-03-13
+  symptom=boot fails: AttributeError: type object 'InferenceGateway' has no attribute 'from_env'
+  root_cause=from_env() and reason() placed at module level inside make_context() function body (4-space indent = inside function, not class)
+  fix=move both methods inside InferenceGateway class body after describe(); remove module-level duplicates
+  status=fixed 2026-03-13b
+  detection=python -c "from inference_gateway import InferenceGateway; InferenceGateway.from_env()"
+
+// ── Tool / Schema ─────────────────────────────────────────────────────────────
+
+F007|TOOL-SCHEMA-ERROR|gpt-4o-mini-rejects-tool|recurring
+  symptom=gpt-4o-mini: "Invalid schema for function 'X': schema must have type 'object'"
+  root_cause=shorthand params format {param: {type, desc}} missing {"type":"object","properties":{}} wrapper
+  fix=registry.py to_openai_schema() normalizes: if type!="object" and no "properties" → wrap
+  status=fixed 2026-03-13a
+  detection=any new tool registered with shorthand params; test with gpt-4o-mini call
+
+F008|TWM-PUSH-KWARG|content-vs-content_csb|date=2026-03-13
+  symptom=web responses never delivered; WORKER error in logs; turn completes but no output to browser
+  root_cause=cortex.twm_push() called with content= instead of content_csb=; TypeError escaped _process_inner(); web_server.send() never ran
+  fix=use content_csb= parameter; wrap post-response bookkeeping in try/except Exception: pass
+  status=fixed 2026-03-13a
+  note=any exception escaping _process_inner() silently drops the web response; thread_worker catches it but send() already missed
+
+// ── Boot / Startup ────────────────────────────────────────────────────────────
+
+F009|BOOT-INFERENCE-CALL|inference-during-boot-before-banner|date=2026-03-13
+  symptom=inference call visible in console before BOOT COMPLETE banner; can't tell when Igor is ready
+  root_cause=backfill_embeddings() called during boot; makes Ollama calls for any memory lacking embedding
+  fix=gate on not is_cloud_training_active(); skip backfill during cloud mode (Ollama not needed)
+  status=fixed 2026-03-13a
+  detection=BOOT COMPLETE banner should now appear before any inference output
+
+F010|SWAP-EXHAUSTION|system-slow-or-frozen|date=2026-03-10
+  symptom=system very slow; possible freeze
+  root_cause=original swap was 512MB; insufficient for Igor + Ollama + browser
+  fix=swap expanded to 8GB (/swapfile, persisted in /etc/fstab)
+  status=fixed 2026-03-10; verify: free -h should show ~8GB swap
+
+// ── Web / Network ─────────────────────────────────────────────────────────────
+
+F011|WEB-NO-RESPONSE|browser-shows-input-but-no-reply|recurring
+  symptom=web UI shows user message but Igor's reply never appears
+  root_cause_1=F008 (content= kwarg)
+  root_cause_2=any exception in _process_inner() before web_server.send()
+  root_cause_3=thread_worker catches exception; send() missed
+  diagnostic=check ~/.TheIgors/logs/forensic_*.log for WORKER errors; check turn_trace log
+  fix=all post-response bookkeeping must be in try/except; web_server.send() must be in finally block
+
+F012|STALE-CIFS-HANDLE|ebook-reader-fails-on-network-share|recurring
+  symptom=ebook_reader fails with stale NFS/CIFS handle on second read attempt
+  root_cause=network share (Calibre library on OneDrive/CIFS mount) drops file handles between calls
+  fix=_local_copy() in ebook_reader.py copies file to /tmp before reading; handles stale CIFS transparently
+  status=implemented; if reappears check _local_copy() is being called

@@ -1,0 +1,42 @@
+DOC|subsystem_memory|v1|updated=2026-03-13
+META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
+META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
+
+DESIGN_POINTS|
+  DP1|everything-is-memory: unified model; no special cases; habits=PROC; values=high-inertia; all connected
+  DP2|graph structure: ROOT→CP(6)→ID(14)→RM(4)→PROC/EPISODIC/etc; depth drives inertia
+  DP3|inertia computed not stored: base(type)+0.1*log1p(activation)+0.05*len(children)+0.02*depth
+  DP4|all r/w through Cortex only; never raw SQL from reasoners or tools
+  DP5|DatabaseProxy wraps all connections: timing+metrics+reconnect; callers never know conn dropped
+  DP6|hybrid search: text keyword Phase1 → cosine rerank Phase2 (nomic-embed-text); graceful degradation
+  DP7|portable flag: portable=True syncable; portable=False instance-local (episodic,credentials,paths)
+  DP8|interpretive_edges table: 4-part directed edges (direction/condition/meaning_payload/action_pointer); BFS traversal
+  DP9|blob support: has_blob=True; expand_blob_memories() appends full content on relevance≥0.5
+
+MEMORY_TYPES|ROOT,CP,ID,RM,EPISODIC,PROCEDURAL,INTERPRETIVE,EXPERIENTIAL,FACTUAL
+  // see glossary.dsb for full definitions
+
+TABLES|
+  memories|main graph|id,narrative,memory_type,parent_id,children_ids,valence,arousal,dominance,activation_count,inertia_override,portable,embedding,metadata
+  ring_memory|FIFO-50|category,content,timestamp,turn_id,thread_id
+  twm_observations|push-only sandbox|source,content_csb,salience,urgency,ttl_seconds,expires_at,attractor_weight,instance_id
+  interpretive_edges|4-part directed|source_id,target_id,direction,condition,meaning_payload,action_pointer
+  word_graph|(separate DB ~/.TheIgors/word_graph.db)|nodes+edges+bigrams
+
+KEY_METHODS|
+  cortex.store()|write memory; increments activation
+  cortex.search(query)|Phase1 text→Phase2 cosine; returns ranked list
+  cortex.recall(id)|fetch by ID; increments activation
+  cortex.twm_push(source,content_csb,salience,urgency,ttl_seconds)|deposit to TWM
+  cortex.ring_push(category,content)|append to ring; FIFO evicts oldest
+  cortex.get_by_type(type)|all memories of a type
+  cortex.get_portable()|exportable memories (excludes EPISODIC+CREDENTIAL_REF+portable=False)
+  cortex.interpretive_traverse(seed_id)|BFS from seed via interpretive_edges
+  cortex.expand_blob_memories(memories)|append blob content for relevance≥0.5
+  db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count
+
+GENESIS|44 seeds: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC + 9 PROC seeds
+  guard=total_count()==44 checked at boot
+  verify=GENESIS_CP_NARRATIVES dict verified at boot; mismatch→refuse operation
+
+DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039

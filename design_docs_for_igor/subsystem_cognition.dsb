@@ -1,0 +1,60 @@
+DOC|subsystem_cognition|v1|updated=2026-03-13
+META|inertia=MEDIUM|parent=architecture_root.dsb
+META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py
+
+THALAMUS|
+  purpose=classify intent + produce complexity signal
+  intents=13 categories incl creative_request,question,command,greeting,status_check,etc
+  outputs=ParsedInput(is_command,command,user_text,intent,complexity,preparse_result,core_input)
+  complexity=low|medium|high → drives skip_to
+  fast_path=greeting/command/habit-match detected in pure Python (<1ms); skips LLM preparse
+  gap=G42: complexity scorer must run on parsed.core_input not full assembled input (thread preamble inflates score)
+
+BASAL_GANGLIA|
+  purpose=parallel habit scoring; winner-take-all above threshold
+  score=trigger_score(1.0 if trigger in input) + keyword_bonus(≤0.15) + activation_bonus(≤0.15) + inertia_bonus(≤0.10) + valence_bonus(≤0.10)
+  threshold=BASE 0.50; modulated by milieu: high_arousal→lower(more reactive); low_dominance→higher(more cautious); clamped [0.30,0.70]
+  lateral_inhibition=max scorer wins; tiebreak by activation_count
+  compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection
+  audit=score= field in HABIT_EXEC ring entries; low scores = trigger too broad
+  decisions=D029,D030,D037
+
+MILIEU|
+  purpose=persistent 3D affect (valence/arousal/dominance); drifts slowly; shapes thresholds
+  ema=α_up=0.25 (fast rise); α_down=0.05 (slow fall); dominance_baseline=+0.3 (default competent)
+  update=friction→arousal; friction_inverse→dominance; roi→dominance_secondary
+  persist=~/.TheIgors/milieu_global.json (shared across instances)
+  consumers=BG(threshold), MilieuInterruptor(extremes→NE alert), MilieuSource(TWM 60s)
+  decisions=D036
+
+NARRATIVE_ENGINE|
+  purpose=background LTM consolidation + prospective prediction
+  runs=daemon thread; ~60s cycle; yields to interactive (polls self._is_processing up to 10s)
+  reads=TWM sorted by urgency*salience descending
+  outputs=narrative synthesis; LTM promotion (importance≥0.7); action_impulses to TWM
+  prospective=predict_next() on recent TWM context; predicted topics merged into memory search
+  link_reinforcement=correct prediction→+0.05 to predicted habit seeds; wrong→-0.10+0.05 to actual
+  gate=IGOR_NE_ENABLED; model=OR gpt-4o-mini (cloud_mode) or local NE model
+  decisions=D007,D009,D018
+
+BACKCHANNEL|
+  purpose=fast low-cost acknowledgment before full response
+  levels=nod(immediate ack)|nod_think(ack+thinking)|full(backchannel response)
+  fires=after thalamus+milieu; before BG/LLM
+  routes=web session via thread_id
+  gate=IGOR_BACKCHANNEL
+  habits=NOD,NOD_THINK,INDEED,INTERESTING,HM (seeded via claudecode/seed_backchannel_habits.py)
+
+WORD_GRAPH|
+  purpose=in-memory two-tier (words+bigrams); same weights=parsing+generation
+  thesis=recognition and generation are the same operation in both directions
+  storage=SQLite ~/.TheIgors/word_graph.db (migrated from JSON 2026-03-10; G41 closed)
+  training=index_text_into_word_graph() tool; training_corpus.py staged fetch→train→evict
+  methods=predict_next(context)→probable next tokens; score_habit(text,habit_triggers)→relevance
+  decisions=D037,D038
+
+RESPONSE_HABITUATION|
+  purpose=passive vocab frequency tracker; detects overused phrases
+  method=decay_factor() [0,1]; high frequency = high decay = Igor notices and varies
+  persist=response_habituation.json
+  exposed=/metrics

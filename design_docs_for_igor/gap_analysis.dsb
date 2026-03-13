@@ -1,0 +1,85 @@
+DOC|gap_analysis|v1|updated=2026-03-13
+META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
+META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
+
+// ── OPEN GAPS (priority order) ────────────────────────────────────────────────
+
+G42|thread-context-complexity-inflation|~2h|ticket=#none
+  what=complexity scorer reads full assembled input (preamble+message) not parsed.core_input
+  symptom=greetings with thread context → tier.3.5-4 all day; cost inflated
+  fix=run complexity scoring on parsed.core_input only
+  trigger=fix before performance sprint
+
+G46|memory-model-fields|~3h|HIGH_INERTIA_CAREFUL
+  what=Memory dataclass missing: source(str), confidence(float 0-1), context_of_encoding(dict VAD+note)
+  why=source enables trust tiers; confidence affects retrieval weighting; context_of_encoding = amygdala analog (high-arousal encoding → crystallized)
+  blocker=models.py HIGH inertia; requires cortex.py migration + all seed scripts updated
+  trigger=when Memory model design is stable enough to commit to schema change
+
+G63|routing-self-awareness|~2h
+  what=Igor writes plans saying "local inference" but D035 overrides tier.2 unconditionally for interactive turns
+  symptom=Igor's stated plans contradict actual routing; incorrect cost model in self-generated plans
+  fix=seed PROC_ROUTING_INTROSPECTION: accurate narrative of live routing stack (D035 floor=t3.5 for interactive; t2=background/NE/impulse only)
+  trigger=any session where Igor is planning his own work
+
+G48|mobile-offline-sync|large|ticket=#190
+  what=phone Igor (small model, stripped habits) + sync protocol when reconnected
+  requires=DatabaseProxy (#211, done), portable memory field (done), conflict resolution (inertia*confidence*recency merge)
+  why_open=productization; not today's work; foundation laid
+  trigger=after stability sprint + training run
+
+G28p3|thread-context-depth|small
+  what=_THREAD_MAX_HISTORY further tuning; long reading sessions lose framing
+  why_open=P3 polish; not blocking anything
+  trigger=if reading discussions start losing context
+
+// ── VISION GAPS (large, multi-session) ────────────────────────────────────────
+
+G7|question-response-habits|large|ticket=#47
+  what=first-class question-habits (Igor asks proactively) and response-habits (bypass LLM for known situations)
+  status=partial: habit_type=question/response implemented; habit compiler (G11) still needed for full benefit
+  why_open=needs habit training pipeline (>90% coverage target)
+
+G11|inference-free-core|very-large|ticket=#45
+  what=trained habit network handles majority of interactions without LLM; LLM only for novel+eloquence
+  requires=G7 (response-habits), training pipeline, word graph maturity
+  why_open=long-term vision; basal_ganglia+milieu are the foundation; graph must densify first
+
+G15p2|NE-as-predictive-parser|research|ticket=#50
+  what=Phase 1 done (prospective_pass predict_next on TWM); Phase 2 = full incremental predictive parsing
+  why_open=research-level; requires word graph to reach sufficient density
+
+G16|global-milieu-sync|~6h|ticket=none
+  what=multi-instance milieu sync (phone Igor + desktop Igor share emotional state)
+  requires=sync protocol (G48)
+  why_open=blocked on G48
+
+G37p2|dual-word-graphs|ongoing|ticket=#160
+  what=generation_graph trained on Igor's replies only; comprehension signal reinforces what worked
+  status=Phase 1 implemented (gated IGOR_DUAL_WORD_GRAPHS); Phase 2 = comprehension feedback loop
+  why_open=needs more data; observe then enable
+
+// ── SELF-PROGRAMMING EPIC (new, 2026-03-13) ──────────────────────────────────
+
+G-SP1|hot-reload-habit|ticket=#207
+  what=PROC_RELOAD_AFTER_EDIT: self_edit completion → TWM signal → habit fires reload_module()
+  why_open=just designed; implement next session
+
+G-SP2|full-introspection|ticket=#208
+  what=get_internal_state() tool: memory counts, word graph weights, tier latency distributions, error rates, NE salience history
+  why_open=depends on forensic log reader + db_proxy.get_metrics() (proxy done)
+
+G-SP3|test-generation|ticket=#209
+  what=Igor writes tests for his own subsystems; run_test() tool; fixture DB snapshots
+  why_open=depends on G-SP2 + clean service seams
+
+G-SP4|self-directed-rollback|ticket=#210
+  what=rollback_last_edit() + list_recent_self_edits(); Igor reverts bad changes without human
+  why_open=just designed
+
+// ── DOCUMENTATION (#212) ─────────────────────────────────────────────────────
+
+G-D1|dsb-docs-remaining|ticket=#212
+  what=failure_modes.dsb, inertia_registry.dsb, ethical_framework.dsb, subsystem_*.dsb (8-10 files)
+  what=docs/ human docs: project_brief.md, architecture.md, subsystem pages, what_i_learned.md, timeline.md, future.md
+  status=in_progress: FORMAT_SPEC, igor_identity_master, glossary, architecture_root, decisions_log done
