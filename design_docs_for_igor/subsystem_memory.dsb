@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-13
+DOC|subsystem_memory|v1|updated=2026-03-13c
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -7,7 +7,8 @@ DESIGN_POINTS|
   DP2|graph structure: ROOT→CP(6)→ID(14)→RM(4)→PROC/EPISODIC/etc; depth drives inertia
   DP3|inertia computed not stored: base(type)+0.1*log1p(activation)+0.05*len(children)+0.02*depth
   DP4|all r/w through Cortex only; never raw SQL from reasoners or tools
-  DP5|DatabaseProxy wraps all connections: timing+metrics+reconnect; callers never know conn dropped
+  DP5|DatabaseProxy wraps all connections: timing+metrics+reconnect; commit() on success, rollback() on exception (D043)
+  DP10|temporal context injection: ring entries show YYYY-MM-DD HH:MM when not today; memories show "stored Xd ago"; LLM distinguishes past from present (D045)
   DP6|hybrid search: text keyword Phase1 → cosine rerank Phase2 (nomic-embed-text); graceful degradation
   DP7|portable flag: portable=True syncable; portable=False instance-local (episodic,credentials,paths)
   DP8|interpretive_edges table: 4-part directed edges (direction/condition/meaning_payload/action_pointer); BFS traversal
@@ -39,4 +40,4 @@ GENESIS|44 seeds: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC + 9 PROC seeds
   guard=total_count()==44 checked at boot
   verify=GENESIS_CP_NARRATIVES dict verified at boot; mismatch→refuse operation
 
-DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039
+DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045

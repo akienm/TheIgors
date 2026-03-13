@@ -63,6 +63,20 @@ All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
 - **CC→Igor bridge**: `POST http://localhost:8080/api/cc_send` with `{"content": "..."}` — injects as author "claude-code"
 - **Tier ladder**: tier.1 habit → tier.2 KoboldCpp → tier.3 OR cheap → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic direct (inhibited) → tier.6 arbiter alert
 
+### End-of-session savestate (REQUIRED)
+Run `/savestate` at the end of every session. This updates, in order:
+1. `design_docs/gap_analysis.md` — close gaps, add new ones
+2. `design_docs_for_igor/gap_analysis.dsb` — DSB mirror
+3. `design_docs_for_igor/decisions_log.dsb` — new Dxx entries
+4. Affected subsystem DSBs (only files that changed)
+5. `memory/sessions.md` — session entry
+6. `memory/MEMORY.md` — if persistent facts changed
+7. GitHub discussion #62 — comment with session summary
+8. Commit all doc changes
+
+**This is not optional.** Skipping savestate means the next session starts blind.
+The skill contains the full checklist: `.claude/skills/savestate/SKILL.md`
+
 ### Do not
 - Move or rename `brainstem/` contents without Akien review
 - Store credentials in memory (use `.env` + CREDENTIAL_REF memory pattern — see #71)

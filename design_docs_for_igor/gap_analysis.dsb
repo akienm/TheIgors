@@ -1,8 +1,45 @@
-DOC|gap_analysis|v1|updated=2026-03-13
+DOC|gap_analysis|v1|updated=2026-03-13c
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
+// ── CLOSED THIS SESSION (2026-03-13c) ─────────────────────────────────────────
+
+G65|score-memories-bottleneck|~~closed=2026-03-13b~~
+  was=score_memories() called qwen2.5:7b on every turn; p50=76s preparse; worst=742s
+  fix=removed both branches in main.py; cortex.search() Phase2 embedding rerank is better
+  result=preparse_search p50 ~500ms
+
+G66|habit-trigger-format|~~closed=2026-03-13c~~
+  was=_score_habit() treated multi-word trigger as single substring; zero habits fired
+  fix=three-format dispatch: pipe-separated|legacy-space(min5-token)|single-token
+  result=PROC_GREETING fires; all legacy habits now match correctly
+
+G67|db-proxy-no-commit|~~closed=2026-03-13c~~
+  was=_DBContext.__exit__() closed connection without commit(); every write silently rolled back
+  fix=added commit() before close() when exc_type is None; rollback() on exception
+  result=cortex.store() now persists; book_learner nodes verified in DB
+
+G68|habit-response-fallback|~~closed=2026-03-13c~~
+  was=habits with no 'action' key showed "Habit executed. [PROC_xxx: narrative...]" to user
+  fix=added actions[] list support (random choice); PROC_GREETING updated with igorish responses
+  result=greetings show human-facing text; any habit can have response variety
+
+G69|temporal-anchoring|~~closed=2026-03-13c~~
+  was=memories injected into LLM context with no creation date; Igor treated old memories as current
+  fix=_build_memory_context() shows "stored X days ago"; _build_ring_context() shows YYYY-MM-DD HH:MM for non-today entries
+  result=Igor can now distinguish past from present in his own context
+
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
+
+G-BL1|book-learner-habit|~1h
+  what=no PROC habit wired to "use book learner|book learn" — must be invoked manually
+  fix=seed PROC_BOOK_LEARNER with trigger + action that runs claudecode/book_learner.py
+  trigger=next session
+
+G-BL2|book-learner-interest-gate|~2h|ticket=#214
+  what=Igor can't say "this no longer interests me" to stop slow reading
+  fix=TWM signal + habit that sets IGOR_READING_STOP flag; ebook_reader checks it each chunk
+  trigger=after book learner habit wired
 
 G42|thread-context-complexity-inflation|~2h|ticket=#none
   what=complexity scorer reads full assembled input (preamble+message) not parsed.core_input

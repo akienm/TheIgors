@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-13
+DOC|subsystem_cognition|v1|updated=2026-03-13c
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py
 
@@ -16,8 +16,10 @@ BASAL_GANGLIA|
   threshold=BASE 0.50; modulated by milieu: high_arousal→lower(more reactive); low_dominance→higher(more cautious); clamped [0.30,0.70]
   lateral_inhibition=max scorer wins; tiebreak by activation_count
   compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection
+  trigger_formats=3 formats: pipe-separated(hello|hi|hey), legacy-space(min5-token), single-token(routing_decision)
+  habit_response=metadata.action (str) OR metadata.actions (list→random choice) OR fallback to narrative
   audit=score= field in HABIT_EXEC ring entries; low scores = trigger too broad
-  decisions=D029,D030,D037
+  decisions=D029,D030,D037,D044
 
 MILIEU|
   purpose=persistent 3D affect (valence/arousal/dominance); drifts slowly; shapes thresholds

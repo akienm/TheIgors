@@ -706,4 +706,42 @@ Full TurnContext dict (JSON) per turn. `threading.local` dict built up by `log_p
 
 ---
 
-*Updated: 2026-03-13 by Claude Code.*
+## Update: Session 2026-03-13c — Habits, temporal anchoring, book learner, db_proxy commit fix
+
+### Resolved
+
+**G65 — score_memories() bottleneck** ~~CLOSED 2026-03-13b~~
+
+`score_memories()` called `qwen2.5:7b` on every interactive turn (25–200s). `cortex.search()` Phase 2 cosine rerank is better quality anyway. Removed from both `_skip_llm_preparse=True` and `=False` branches in `main.py`. Result: `preparse_search` p50 ~500ms.
+
+**G66 — habit trigger matching** ~~CLOSED 2026-03-13c~~
+
+`_score_habit()` treated multi-word triggers as a single substring (`'hello hi hey...' in 'hello'` → always False). Zero habits fired. Fixed with three-format dispatch in `basal_ganglia.py`: pipe-separated (`hello|hi|hey`), legacy space-separated with min-5 token filter, single-token. PROC_GREETING now fires.
+
+**G67 — db_proxy silent rollback** ~~CLOSED 2026-03-13c~~
+
+`_DBContext.__exit__()` closed the SQLite connection without calling `commit()`. Every write through `cortex.store()` was silently rolled back. Discovered when `book_learner.py` reported "10 nodes deposited" but DB showed zero. Fix: `commit()` before `close()` when no exception; `rollback()` on exception. This affected all writes since DatabaseProxy was introduced.
+
+**G68 — habit response fallback** ~~CLOSED 2026-03-13c~~
+
+Habits with no `action` key in metadata showed `"Habit executed. [PROC_xxx: ...]"` to users. Added `actions` list support in `main.py` (random choice for natural variation). PROC_GREETING updated with 7 igorish response variants. Other habits that had this problem (PROC_READING_DEPOSIT, PROC_WG_PREPARSE_TUNING) also fixed.
+
+**G69 — temporal anchoring** ~~CLOSED 2026-03-13c~~
+
+Memories injected into LLM context had no creation date. Igor treated a memory from 2023 the same as one from today. Fixed in `_build_memory_context()` (shows "stored 45d ago (2026-01-27)") and `_build_ring_context()` (ring entries show `YYYY-MM-DD HH:MM` when not from today). Igor can now distinguish past from present.
+
+### New
+
+**G-BL1 — book learner habit** *(~1h)*
+`claudecode/book_learner.py` exists but no PROC habit wires to it. Igor can't invoke it himself yet.
+
+**G-BL2 — reading interest gate** *(~2h, #214)*
+Igor can't say "this no longer interests me" to stop slow reading. Needs TWM signal + habit that sets a stop flag checked by `ebook_reader`.
+
+### New tool: `claudecode/book_learner.py`
+
+Chunks a book via `ebook_reader`, sends each chunk to gpt-4o-mini with an extraction prompt, deposits FACTUAL/INTERPRETIVE/PROCEDURAL nodes into Igor's graph via `cortex.store()`. Checkpoint/resume support. Trains word graph per chunk as side effect. Cost: ~$0.02 for a 300-page book. First run: 10 chunks of Damasio "Feeling of What Happens" → 44 nodes deposited.
+
+---
+
+*Updated: 2026-03-13c by Claude Code.*
