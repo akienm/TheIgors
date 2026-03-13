@@ -53,6 +53,27 @@ def cmd_perf(args):
         avg = sum(vals) // n
         print(f"  {step:20s}  n={n:3d}  avg={avg:6d}ms  p50={p50:6d}ms  p95={p95:6d}ms  worst={worst:7d}ms")
 
+    # Habit fire rate
+    trace = LOGS / f"pipeline_trace.{TODAY}.log"
+    total_turns = 0
+    habit_fires = 0
+    habit_names = {}
+    with trace.open() as f:
+        for line in f:
+            if "|step=bg_prospect|" in line:
+                total_turns += 1
+                parts = {p.split("=")[0]: p.split("=")[1] for p in line.split("|") if "=" in p}
+                h = parts.get("habit", "none")
+                if h and h != "none":
+                    habit_fires += 1
+                    habit_names[h] = habit_names.get(h, 0) + 1
+    if total_turns:
+        rate = habit_fires / total_turns * 100
+        print(f"\n  Habit fire rate: {habit_fires}/{total_turns} turns ({rate:.0f}%)")
+        if habit_names:
+            for name, count in sorted(habit_names.items(), key=lambda x: -x[1])[:10]:
+                print(f"    {name}: {count}")
+
 
 def cmd_memory_stats(args):
     db = sqlite3.connect(DB)
