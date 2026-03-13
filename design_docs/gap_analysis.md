@@ -644,6 +644,22 @@ NE tags narrative `write_ring()` with active `thread_id` (most common in obs_lis
 - **G48** — Mobile + offline sync epic
 - **G46** — Memory model fields: source, confidence, context_of_encoding (HIGH inertia, design carefully)
 
+## Update: Session 2026-03-12p — Self-repair / Turn Revision Detection
+
+### Resolved
+
+**G64 — Self-repair: turns that revise prior statements** ~~CLOSED 2026-03-12p~~
+
+**Observed**: Debounce (#146) was a timing bandaid — it batched rapid successive messages into one turn by merging them with `\n`. This worked when revision arrived within DEBOUNCE_SECS but (a) merged them without modeling the relationship, and (b) didn't handle cross-turn revisions (Igor had already responded to the first message).
+
+**Root cause**: The utterance pattern "Yes, I can do that! [END OF TURN] Oh wait, I can't because X" is a **self-repair** in conversation analysis — message N+1's meaning is semantically dependent on and modifies message N. Treating them as independent statements or naively joining them loses the revision relationship.
+
+**Fix (two paths)**:
+1. **Same-batch merging (`_smart_merge()`)**: When debounce fires with multiple buffered messages, `_smart_merge([texts])` checks if any message after the first contains a repair marker (`"oh ", "wait", "actually", "hold on", "never mind", "i can't"`, etc.). If yes, output is `[STATEMENT]: ... \n[REVISION]: ...` instead of plain `\n`-join. Applied to stdin flush (all 3 flush points) and `_flush_debounced_network()`.
+2. **Cross-turn detection (`_detect_self_repair()`)**: At the top of `_process_inner()`, before thalamus, check ring_memory `user_turn` entries for the last human turn. If age < `_REPAIR_WINDOW_SECS` (90s) AND new input contains a repair marker, write a `[SELF-REPAIR]` ring entry with `category="self_repair"`. Ring entries flow into LLM context via `_build_ring_context()` (not in `_RING_EXCLUDE`). LLM sees: "Prior: '...' — Revision: '...'. Interpret revised meaning; original commitment is retracted."
+
+**Result**: Igor now models the revision relationship explicitly rather than treating the second message as a standalone statement or silently merging both. The debounce still fires (avoids processing partial input) but the output is semantically labeled when revision is detected.
+
 ---
 
 *Updated: 2026-03-12 by Claude Code.*
