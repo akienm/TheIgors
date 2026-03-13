@@ -140,17 +140,27 @@ def _save_progress(book_key: str, state: dict) -> None:
 
 # ── LLM extraction ────────────────────────────────────────────────────────────
 
-def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "") -> dict:
+def _clean_json(raw: str) -> str:
+    """Strip markdown code fences if the model wraps its JSON output."""
+    raw = raw.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+    return raw.strip()
+
+
+def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
     """
-    Send one chunk to the LLM. Returns parsed JSON dict or error dict.
+    Extract nodes using local Ollama — zero API cost.
+    Uses OLLAMA_LOCAL_MODEL (default qwen2.5:7b) at OLLAMA_HOST.
     """
     import urllib.request
 
-    api_key = os.getenv("OPENROUTER_API_KEY", "")
-    if not api_key:
-        return {"nodes": [], "summary": "ERROR: OPENROUTER_API_KEY not set"}
+    model = os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b")
+    host  = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
-    user_content = f"BOOK PASSAGE"
+    user_content = "BOOK PASSAGE"
     if chapter_title:
         user_content += f" (from chapter: {chapter_title})"
     user_content += f":\n\n{chunk_text}"
@@ -161,6 +171,58 @@ def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "") -> dict
             {"role": "system", "content": _EXTRACT_PROMPT},
             {"role": "user",   "content": user_content},
         ],
+        "stream": False,
+        "options": {"temperature": 0.2},
+    }).encode()
+
+    req = urllib.request.Request(
+        f"{host}/api/chat",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read())
+        raw = data.get("message", {}).get("content", "").strip()
+        return json.loads(_clean_json(raw))
+    except json.JSONDecodeError:
+        return {"nodes": [], "summary": f"local parse error: {raw[:100] if 'raw' in dir() else '?'}"}
+    except Exception as e:
+        return {"nodes": [], "summary": f"local inference error: {e}"}
+
+
+def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "",
+                   local: bool = False) -> dict:
+    """
+    Send one chunk to the LLM. Returns parsed JSON dict or error dict.
+    If local=True, uses Ollama directly (free, no API key needed).
+    """
+    if local:
+        return _extract_nodes_local(chunk_text, chapter_title)
+
+    import urllib.request
+
+    api_key = os.getenv("OPENROUTER_API_KEY", "")
+    if not api_key:
+        return {"nodes": [], "summary": "ERROR: OPENROUTER_API_KEY not set"}
+
+    user_content = "BOOK PASSAGE"
+    if chapter_title:
+        user_content += f" (from chapter: {chapter_title})"
+    user_content += f":\n\n{chunk_text}"
+
+    # Prompt caching: system prompt is identical across all chunks of a book.
+    # OR supports cache_control for Claude models — cache once, free for ~200 chunks.
+    _use_cache = "claude" in model.lower() or "anthropic" in model.lower()
+    _sys_msg = {"role": "system", "content": _EXTRACT_PROMPT}
+    if _use_cache:
+        _sys_msg["cache_control"] = {"type": "ephemeral"}
+
+    payload = json.dumps({
+        "model": model,
+        "messages": [_sys_msg, {"role": "user", "content": user_content}],
         "temperature": 0.2,
         "max_tokens": 500,
     }).encode()
@@ -180,12 +242,7 @@ def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "") -> dict
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read())
         raw = data["choices"][0]["message"]["content"].strip()
-        # Strip markdown code fences if model adds them
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        return json.loads(raw)
+        return json.loads(_clean_json(raw))
     except json.JSONDecodeError:
         return {"nodes": [], "summary": f"parse error: {raw[:100] if 'raw' in dir() else '?'}"}
     except Exception as e:
@@ -268,7 +325,10 @@ def run(args) -> None:
 
     # ── Open book ─────────────────────────────────────────────────────────
     print(f"Opening book...")
-    if args.calibre_id:
+    if args.url:
+        from igor.tools.ebook_reader import open_book_url
+        handle = open_book_url(args.url, title=args.title or args.url)
+    elif args.calibre_id:
         handle = open_book(calibre_id=args.calibre_id, resume=False)
     else:
         handle = open_book(title=args.book, resume=False)
@@ -288,7 +348,7 @@ def run(args) -> None:
     print(f"Author: {handle['author']}")
     print(f"Sentences: {total_sentences}")
     print(f"Chunk size: {args.chunk} sentences")
-    print(f"Model: {args.model}")
+    print(f"Model: {'local Ollama (' + os.getenv('OLLAMA_LOCAL_MODEL','qwen2.5:7b') + ')' if args.local else args.model}")
     print(f"Mode: {'DRY RUN' if not args.run else 'LIVE'}")
 
     # ── Checkpoint ────────────────────────────────────────────────────────
@@ -346,7 +406,8 @@ def run(args) -> None:
 
         if args.run:
             # Extract nodes
-            extraction = _extract_nodes(chunk_text, args.model, chapter_title)
+            extraction = _extract_nodes(chunk_text, args.model, chapter_title,
+                                        local=args.local)
             nodes = extraction.get("nodes", [])
             summary = extraction.get("summary", "")
 
@@ -390,18 +451,21 @@ def main():
     parser = argparse.ArgumentParser(description="Book learner — extract graph nodes from a book")
     parser.add_argument("--book",        default="", help="Book title (fuzzy search)")
     parser.add_argument("--calibre-id",  type=int,   default=None, help="Exact Calibre book ID")
+    parser.add_argument("--url",         default="", help="URL to fetch and learn (web source)")
+    parser.add_argument("--title",       default="", help="Title override for URL sources")
     parser.add_argument("--chunk",       type=int,   default=15,   help="Sentences per chunk (default 15)")
     parser.add_argument("--delay",       type=float, default=1.5,  help="Seconds between API calls (default 1.5)")
     parser.add_argument("--model",       default=os.getenv("BOOK_LEARNER_MODEL", "openai/gpt-4o-mini"),
                         help="LLM model (default: BOOK_LEARNER_MODEL env or gpt-4o-mini)")
+    parser.add_argument("--local",       action="store_true", help="Use local Ollama instead of OpenRouter (free, no API cost)")
     parser.add_argument("--run",         action="store_true", help="Actually call API and deposit (default: dry run)")
     parser.add_argument("--resume",      action="store_true", help="Skip chunks already processed")
     parser.add_argument("--limit",       type=int,   default=0,    help="Max chunks to process (0=all)")
     parser.add_argument("--start",       type=int,   default=0,    help="Start at sentence position")
     args = parser.parse_args()
 
-    if not args.book and not args.calibre_id:
-        parser.error("Provide --book or --calibre-id")
+    if not args.book and not args.calibre_id and not args.url:
+        parser.error("Provide --book, --calibre-id, or --url")
 
     run(args)
 

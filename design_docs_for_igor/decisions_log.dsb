@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-13c|latest=D046
+DOC|decisions_log|v1|updated=2026-03-13d|latest=D048
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -69,3 +69,5 @@ D043|db-proxy-commit|implemented|_DBContext.__exit__ must commit() before close(
 D044|habit-action-list|implemented|habits support actions[] (list) in metadata → random choice; single action field still works; enables response variety without code branches
 D045|temporal-context-injection|implemented|ring entries show YYYY-MM-DD HH:MM when not today; memories show "stored Xd ago (date)"; LLM can now distinguish past from present
 D046|book-learner|implemented|claudecode/book_learner.py; chunks ebook via ebook_reader; extracts FACTUAL/INTERPRETIVE/PROCEDURAL nodes via LLM; deposits via cortex; checkpoint/resume; trains word graph per chunk
+D047|learn-about-tool|implemented|tools/learner.py; go-learn-about habit; Calibre non-fiction filter; browser AI discovery; tonight→queue; all background runs use local Ollama (free); night queue drains at human pace
+D048|book-learner-local|implemented|--local flag uses Ollama /api/chat directly; --url flag for web sources; cache_control:ephemeral on system prompt for Claude models via OR

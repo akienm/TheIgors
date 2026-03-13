@@ -31,10 +31,8 @@ G69|temporal-anchoring|~~closed=2026-03-13c~~
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
 
-G-BL1|book-learner-habit|~1h
-  what=no PROC habit wired to "use book learner|book learn" — must be invoked manually
-  fix=seed PROC_BOOK_LEARNER with trigger + action that runs claudecode/book_learner.py
-  trigger=next session
+G-BL1|book-learner-habit|~~closed=2026-03-13d~~
+  fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
 
 G-BL2|book-learner-interest-gate|~2h|ticket=#214
   what=Igor can't say "this no longer interests me" to stop slow reading
