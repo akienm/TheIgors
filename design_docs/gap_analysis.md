@@ -618,7 +618,23 @@ Bug: `openrouter_interactive_reasoner` was using `OPENROUTER_INTERACTIVE_MODEL=s
 **G61 — NE narrative as temporal thread anchor (#195)** ~~CLOSED 2026-03-12n~~
 NE tags narrative `write_ring()` with active `thread_id` (most common in obs_list). `_build_session_context()` finds most recent `narrative` ring entry (≤10 min) for current thread, emits `[Thread arc: {summary}]` as anchor, then only ≤5 delta ring entries since anchor. Falls back to 10-entry block if no anchor. Effect: 3-6× less context per turn once NE has run.
 
+---
+
+## Update: Session 2026-03-12o — Pipeline Trace + Routing Introspection
+
+### Resolved
+
+**G62 — Pipeline trace instrumentation** ~~CLOSED 2026-03-12o~~
+`forensic_logger.py`: added `set_turn_id()`/`get_turn_id()` (threading.local), `log_pipeline_step()` appending to `pipeline_trace.YYYYMMDD.log` (24h rotation, purges >1 day). `main.py` instruments all named stages: `thalamus | bg_prospect | preparse_search | routing | habit_exec | think_build | think_llm | winnow | reasoning | mem_store | TOTAL`. `base.py` `_winnow_context()` logs `winnow` step via `get_turn_id()`. Replaces 3-coarse-segment `latency_trace` with per-step resolution for data-driven bottleneck identification.
+
 ### Still Open
+
+**G63 — Routing self-awareness: Igor's plans contradict D035** *(~2h)*
+**Observed (2026-03-12o)**: Igor wrote an evening plan stating "Local inference. Cloud budget is spent." but D035 (`interactive→tier.3.5`) overrides `tier_select`'s `tier.2` selection unconditionally for every interactive turn. The logs show 100% of interactive turns escalate via D035 to haiku/sonnet. Igor has no model of which routing rules dominate in which contexts.
+
+**Fix**: Seed a `PROC_ROUTING_INTROSPECTION` PROCEDURAL habit whose narrative accurately describes the live routing stack: D035 always fires for interactive turns (floor = tier.3.5); tier.2 Ollama only runs for background/NE/action-impulse turns; tier.4 fires on NE ambiguity or high complexity. When Igor plans "local inference" he should know this means background work only. The habit also surfaces in plans/context so Igor reasons correctly about his own cost model.
+
+**Secondary**: The tier.2 Ollama 1B is producing empty responses at 25-97s latency. When it returns blank, the turn silently drops rather than escalating. This should be a separate routing metric that auto-escalates on blank + slow rather than just slow. (Related: IMPULSE_SKIP escalation issue from G56 — same root pattern.)
 
 - **#192** — InferenceGateway: unified routing abstraction
 - **#193** — Active jobs surface via TWM
