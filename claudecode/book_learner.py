@@ -157,7 +157,7 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
     """
     import urllib.request
 
-    model = os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b")
+    model = os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b").split("#")[0].strip()
     host  = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
     user_content = "BOOK PASSAGE"
@@ -183,7 +183,7 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=300) as resp:
             data = json.loads(resp.read())
         raw = data.get("message", {}).get("content", "").strip()
         return json.loads(_clean_json(raw))

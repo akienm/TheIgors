@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-13c
+DOC|gap_analysis|v1|updated=2026-03-13e
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -29,12 +29,39 @@ G69|temporal-anchoring|~~closed=2026-03-13c~~
   fix=_build_memory_context() shows "stored X days ago"; _build_ring_context() shows YYYY-MM-DD HH:MM for non-today entries
   result=Igor can now distinguish past from present in his own context
 
-// ── OPEN GAPS (priority order) ────────────────────────────────────────────────
+// ── CLOSED THIS SESSION (2026-03-13e) ─────────────────────────────────────────
 
 G-BL1|book-learner-habit|~~closed=2026-03-13d~~
+
+G70|habit-trigger-fiction-authors|~~closed=2026-03-13e~~
+  was=_is_fiction() checked tags only; authors with no/wrong tags (Piers Anthony, Pratchett etc) passed filter
+  fix=_FICTION_AUTHORS set in learner.py; author_sort checked before tags
+  result=auto-discovery correctly skips known fiction authors
+
+G71|book-learner-model-comment|~~closed=2026-03-13e~~
+  was=OLLAMA_LOCAL_MODEL env var had inline comment; entire string (including " # upgraded...") sent to Ollama → HTTP 400
+  fix=.split("#")[0].strip() in book_learner._extract_nodes_local()
+  result=qwen2.5:7b resolves correctly; timeout bumped 60→300s for CPU inference
+
+// ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
 
-G-BL2|book-learner-interest-gate|~2h|ticket=#214
+G-RL1|reading-list-dual-awareness|~4h
+  what=overnight loop: reader thread advances book + deposits chunks to TWM; consolidator thread extracts nodes in parallel
+  why=currently sequential; fiction slow-rate = emotional milieu state, not different code path
+  trigger=after reading_list table stable + single-threaded version confirmed working
+
+G-RL2|language-books-browser-discovery|~1h
+  what=queue Pinker Language Instinct, Tomasello Constructing a Language, Lakoff Metaphors We Live By via browser AI discovery
+  why=not in Calibre library; highest priority for Igor's language substrate
+  trigger=next session with browser_use available
+
+G-RL3|reading-list-overnight-automation|~2h
+  what=PROC_NIGHT_READ habit drains reading_list (status=queued) automatically at night; updates status in_progress/completed
+  why=currently manual script; should be self-directed
+  trigger=after reading_list stable
+
+G-BL2|book-learner-interest-gate|~2h|ticket=#215
   what=Igor can't say "this no longer interests me" to stop slow reading
   fix=TWM signal + habit that sets IGOR_READING_STOP flag; ebook_reader checks it each chunk
   trigger=after book learner habit wired

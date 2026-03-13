@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-13d|latest=D048
+DOC|decisions_log|v1|updated=2026-03-13e|latest=D051
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -62,6 +62,12 @@ D039|db-proxy|implemented|DatabaseProxy wraps all SQLite calls; timing+metrics r
 D040|hot-module-reload|implemented|importlib.reload() on stateless leaf modules; HIGH inertia blocked; tool modules self-re-register; no restart needed for leaf patches
 D041|stateless-by-design|implemented|hot-reloadable modules hold no state (state in DB); __class__ swap for edge cases; cortex=only stateful owner (owns DB proxy)
 D042|dsb-format|implemented|Distilled Structured Block; replaces CSB for machine-facing docs; ~80% token reduction; DSB loads directly into system prompt CHARACTER layer
+
+// ── Session 2026-03-13e additions ─────────────────────────────────────────────
+
+D049|reading-list-db-table|implemented|reading_list table in main DB; fields: title/author/source/book_type/reading_rate/priority/status/emotional_significance/encoding_arousal/added_by; 15 books seeded
+D050|slow-fast-reading|defined|slow/fast reading = same extraction pipeline; difference is emotional milieu state during read; all books get fast matrix pass; important books also get slow pass later
+D051|fiction-filter-author-blocklist|implemented|_FICTION_AUTHORS set in learner.py; checked before tags; tag-based filter catches tagged fiction; author list catches untagged; explicit requests bypass filter entirely
 
 // ── Session 2026-03-13c additions ─────────────────────────────────────────────
 
