@@ -85,16 +85,21 @@ G-BRW4|browser-use-schema-compat|~~closed=2026-03-14g~~
   fix=upgraded browser-use 0.11.9→0.12.2; fixed result.final_state().url→result.urls()[-1] (API removed); switched LLM to gpt-4o-mini (cheaper, no schema strictness); BROWSER_USE_MODEL env var for override
   result=browser discovery working; Gemini navigated + typed prompt successfully
 
-G-BRW5|topic-extraction-thread-context-pollution|open|small
-  what=_extract_topic() used startswith(); CC bridge passes full thread context as user_input; trigger phrase in middle → whole blob returned as topic
-  fix=changed to find() in learner.py; searches anywhere in input
-  trigger=verify next session with "go learn about X" via CC bridge
+G-BRW5|topic-extraction-thread-context-pollution|~~closed=2026-03-14h~~
+  was=_extract_topic() used startswith(); full CC bridge context returned as topic
+  fix=find() in learner.py; confirmed via "go learn about mathematics" → topic=mathematics
+  note=browser gets 0 direct URLs from prose AI responses; URL extraction = G74 (open)
 
-G-BRW1|cc-bridge-greeting-dominance|open|small
-  what=CC bridge messages fire PROC_GREETING instead of action habits for short requests
-  why=PROC_GREETING scores too high at tier.2; action habits (PROC_GO_LEARN etc) don't compete
-  fix=options: lower PROC_GREETING threshold for cc_bridge source; or route cc_bridge to tier.3+ directly
-  trigger=whenever CC bridge is used for action requests
+G-BRW1|cc-bridge-greeting-dominance|~~closed=2026-03-14h~~
+  was=PROC_GREETING fired for /metrics, reload_module, action requests; "hi" matched "this" substring
+  fix1=basal_ganglia.py: Format 1 pipe triggers use \b-bounded regex (word boundaries)
+  fix2=thalamus.py: strip [Routing directive:...] suffix from core_text before habit scoring
+  result=/metrics routes to LLM; hello still routes to PROC_GREETING
+
+G-RD1|routing-directive-leaks-into-tool-args|~~closed=2026-03-14h~~
+  was=main.py habit code_ref dispatch passed raw user_input (with routing directive) to single-arg tools
+  fix=main.py:2921 pass parsed.core_input instead of user_input
+  result=learn_about() and other reactive habits receive clean user message
 
 G-DBM1|memory-last-accessed-not-updated|open|small
   what=last_accessed=None on all memories including CPs; record_activation() only called on habit fires, never on search() results or interpretive traversal

@@ -109,3 +109,9 @@ D062|browser-virtual-display|implemented|browser.py _ensure_virtual_display(): p
 D063|browser-use-gpt4o-mini|implemented|browser_use LLM=gpt-4o-mini via OR (avoids Anthropic integer-minimum schema rejection in 0.11.x/0.12.x); cheaper; BROWSER_USE_MODEL env var overrides
 D064|db-proxy-sql-tracing|implemented|_DBContext uses set_trace_callback() to capture last SQL; slow query warnings include SQL snippet; dedicated db_queries.log with turn_id tie-back to forensic_logger
 D065|inference-controller-auto-restart|implemented|_try_restart_local_ollama() in inference_gateway.py; always-on; 60s cooldown; called when is_healthy()=False; restart_ollama tool also available manually
+
+// ── Session 2026-03-14h additions ─────────────────────────────────────────────
+
+D066|pipe-trigger-word-boundary|implemented|basal_ganglia.py Format 1 pipe-separated triggers use \b regex word-boundary; prevents "hi" matching inside "this"; all habits benefit
+D067|routing-directive-strip-from-core-input|implemented|thalamus.py strips [Routing directive:...] suffix from core_text; prevents CC bridge directive words ("background","inline") from triggering threshold habits
+D068|code-ref-dispatch-uses-core-input|implemented|main.py habit code_ref dispatch passes parsed.core_input (routing directive stripped) not raw user_input to single-arg tools

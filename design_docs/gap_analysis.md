@@ -813,7 +813,7 @@ New issues:
 - **G-BRW2 ~~CLOSED~~**: User applied `OLLAMA_HOST=0.0.0.0` to `/etc/systemd/system/ollama.service.d/override.conf` + daemon-reload + restart; cluster_status can now reach Ollama via external IP
 - **G-BRW3 ~~CLOSED~~**: `restart_ollama(machine="")` tool in cluster_ssh.py — local uses `sudo systemctl restart ollama.service` (sudoers entry added); remote uses `_ssh_run()` + sudo; 5s wait + health check. `_try_restart_local_ollama()` in inference_gateway.py — called from `is_local_inference_available()` when `is_healthy()` returns False; 60s cooldown; always-on; logs OLLAMA_RESTART_OK/FAIL/ERROR to forensic logger
 - **G-BRW4 (new, closed)**: browser_use 0.11.9 sent `minimum` property on integer schema fields; Claude-sonnet-4-6 via Anthropic rejected with HTTP 400 on every step. Fix: upgraded browser-use to 0.12.2; fixed `result.final_state().url` → `result.urls()[-1]` (API removed in 0.12.x). Result: browser discovery working.
-- **G-BRW5 (new, open)**: topic extraction received full CC bridge thread context as `user_input`; `_extract_topic()` used `startswith()` so returned full blob as topic. Fix applied: changed to `find()` to search anywhere in input. Verify next session.
+- **G-BRW5 ~~CLOSED~~**: topic extraction now correct — `_extract_topic()` find() fix confirmed working via CC bridge; "go learn about mathematics" → topic="mathematics" (clean). Browser discovery triggered and found 9 books via Gemini but returned 0 direct URLs — ChatGPT/Gemini responses are prose, not hyperlinks. URL extraction from prose is G74 (open). G-BRW5 (topic extraction) closed.
 - **db_proxy SQL tracing**: `_DBContext` now uses `set_trace_callback()` to capture last SQL; slow query warnings include SQL snippet; dedicated `~/.TheIgors/logs/db_queries.log` with `turn=` tie-back to forensic_logger
 - **G-DBM1 (new, open)**: `last_accessed=None` on all memories including all CPs — `record_activation()` only called on habit fires, never on `search()` results. Fix: update `last_accessed` on memories surfaced into LLM context (top-N from search + interpretive traversal). Blocked by: need slow query baseline first before adding more writes.
 - **browser_use LLM**: switched to `gpt-4o-mini` via OR (cheaper; avoids Anthropic schema strictness); `BROWSER_USE_MODEL` env var overrides; browser still opens on real display while debugging (will force Xvfb once stable)
@@ -833,6 +833,12 @@ New issues:
 - **CLAUDE.md Compact Instructions**: section added; guides auto-compact summarizer to preserve open gaps, modified files, current hypothesis
 - **WorkingWithClaude.md**: skills/hooks/compact added to Infrastructure; Part Three "How I Work with Akien" added; workflow step 6 = notify user to /compact
 - **New gap G-BRW1**: CC bridge messages fire PROC_GREETING instead of action habits for short action requests — PROC_GREETING threshold too high at tier.2; need habit scoring adjustment or CC bridge routing change
+
+### Session 2026-03-14h additions
+
+- **G-BRW1 ~~CLOSED~~**: Two-part fix — (1) `basal_ganglia.py` Format 1 pipe triggers now use `\b`-bounded regex (prevents "hi" matching inside "this"); (2) `thalamus.py` strips `[Routing directive:...]` suffix from `core_text` before habit scoring. Result: `/metrics` and `reload_module(...)` no longer fire PROC_GREETING; `hello` still routes correctly.
+- **G-BRW5 ~~CLOSED~~**: Confirmed — topic extraction works via CC bridge; "go learn about mathematics" → topic="mathematics". Browser discovery triggered and queried Gemini+ChatGPT; got book titles but 0 direct URLs (prose responses). URL extraction from prose is G74.
+- **New gap G-RD1 (new, small)**: `[Routing directive:...]` was leaking into single-arg habit code_ref tool calls. `main.py` line 2921 passed `user_input` (raw) to tool; now passes `parsed.core_input` (routing directive stripped). Fixed same session.
 - **learner.py bugs fixed**: (1) `task=`→`task_description=` kwarg, (2) json.loads() before dict access, (3) pyvirtualdisplay installed
 
 ### Session 2026-03-14d additions
