@@ -70,6 +70,14 @@ All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
 ### End-of-session savestate (REQUIRED)
 Run `/savestate`. It's not optional — skipping means the next session starts blind. Full checklist: `.claude/skills/savestate/SKILL.md`
 
+### Compact Instructions
+When `/compact` runs (manually or automatically), preserve:
+- List of open gaps (Gxx) touched this session
+- Files modified this session and what changed
+- Current debugging hypothesis or in-progress task
+- Any decisions made that haven't been saved to design_docs yet
+- Next session priorities
+
 ### Do not
 - Move or rename `brainstem/` contents without Akien review
 - Store credentials in memory (use `.env` + CREDENTIAL_REF memory pattern — see #71)

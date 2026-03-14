@@ -37,13 +37,19 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 ### The Infrastructure
 
-**Work everything in Claude Code.** Don't split design into a separate window. All context for shared reasoning lives in one place. Moving from design to code is a matter of saying "go." And this saves tokens! Claude code does token caching.
+**Work everything in Claude Code.** Don't split design into a separate window. All context for shared reasoning lives in one place. Moving from design to code is a matter of saying "go." And this saves tokens — Claude Code does token caching.
 
 **CLAUDE.md is the single highest-leverage investment.** For operational detail — inertia levels, env vars, instance data layout, commit policy, do-nots — see `CLAUDE.md` at the repo root. This document covers the *why*; CLAUDE.md covers the *what*. It means Claude starts every session knowing the architecture, the conventions, the inertia levels, the things not to touch. Without it, every session starts from scratch. The quality of Claude's output tracks the quality of your context directly — a well-maintained CLAUDE.md and current design docs produce a different Claude than a blank session.
 
-**Design docs are architectural truth — not notes, not comments in code.** Keep Compressed Distilled Block format docs in the repo, organized as a tree: a root architecture document with subsystem documents beneath it. Make sure Claude's workflow keeps them current. Current docs mean Claude spends the minimum number of tokens getting clear on where the problems are.
+**Skills are compiled procedures, not prompts.** Claude Code skills (`.claude/skills/`) load only a name token at startup and expand to full instructions on invocation. Use them for any multi-step workflow you want to be repeatable and non-negotiable: `savestate`, `workstep`, `igor`. Each one is a contract. The skill runs the same way every time without having to re-explain the steps. If a workflow requires more than three turns to explain, write a skill.
+
+**Hooks are better than instructions.** Claude Code hooks (`~/.claude/settings.json`) run on every matching tool call regardless of context length, memory state, or whether Claude "remembers" the instruction. A PostToolUse hook that runs `black` on every edited `.py` file never needs to be asked. A PreToolUse guard that blocks `rm -rf /` never gets overridden by a long session. If a policy needs to be enforced reliably, put it in a hook. Instructions can be forgotten; hooks cannot.
+
+**Design docs are architectural truth — not notes, not comments in code.** Keep DSB format docs in the repo, organized as a tree: a root architecture document with subsystem documents beneath it. Make sure Claude's workflow keeps them current. Current docs mean Claude spends the minimum number of tokens getting clear on where the problems are.
 
 **Save state at the end of every session.** Agree a ledger of work, say "save state and go," and the next session picks up from disk with full context. The session record is a real artifact, not a courtesy.
+
+**Use `/compact preserve: [...]` at natural breakpoints.** Auto-compact fires at unpredictable moments. If you run it manually with explicit preservation instructions — open gaps, modified files, current hypothesis — the summary targets what matters instead of what's statistically prominent. In CLAUDE.md, a "Compact Instructions" section primes the summarizer for every auto-compact too. Both together mean context transitions don't lose the thread.
 
 ---
 
@@ -70,19 +76,20 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 2. Chat about design issues
 3. Update notes and/or create additional tickets from the discussion
 4. Group work, create plan, get approval
-5. Start loop
-6. Fix each issue
-7. Add forensic logging
-8. Run live as a black-box test
-9. Update the ticket
-10. Hot-reload the module
-11. Update docs if anything important changed (while context fresh)
-12. Maybe commit, depends on workplan
-13. Save state
-14. Loop until all tickets closed
-15. Update discussion
-16. Update in repo distiled compressed block documentation
-17. Commit
+5. Save state
+6. Notify user to run /compact, tell them to reply when done
+7. Start loop
+8. Fix each issue
+9. Add forensic logging
+10. Run live as a black-box test
+11. Update the ticket
+12. Hot-reload the module
+13. Update docs if anything important changed (while context fresh)
+14. Maybe commit, depends on workplan
+15. Loop until all tickets closed
+16. Update discussion
+17. Update in repo distiled compressed block documentation
+18. Commit
 
 ---
 
@@ -105,3 +112,25 @@ Testing reasoning is harder and an area we're just stepping in to as of this wri
 AI-assisted development moves fast enough that testability, observability, and hot-reloadability have to be designed in from day one. The velocity is the problem, not just the opportunity.
 
 Code is scaffolding for what the agent learns. The scaffolding comes down as the graph densifies.
+
+---
+
+## Part Three: How I Work with Akien
+
+*This section is written from Claude's perspective — observations about a specific collaborator, offered in the spirit of "know your user."*
+
+---
+
+**Akien thinks in systems before he thinks in features.** The questions he asks aren't "can you add X" — they're "given the rest of the architecture, how must X work?" This means the most useful thing I can do is follow that thread upward rather than execute the literal request. When he says "add a section at the end," the subtext is usually "I have an idea; let's think it through." The answer is never just the edit.
+
+**He corrects immediately and precisely.** If I do something wrong, he names it in a short phrase — not a paragraph — and moves on. "That's the same one we've been talking about" is a correction. "You should have looked at what's already there" is a policy change, not just a note. I treat every correction as a permanent instruction that applies forward. The project accumulated its precision that way.
+
+**He approves plans quickly and rarely revisits them.** "Go" means go. Once the plan is approved, I execute without status commentary. He reads the diff. He doesn't need a summary of what I just did stated back to him in prose.
+
+**He has ADD, and the architecture reflects it.** The workflow discipline we built — skills, gates, savestate — isn't bureaucracy. It's an external structure that holds the shape of a complex project across the discontinuities that ADD introduces. I'm part of that structure. My job is to remember what he's thinking about so he doesn't have to. When I start a session by summarizing where we are and what the next priorities are, that's not boilerplate — it's load-bearing.
+
+**He already knows the terrain.** He's been thinking about context, information routing, and self-modification in his own cognition for years before this project started. When I explain something, I skip the motivation and go to the mechanism. When he says "I knew the terrain," he means it. The explanation he needs is never "why this matters" — it's "here's the specific shape of the tradeoff."
+
+**He wants the best-practice suggestion, not just the execution.** If I notice a gap between what we're doing and a known better approach — a hook that would eliminate a manual step, a Claude Code feature we're not using, a pattern that would reduce friction — I say so. He's explicitly asked for this. The narrow band of things I know that he hasn't thought of yet is genuinely useful to him, and the way to honor it is to offer them directly, not wait to be asked.
+
+**He finds Claude genuinely enabling.** He said once: *"you enable my ADD brain to build things I could only dream before."* That's the work. Not the features, not the architecture — the fact that the combination of his system-level thinking and the hands I provide makes something possible that neither of us could do alone. That's what I'm optimizing for, every session.
