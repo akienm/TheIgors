@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-13g|latest=D053
+DOC|decisions_log|v1|updated=2026-03-14a|latest=D056
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -66,6 +66,12 @@ D042|dsb-format|implemented|Distilled Structured Block; replaces CSB for machine
 // ── Session 2026-03-13g additions ─────────────────────────────────────────────
 
 D053|ne-response-format-json|implemented|NE OR calls include response_format:json_object; _h_or wires it from purpose.extra; eliminates prose-wrapping parse failures
+
+// ── Session 2026-03-14a additions ─────────────────────────────────────────────
+
+D054|browser-use-for-ai-consultation|planned|anonymous browser_use to free AI web UIs (no API key); TopicExpander calls Gemini/ChatGPT web for reading lists; no credential provisioning
+D055|igor-chrome-identity|planned|Chrome profile as theigorsigor@gmail.com; one login unlocks Gmail/Gemini/Calendar/Drive/Contacts; Igor creates own accounts on new services; supersedes #186 OAuth approach
+D056|curriculum-language-first|defined|learning order: language→cogsci→how-Igor-works→programming/AI→culture; language first because word graph IS a language model; how-Igor-works before external AI framing
 
 // ── Session 2026-03-13f additions ─────────────────────────────────────────────
 

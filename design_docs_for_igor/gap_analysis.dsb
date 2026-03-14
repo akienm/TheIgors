@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-13e
+DOC|gap_analysis|v1|updated=2026-03-14a
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -48,6 +48,20 @@ G72|ne-json-parse-failures|~~closed=2026-03-13g~~
   fix1=inference_gateway.py NE purpose extra: response_format={"type":"json_object"} + _h_or wires it into OR payload
   fix2=narrative_engine.py _call_inference: print raw[:150] + log_anomaly(NE_FAIL, json_parse_failed raw=...) on parse failure
   result=OR contractually returns valid JSON; failures now visible in cc_alerts.log
+
+// ── NEW GAPS (2026-03-14a planning session) ────────────────────────────────
+
+G73|overnight-reader-stops-after-first-book|open|ticket=#215
+  was=overnight runner completes one book and exits; no queue advancement
+  fix=NightlyRunner checks LearningQueue after each book; loops until queue empty or time limit
+
+G74|no-autonomous-source-discovery|open|ticket=#215
+  was=topic→reading list requires manual URL curation; no TopicExpander
+  fix=TopicExpander: anonymous browser_use to free AI web UI → parse URLs into LearningQueue; Calibre CSV as priority local source
+
+G75|no-learning-queue-infrastructure|open|ticket=#215
+  was=no persistent queue, no rate-limited fetcher, no blob→book_learner trigger, no overnight scheduler
+  fix=LearningQueue (SQLite), ParallelFetcher (rate-limited per domain, parallel), NightlyRunner (cron, drains queue)
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end

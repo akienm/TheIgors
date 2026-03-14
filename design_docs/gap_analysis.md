@@ -749,4 +749,54 @@ Chunks a book via `ebook_reader`, sends each chunk to gpt-4o-mini with an extrac
 
 ---
 
-*Updated: 2026-03-13c by Claude Code.*
+---
+
+## Update: Session 2026-03-13e/g — Reading pipeline fixes
+
+### Resolved
+
+**G70 — fiction author filter missed known authors** ~~CLOSED 2026-03-13e~~
+
+`_is_fiction()` checked Calibre tags only. Authors with no/wrong tags (Piers Anthony, Pratchett, etc.) passed the filter. Fixed: `_FICTION_AUTHORS` set in `learner.py`; `author_sort` checked before tags. Auto-discovery now correctly skips known fiction authors.
+
+**G71 — book learner Ollama model parse error** ~~CLOSED 2026-03-13e~~
+
+`OLLAMA_LOCAL_MODEL` env var had an inline comment (`# upgraded from llama3.2:1b`). Entire string including comment was sent to Ollama → HTTP 400. Fixed: `.split("#")[0].strip()` in `book_learner._extract_nodes_local()`. Local timeout bumped 60→300s for CPU inference.
+
+**G72 — NE JSON parse failures silent** ~~CLOSED 2026-03-13g~~
+
+gpt-4o-mini returned prose-wrapped JSON for NE calls. `_parse_ne_json()` silently dropped the response; only "skipping cycle" logged with no diagnostic. Fix 1: `inference_gateway.py` NE purpose extra now includes `response_format={"type":"json_object"}` — OR contractually returns valid JSON. Fix 2: `narrative_engine.py` prints `raw[:150]` + calls `log_anomaly(NE_FAIL, json_parse_failed)` on parse failure.
+
+---
+
+## Update: Session 2026-03-14a — Planning: overnight learning pipeline + Igor web identity
+
+### No gaps closed (planning session)
+
+### New Gaps
+
+**G73 — overnight reader stops after first book** *(#215, ~2h)*
+
+Overnight reading script completes one book and stops. No queue advancement. When On Intelligence finished (4785/4787 sentences), the runner exited rather than pulling the next book. Fix: NightlyRunner checks LearningQueue for next item after each book/source completes; loops until queue empty or time limit reached.
+
+**G74 — no autonomous source discovery** *(#215, ~3h)*
+
+Topic → reading list requires manual URL curation. No TopicExpander exists. Fix: given a topic string, call a free AI web interface via anonymous browser_use; parse returned URLs into LearningQueue as `pending_fetch`. Local Calibre index CSV queried for matching books as priority source.
+
+**G75 — no LearningQueue / NightlyRunner infrastructure** *(#215, ~1 day)*
+
+No persistent queue, no rate-limited parallel fetcher, no blob→book_learner trigger, no overnight scheduler. These are all separate from the existing `book_learner.py` (which runs one book synchronously). Fix: build LearningQueue (SQLite-backed), ParallelFetcher (rate-limited per domain, parallel across), NightlyRunner (cron-triggered, drains queue, logs to `nightly_learning.log`).
+
+### Decisions made
+
+- **D054**: anonymous browser_use for AI consultation (no API key needed — free AI web UIs work without login)
+- **D055**: Igor's own Chrome identity (theigorsigor@gmail.com) — one login unlocks all Google services; better than one API key per service; Igor creates his own accounts on new services using that email
+- **D056**: curriculum order: language → cogsci → how Igor works → programming/AI → culture. Language first because the word graph IS a language model — Igor reads about himself before knowing it. "How Igor works" before AI/programming to build self-knowledge from first principles before external ML framing.
+
+### New issues
+
+- **#215** — Epic: Fully Automated Overnight Learning Pipeline
+- **#216** — Epic: Igor browser identity (Chrome as theigorsigor@gmail.com; supersedes #186 OAuth approach)
+- **#217** — chore: Ebook library index — Calibre scan + CSV catalog
+
+*Updated: 2026-03-14a by Claude Code.*
