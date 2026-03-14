@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-13d
+DOC|subsystem_tools|v1|updated=2026-03-14b
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -23,7 +23,7 @@ KEY_TOOLS|
   senses|take_photo,record_audio,list_cameras
   web_search|web_search(query)
   budget|get_budget_status,set_spending_cap,check_openrouter_balance,is_cloud_blocked
-  learner|learn_about(user_input),process_learn_queue(max_items)|PROC_GO_LEARN+PROC_NIGHT_LEARN_QUEUE habits|non-fiction filter,browser discovery,night queue,local Ollama
+  learner|learn_about(user_input),process_learn_queue(max_items),drain_learn_queue,list_absorbed_books,get_reading_list,add_to_reading_list,update_reading_status|non-fiction filter,browser discovery,night queue,background runner,local Ollama
   ebook_reader|find_book,open_book,open_book_url,read_chunk,jump_to_chapter,reading_position,list_reading_sessions
   word_graph|index_text_into_word_graph,query_word_graph_stats,analyze_word_graph,train_word_graph
   interpretive|add_interpretive_edge,get_interpretive_edges,interpretive_traverse
@@ -43,9 +43,12 @@ LEARNER|
   tonight=detected from input → queues Calibre books too; nothing launches immediately
   local=all background launches use --local (Ollama qwen2.5:7b, free)
   queue=~/.TheIgors/learn_queue.json|calibre://ID sentinel for Calibre books|URLs for web sources
-  drain=process_learn_queue(max_items=5) — 3s human pace between launches
+  drain_manual=process_learn_queue(max_items=5) — 3s human pace between launches
+  drain_background=drain_learn_queue() → spawns claudecode/drain_learn_queue.py (PID-guarded, 60s between, loops until empty)
+  auto_drain=learn_about() calls _launch_queue_runner() whenever items queued
   caching=book_learner adds cache_control:ephemeral to system prompt for Claude models via OR
   book_learner=claudecode/book_learner.py --calibre-id|--url|--local|--run|--resume
+  drain_runner=claudecode/drain_learn_queue.py --delay SECS|PID=~/.TheIgors/drain_learn_queue.pid
 
 KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 DECISIONS|D030

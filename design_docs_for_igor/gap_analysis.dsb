@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14a
+DOC|gap_analysis|v1|updated=2026-03-14b
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -51,9 +51,9 @@ G72|ne-json-parse-failures|~~closed=2026-03-13g~~
 
 // ── NEW GAPS (2026-03-14a planning session) ────────────────────────────────
 
-G73|overnight-reader-stops-after-first-book|open|ticket=#215
+G73|overnight-reader-stops-after-first-book|~~closed=2026-03-14b~~
   was=overnight runner completes one book and exits; no queue advancement
-  fix=NightlyRunner checks LearningQueue after each book; loops until queue empty or time limit
+  fix=claudecode/drain_learn_queue.py: loops learn_queue.json until empty; PID-guarded; 60s between launches; auto-spawned by learn_about() when items queued
 
 G74|no-autonomous-source-discovery|open|ticket=#215
   was=topic→reading list requires manual URL curation; no TopicExpander
@@ -86,11 +86,10 @@ G-BL2|book-learner-interest-gate|~2h|ticket=#215
   fix=TWM signal + habit that sets IGOR_READING_STOP flag; ebook_reader checks it each chunk
   trigger=after book learner habit wired
 
-G42|thread-context-complexity-inflation|~2h|ticket=#none
-  what=complexity scorer reads full assembled input (preamble+message) not parsed.core_input
-  symptom=greetings with thread context → tier.3.5-4 all day; cost inflated
-  fix=run complexity scoring on parsed.core_input only
-  trigger=fix before performance sprint
+G42|thread-context-complexity-inflation|~~closed=2026-03-14b~~
+  was=complexity scorer reading full assembled input inflating tier for short turns with thread context
+  fix=already done at main.py:2334 (_preparse_input = parsed.core_input); thalamus._assess_complexity also uses core_text not raw text
+  result=complexity scoring reflects user's actual message only
 
 G46|memory-model-fields|~3h|HIGH_INERTIA_CAREFUL
   what=Memory dataclass missing: source(str), confidence(float 0-1), context_of_encoding(dict VAD+note)

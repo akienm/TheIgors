@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-14a|latest=D056
+DOC|decisions_log|v1|updated=2026-03-14b|latest=D060
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -66,6 +66,13 @@ D042|dsb-format|implemented|Distilled Structured Block; replaces CSB for machine
 // ── Session 2026-03-13g additions ─────────────────────────────────────────────
 
 D053|ne-response-format-json|implemented|NE OR calls include response_format:json_object; _h_or wires it from purpose.extra; eliminates prose-wrapping parse failures
+
+// ── Session 2026-03-14b additions ─────────────────────────────────────────────
+
+D057|three-tier-runtime-model|defined|~/.TheIgors/local/=machine-global; ~/.TheIgors/<db>/=database-global (milieu/soul/word_graph/cache); ~/.TheIgors/<db>/<inst>/=instance-local; all runtime writes must route through Instance object (#197)
+D058|skills-as-compiled-exec-functions|implemented|CC skills (igor/workstep/validate-files/savestate) = compiled executive functions; same architectural role as Igor's PROC nodes; reduce working-memory load on Claude per session
+D059|capabilities-index-dsb|implemented|design_docs_for_igor/capabilities_index.dsb = 118-tool inventory; one line per tool; Claude reads before asking "can Igor do X?"; updated whenever tool added
+D060|research-delegation-to-igor|defined|bulk fact-gathering delegated to Igor (tier.3 gpt-4o-mini ~10-50x cheaper); output = topic DSB in design_docs_for_igor/research/; Claude reads result for synthesis; decision tree: synthesis→Claude, gathering→Igor
 
 // ── Session 2026-03-14a additions ─────────────────────────────────────────────
 

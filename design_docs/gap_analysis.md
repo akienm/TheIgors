@@ -449,11 +449,8 @@ Root cause of 1808 freeze: OOM at 13:24 (14.3GB RSS) PLUS `ollama.service` crash
 
 ### New Gaps (identified from 2026-03-10c logs)
 
-**G42 — Thread context complexity inflation** *(~2h)*
-Every input with `[Thread context — recent exchanges...]` preamble gets `cx_score=0.80|cx_signals=high`
-regardless of actual message content. "hello :)" with thread context → tier.3.5-4. The
-complexity scorer reads the full assembled input (preamble + message) rather than `parsed.core_input`.
-Result: greetings and acks cost tier.3.5-4 all day. Fix: run complexity scoring on `parsed.core_input` only.
+**G42 — Thread context complexity inflation** ~~CLOSED 2026-03-14b~~
+Already fixed at `main.py:2334` (`_preparse_input = parsed.core_input`) and `thalamus.py` (`_assess_complexity(core_text, ...)`). Complexity scoring has been running on the stripped user message all along. No code change needed — gap was already closed.
 
 **G43 — Zero response/question habits → 100% LLM escalation** ~~*(ongoing — G11 blocker)*~~
 **RESOLVED 2026-03-10d** — 12 habits seeded via `claudecode/seed_response_habits.py`:
@@ -775,9 +772,9 @@ gpt-4o-mini returned prose-wrapped JSON for NE calls. `_parse_ne_json()` silentl
 
 ### New Gaps
 
-**G73 — overnight reader stops after first book** *(#215, ~2h)*
+**G73 — overnight reader stops after first book** ~~CLOSED 2026-03-14b~~
 
-Overnight reading script completes one book and stops. No queue advancement. When On Intelligence finished (4785/4787 sentences), the runner exited rather than pulling the next book. Fix: NightlyRunner checks LearningQueue for next item after each book/source completes; loops until queue empty or time limit reached.
+Fixed by `claudecode/drain_learn_queue.py`: loops over `learn_queue.json` until all items are done; PID-guarded against duplicate runners; 60s between launches; auto-spawned by `learn_about()` whenever items are queued. `drain_learn_queue` tool added to tool registry for manual trigger.
 
 **G74 — no autonomous source discovery** *(#215, ~3h)*
 
@@ -799,4 +796,14 @@ No persistent queue, no rate-limited parallel fetcher, no blob→book_learner tr
 - **#216** — Epic: Igor browser identity (Chrome as theigorsigor@gmail.com; supersedes #186 OAuth approach)
 - **#217** — chore: Ebook library index — Calibre scan + CSV catalog
 
-*Updated: 2026-03-14a by Claude Code.*
+### Session 2026-03-14b additions
+
+- **D057**: three-tier runtime model — machine-global / database-global / instance-local; baked into #197
+- **D058**: skills as compiled executive functions — `/igor`, `/workstep`, `/validate-files` skills
+- **D059**: `capabilities_index.dsb` — 118-tool inventory, one line per tool
+- **D060**: research delegation to Igor at tier.3 (cheap) for bulk fact-gathering; output as topic DSBs
+
+New issues:
+- **#218** — design_docs/ cleanup: archive CSBs, create human-readable doc set
+
+*Updated: 2026-03-14b by Claude Code.*

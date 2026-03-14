@@ -1,0 +1,188 @@
+DOC|capabilities_index|v1|updated=2026-03-14
+
+META|purpose=quick lookup index of all registered tools and integrations|inertia=LOW
+// This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
+// Update whenever a tool is added or removed. Total count tracked in TOTALS section.
+
+TOTALS|tools=118|integrations=13|env_gates=8|updated=2026-03-14
+
+SECTION_SYSTEM|
+  run_bash|runner.py|run shell commands in workspace (30s timeout)
+  run_python|runner.py|execute Python snippets (full OS access, unsandboxed)
+  get_current_time|runner.py|current local date+time
+  restart_self|runner.py|clean restart with optional wakeup note
+  run_benchmark|runner.py|cluster resource comparison benchmarks
+
+SECTION_FILESYSTEM|
+  read_file|filesystem.py|read files (sandbox: /home/akien root); PDF supported
+  write_file|filesystem.py|write files (sandbox: /home/akien root); creates dirs
+  list_directory|filesystem.py|directory listing with sizes
+  read_system_file|filesystem.py|read any system file (absolute path, read-only)
+  list_system_dir|filesystem.py|list any system directory (absolute path)
+  read_pdf_pages|filesystem.py|read PDF by page range with cursor tracking
+  check_disk_usage|filesystem.py|free space: ~/.TheIgors + ~/TheIgors + /
+  check_resource_load|filesystem.py|CPU/RAM/swap verdict: ok|warn|critical
+
+SECTION_SENSES|
+  get_datetime|senses.py|date, time, day-of-week, timezone
+  take_photo|senses.py|webcam snapshot (multiple device indices)
+  list_cameras|senses.py|probe available camera devices
+  record_audio|senses.py|microphone recording 1-60s → WAV
+
+SECTION_WEB|
+  web_search|web_search.py|DuckDuckGo search (no API key required)
+  read_webpage|web_search.py|fetch URL → readable text
+  browse_as_employer|browser.py|Chrome with Akien's logged-in profile
+  browser_use_task|browser.py|AI-driven browser automation (describe task → agent acts)
+
+SECTION_EMAIL|gate=GMAIL_USER+GMAIL_APP_PASSWORD
+  send_email|gmail.py|outbound Gmail; gate=IGOR_EMAIL_SEND_ENABLED
+  read_inbox|gmail.py|read recent Gmail inbox
+  search_email|gmail.py|search Gmail by text query
+
+SECTION_DISCORD|gate=DISCORD_BOT_TOKEN
+  send_discord_message|discord.py|send to Discord channel via outgoing queue
+
+SECTION_CONFLUENCE|gate=ConfluenceAPIKey+CONFLUENCE_EMAIL+CONFLUENCE_DOMAIN
+  confluence_get_page|confluence.py|fetch page by ID or title+space_key
+  confluence_search|confluence.py|CQL search
+  confluence_create_page|confluence.py|create page in space
+  confluence_update_page|confluence.py|update page (auto-increments version)
+  // rate throttle: IGOR_CONFLUENCE_MIN_DELAY_S (def 3s), IGOR_CONFLUENCE_READ_WPM (def 250)
+
+SECTION_CALENDAR|gate=IGOR_CALENDAR_ENABLED
+  create_calendar_event|google_calendar.py|create event (ISO 8601 datetimes)
+  list_calendar_events|google_calendar.py|list events in date range
+  update_calendar_event|google_calendar.py|update event (changed fields only)
+  delete_calendar_event|google_calendar.py|delete event by ID
+  create_task|google_calendar.py|create Google Task (due_iso optional)
+  list_tasks|google_calendar.py|list pending Google Tasks
+  complete_task|google_calendar.py|mark task completed
+  delete_task|google_calendar.py|delete task
+
+SECTION_CONTACTS|gate=IGOR_CALENDAR_ENABLED
+  create_contact|google_contacts.py|store contact; syncs to Google Contacts
+  search_contacts|google_contacts.py|search by name/email; Google then DB fallback
+  update_contact|google_contacts.py|update contact by resource_name
+
+SECTION_BUDGET|
+  check_openrouter_balance|budget.py|real OR balance (cached 1h; don't call >1/hr)
+  set_spending_cap|budget.py|set local USD soft guardrail
+  openrouter_spend_history|budget.py|locally-tracked OR spend history
+  get_budget_status|budget.py|alias for check_openrouter_balance
+
+SECTION_SELF_EDIT|gate=IGOR_SELF_EDIT_ENABLED
+  list_source_files|self_edit.py|list Igor source with inertia levels
+  read_source_file|self_edit.py|read Igor own source files
+  edit_source_file|self_edit.py|full file rewrite with syntax check; commits+pushes
+  patch_source_file|self_edit.py|targeted old→new patch; preferred for small changes
+  run_syntax_check|self_edit.py|Python syntax validation
+  // inertia: HIGH=brainstem/,models.py,reasoners/base.py → arbiter gate
+  // inertia: MEDIUM=cognition/,cortex.py,anthropic.py,main.py
+  // inertia: LOW=tools/,dashboard/,thalamus.py,word_graph.py
+
+SECTION_EBOOK|
+  find_book|ebook_reader.py|search Calibre + Kindle by title/author
+  open_book|ebook_reader.py|open ebook; auto-resumes last position
+  read_chunk|ebook_reader.py|read N sentences; advances position
+  jump_to_chapter|ebook_reader.py|jump to chapter+sentence
+  reading_position|ebook_reader.py|get position without advancing
+  list_reading_sessions|ebook_reader.py|all books Igor has read with progress
+  list_reading_memories|ebook_reader.py|memories extracted from reading (source=reading)
+  open_book_url|ebook_reader.py|open web URL as readable book (HTML/text)
+  open_book_gutenberg|ebook_reader.py|open Gutenberg book by ID or title search
+
+SECTION_WORD_GRAPH|
+  analyze_word_graph|word_graph.py|hubs, bridges, exclusive domain analysis
+  index_text_into_word_graph|word_graph.py|index text block (weight=1.0 normal|2.0 high-signal)
+  query_word_graph_stats|word_graph.py|vocab size, doc count, next-word predictions
+
+SECTION_LEARNING|
+  learn_about|learner.py|Calibre search + book_learner launch + web queue
+  process_learn_queue|learner.py|drain learn_queue.json (max 5 items at human pace)
+  drain_learn_queue|learner.py|start background queue runner (60s intervals; PID-guarded)
+  list_absorbed_books|learner.py|books absorbed via book_learner with node counts
+  get_reading_list|learner.py|show reading list (filter by status/book_type)
+  add_to_reading_list|learner.py|add book to permanent reading list
+  update_reading_status|learner.py|update reading list entry status
+
+SECTION_TRAINING|
+  fetch_training_text|training.py|fetch URL into staged training corpus
+  scan_local_training_source|training.py|scan ~/TheIgorsProject/ for .txt corpus files
+  load_gutenberg_list|training.py|queue Gutenberg top-100 from Akien's list
+  train_word_graph|training.py|train word graph on corpus book (resumable)
+  train_all_pending|training.py|train all pending/in-progress corpus books
+  list_training_corpus|training.py|corpus status: pending/in_progress/complete
+  evict_training_corpus|training.py|evict corpus files to free disk
+
+SECTION_METRICS|
+  get_metrics_report|metrics.py|tier distribution, escalation rate, tool stats
+  get_error_log|metrics.py|recent errors from errors.log
+
+SECTION_CLUSTER|
+  ssh_exec|cluster_ssh.py|shell command on remote cluster machine via SSH
+  cluster_status|cluster_ssh.py|SSH + Ollama health on all cluster machines
+  bootstrap_ssh|cluster_ssh.py|push Igor's SSH pubkey to cluster machines
+  // config: ~/.TheIgors/local/machines.json
+
+SECTION_HOT_RELOAD|gate=IGOR_HOT_RELOAD
+  reload_module|hot_reload.py|hot-reload module by dotted name (HIGH-inertia blocked)
+  list_loaded_modules|hot_reload.py|list all loaded wild_igor modules
+
+SECTION_NOTEBOOK|
+  notebook_save|notebook.py|save to Igor's personal notebook
+  notebook_search|notebook.py|semantic search of notebook
+  notebook_list|notebook.py|list all notebook items
+  notebook_remove|notebook.py|remove by ID prefix or title
+
+SECTION_BLOBS|
+  store_reference|blobs.py|store reference doc (research/code/transcripts) with tags
+  get_reference|blobs.py|retrieve full blob content by memory ID
+  search_references|blobs.py|search blobs by tag (match_all option)
+  list_reference_tags|blobs.py|list all tags with usage counts
+  store_design_doc_pair|blobs.py|store CSB + distilled summary (model-tagged)
+  load_design_doc|blobs.py|smart-load: distilled cache → CSB → filesystem
+
+SECTION_INTERPRETIVE|
+  add_interpretive_edge|interpretive.py|add directed edge in interpretive tree
+  interpretive_traverse|interpretive.py|BFS from seed nodes (activation only)
+  get_interpretive_edges|interpretive.py|list outgoing edges from memory node
+
+SECTION_GITHUB|
+  create_work_order|github.py|create GitHub issue as work order
+  update_work_order|github.py|post status comment on work order
+  close_work_order|github.py|close work order with resolution summary
+  list_work_orders|github.py|list issues (state: open|closed|all)
+  get_work_order|github.py|full detail including all comments
+  sync_github_issues|github.py|sync issues to blob storage (incremental)
+
+SECTION_REASONING|
+  list_cloud_models|openrouter_reasoner.py|list OR models with context + pricing
+  compare_cloud_costs|openrouter_reasoner.py|cheapest OR model for task complexity
+  inner_cc|inner_cc.py|internal code reasoning; deposits reusable graph nodes
+  // inner_cc modes: architecture|code_review|pattern|debug|curriculum
+
+SECTION_ENV_GATES|
+  IGOR_SELF_EDIT_ENABLED|gates all source file writes (default false)
+  IGOR_HOT_RELOAD|gates hot-reload capability
+  IGOR_CALENDAR_ENABLED|gates Google Calendar + Contacts
+  IGOR_EMAIL_SEND_ENABLED|gates outbound Gmail
+  IGOR_ARBITER_ENABLED|gates human-approval queue (default false)
+  IGOR_TIER5_ENABLED|gates Anthropic direct spend (default false)
+  IGOR_RESEARCH_MODE|allows bulk external reads (default false)
+  IGOR_CONTEXT_WINNOW|gates pre-call context winnowing via gpt-4o-mini
+
+SECTION_INTEGRATIONS|
+  gmail|SMTP/IMAP via app password
+  google_calendar|OAuth2
+  google_contacts|Contacts API
+  discord|bot token + outgoing queue
+  confluence|REST API v2 + rate throttling
+  openrouter|cloud inference + spend cap
+  github|issue/work order API
+  duckduckgo|web search (no key)
+  gutenberg|text fetching
+  calibre|local ebook library (CLI: calibredb)
+  kindle|local .mobi + Cloud Reader via browser
+  cluster_ssh|paramiko key-based auth
+  ollama|local inference via HTTP
