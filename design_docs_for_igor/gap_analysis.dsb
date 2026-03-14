@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14e
+DOC|gap_analysis|v1|updated=2026-03-14f
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -69,6 +69,17 @@ G74|no-autonomous-source-discovery|open|ticket=#215
 G75|no-learning-queue-infrastructure|open|ticket=#215
   was=no persistent queue, no rate-limited fetcher, no blob→book_learner trigger, no overnight scheduler
   fix=LearningQueue (SQLite), ParallelFetcher (rate-limited per domain, parallel), NightlyRunner (cron, drains queue)
+
+G-BRW2|ollama-external-ip|open|small
+  what=Ollama systemd service binds 127.0.0.1 only; cluster_status check uses external IP → always reports unreachable for local box
+  fix=add Environment="OLLAMA_HOST=0.0.0.0" to /etc/systemd/system/ollama.service.d/override.conf; sudo systemctl daemon-reload + restart
+  trigger=whenever cluster_status run on local box
+
+G-BRW3|inference-controller-auto-restart|planned|small
+  what=when is_healthy() returns False, inference_gateway.py should attempt sudo systemctl restart ollama.service before returning False
+  fix=_try_restart_local_ollama() in inference_gateway.py; 60s cooldown; always-on; log to forensic logger
+  also=restart_ollama tool in cluster_ssh.py for manual + remote use
+  trigger=next session
 
 G-BRW1|cc-bridge-greeting-dominance|open|small
   what=CC bridge messages fire PROC_GREETING instead of action habits for short requests

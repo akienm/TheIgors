@@ -808,6 +808,12 @@ No persistent queue, no rate-limited parallel fetcher, no blob→book_learner tr
 New issues:
 - **#218** — design_docs/ cleanup: archive CSBs, create human-readable doc set
 
+### Session 2026-03-14f additions
+
+- **PROC_CLUSTER_SSH_CHECK fixed**: `code_ref` had `_cluster_status` (wrong, private name) → `cluster_status` (registered tool name); fixed via DB UPDATE
+- **Ollama service fixed**: snap Ollama was holding port 11434 with no models; stopped + disabled; systemd Ollama now running with nomic-embed-text + qwen2.5:7b + llama3.2:1b; external IP still needs `OLLAMA_HOST=0.0.0.0` in `/etc/systemd/system/ollama.service.d/override.conf`
+- **Planned (next session)**: `restart_ollama` tool in cluster_ssh.py + auto-restart in inference_gateway.py when `is_healthy()` returns False; always-on, 60s cooldown, `sudo systemctl restart ollama.service`
+
 ### Session 2026-03-14e additions
 
 - **G-RL2 ~~CLOSED~~**: browser discovery now working — 3 bugs fixed in `learner.py`/`browser.py`; 20 URLs queued for Pinker/Tomasello/Lakoff; drain runner active
