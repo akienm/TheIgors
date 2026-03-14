@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14b
+DOC|gap_analysis|v1|updated=2026-03-14c
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -49,6 +49,13 @@ G72|ne-json-parse-failures|~~closed=2026-03-13g~~
   fix2=narrative_engine.py _call_inference: print raw[:150] + log_anomaly(NE_FAIL, json_parse_failed raw=...) on parse failure
   result=OR contractually returns valid JSON; failures now visible in cc_alerts.log
 
+// ── CLOSED THIS SESSION (2026-03-14c) ─────────────────────────────────────
+
+G63|routing-self-awareness|~~closed=2026-03-14c~~
+  was=Igor wrote plans claiming "local inference" for interactive turns; contradicts D035 (interactive→t3.5 floor)
+  fix=CC bridge message → Igor seeded PROC_ROUTING_INTROSPECTION; blob stored (68e63a31); Igor confirmed G63 closed
+  result=accurate routing self-model in PROCEDURAL memory; plans now correctly scope local to background only
+
 // ── NEW GAPS (2026-03-14a planning session) ────────────────────────────────
 
 G73|overnight-reader-stops-after-first-book|~~closed=2026-03-14b~~
@@ -97,11 +104,10 @@ G46|memory-model-fields|~3h|HIGH_INERTIA_CAREFUL
   blocker=models.py HIGH inertia; requires cortex.py migration + all seed scripts updated
   trigger=when Memory model design is stable enough to commit to schema change
 
-G63|routing-self-awareness|~2h
-  what=Igor writes plans saying "local inference" but D035 overrides tier.2 unconditionally for interactive turns
-  symptom=Igor's stated plans contradict actual routing; incorrect cost model in self-generated plans
-  fix=seed PROC_ROUTING_INTROSPECTION: accurate narrative of live routing stack (D035 floor=t3.5 for interactive; t2=background/NE/impulse only)
-  trigger=any session where Igor is planning his own work
+G63|routing-self-awareness|~~closed=2026-03-14c~~
+  was=Igor wrote plans claiming "local inference" for interactive turns; contradicts D035 (interactive→t3.5 floor)
+  fix=CC bridge message → Igor seeded PROC_ROUTING_INTROSPECTION; blob stored (68e63a31); Igor confirmed G63 closed
+  result=accurate routing self-model in PROCEDURAL memory; plans now correctly scope local to background only
 
 G48|mobile-offline-sync|large|ticket=#190
   what=phone Igor (small model, stripped habits) + sync protocol when reconnected

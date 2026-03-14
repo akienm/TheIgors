@@ -1,4 +1,4 @@
-DOC|subsystem_self_edit|v1|updated=2026-03-13
+DOC|subsystem_self_edit|v1|updated=2026-03-14c
 META|inertia=LOW(tools)|parent=architecture_root.dsb
 META|files=tools/self_edit.py,tools/hot_reload.py,cognition/forensic_logger.py
 
@@ -10,7 +10,7 @@ DESIGN_POINTS|
   DP5|auto-commit+push after successful edit (Igor's edits only; CC edits do NOT)
   DP6|hot_reload: reload_module() after patch if module is stateless/hot-reloadable; else restart
   DP7|inertia_gate: validate_against_core() before response delivery; catches CP violations
-  DP8|PROC_RELOAD_AFTER_EDIT habit (pending #207): self_edit TWM signal → habit fires reload
+  DP8|PROC_RELOAD_AFTER_EDIT: _try_hot_reload() in self_edit.py fires after edit/patch if IGOR_HOT_RELOAD=true + LOW inertia; else restart message
 
 SELF_EDIT_FLOW|
   1=check inertia_registry.dsb for target module
@@ -27,7 +27,7 @@ HOT_RELOAD|
   blocked=brainstem/,memory/models.py,memory/cortex.py,reasoners/base.py,tools/registry.py,hot_reload.py itself
   auto_reregister=tool modules re-execute registry.register() calls on reload; no extra step needed
   shortname=accepts partial names; resolves if unambiguous
-  pending=PROC_RELOAD_AFTER_EDIT habit (#207 comment); self_edit→TWM signal→habit fires
+  auto=_try_hot_reload(path, label) called after successful edit/patch; gate=IGOR_HOT_RELOAD + label==LOW
 
 FORENSIC_LOGGING|
   file=cognition/forensic_logger.py

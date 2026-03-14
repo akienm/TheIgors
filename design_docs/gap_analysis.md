@@ -631,10 +631,12 @@ NE tags narrative `write_ring()` with active `thread_id` (most common in obs_lis
 
 ### Still Open
 
-**G63 — Routing self-awareness: Igor's plans contradict D035** *(~2h)*
-**Observed (2026-03-12o)**: Igor wrote an evening plan stating "Local inference. Cloud budget is spent." but D035 (`interactive→tier.3.5`) overrides `tier_select`'s `tier.2` selection unconditionally for every interactive turn. The logs show 100% of interactive turns escalate via D035 to haiku/sonnet. Igor has no model of which routing rules dominate in which contexts.
+**G63 — Routing self-awareness: Igor's plans contradict D035** ~~CLOSED 2026-03-14c~~
+**Observed (2026-03-12o)**: Igor wrote plans claiming "Local inference" for interactive turns — contradicts D035 (interactive→tier.3.5 floor unconditionally). 100% of interactive turns in logs escalate to haiku/sonnet regardless of complexity signal.
 
-**Fix**: Seed a `PROC_ROUTING_INTROSPECTION` PROCEDURAL habit whose narrative accurately describes the live routing stack: D035 always fires for interactive turns (floor = tier.3.5); tier.2 Ollama only runs for background/NE/action-impulse turns; tier.4 fires on NE ambiguity or high complexity. When Igor plans "local inference" he should know this means background work only. The habit also surfaces in plans/context so Igor reasons correctly about his own cost model.
+**Fix**: Sent CC bridge message to seed `PROC_ROUTING_INTROSPECTION` habit with accurate D035 description. Igor confirmed seeded, blob stored (`68e63a31`), G63 closed.
+
+**Result**: Igor now has accurate self-model of routing stack in PROCEDURAL memory. Plans involving "local inference" will correctly be scoped to background/NE work only.
 
 **Secondary (CLOSED 2026-03-12o)**: IMPULSE_SKIP root cause was `OllamaReasoner.reason()` raising `RuntimeError("cloud_mode active")` unconditionally — it didn't check whether the call was interactive or background. Fix: `force_local=True` (already set by main.py for impulse paths) now propagates from `OllamaPool.reason()` into `OllamaReasoner.reason()`, bypassing the cloud_mode gate. Background/NE turns run as long as they need. Interactive turns still escalate via D035.
 
@@ -806,4 +808,12 @@ No persistent queue, no rate-limited parallel fetcher, no blob→book_learner tr
 New issues:
 - **#218** — design_docs/ cleanup: archive CSBs, create human-readable doc set
 
-*Updated: 2026-03-14b by Claude Code.*
+### Session 2026-03-14c additions
+
+- **G63 closed**: PROC_ROUTING_INTROSPECTION seeded via CC bridge; Igor confirmed and stored blob
+- **PROC_RELOAD_AFTER_EDIT implemented**: `_try_hot_reload()` in `self_edit.py` — auto-reloads LOW-inertia modules post-edit when `IGOR_HOT_RELOAD=true`
+- **#205 (partial)**: 4 LOW-inertia silent except-pass fixed with `log_error()` — ebook_reader.py (3), learner.py (1); MEDIUM-inertia files (basal_ganglia, narrative_engine, inference_gateway) deferred
+- **Latency investigation**: no bug — slow haiku calls are agentic sessions with 19-42 turns under `IGOR_MAX_TURNS=50`; interactive haiku healthy at 7-9s
+- **#218 closed**: 28 stale CSB/MD files archived to ~/TheIgorsProject/akien/Readings/; 9 new human-readable docs created in design_docs/ (ProjectOverview, OverallArchitecture, DesignDecisions, 6 subsystem docs); WorkingWithClaude.md moved from thoughts/
+
+*Updated: 2026-03-14c by Claude Code.*

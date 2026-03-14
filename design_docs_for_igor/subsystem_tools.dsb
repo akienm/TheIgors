@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-14b
+DOC|subsystem_tools|v1|updated=2026-03-14c
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -51,4 +51,5 @@ LEARNER|
   drain_runner=claudecode/drain_learn_queue.py --delay SECS|PID=~/.TheIgors/drain_learn_queue.pid
 
 KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
+// silent-exception audit 2026-03-14c: ebook_reader EBOOK_TWM_STEW_FAIL+EBOOK_EXTRACT_STORE_FAIL+READING_STATE_LOAD_FAIL + learner LEARN_QUEUE_LOAD_FAIL now log_error(); MEDIUM-inertia files (BG/NE/gateway) deferred
 DECISIONS|D030
