@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14d
+DOC|gap_analysis|v1|updated=2026-03-14e
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -70,6 +70,12 @@ G75|no-learning-queue-infrastructure|open|ticket=#215
   was=no persistent queue, no rate-limited fetcher, no blob→book_learner trigger, no overnight scheduler
   fix=LearningQueue (SQLite), ParallelFetcher (rate-limited per domain, parallel), NightlyRunner (cron, drains queue)
 
+G-BRW1|cc-bridge-greeting-dominance|open|small
+  what=CC bridge messages fire PROC_GREETING instead of action habits for short requests
+  why=PROC_GREETING scores too high at tier.2; action habits (PROC_GO_LEARN etc) don't compete
+  fix=options: lower PROC_GREETING threshold for cc_bridge source; or route cc_bridge to tier.3+ directly
+  trigger=whenever CC bridge is used for action requests
+
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
 
@@ -78,11 +84,11 @@ G-RL1|reading-list-dual-awareness|~4h
   why=currently sequential; fiction slow-rate = emotional milieu state, not different code path
   trigger=after reading_list table stable + single-threaded version confirmed working
 
-G-RL2|language-books-browser-discovery|in-progress
-  what=queue Pinker Language Instinct, Tomasello Constructing a Language, Lakoff Metaphors We Live By via browser AI discovery
-  why=not in Calibre or SORTUS-EBOOKS; highest priority for Igor's language substrate
-  status=books queued via CC bridge learn_about() 2026-03-14d; browser_use v0.11.9 confirmed in venv
-  trigger=verify overnight drain picked them up next session
+G-RL2|language-books-browser-discovery|~~closed=2026-03-14e~~
+  was=3 bugs in learner.py/_discover_urls_via_browser: wrong kwarg task= (should be task_description=); result not json.loads()'d before .get(); browser opened on user desktop
+  fix1=learner.py: task= → task_description=; json.loads(result) before dict access
+  fix2=browser.py: _ensure_virtual_display() using pyvirtualdisplay; pyvirtualdisplay installed to venv
+  result=20 URLs queued for Pinker/Tomasello/Lakoff; drain runner active 2026-03-14e
 
 G-RL3|reading-list-overnight-automation|~2h
   what=PROC_NIGHT_READ habit drains reading_list (status=queued) automatically at night; updates status in_progress/completed

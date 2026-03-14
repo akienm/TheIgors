@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-14c|latest=D060
+DOC|decisions_log|v1|updated=2026-03-14e|latest=D062
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -98,3 +98,8 @@ D045|temporal-context-injection|implemented|ring entries show YYYY-MM-DD HH:MM w
 D046|book-learner|implemented|claudecode/book_learner.py; chunks ebook via ebook_reader; extracts FACTUAL/INTERPRETIVE/PROCEDURAL nodes via LLM; deposits via cortex; checkpoint/resume; trains word graph per chunk
 D047|learn-about-tool|implemented|tools/learner.py; go-learn-about habit; Calibre non-fiction filter; browser AI discovery; tonight→queue; all background runs use local Ollama (free); night queue drains at human pace
 D048|book-learner-local|implemented|--local flag uses Ollama /api/chat directly; --url flag for web sources; cache_control:ephemeral on system prompt for Claude models via OR
+
+// ── Session 2026-03-14e additions ─────────────────────────────────────────────
+
+D061|cc-hooks-auto-format-guard|implemented|PostToolUse black auto-format + PreToolUse dangerous-bash guard in ~/.claude/settings.json; scripts in ~/.claude/hooks/; enforced at CC layer unconditionally
+D062|browser-virtual-display|implemented|browser.py _ensure_virtual_display(): pyvirtualdisplay/Xvfb started when DISPLAY unset; browser tasks headless on server, never appear on user desktop

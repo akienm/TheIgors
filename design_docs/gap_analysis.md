@@ -808,6 +808,16 @@ No persistent queue, no rate-limited parallel fetcher, no blob→book_learner tr
 New issues:
 - **#218** — design_docs/ cleanup: archive CSBs, create human-readable doc set
 
+### Session 2026-03-14e additions
+
+- **G-RL2 ~~CLOSED~~**: browser discovery now working — 3 bugs fixed in `learner.py`/`browser.py`; 20 URLs queued for Pinker/Tomasello/Lakoff; drain runner active
+- **browser.py**: `_ensure_virtual_display()` added — uses pyvirtualdisplay/Xvfb; no longer opens on user's desktop
+- **Claude Code hooks**: PostToolUse auto-format (black) + PreToolUse dangerous-bash guard wired in `~/.claude/settings.json`; scripts in `~/.claude/hooks/`
+- **CLAUDE.md Compact Instructions**: section added; guides auto-compact summarizer to preserve open gaps, modified files, current hypothesis
+- **WorkingWithClaude.md**: skills/hooks/compact added to Infrastructure; Part Three "How I Work with Akien" added; workflow step 6 = notify user to /compact
+- **New gap G-BRW1**: CC bridge messages fire PROC_GREETING instead of action habits for short action requests — PROC_GREETING threshold too high at tier.2; need habit scoring adjustment or CC bridge routing change
+- **learner.py bugs fixed**: (1) `task=`→`task_description=` kwarg, (2) json.loads() before dict access, (3) pyvirtualdisplay installed
+
 ### Session 2026-03-14d additions
 
 - **browser_use confirmed available**: v0.11.9 in venv — earlier "not installed" check was wrong (used system Python, not venv)
