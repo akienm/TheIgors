@@ -1,4 +1,4 @@
-DOC|subsystem_inference|v1|updated=2026-03-13
+DOC|subsystem_inference|v1|updated=2026-03-13g
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/inference_gateway.py,cognition/cloud_mode.py,cognition/reasoners/
 
@@ -25,7 +25,7 @@ SKIP_TO_SIGNALS|
 DAG_PURPOSES|preparse,winnow,ne,think
   preparse|local_preferred→ollama_preparse[fallback→or_preparse]|cloud_preferred→or_preparse
   winnow|local_preferred→ollama_winnow[fallback→or_winnow]|cloud_preferred→or_winnow
-  ne|cloud_training→or_ne|ne_local_ok→ollama_ne[fallback→or_ne]
+  ne|cloud_training→or_ne|ne_local_ok→ollama_ne[fallback→or_ne]|ne_purpose_extra:response_format=json_object
   think|always→ollama_think (no cloud fallback)
 
 REASONERS|
@@ -43,4 +43,4 @@ CLOUD_MODE|
   balance_unknown=-1.0 sentinel; network error→assume funded; never silently disable
 
 KNOWN_FAILURES|F003(IMPULSE_SKIP),F004(cloud-mode-disabled),F005(tier-model-inversion),F006(gateway-attr-error)
-DECISIONS|D015,D023,D025,D026,D031,D032,D033,D034,D035,D039,D040,D041
+DECISIONS|D015,D023,D025,D026,D031,D032,D033,D034,D035,D039,D040,D041,D053

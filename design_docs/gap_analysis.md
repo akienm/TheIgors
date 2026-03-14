@@ -76,6 +76,11 @@ responses that bypass the LLM for known situations) would dramatically reduce cl
 **G10 — rich Live status bar (terminal UX)** ~~*(~3h)*~~
 **RESOLVED** — `dashboard/terminal.py` render() extended with milieu VAD bars (▓▓▓░░), TWM depth, active jobs count, last tier used. Both boot and post-interaction dashboard calls updated. Issue #35 closed 2026-03-05.
 
+**G72 — NE JSON parse failures (silent)** ~~*(~1h)*~~
+**RESOLVED 2026-03-13g** — `gpt-4o-mini` via OR occasionally returned prose wrapping or malformed JSON for NE calls; `_parse_ne_json()` silently discarded the response and logged only "skipping cycle" with no diagnostic detail.
+Fix 1: `inference_gateway.py` NE purpose constraints — added `"response_format": {"type": "json_object"}` to `extra`; `_h_or` now includes it in the OR payload → model contractually returns valid JSON.
+Fix 2: `narrative_engine.py` `_call_inference()` — on parse failure, prints truncated raw response and calls `log_anomaly(kind="NE_FAIL", detail=f"json_parse_failed raw=...")` → surfaced in `cc_alerts.log` at session start.
+
 ---
 
 ### Tier 3: Architecture / Vision Items

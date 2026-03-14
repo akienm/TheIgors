@@ -43,6 +43,12 @@ G71|book-learner-model-comment|~~closed=2026-03-13e~~
   fix=.split("#")[0].strip() in book_learner._extract_nodes_local()
   result=qwen2.5:7b resolves correctly; timeout bumped 60→300s for CPU inference
 
+G72|ne-json-parse-failures|~~closed=2026-03-13g~~
+  was=gpt-4o-mini returned prose/malformed JSON for NE calls; _parse_ne_json() silently dropped response; only "skipping cycle" logged with no diagnostic
+  fix1=inference_gateway.py NE purpose extra: response_format={"type":"json_object"} + _h_or wires it into OR payload
+  fix2=narrative_engine.py _call_inference: print raw[:150] + log_anomaly(NE_FAIL, json_parse_failed raw=...) on parse failure
+  result=OR contractually returns valid JSON; failures now visible in cc_alerts.log
+
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
 
