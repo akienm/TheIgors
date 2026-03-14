@@ -356,6 +356,13 @@ def run(args) -> None:
     processed_positions = set(progress.get("processed_positions", []))
     total_deposited = progress.get("total_deposited", 0)
 
+    # ── Console note: new book vs resume ───────────────────────────────────
+    if processed_positions and args.resume:
+        print(f"▶ Resuming absorption: \"{book_title}\" "
+              f"({len(processed_positions)} chunks done, {total_deposited} nodes deposited)")
+    else:
+        print(f"★ New book — starting absorption: \"{book_title}\" by {handle['author']}")
+
     # ── Seek to start position ─────────────────────────────────────────────
     # Access the live BookHandle from cache for position management
     from igor.tools.ebook_reader import _HANDLE_CACHE

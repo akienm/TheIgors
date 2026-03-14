@@ -1,4 +1,4 @@
-DOC|subsystem_reading|v1|updated=2026-03-13
+DOC|subsystem_reading|v1|updated=2026-03-13f
 META|inertia=LOW|parent=architecture_root.dsb
 META|files=tools/ebook_reader.py,tools/training.py,cognition/word_graph.py
 META|purpose=book reading → graph training → realtime discussion
@@ -31,5 +31,10 @@ MILESTONE|books_realtime
   why_matters=confirms read→extract→graph→respond loop working end-to-end
   gates=Claude training run (don't train until this works; else reinforce incomplete behavior)
 
-DECISIONS|D038
+BOOK_LEARNER_OBSERVABILITY|
+  console_note=open_book() prints "★ Opening" or "▶ Resuming" to stdout on every open
+  absorption_note=book_learner.py prints new/resume + checkpoint stats after loading progress
+  log=subprocess stdout routed to ~/.TheIgors/logs/book_learner.log (was DEVNULL); tailable
+
+DECISIONS|D038,D052
 KNOWN_FAILURES|F001(OOM from word_graph JSON — fixed by SQLite migration),F012(stale-CIFS)
