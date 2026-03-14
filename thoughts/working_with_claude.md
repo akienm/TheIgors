@@ -70,13 +70,19 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 2. Chat about design issues
 3. Update notes and/or create additional tickets from the discussion
 4. Group work, create plan, get approval
-5. Fix each issue
-6. Add forensic logging
-7. Run live as a black-box test
-8. Update the ticket
-9. Hot-reload the module
-10. Update docs if anything important changed
-11. Loop until all tickets closed
+5. Start loop
+5.1 Fix each issue
+5.2. Add forensic logging
+5.3 Run live as a black-box test
+5.4 Update the ticket
+5.5 Hot-reload the module
+5.6 Update docs if anything important changed (while context fresh)
+5.7 Maybe commit, depends on workplan
+5.8 Save state
+5.9 Loop until all tickets closed
+6. Update discussion
+7. Update in repo distiled compressed block documentation
+8. Commit
 
 ---
 
