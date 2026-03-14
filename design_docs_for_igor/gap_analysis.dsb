@@ -101,10 +101,10 @@ G-RD1|routing-directive-leaks-into-tool-args|~~closed=2026-03-14h~~
   fix=main.py:2921 pass parsed.core_input instead of user_input
   result=learn_about() and other reactive habits receive clean user message
 
-G-DBM1|memory-last-accessed-not-updated|open|small
-  what=last_accessed=None on all memories including CPs; record_activation() only called on habit fires, never on search() results or interpretive traversal
-  fix=update last_accessed on top-N memories surfaced into LLM context (search + interpretive BFS); lightweight batch write
-  trigger=after slow query baseline confirmed via db_queries.log (avoid adding writes before knowing load)
+G-DBM1|memory-last-accessed-not-updated|~~closed=2026-03-14h~~
+  was=last_accessed=None on all memories; only updated by record_activation() on habit fires
+  fix=cortex._touch_last_accessed(): single SQL UPDATE after Phase 2 + Phase 1 search paths; skips ROOT/CP
+  result=verified: 10 memories got last_accessed timestamps after one search turn
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
