@@ -808,6 +808,12 @@ No persistent queue, no rate-limited parallel fetcher, no blob→book_learner tr
 New issues:
 - **#218** — design_docs/ cleanup: archive CSBs, create human-readable doc set
 
+### Session 2026-03-14d additions
+
+- **browser_use confirmed available**: v0.11.9 in venv — earlier "not installed" check was wrong (used system Python, not venv)
+- **G-RL2 in progress**: Lakoff *Metaphors We Live By*, Pinker *Language Instinct*, Tomasello *Constructing a Language* — none in Calibre or SORTUS-EBOOKS; Igor sent CC bridge message to queue all three via `learn_about()` for overnight drain runner
+- **Library state**: Calibre has Lakoff *Political Mind* (IDs 2241/3495); Pinker and Tomasello absent entirely; future G: Igor to deduplicate/index his own library
+
 ### Session 2026-03-14c additions
 
 - **G63 closed**: PROC_ROUTING_INTROSPECTION seeded via CC bridge; Igor confirmed and stored blob
