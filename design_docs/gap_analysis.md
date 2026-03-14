@@ -834,6 +834,16 @@ New issues:
 - **WorkingWithClaude.md**: skills/hooks/compact added to Infrastructure; Part Three "How I Work with Akien" added; workflow step 6 = notify user to /compact
 - **New gap G-BRW1**: CC bridge messages fire PROC_GREETING instead of action habits for short action requests — PROC_GREETING threshold too high at tier.2; need habit scoring adjustment or CC bridge routing change
 
+### Session 2026-03-14i additions
+
+- **G74 partial fix**: `learner.py` — `_discover_urls_direct()` added: constructs arXiv/Wikipedia/Gutenberg URLs directly without needing AI response (always delivers 3 URLs per topic). `_DISCOVERY_PROMPT` updated to force bare-URL-per-line output. `_parse_urls()` now also extracts markdown `[text](url)` links + deduplicates. Wired into `learn_about()`: direct channel runs first, then AI browser channel.
+- **Learn queue cleanup**: 10 corrupt entries (old thread-context pollution from before G-BRW5 fix) removed; 9 targeted linguistics URLs added (Wikipedia: language acquisition/universal grammar/cognitive linguistics/construction grammar; SEP: language+thought/linguistics; arXiv x3); drain runner started.
+- **#205 silent exception audit (MEDIUM files)**: Full audit of basal_ganglia.py, narrative_engine.py, inference_gateway.py, thalamus.py, learner.py — all 51 exception handlers reviewed; all are intentional (optional instrumentation, safe degradation, or tier-cascade). No fixes needed.
+- **D069**: reading mode sympathetic/autonomic — `cloud_ok` field in queue items; "tonight" = background/local-only (cloud_ok=False); "now" = foreground/cloud-OK. Encodes parasympathetic vs sympathetic at queue level.
+- **D070**: G-SP1 pattern — after `self_edit.patch_source_file()` succeeds: push EPISODIC memory of edit, then call `reload_module()` directly. Both awareness (memory) and automation (direct call). No habit needed.
+- **#219 created**: feat: PROC_NIGHT_READ habit + tonight/now reading modes (G-RL3)
+- **Plan approved**: G-SP1 (self_edit.py: episodic memory push + reload_module call) + G-RL3 (cloud_ok field, tonight/now parsing, PROC_NIGHT_READ seed)
+
 ### Session 2026-03-14h additions
 
 - **G-BRW1 ~~CLOSED~~**: Two-part fix — (1) `basal_ganglia.py` Format 1 pipe triggers now use `\b`-bounded regex (prevents "hi" matching inside "this"); (2) `thalamus.py` strips `[Routing directive:...]` suffix from `core_text` before habit scoring. Result: `/metrics` and `reload_module(...)` no longer fire PROC_GREETING; `hello` still routes correctly.

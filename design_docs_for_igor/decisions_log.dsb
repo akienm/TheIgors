@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-14e|latest=D062
+DOC|decisions_log|v1|updated=2026-03-14i|latest=D070
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -115,3 +115,8 @@ D065|inference-controller-auto-restart|implemented|_try_restart_local_ollama() i
 D066|pipe-trigger-word-boundary|implemented|basal_ganglia.py Format 1 pipe-separated triggers use \b regex word-boundary; prevents "hi" matching inside "this"; all habits benefit
 D067|routing-directive-strip-from-core-input|implemented|thalamus.py strips [Routing directive:...] suffix from core_text; prevents CC bridge directive words ("background","inline") from triggering threshold habits
 D068|code-ref-dispatch-uses-core-input|implemented|main.py habit code_ref dispatch passes parsed.core_input (routing directive stripped) not raw user_input to single-arg tools
+
+// ── Session 2026-03-14i additions ─────────────────────────────────────────────
+
+D069|reading-mode-sympathetic-autonomic|defined|cloud_ok field in queue items; "tonight"=background/local-only (cloud_ok=False); "now"=foreground/cloud-OK; encodes parasympathetic vs sympathetic at queue level; tonight drains overnight on local; now starts immediately with cloud if needed
+D070|auto-reload-with-episodic-memory|planned|G-SP1: after self_edit.patch_source_file() succeeds: push EPISODIC memory of edit then call reload_module() directly; both awareness (memory) and automation (direct call); no habit needed for this layer

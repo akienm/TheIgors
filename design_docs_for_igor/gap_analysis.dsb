@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14f
+DOC|gap_analysis|v1|updated=2026-03-14i
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -62,9 +62,10 @@ G73|overnight-reader-stops-after-first-book|~~closed=2026-03-14b~~
   was=overnight runner completes one book and exits; no queue advancement
   fix=claudecode/drain_learn_queue.py: loops learn_queue.json until empty; PID-guarded; 60s between launches; auto-spawned by learn_about() when items queued
 
-G74|no-autonomous-source-discovery|open|ticket=#215
+G74|no-autonomous-source-discovery|partial|ticket=#215
   was=topic→reading list requires manual URL curation; no TopicExpander
-  fix=TopicExpander: anonymous browser_use to free AI web UI → parse URLs into LearningQueue; Calibre CSV as priority local source
+  partial_fix=_discover_urls_direct() always delivers arXiv/Wikipedia/Gutenberg URLs; _DISCOVERY_PROMPT forces bare-URL output; _parse_urls() now handles markdown links; 2026-03-14i
+  still_open=AI browser path (Gemini/ChatGPT) still returns 0 URLs — AI responses are prose; need scraping approach or different channel
 
 G75|no-learning-queue-infrastructure|open|ticket=#215
   was=no persistent queue, no rate-limited fetcher, no blob→book_learner trigger, no overnight scheduler
@@ -120,9 +121,10 @@ G-RL2|language-books-browser-discovery|~~closed=2026-03-14e~~
   fix2=browser.py: _ensure_virtual_display() using pyvirtualdisplay; pyvirtualdisplay installed to venv
   result=20 URLs queued for Pinker/Tomasello/Lakoff; drain runner active 2026-03-14e
 
-G-RL3|reading-list-overnight-automation|~2h
+G-RL3|reading-list-overnight-automation|~2h|ticket=#219
   what=PROC_NIGHT_READ habit drains reading_list (status=queued) automatically at night; updates status in_progress/completed
   why=currently manual script; should be self-directed
+  also=cloud_ok field in queue items; "tonight"=background/local; "now"=foreground/cloud-OK (D069)
   trigger=after reading_list stable
 
 G-BL2|book-learner-interest-gate|~2h|ticket=#215
