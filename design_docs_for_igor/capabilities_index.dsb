@@ -122,6 +122,8 @@ SECTION_METRICS|
 SECTION_CLUSTER|
   ssh_exec|cluster_ssh.py|shell command on remote cluster machine via SSH
   cluster_status|cluster_ssh.py|SSH + Ollama health on all cluster machines
+  cluster_load|cluster_ssh.py|CPU/RAM/swap load report for all SSH machines
+  restart_ollama|cluster_ssh.py|restart Ollama systemd service (local or remote); 5s wait + health check
   bootstrap_ssh|cluster_ssh.py|push Igor's SSH pubkey to cluster machines
   // config: ~/.TheIgors/local/machines.json
 
