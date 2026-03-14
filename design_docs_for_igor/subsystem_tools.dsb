@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-14e
+DOC|subsystem_tools|v1|updated=2026-03-14g
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -29,6 +29,7 @@ KEY_TOOLS|
   interpretive|add_interpretive_edge,get_interpretive_edges,interpretive_traverse
   metrics|get_metrics_report — /metrics slash command output
   filesystem_extra|check_resource_load,check_disk_usage,evaluate_threshold_habits
+  cluster|ssh_exec,cluster_status,cluster_load,restart_ollama,bootstrap_ssh|restart_ollama: local=sudo systemctl, remote=SSH+sudo; 5s wait + health check; sudoers required
   arbiter|arbiter_submit|gate=IGOR_ARBITER_ENABLED=false
 
 EBOOK_READER|
@@ -50,8 +51,16 @@ LEARNER|
   book_learner=claudecode/book_learner.py --calibre-id|--url|--local|--run|--resume
   drain_runner=claudecode/drain_learn_queue.py --delay SECS|PID=~/.TheIgors/drain_learn_queue.pid
 
+BROWSER|
+  lib=browser-use 0.12.2 in venv (upgraded 2026-03-14g from 0.11.9; fixes integer-minimum schema rejection)
+  llm=gpt-4o-mini via OR (D063); BROWSER_USE_MODEL env var overrides
+  display=real display while debugging (DISPLAY set → skip Xvfb); headless=Xvfb when DISPLAY unset
+  log=~/.TheIgors/logs/browser_use.log; start/complete/error logged at INFO level
+  discovery=_discover_urls_via_browser() logs errors; status+URL count logged; _extract_topic() uses find() not startswith()
+
 KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 // silent-exception audit 2026-03-14c: ebook_reader EBOOK_TWM_STEW_FAIL+EBOOK_EXTRACT_STORE_FAIL+READING_STATE_LOAD_FAIL + learner LEARN_QUEUE_LOAD_FAIL now log_error(); MEDIUM-inertia files (BG/NE/gateway) deferred
 // browser discovery fixed 2026-03-14e: task= → task_description=; json.loads(result); _ensure_virtual_display() in browser.py; pyvirtualdisplay in venv
+// browser fully working 2026-03-14g: upgraded to 0.12.2; gpt-4o-mini LLM; Gemini navigation confirmed
 // G-BRW1 open: CC bridge fires PROC_GREETING for action requests at tier.2; workaround=call learn_about() directly from venv
 DECISIONS|D030

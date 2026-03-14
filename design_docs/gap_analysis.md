@@ -808,6 +808,17 @@ No persistent queue, no rate-limited parallel fetcher, no blob→book_learner tr
 New issues:
 - **#218** — design_docs/ cleanup: archive CSBs, create human-readable doc set
 
+### Session 2026-03-14g additions
+
+- **G-BRW2 ~~CLOSED~~**: User applied `OLLAMA_HOST=0.0.0.0` to `/etc/systemd/system/ollama.service.d/override.conf` + daemon-reload + restart; cluster_status can now reach Ollama via external IP
+- **G-BRW3 ~~CLOSED~~**: `restart_ollama(machine="")` tool in cluster_ssh.py — local uses `sudo systemctl restart ollama.service` (sudoers entry added); remote uses `_ssh_run()` + sudo; 5s wait + health check. `_try_restart_local_ollama()` in inference_gateway.py — called from `is_local_inference_available()` when `is_healthy()` returns False; 60s cooldown; always-on; logs OLLAMA_RESTART_OK/FAIL/ERROR to forensic logger
+- **G-BRW4 (new, closed)**: browser_use 0.11.9 sent `minimum` property on integer schema fields; Claude-sonnet-4-6 via Anthropic rejected with HTTP 400 on every step. Fix: upgraded browser-use to 0.12.2; fixed `result.final_state().url` → `result.urls()[-1]` (API removed in 0.12.x). Result: browser discovery working.
+- **G-BRW5 (new, open)**: topic extraction received full CC bridge thread context as `user_input`; `_extract_topic()` used `startswith()` so returned full blob as topic. Fix applied: changed to `find()` to search anywhere in input. Verify next session.
+- **db_proxy SQL tracing**: `_DBContext` now uses `set_trace_callback()` to capture last SQL; slow query warnings include SQL snippet; dedicated `~/.TheIgors/logs/db_queries.log` with `turn=` tie-back to forensic_logger
+- **G-DBM1 (new, open)**: `last_accessed=None` on all memories including all CPs — `record_activation()` only called on habit fires, never on `search()` results. Fix: update `last_accessed` on memories surfaced into LLM context (top-N from search + interpretive traversal). Blocked by: need slow query baseline first before adding more writes.
+- **browser_use LLM**: switched to `gpt-4o-mini` via OR (cheaper; avoids Anthropic schema strictness); `BROWSER_USE_MODEL` env var overrides; browser still opens on real display while debugging (will force Xvfb once stable)
+- **sudoers entry**: `akien ALL=(ALL) NOPASSWD: /bin/systemctl restart ollama.service` added
+
 ### Session 2026-03-14f additions
 
 - **PROC_CLUSTER_SSH_CHECK fixed**: `code_ref` had `_cluster_status` (wrong, private name) → `cluster_status` (registered tool name); fixed via DB UPDATE

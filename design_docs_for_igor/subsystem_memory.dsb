@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-13c
+DOC|subsystem_memory|v1|updated=2026-03-14g
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -35,6 +35,8 @@ KEY_METHODS|
   cortex.interpretive_traverse(seed_id)|BFS from seed via interpretive_edges
   cortex.expand_blob_memories(memories)|append blob content for relevance≥0.5
   db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count
+  db_proxy SQL tracing|set_trace_callback() captures last SQL per block; slow queries logged to db_queries.log with turn_id; D064
+  db_queries.log|~/.TheIgors/logs/db_queries.log|format: timestamp turn=X elapsed=Xms sql=...
 
 GENESIS|44 seeds: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC + 9 PROC seeds
   guard=total_count()==44 checked at boot

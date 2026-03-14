@@ -70,22 +70,36 @@ G75|no-learning-queue-infrastructure|open|ticket=#215
   was=no persistent queue, no rate-limited fetcher, no blob→book_learner trigger, no overnight scheduler
   fix=LearningQueue (SQLite), ParallelFetcher (rate-limited per domain, parallel), NightlyRunner (cron, drains queue)
 
-G-BRW2|ollama-external-ip|open|small
-  what=Ollama systemd service binds 127.0.0.1 only; cluster_status check uses external IP → always reports unreachable for local box
-  fix=add Environment="OLLAMA_HOST=0.0.0.0" to /etc/systemd/system/ollama.service.d/override.conf; sudo systemctl daemon-reload + restart
-  trigger=whenever cluster_status run on local box
+G-BRW2|ollama-external-ip|~~closed=2026-03-14g~~
+  was=Ollama systemd service bound 127.0.0.1 only; cluster_status reported unreachable for local box
+  fix=user added Environment="OLLAMA_HOST=0.0.0.0" to /etc/systemd/system/ollama.service.d/override.conf + daemon-reload + restart
+  result=cluster_status can now reach Ollama via external IP
 
-G-BRW3|inference-controller-auto-restart|planned|small
-  what=when is_healthy() returns False, inference_gateway.py should attempt sudo systemctl restart ollama.service before returning False
-  fix=_try_restart_local_ollama() in inference_gateway.py; 60s cooldown; always-on; log to forensic logger
-  also=restart_ollama tool in cluster_ssh.py for manual + remote use
-  trigger=next session
+G-BRW3|inference-controller-auto-restart|~~closed=2026-03-14g~~
+  was=Ollama failure required manual restart; inference_gateway.py had no recovery path
+  fix=restart_ollama tool in cluster_ssh.py (local: sudo systemctl, remote: SSH+sudo; 5s wait + health check); _try_restart_local_ollama() in inference_gateway.py called when is_healthy()=False; 60s cooldown; always-on; logs OLLAMA_RESTART_OK/FAIL/ERROR
+  result=Ollama auto-restarts within 60s of failure; manual tool available for remote machines
+
+G-BRW4|browser-use-schema-compat|~~closed=2026-03-14g~~
+  was=browser-use 0.11.9 generated minimum:0 on integer schema fields; Claude-sonnet-4-6 via Anthropic rejected HTTP 400 on every step; browser opened but never acted
+  fix=upgraded browser-use 0.11.9→0.12.2; fixed result.final_state().url→result.urls()[-1] (API removed); switched LLM to gpt-4o-mini (cheaper, no schema strictness); BROWSER_USE_MODEL env var for override
+  result=browser discovery working; Gemini navigated + typed prompt successfully
+
+G-BRW5|topic-extraction-thread-context-pollution|open|small
+  what=_extract_topic() used startswith(); CC bridge passes full thread context as user_input; trigger phrase in middle → whole blob returned as topic
+  fix=changed to find() in learner.py; searches anywhere in input
+  trigger=verify next session with "go learn about X" via CC bridge
 
 G-BRW1|cc-bridge-greeting-dominance|open|small
   what=CC bridge messages fire PROC_GREETING instead of action habits for short requests
   why=PROC_GREETING scores too high at tier.2; action habits (PROC_GO_LEARN etc) don't compete
   fix=options: lower PROC_GREETING threshold for cc_bridge source; or route cc_bridge to tier.3+ directly
   trigger=whenever CC bridge is used for action requests
+
+G-DBM1|memory-last-accessed-not-updated|open|small
+  what=last_accessed=None on all memories including CPs; record_activation() only called on habit fires, never on search() results or interpretive traversal
+  fix=update last_accessed on top-N memories surfaced into LLM context (search + interpretive BFS); lightweight batch write
+  trigger=after slow query baseline confirmed via db_queries.log (avoid adding writes before knowing load)
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end

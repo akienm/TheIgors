@@ -103,3 +103,9 @@ D048|book-learner-local|implemented|--local flag uses Ollama /api/chat directly;
 
 D061|cc-hooks-auto-format-guard|implemented|PostToolUse black auto-format + PreToolUse dangerous-bash guard in ~/.claude/settings.json; scripts in ~/.claude/hooks/; enforced at CC layer unconditionally
 D062|browser-virtual-display|implemented|browser.py _ensure_virtual_display(): pyvirtualdisplay/Xvfb started when DISPLAY unset; browser tasks headless on server, never appear on user desktop
+
+// ── Session 2026-03-14g additions ─────────────────────────────────────────────
+
+D063|browser-use-gpt4o-mini|implemented|browser_use LLM=gpt-4o-mini via OR (avoids Anthropic integer-minimum schema rejection in 0.11.x/0.12.x); cheaper; BROWSER_USE_MODEL env var overrides
+D064|db-proxy-sql-tracing|implemented|_DBContext uses set_trace_callback() to capture last SQL; slow query warnings include SQL snippet; dedicated db_queries.log with turn_id tie-back to forensic_logger
+D065|inference-controller-auto-restart|implemented|_try_restart_local_ollama() in inference_gateway.py; always-on; 60s cooldown; called when is_healthy()=False; restart_ollama tool also available manually
