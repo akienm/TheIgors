@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14k
+DOC|gap_analysis|v1|updated=2026-03-14l
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -107,6 +107,23 @@ G-DBM1|memory-last-accessed-not-updated|~~closed=2026-03-14h~~
   fix=cortex._touch_last_accessed(): single SQL UPDATE after Phase 2 + Phase 1 search paths; skips ROOT/CP
   result=verified: 10 memories got last_accessed timestamps after one search turn
 
+// ── CLOSED THIS SESSION (2026-03-14l) ────────────────────────────────────────
+
+G-MP1|multi-pass-response-generation|~~closed=2026-03-14l~~
+  was=Igor single-pass LLM output; no lateral inhibition; "too automatic, too low level" (Akien)
+  fix=word_graph.py: predict_next_with_flatness(); main.py _build_think_context(): D072 generation graph vigilance; flatness<0.35→[REFLEXIVE_PATTERN]; flatness>0.85→[GRAPH_UNCERTAIN]; gate=IGOR_NPASS_REPLY=true
+  result=LLM self-inhibits reflexive paths before output; zero extra LLM calls; biology-correct inhibition before output
+
+G-HB2|log-ticket-misfire-greeting|~~closed=2026-03-14l~~
+  was=non-greeting inputs (CC bridge messages, "log a ticket") firing PROC_GREETING
+  fix=root_cause=pre-D066 substring matching; "hi" matched inside "relationship" etc; D066 \b word-boundary already fixed this at 15:33 2026-03-14; all logged misfires confirmed pre-D066
+  result=no new code needed; D066 is the fix; post-D066 PROC_GREETING only fires on real greetings
+
+G-RL3|reading-list-overnight-automation|~~closed=2026-03-14l~~
+  was=reading_list status stayed 'queued' regardless of processing; no in_progress/completed tracking
+  fix=drain_learn_queue.py: _set_reading_list_in_progress(calibre_id) after Popen launch; book_learner.py: status='completed'+completed_at on full run (position>=total_sentences, no --limit)
+  result=reading_list reflects actual processing state; drain runner leaves audit trail
+
 // ── CLOSED THIS SESSION (2026-03-14k) ────────────────────────────────────────
 
 G-QP1|ne-activation-count-slow-scan|~~closed=2026-03-14k~~
@@ -128,10 +145,7 @@ G-HB1|resource-awareness-memory-keyword-collision|~~closed=2026-03-14j~~
   fix=live DB UPDATE removed "memory" from trigger; seed script not yet updated
   result=cognitive questions no longer fire resource habit
 
-G-HB2|log-ticket-misfire-greeting|~1h
-  what="log a ticket that you're still having trouble sshing to yourself" → PROC_GREETING fired; PROC_GREETING trigger is clean
-  investigation=query live DB for habits matching "log" or "ticket"; check if self-seeded habit exists
-  trigger=next session
+G-HB2|log-ticket-misfire-greeting|~~closed=2026-03-14l~~
 
 G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
   was=no runtime mechanism to switch cloud/local without subprocess restart
@@ -140,7 +154,7 @@ G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
 
-G-MP1|multi-pass-response-generation|urgent|~2h
+G-MP1|multi-pass-response-generation|~~closed=2026-03-14l~~
   what=Igor's output is single-pass LLM; feels "too automatic, too low level" (Akien flag)
   //
   // DESIGN DIRECTION (2026-03-14k session): build like the biology
@@ -199,11 +213,7 @@ G-RL2|language-books-browser-discovery|~~closed=2026-03-14e~~
   fix2=browser.py: _ensure_virtual_display() using pyvirtualdisplay; pyvirtualdisplay installed to venv
   result=20 URLs queued for Pinker/Tomasello/Lakoff; drain runner active 2026-03-14e
 
-G-RL3|reading-list-overnight-automation|~2h|ticket=#219
-  what=PROC_NIGHT_READ habit drains reading_list (status=queued) automatically at night; updates status in_progress/completed
-  why=currently manual script; should be self-directed
-  also=cloud_ok field in queue items; "tonight"=background/local; "now"=foreground/cloud-OK (D069)
-  trigger=after reading_list stable
+G-RL3|reading-list-overnight-automation|~~closed=2026-03-14l~~
 
 G-BL2|book-learner-interest-gate|~2h|ticket=#215
   what=Igor can't say "this no longer interests me" to stop slow reading

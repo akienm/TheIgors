@@ -874,6 +874,12 @@ New issues:
 - **Latency investigation**: no bug — slow haiku calls are agentic sessions with 19-42 turns under `IGOR_MAX_TURNS=50`; interactive haiku healthy at 7-9s
 - **#218 closed**: 28 stale CSB/MD files archived to ~/TheIgorsProject/akien/Readings/; 9 new human-readable docs created in design_docs/ (ProjectOverview, OverallArchitecture, DesignDecisions, 6 subsystem docs); WorkingWithClaude.md moved from thoughts/
 
+### Session 2026-03-14l additions
+
+- **G-MP1 ~~CLOSED~~**: D072 vigilance gate implemented. `word_graph.py`: `predict_next_with_flatness()` convenience wrapper added. `main.py` `_build_think_context()`: if `self._npass_reply` and generation graph present, runs `predict_next_with_flatness(user_input, n=5)` — injects `[REFLEXIVE_PATTERN]` when flatness < 0.35 (steep = reflexive path), `[GRAPH_UNCERTAIN]` when > 0.85 (novel/graph-empty). Forensic debug log. Gate: `IGOR_NPASS_REPLY=true` (added to .env). Zero extra LLM calls.
+- **G-HB2 ~~CLOSED~~**: Root cause confirmed — all logged misfires are from before D066 (committed 15:33 2026-03-14). Pre-D066 pipe-trigger matching used plain substring (`"hi" in text`), matching `"hi"` inside `"relationship"` and similar. D066's `\b` word-boundary regex already fixed this. No new code needed.
+- **G-RL3 ~~CLOSED~~**: `drain_learn_queue.py` — `_set_reading_list_in_progress(calibre_id)` added; called after successful Popen launch for calibre entries; sets `status='in_progress'`, `started_at=now` where `status='queued'`. `book_learner.py` — at end of full run (`position >= total_sentences` and no `--limit`), sets `status='completed'`, `completed_at=now`.
+
 ### Session 2026-03-14k additions
 
 - **G-QP1 ~~CLOSED~~**: `SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC` was running 600–750ms on every NE cycle. Fix: added `CREATE INDEX IF NOT EXISTS idx_activation ON memories(activation_count DESC)` to `cortex.py` `_init_db()`. Index also applied to live DB directly. EXPLAIN QUERY PLAN confirms `SCAN memories USING INDEX idx_activation` — sort eliminated.

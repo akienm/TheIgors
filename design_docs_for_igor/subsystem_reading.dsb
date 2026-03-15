@@ -1,4 +1,4 @@
-DOC|subsystem_reading|v1|updated=2026-03-14j
+DOC|subsystem_reading|v1|updated=2026-03-14l
 META|inertia=LOW|parent=architecture_root.dsb
 META|files=tools/ebook_reader.py,tools/training.py,cognition/word_graph.py
 META|purpose=book reading → graph training → realtime discussion
@@ -36,6 +36,8 @@ BOOK_LEARNER_OBSERVABILITY|
   console_note=open_book() prints "★ Opening" or "▶ Resuming" to stdout on every open
   absorption_note=book_learner.py prints new/resume + checkpoint stats after loading progress
   log=subprocess stdout routed to ~/.TheIgors/logs/book_learner.log (was DEVNULL); tailable
+
+READING_LIST_STATUS|G-RL3: drain_learn_queue.py sets status=in_progress+started_at on calibre launch; book_learner.py sets status=completed+completed_at on full run (position>=total_sentences, no --limit)
 
 DECISIONS|D038,D052
 KNOWN_FAILURES|F001(OOM from word_graph JSON — fixed by SQLite migration),F012(stale-CIFS)
