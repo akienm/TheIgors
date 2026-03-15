@@ -136,7 +136,7 @@ The channel between all three: `~/.TheIgors/cc_channel/queue.json`, managed via 
 
 ```bash
 # Start a Worker in a new terminal
-DISPLAY=:0 konsole -e bash -c "claude" &
+DISPLAY=:0 konsole -e bash -c "superclaude" &
 # First message:
 # "Read ~/TheIgors/claudecode/WORKER_CONTEXT.md then run: python3 ~/TheIgors/claudecode/cc_queue.py list"
 # Or for Scribe:
