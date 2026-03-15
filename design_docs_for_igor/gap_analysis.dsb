@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14j
+DOC|gap_analysis|v1|updated=2026-03-14k
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -107,6 +107,13 @@ G-DBM1|memory-last-accessed-not-updated|~~closed=2026-03-14h~~
   fix=cortex._touch_last_accessed(): single SQL UPDATE after Phase 2 + Phase 1 search paths; skips ROOT/CP
   result=verified: 10 memories got last_accessed timestamps after one search turn
 
+// ── CLOSED THIS SESSION (2026-03-14k) ────────────────────────────────────────
+
+G-QP1|ne-activation-count-slow-scan|~~closed=2026-03-14k~~
+  was=SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC → 600-750ms per NE cycle; no index for ORDER BY
+  fix=cortex.py _init_db(): CREATE INDEX IF NOT EXISTS idx_activation ON memories(activation_count DESC); applied to live DB
+  result=EXPLAIN QUERY PLAN: SCAN memories USING INDEX idx_activation; sort eliminated
+
 // ── CLOSED THIS SESSION (2026-03-14j) ────────────────────────────────────────
 
 G-SP1|auto-reload-with-episodic-memory|~~closed=2026-03-14j~~
@@ -132,6 +139,17 @@ G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
   result=human "do it now" → 4h cloud window → background processors adapt without restart; night mode auto-gates to local
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
+
+G-MP1|multi-pass-response-generation|urgent|design-first
+  what=Igor's output is single-pass LLM; feels "too automatic, too low level" (Akien flag)
+  insight=human speech goes through internal inhibition/editing before output; only curt answers come from one pass
+  design_needed=response buffer: LLM generates candidate → evaluator pass (gpt-4o-mini/local) asks "too reflexive? missing nuance?" → revise if below threshold; OR multi-candidate fork-A style
+  termination=gradient_flatness() threshold (G37p2 infra already seeded); or evaluator "good enough"
+  connects_to=G37p2 (IGOR_NPASS_REPLY gate already wired), think context (_build_think_context()), generation graph
+  risk=latency; must gate on complexity threshold; IGOR_NPASS_REPLY already exists as gate
+  priority=design conversation before implementation; needs both Akien and Claude Code thinking
+  trigger=next session with capacity for design + latency testing
+
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
 
 G-RL1|reading-list-dual-awareness|~4h

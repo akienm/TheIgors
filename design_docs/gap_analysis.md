@@ -874,4 +874,22 @@ New issues:
 - **Latency investigation**: no bug — slow haiku calls are agentic sessions with 19-42 turns under `IGOR_MAX_TURNS=50`; interactive haiku healthy at 7-9s
 - **#218 closed**: 28 stale CSB/MD files archived to ~/TheIgorsProject/akien/Readings/; 9 new human-readable docs created in design_docs/ (ProjectOverview, OverallArchitecture, DesignDecisions, 6 subsystem docs); WorkingWithClaude.md moved from thoughts/
 
-*Updated: 2026-03-14c by Claude Code.*
+### Session 2026-03-14k additions
+
+- **G-QP1 ~~CLOSED~~**: `SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC` was running 600–750ms on every NE cycle. Fix: added `CREATE INDEX IF NOT EXISTS idx_activation ON memories(activation_count DESC)` to `cortex.py` `_init_db()`. Index also applied to live DB directly. EXPLAIN QUERY PLAN confirms `SCAN memories USING INDEX idx_activation` — sort eliminated.
+
+**G-MP1 — Multi-pass response generation** *(design needed — urgent, ~1 session)*
+
+Akien's observation: Igor's responses feel "too automatic, too low level." Single-pass LLM output bypasses the inhibition and editing layers that human speech goes through before output. Real human speech: speaker generates a first-pass candidate internally, runs it through filters (tone check, relevance check, audience model, inhibition of the most obvious/reflexive response), may revise 2-3x before speaking. "Only the most curt answers come from a single pass."
+
+Current state: `G37 Phase 2` seeded the idea — `IGOR_NPASS_REPLY` logs `gradient_flatness()` per reply (infrastructure for n-pass termination). `_build_think_context()` gives Igor a Python-built scratchpad before the reply call. But the reply call is still a single forward pass.
+
+What's needed (design discussion first):
+- A response buffer: LLM generates candidate reply → evaluator pass (cheap: gpt-4o-mini or local) asks "is this the best framing? too reflexive? missing nuance?" → revise if score below threshold
+- Termination condition: gradient_flatness() on generation graph, or evaluator "good enough" response
+- Or: multi-candidate generation (fork A-style) → evaluator picks best → show to user
+- Connect to: G37 Phase 2 (`IGOR_NPASS_REPLY`), think context (already built), generation graph (already seeded)
+- Risk: latency. Must be gated (`IGOR_NPASS_REPLY` already exists). Only trigger when response is above some complexity threshold.
+- Priority: urgent (Akien flag). Design conversation before implementation — "needs thinking from both of us."
+
+*Updated: 2026-03-14k by Claude Code.*
