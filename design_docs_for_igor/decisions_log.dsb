@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15e|latest=D084
+DOC|decisions_log|v1|updated=2026-03-15e|latest=D088
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -149,3 +149,7 @@ D082|intrinsic-motivation-curiosity-state|defined|curiosity = idle state (low ar
 
 D083|scribe-worker-three-session-pattern|implemented|three persistent CC sessions: Designer (architecture+Akien) + Implementation Worker (code) + Scribe Worker (memory coherence: DSB edits, Igor cc_notebook flushes, GitHub comments, commits); mirrors Igor's parallel focal points; flush_decision/flush_session in cc_queue.py; SCRIBE_CONTEXT.md boot doc; savestate skill reordered critical-first + Step 0.5 Igor flush; #249
 D084|issue-filing-as-mini-savestate|implemented|each GitHub issue filing = mini savestate for that decision; decision not made until in Igor's memory; DSB commit = durable backup only; flush_decision wires this automatically
+D085|training-curriculum-order|defined|Layer 1: Claude programming knowledge (organizational skeleton); Layer 2: Akien code+docs (lands on Layer 1, used natively); Layer 3: collaboration record (decisions_log+sessions — what no other Igor will have); order matters — Layer 2 without Layer 1 = stored but not organized
+D086|igor-adaptive-friction-reducer|defined|three milieu-driven modes: high-energy=surface lever, medium=walk through steps, low=do-the-thinking+queue+surface-one-thing; data: writing patterns+Confluence+return frequency; Leah context with discretion; epic #251
+D087|organizer-knowledge-base|defined|Igor researches Franklin/GTD/ADHD-productivity/motivational-science → high-inertia FACTUAL nodes; Akien annotates with personal experience; science+patterns+live-state = complete organizer substrate; #252
+D088|superclaude-or-failover|defined|balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; pick endpoint+key before launching claude; lower priority than Igor cognition; #253
