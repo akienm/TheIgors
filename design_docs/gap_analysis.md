@@ -941,3 +941,25 @@ The narrative engine IS the TWM — not two separate things. The TWM is the curr
 - **G-QP2 ~~CLOSED~~**: `cortex.py` `search()` Phase 1 query: added `LIMIT 300` to candidate pool fetch (`ORDER BY activation_count DESC`). `_init_db()`: added `PRAGMA wal_checkpoint(TRUNCATE)` at end of init block. Issue #221. Commit: 326f433.
 - **phrase_regression.py restarted**: 113-phrase file (`automated_phrase_response_test.txt`), 1 pass, 5-min delay. Running in background (PID 357138) after all fixes deployed.
 - **Igor rebooted**: 08:08:26 on 2026-03-15. Memory count: 8,479 habits=101 (was 5,279/82 at session start).
+
+### Session 2026-03-15d additions (design + implementation sprint)
+
+**New gaps discovered:**
+
+**G-DSP1 — Dashboard display: Cloud%/cloud_mode contradiction + p95 outlier** *(S — display only)*
+`Cloud: 0%` shown while `preparse skipped (cloud mode)` also shown — two different signals (mode gate vs call fraction) with no label distinction. p95=186,951ms caused by single Feb timeout still in n=20 rolling window. Fix: distinguish labels; cap window at 24h or exclude >60s outliers. Ticket: #247.
+
+**G-RSP1 — Response quality: habit trace leak + knowledge query misrouting + Mashter in canned responses** *(S-M)*
+'Habit executed. [BL_...]' leaking into user-facing response. 'What do you know about grammar?' triggering canned 'I don't know that one, Mashter' instead of LLM+memory. Character voice baked into canned response text firing on knowledge queries. Ticket: #248.
+
+**Design decisions recorded (not gaps but load-bearing):**
+
+- **Watchlist (#240)**: `habit_type="watch"` subtree — fires salience boost instead of action; named inspectable list; `watch_expires` in metadata; inward + outward facing entries.
+- **BG meta-habits (#241)**: all BG rules should eventually be graph nodes, not Python. "Less code more data."
+- **Executive function (#242)**: emerges from inter-layer inspection topology, not a module. PFC analog = dense bidirectional inspection edges.
+- **Self-observation (#243)**: habit subtree firing on own output patterns; async NE-pattern; inward-facing watchlist entries.
+- **Meaning-to-me cluster (#244)**: named node cluster between interpretive edges and CP/ID nodes; `metadata.layer=meaning_to_me`; threads traversing it get personally-significant flag.
+- **Salience elevation (#245)**: distributed, no single owner — watchlist, NE, meaning-to-me, attractor all contribute independently.
+- **Intrinsic motivation (#246)**: curiosity as idle state (low arousal + positive valence + open attractor); NE internal_state → milieu reward signal; temporal credit assignment ('thanks past self') deferred.
+
+*Updated: 2026-03-15d by Claude Code.*

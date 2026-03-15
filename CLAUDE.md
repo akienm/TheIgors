@@ -8,7 +8,7 @@ Igor is a Python AI agent with persistent SQLite memory, running on akiendelllin
 - DB: `~/.TheIgors/igor_wild_0001/wild-0001.db` (runtime, not in repo)
 - .env: `~/.TheIgors/igor_wild_0001/.env` (never committed)
 - venv: `/home/akien/TheIgors/venv/` (Python 3.12)
-- Launch: `igor` bash alias (loops on exit code 42 = restart); visible terminal: `DISPLAY=:0 konsole -e bash -c "igor; exec bash" &`
+- Launch: `igor` bash alias (loops on exit code 42 = restart); visible terminal: `DISPLAY=:0 konsole -e bash -c "igor" &` (add `; exec bash` to keep terminal open after crash)
 - Source/runtime split: `~/TheIgors/` = source; `~/.TheIgors/` = all runtime data
 
 ## Developer Conventions

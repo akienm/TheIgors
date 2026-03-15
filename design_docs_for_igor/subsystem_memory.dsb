@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-15b
+DOC|subsystem_memory|v1|updated=2026-03-15d
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -32,6 +32,8 @@ KEY_METHODS|
   cortex.ring_push(category,content)|append to ring; FIFO evicts oldest
   cortex.get_by_type(type)|all memories of a type
   cortex.get_portable()|exportable memories (excludes EPISODIC+CREDENTIAL_REF+portable=False)
+  cortex.for_employer(employer_id)|returns memories with metadata.employer_id==employer_id; no schema change; D078
+  employer_model|Akien/Leah/Claude are peer employers; each has notebook in DB via metadata.employer_id; /api/cc_notebook GET/POST; D078
   cortex.interpretive_traverse(seed_id)|BFS from seed via interpretive_edges
   cortex.expand_blob_memories(memories)|append blob content for relevance≥0.5
   db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count

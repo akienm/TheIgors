@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15b|latest=D075
+DOC|decisions_log|v1|updated=2026-03-15d|latest=D082
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -135,3 +135,12 @@ D075|context-inject-habit-type|implemented|new habit_type="context_inject": fetc
 // ── Session 2026-03-15c additions ─────────────────────────────────────────────
 
 D076|designer-worker-cc-pattern|implemented|two persistent CC sessions: Designer (architecture+conversation+Akien relationship) + Worker (execution: loads files, runs code, writes results); shared queue ~/.TheIgors/cc_channel/queue.json; cc_queue.py CLI; WORKER_CONTEXT.md boot doc; Igor observer hook planned (T008)
+
+// ── Session 2026-03-15d additions ─────────────────────────────────────────────
+
+D077|ne-traversal-cursor|implemented|TraversalCursor dataclass tracks thread_topic across NE cycles; oscillation detection (same topic × NE_OSCILLATION_DEPTH + 0 promotions → reset thread); convergence (≥2 promotions); _cursor_context() injected into prompt; NE_MIN_INTERVAL_SEC=5; NE_CURSOR| snapshots to ring_memory; #236
+D078|employer-model|implemented|Akien/Leah/Claude are peer employers of Igor; each gets master notebook in Igor DB; metadata.employer_id convention (no schema change); cortex.for_employer(); /api/cc_notebook GET/POST; Claude notebook seeded (4 entries); Leah+Claude already in genesis RM memories; #239
+D079|decision-capture-habit|implemented|PROC_DECISION_CAPTURE + PROC_DECISION_CAPTURE_CC: passive_capture type; triggers on 'decided agreed plan confirmed going with'; stores as EPISODIC to LTM; D001 applied to dev process itself; #235
+D080|watchlist-as-habit-subtree|defined|habit_type="watch" — fires salience boost instead of action; named inspectable list (Igor can answer 'what are you watching for?'); watch_expires in metadata (None=permanent); inward+outward facing entries; same BG scoring as all habits; #240
+D081|executive-function-is-inspection-topology|defined|executive function emerges from inter-layer inspection topology, not a module; PFC analog = dense bidirectional inspection edges; each inspection edge is a graph node; build more inspection edges, not a controller; #242
+D082|intrinsic-motivation-curiosity-state|defined|curiosity = idle state (low arousal + positive valence + open attractor) → habit fires to explore; NE internal_state → milieu reward signal on resolution; temporal credit assignment ('thanks past self') deferred; meaning-to-me level has highest milieu impact; #246

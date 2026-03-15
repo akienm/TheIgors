@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-15b
+DOC|subsystem_cognition|v1|updated=2026-03-15d
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py
 
@@ -39,7 +39,9 @@ NARRATIVE_ENGINE|
   prospective=predict_next() on recent TWM context; predicted topics merged into memory search
   link_reinforcement=correct prediction→+0.05 to predicted habit seeds; wrong→-0.10+0.05 to actual
   gate=IGOR_NE_ENABLED; model=OR gpt-4o-mini (cloud_mode) or local NE model
-  decisions=D007,D009,D018
+  NE_MIN_INTERVAL_SEC=5 (was 30; cursor makes fast cycles safe)
+  traversal_cursor=TraversalCursor dataclass; thread_id/topic_history/depth/status/promotions_this_thread; oscillation detection (same topic × NE_OSCILLATION_DEPTH + 0 promotions → reset); convergence (≥2 promotions); _cursor_context() injected into every prompt; LLM outputs thread_topic field; NE_CURSOR| snapshots to ring_memory; D077
+  decisions=D007,D009,D018,D077
 
 BACKCHANNEL|
   purpose=fast low-cost acknowledgment before full response

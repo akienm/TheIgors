@@ -134,7 +134,7 @@ The channel between them: `~/.TheIgors/cc_channel/queue.json`, managed via `pyth
 
 ```bash
 # Start Worker in a new terminal
-DISPLAY=:0 konsole -e bash -c "claude; exec bash" &
+DISPLAY=:0 konsole -e bash -c "igor" &
 # First message to Worker:
 # "Read ~/TheIgors/claudecode/WORKER_CONTEXT.md then run: python3 ~/TheIgors/claudecode/cc_queue.py list"
 ```
