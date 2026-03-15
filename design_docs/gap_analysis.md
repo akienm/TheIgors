@@ -878,18 +878,25 @@ New issues:
 
 - **G-QP1 ~~CLOSED~~**: `SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC` was running 600–750ms on every NE cycle. Fix: added `CREATE INDEX IF NOT EXISTS idx_activation ON memories(activation_count DESC)` to `cortex.py` `_init_db()`. Index also applied to live DB directly. EXPLAIN QUERY PLAN confirms `SCAN memories USING INDEX idx_activation` — sort eliminated.
 
-**G-MP1 — Multi-pass response generation** *(design needed — urgent, ~1 session)*
+**G-MP1 — Multi-pass response generation** *(urgent, ~2h — design complete, ready to implement)*
 
-Akien's observation: Igor's responses feel "too automatic, too low level." Single-pass LLM output bypasses the inhibition and editing layers that human speech goes through before output. Real human speech: speaker generates a first-pass candidate internally, runs it through filters (tone check, relevance check, audience model, inhibition of the most obvious/reflexive response), may revise 2-3x before speaking. "Only the most curt answers come from a single pass."
+Akien's observation: Igor's responses feel "too automatic, too low level." Single-pass LLM output bypasses the inhibition layers that human (and internal narrative) processing goes through.
 
-Current state: `G37 Phase 2` seeded the idea — `IGOR_NPASS_REPLY` logs `gradient_flatness()` per reply (infrastructure for n-pass termination). `_build_think_context()` gives Igor a Python-built scratchpad before the reply call. But the reply call is still a single forward pass.
+**Design direction (2026-03-14k) — build like the biology:**
 
-What's needed (design discussion first):
-- A response buffer: LLM generates candidate reply → evaluator pass (cheap: gpt-4o-mini or local) asks "is this the best framing? too reflexive? missing nuance?" → revise if score below threshold
-- Termination condition: gradient_flatness() on generation graph, or evaluator "good enough" response
-- Or: multi-candidate generation (fork A-style) → evaluator picks best → show to user
-- Connect to: G37 Phase 2 (`IGOR_NPASS_REPLY`), think context (already built), generation graph (already seeded)
-- Risk: latency. Must be gated (`IGOR_NPASS_REPLY` already exists). Only trigger when response is above some complexity threshold.
-- Priority: urgent (Akien flag). Design conversation before implementation — "needs thinking from both of us."
+The narrative engine IS the TWM — not two separate things. The TWM is the current activation state of the graph; the NE is the process traversing that state, predicting what fires next; the predictions ARE the next activations. Key science: Global Workspace Theory (TWM = broadcast workspace; narrative = competitive broadcast process), Attractor dynamics (loop terminates at stable state not by step count), ART vigilance gate (match above threshold → commit; below → reject and search), spreading activation (concurrent waves, not sequential BFS).
+
+**The problem:** no lateral inhibition. The highest-weight path wins immediately. `gradient_flatness()` on the generation graph IS the vigilance signal — fast settle (high flatness immediately) = reflexive answer = below-vigilance = reject.
+
+**Implementation — no extra LLM call:**
+1. Before reply LLM call, run `predict_next()` on generation graph seeded by current context + compute `gradient_flatness()`
+2. If flatness > `NPASS_FLATNESS_THRESHOLD` → inject into think context as `[REFLEXIVE_PATTERN]: your generation graph predicts: {words}. If this feels too automatic, go deeper.`
+3. Single LLM call self-inhibits the obvious path. Inhibition happens BEFORE output (biology-correct). Cost: `predict_next()` + `flatness()` = microseconds.
+
+**Files:** `word_graph.py` (LOW) — expose `predict_next_with_flatness(seed_words)`. `main.py` (MEDIUM) — `_build_think_context()`: add generation graph prediction + REFLEXIVE_PATTERN injection. Gate: `IGOR_NPASS_REPLY` (already exists).
+
+**When to escalate to LLM (D073):** `gradient_flatness()` gives two signals: (1) HIGH immediately = reflexive, inhibit and re-traverse (D072); (2) NEVER converges after enough cycles = genuinely exhausted = escalate. "I honestly looked everywhere and I'm stumped" — not a canned fallback. Factual queries: achievable soon. Fuzzy/generative: harder, deferred. "The program is the data" — the graph IS the knowledge; LLM is the trainer, not the primary answerer. Book learning pipeline unchanged; this changes when we query the graph vs. hand off.
+
+**Dependency:** enable `IGOR_DUAL_WORD_GRAPHS` first (seed script exists) — need reply data in the generation graph before flatness is meaningful. D072 + D073.
 
 *Updated: 2026-03-14k by Claude Code.*

@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-14j|latest=D071
+DOC|decisions_log|v1|updated=2026-03-14k|latest=D073
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -121,3 +121,8 @@ D068|code-ref-dispatch-uses-core-input|implemented|main.py habit code_ref dispat
 D069|reading-mode-sympathetic-autonomic|defined|cloud_ok field in queue items; "tonight"=background/local-only (cloud_ok=False); "now"=foreground/cloud-OK; encodes parasympathetic vs sympathetic at queue level; tonight drains overnight on local; now starts immediately with cloud if needed
 D070|auto-reload-with-episodic-memory|implemented|G-SP1: self_edit._push_edit_episodic() creates EPISODIC memory (portable=False, source=self_edit); _try_hot_reload() calls it unconditionally; both callsites pass reason
 D071|cloud-ok-runtime-switch|defined|cloud_ok lives in ~/.TheIgors/cloud_ok_override.json (TTL-based file); is_cloud_ok_override() in cloud_mode.py; inference_gateway checks per-call; env vars NOT used (can't change in running subprocess); two habits: PROC_SET_CLOUD_NOW (human trigger, writes override) + PROC_NIGHT_READ (threshold, clears override + drains local)
+
+// ── Session 2026-03-14k additions ─────────────────────────────────────────────
+
+D072|graph-first-response-vigilance|defined|G-MP1 architecture: inhibition happens before output in the graph layer (not after via evaluator LLM). predict_next() + gradient_flatness() on generation graph injected into _build_think_context() as [REFLEXIVE_PATTERN]. LLM self-inhibits obvious path. Cost=microseconds. Gate=IGOR_NPASS_REPLY. Biology basis: ART vigilance gate + attractor dynamics + Global Workspace Theory. TWM IS the narrative engine activation state — not two things.
+D073|llm-escalation-is-graph-exhaustion|defined|We reach up to LLM only when graph traversal has genuinely exhausted — enough real time + passes + resonance cycles to honestly say "I don't know." Not a canned fallback. flatness() that never converges (stays LOW after many cycles) = genuinely stuck = escalate. Contrast: flatness HIGH immediately = reflexive = inhibit and re-traverse (D072). Factual queries: achievable soon. Fuzzy/generative queries: harder, deferred. Principle: "the program is the data" — the graph IS the knowledge; LLM is the trainer, not the primary answerer.

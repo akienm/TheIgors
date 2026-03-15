@@ -140,15 +140,51 @@ G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
 
-G-MP1|multi-pass-response-generation|urgent|design-first
+G-MP1|multi-pass-response-generation|urgent|~2h
   what=Igor's output is single-pass LLM; feels "too automatic, too low level" (Akien flag)
-  insight=human speech goes through internal inhibition/editing before output; only curt answers come from one pass
-  design_needed=response buffer: LLM generates candidate → evaluator pass (gpt-4o-mini/local) asks "too reflexive? missing nuance?" → revise if below threshold; OR multi-candidate fork-A style
-  termination=gradient_flatness() threshold (G37p2 infra already seeded); or evaluator "good enough"
-  connects_to=G37p2 (IGOR_NPASS_REPLY gate already wired), think context (_build_think_context()), generation graph
-  risk=latency; must gate on complexity threshold; IGOR_NPASS_REPLY already exists as gate
-  priority=design conversation before implementation; needs both Akien and Claude Code thinking
-  trigger=next session with capacity for design + latency testing
+  //
+  // DESIGN DIRECTION (2026-03-14k session): build like the biology
+  //
+  // narrative_engine IS the TWM — not two things. TWM = current activation state of the graph.
+  // NE = the process traversing that state, predicting what fires next. Predictions ARE activations.
+  // Science: Global Workspace Theory (Baars/Dehaene) — TWM is the broadcast workspace;
+  //          narrative is the competitive broadcast process; "conscious" response = pattern that won.
+  //          Attractor dynamics (Hopfield/Grossberg) — loop terminates at stable state, not by step count.
+  //          ART (Grossberg) — vigilance gate: match > threshold → resonate+commit; below → reject+search.
+  //          Spreading activation (Collins/Loftus) — concurrent waves, not BFS; all at once.
+  //
+  // THE PROBLEM: no lateral inhibition. Highest-weight path wins immediately. No "too obvious" gate.
+  // THE MECHANISM: gradient_flatness() on generation graph IS the vigilance signal.
+  //   fast settle (high flatness immediately) = reflexive answer = below-vigilance = reject
+  //   slow settle (flatness builds over time) = genuinely considered = commit
+  //
+  // IMPLEMENTATION (no extra LLM call — pure graph machinery):
+  //   1. Before reply LLM call, run predict_next() on generation graph seeded by current context
+  //   2. Compute gradient_flatness()
+  //   3. If flatness > NPASS_FLATNESS_THRESHOLD → add to think context as:
+  //      "[REFLEXIVE_PATTERN]: your generation graph predicts: {predicted_words}. If this feels too automatic, go deeper."
+  //   4. Single LLM call uses or overrides the reflexive pattern — no second LLM call
+  //   5. Gate: IGOR_NPASS_REPLY (already exists)
+  //
+  // WHY NO SECOND LLM CALL: inhibition happens BEFORE output (biology-correct), not after.
+  //   The think context IS the workspace broadcast. Injecting the reflexive pattern + vigilance signal
+  //   lets the LLM self-inhibit the obvious path. Cost: predict_next() + flatness() = microseconds.
+  //
+  // FILES: word_graph.py (LOW) — expose predict_next_with_flatness(seed_words) → (words, score)
+  //        main.py (MEDIUM) — _build_think_context(): add generation graph prediction + REFLEXIVE_PATTERN
+  //
+  //
+  // WHEN TO ESCALATE (D073): flatness() that NEVER converges (stays LOW after many cycles) = genuinely stumped.
+  // Not "I don't know" as canned fallback. "I looked everywhere in the graph and I'm stuck."
+  // Two signals from gradient_flatness():
+  //   HIGH immediately → reflexive (D072: inhibit, re-traverse)
+  //   NEVER converges → genuinely exhausted → THEN escalate to LLM
+  // Factual queries: achievable soon. Fuzzy/generative: harder, deferred.
+  // Book learning pipeline unchanged — that trains the graph; this changes when we query vs. escalate.
+  //
+  connects_to=G37p2 (IGOR_NPASS_REPLY + gradient_flatness() + generation graph all already built); D072; D073
+  estimate=~2h; smaller than original framing; no new LLM calls; moves toward G11 (inference-free core)
+  trigger=after IGOR_DUAL_WORD_GRAPHS enabled and has reply data to measure flatness against
 
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end
 
