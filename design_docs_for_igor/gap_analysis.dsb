@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-15a
+DOC|gap_analysis|v1|updated=2026-03-15b
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -154,42 +154,35 @@ G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
 
-G-OVN-1|wrong-habit-intent-mismatch|~3h|ticket=#222
-  what=10/13 regression phrases hit wrong habits; PROC_SWAP_THRESHOLD fires for memory questions; PROC_CALENDAR_CREATE for "remember yesterday"; PROC_CLUSTER_CHECK for "fields/understand"
-  why_open=threshold/tool-dispatch habits not gated by thalamus intent; trigger vocab overlaps question vocab
-  fix=basal_ganglia.py: skip threshold+tool-dispatch habits when intent=question|introspective_question
-  files=cognition/basal_ganglia.py(MEDIUM)+live_db_trigger_updates
+G-OVN-1|wrong-habit-intent-mismatch|~~closed=2026-03-15b~~
+  was=10/13 regression phrases hit wrong habits; PROC_SWAP_THRESHOLD fires for memory questions; PROC_CALENDAR_CREATE for "remember yesterday"; PROC_CLUSTER_CHECK for "fields/understand"
+  fix=basal_ganglia.py: skip habit_type="threshold" always; skip habit_type in (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in _QUESTION_INTENTS; DB: PROC_CALENDAR_CREATE + PROC_RESP_CLARIFY triggers tightened to pipe-separated
+  result=memory questions no longer fire calendar/swap habits; "tell me about fields" no longer fires SSH check; commits: 326f433 c8e8f79; ticket=#222
 
-G-OVN-2|ebook-twm-stew-kwarg|~15m|ticket=#223
-  what=ebook_reader.read_chunk calls twm_push(content=...) but signature is content_csb; 799 errors; reading→TWM dead
-  why_open=kwarg name mismatch; one-line fix
-  fix=tools/ebook_reader.py:762 change content= to content_csb=
+G-OVN-2|ebook-twm-stew-kwarg|~~closed=2026-03-15b~~
+  was=ebook_reader.read_chunk calls twm_push(content=...) but signature is content_csb=; 799 errors; reading→TWM dead
+  fix=tools/ebook_reader.py:762 changed content= to content_csb=; commit:326f433; ticket=#223
 
-G-OVN-3|drain-cron-relative-path|~5m|ticket=#224
-  what=crontab uses relative path claudecode/drain_learn_queue.py→resolves to /home/akien/claudecode/ (wrong); silent fail every 30min
-  fix=crontab: use absolute path /home/akien/TheIgors/claudecode/drain_learn_queue.py
+G-OVN-3|drain-cron-relative-path|~~closed=2026-03-15a~~
+  was=crontab used relative path claudecode/drain_learn_queue.py→resolves to /home/akien/claudecode/; silent fail every 30min
+  fix=crontab updated to absolute path /home/akien/TheIgors/claudecode/drain_learn_queue.py via sed+crontab-; ticket=#224
 
-G-OVN-4|book-learner-local-404|~1h|ticket=#225
-  what=book_learner --local + 8 concurrent processes → Ollama 404 on every chunk; 400+ chunks, 0 nodes; cloud succeeds
-  fix=drain_learn_queue: remove --local flag; cap concurrency to 2; add cloud fallback in _extract_nodes()
+G-OVN-4|book-learner-local-404|~~closed=2026-03-15b~~
+  was=book_learner --local + 8 concurrent processes → Ollama 404 on every chunk; 400+ chunks, 0 nodes
+  fix=drain_learn_queue.py: _count_running_learners() via pgrep; MAX_CONCURRENT=2 check before launch; sleeps+continues at cap; commit:326f433; ticket=#225
 
-G-OVN-5|learner-cc-prefix-topic|~30m|ticket=#226
-  what=learn_about called with CC bridge thread-context prefix as topic; 6+ spurious Gemini navigations overnight
-  fix=tools/learner.py: add CC prefix patterns to _extract_topic() strip list; return None if <3 words remain
+G-OVN-5|learner-cc-prefix-topic|~~closed=2026-03-15b~~
+  was=learn_about called with raw CC bridge thread-context prefix as topic; 6+ spurious navigations overnight
+  fix=tools/learner.py _extract_topic(): strip [Thread context:...] + [xxx]: prefixes; return "" if <2 trigger words or <3 total words; commit:326f433; ticket=#226
 
-G-QP2|db-growth-slow-queries|~2h|ticket=#221
-  what=DB grown to 8132 memories; NE activation scan p50=628ms p99=1100ms; EPISODIC fetch p50=175ms; id IN p50=131ms
-  why_open=SELECT * on 8125 rows (Q1) + 4294 rows (Q2); WAL contention (Q3/Q4)
-  fix=Q1:LIMIT 100 on NE query; Q2:LIMIT+column projection; Q3/Q4:wal_checkpoint(TRUNCATE) at boot
-  files=cortex.py(MEDIUM),narrative_engine.py(MEDIUM)
-  data=count:130samples|Q1:min=198ms,p50=628ms,p95=833ms,p99=1100ms|Q2:p50=175ms|Q3:p50=131ms|Q4:p50=63ms
+G-QP2|db-growth-slow-queries|~~closed=2026-03-15b~~
+  was=DB at 8460 memories; cortex.search() Phase 1 fetched ALL non-ROOT/CP rows (8460); p50=628ms per call
+  fix=cortex.py search(): LIMIT 300 on Phase 1 candidate fetch (ORDER BY activation_count DESC); _init_db(): PRAGMA wal_checkpoint(TRUNCATE) at boot end; commit:326f433; ticket=#221
 
-G-HB3|introspective-habit-bypasses-d072|~2h|ticket=#220
-  what=PROC_RESP_WHO_AM_I (+ similar introspective habits) return canned string; bypass _build_think_context()
-  why_open=D072 vigilance gate only fires on LLM turns; habit response never reaches it
-  fix=convert to context-injection habit: inject LTM+milieu as LLM context, let LLM answer
-  trigger=input: "what are you inside", "tell me about the igors", introspective register
-  test=response_quality_cases.md TC-3 TC-6
+G-HB3|introspective-habit-bypasses-d072|~~closed=2026-03-15b~~
+  was=PROC_RESP_WHO_AM_I returned canned string; bypassed _build_think_context() entirely; D072 never fired
+  fix=main.py: context_inject handler before if habit: block — fetches ID+CP memories, gets milieu, pushes SELF_CONTEXT to TWM (salience=0.75, ttl=90s), sets habit=None to fall through to LLM; DB: PROC_RESP_WHO_AM_I habit_type→context_inject, trigger→pipe-separated, context_query added
+  result=introspective questions get rich LLM answers; habit_fired:true + tier.3.5 response verified; commit:326f433; ticket=#220
 
 G-MP1|multi-pass-response-generation|~~closed=2026-03-14l~~
   what=Igor's output is single-pass LLM; feels "too automatic, too low level" (Akien flag)

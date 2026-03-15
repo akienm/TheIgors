@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-14k
+DOC|subsystem_memory|v1|updated=2026-03-15b
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -9,7 +9,7 @@ DESIGN_POINTS|
   DP4|all r/w through Cortex only; never raw SQL from reasoners or tools
   DP5|DatabaseProxy wraps all connections: timing+metrics+reconnect; commit() on success, rollback() on exception (D043)
   DP10|temporal context injection: ring entries show YYYY-MM-DD HH:MM when not today; memories show "stored Xd ago"; LLM distinguishes past from present (D045)
-  DP6|hybrid search: text keyword Phase1 → cosine rerank Phase2 (nomic-embed-text); graceful degradation
+  DP6|hybrid search: text keyword Phase1 (LIMIT 300 by activation_count DESC) → cosine rerank Phase2 (nomic-embed-text); graceful degradation; G-QP2
   DP7|portable flag: portable=True syncable; portable=False instance-local (episodic,credentials,paths)
   DP8|interpretive_edges table: 4-part directed edges (direction/condition/meaning_payload/action_pointer); BFS traversal
   DP9|blob support: has_blob=True; expand_blob_memories() appends full content on relevance≥0.5
@@ -46,5 +46,6 @@ INDEXES|
   idx_parent ON memories(parent_id)
   idx_type ON memories(memory_type)
   idx_activation ON memories(activation_count DESC) — G-QP1: NE query was 600-750ms; now SCAN USING INDEX
+  wal_checkpoint|PRAGMA wal_checkpoint(TRUNCATE) in _init_db() at boot — G-QP2: reduces WAL scan overhead
 
 DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045

@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-14k|latest=D073
+DOC|decisions_log|v1|updated=2026-03-15b|latest=D075
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -126,3 +126,8 @@ D071|cloud-ok-runtime-switch|defined|cloud_ok lives in ~/.TheIgors/cloud_ok_over
 
 D072|graph-first-response-vigilance|defined|G-MP1 architecture: inhibition happens before output in the graph layer (not after via evaluator LLM). predict_next() + gradient_flatness() on generation graph injected into _build_think_context() as [REFLEXIVE_PATTERN]. LLM self-inhibits obvious path. Cost=microseconds. Gate=IGOR_NPASS_REPLY. Biology basis: ART vigilance gate + attractor dynamics + Global Workspace Theory. TWM IS the narrative engine activation state — not two things. FLATNESS DIRECTION: gradient_flatness()=0.0 means STEEP (strong dominant prediction = REFLEXIVE); =1.0 means FLAT (no dominant prediction = novel/uncertain). LOW flatness = reflexive = inject warning. HIGH flatness = no graph data = D073 escalation signal.
 D073|llm-escalation-is-graph-exhaustion|defined|We reach up to LLM only when graph traversal has genuinely exhausted — enough real time + passes + resonance cycles to honestly say "I don't know." Not a canned fallback. flatness() that never converges (stays LOW after many cycles) = genuinely stuck = escalate. Contrast: flatness HIGH immediately = reflexive = inhibit and re-traverse (D072). Factual queries: achievable soon. Fuzzy/generative queries: harder, deferred. Principle: "the program is the data" — the graph IS the knowledge; LLM is the trainer, not the primary answerer.
+
+// ── Session 2026-03-15b additions ─────────────────────────────────────────────
+
+D074|habit-intent-gate|implemented|basal_ganglia.select_habit(): skip habit_type="threshold" always (handled by ResourceMonitorSource/pre-submit hook); skip habit_type in (action+proactive with code_ref) + (workflow,delegation,reactive) when parsed_intent in _QUESTION_INTENTS={factual_question,meta_question,explanation_request,general,conversation}; prevents calendar/swap/ssh habits misfiring on question vocabulary overlap; G-OVN-1
+D075|context-inject-habit-type|implemented|new habit_type="context_inject": fetches LTM identity+CP memories via cortex.search(), pushes SELF_CONTEXT to TWM (salience=0.75, ttl=90s), sets habit=None to fall through to LLM; LLM sees enriched context and answers introspectively; replaces canned WHO_AM_I response; G-HB3; main.py before if habit: block

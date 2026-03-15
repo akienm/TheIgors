@@ -1,11 +1,11 @@
-DOC|subsystem_reading|v1|updated=2026-03-14l
+DOC|subsystem_reading|v1|updated=2026-03-15b
 META|inertia=LOW|parent=architecture_root.dsb
 META|files=tools/ebook_reader.py,tools/training.py,cognition/word_graph.py
 META|purpose=book reading → graph training → realtime discussion
 
 DESIGN_POINTS|
   DP1|reading pipeline: open_book→read_chunk→extract→stew(TWM)→NE integrates→LTM
-  DP2|stew salience=0.65 (above NE force-run threshold 0.60); guarantees NE processes book content
+  DP2|stew salience=0.65 (above NE force-run threshold 0.60); guarantees NE processes book content; kwarg=content_csb= (G-OVN-2: was content=, causing 799 silent failures)
   DP3|G54 extraction gate: IGOR_READING_EXTRACT=true; reads trigger interpretive edge creation
   DP4|training corpus: staged ~/.TheIgors/training_corpus/; fetch→train→evict; cursor=index.json
   DP5|word graph trained from book text: enriches predict_next() + habit pattern matching
