@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-13c
+DOC|subsystem_cognition|v1|updated=2026-03-14k
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py
 
@@ -52,8 +52,10 @@ WORD_GRAPH|
   thesis=recognition and generation are the same operation in both directions
   storage=SQLite ~/.TheIgors/word_graph.db (migrated from JSON 2026-03-10; G41 closed)
   training=index_text_into_word_graph() tool; training_corpus.py staged fetch→train→evict
-  methods=predict_next(context)→probable next tokens; score_habit(text,habit_triggers)→relevance
-  decisions=D037,D038
+  methods=predict_next(context)→probable next tokens; score_habit(text,habit_triggers)→relevance; gradient_flatness()→[0,1] convergence signal
+  generation_graph=separate WordGraph trained on Igor's replies only; gate=IGOR_DUAL_WORD_GRAPHS; seed=claudecode/seed_generation_graph.py
+  vigilance_gate=D072: predict_next()+gradient_flatness() on generation_graph injected into _build_think_context() as [REFLEXIVE_PATTERN]; HIGH flatness=reflexive; NEVER converges=genuinely stumped→escalate(D073)
+  decisions=D037,D038,D072,D073
 
 RESPONSE_HABITUATION|
   purpose=passive vocab frequency tracker; detects overused phrases

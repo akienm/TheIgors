@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-14g
+DOC|subsystem_memory|v1|updated=2026-03-14k
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -41,5 +41,10 @@ KEY_METHODS|
 GENESIS|44 seeds: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC + 9 PROC seeds
   guard=total_count()==44 checked at boot
   verify=GENESIS_CP_NARRATIVES dict verified at boot; mismatch→refuse operation
+
+INDEXES|
+  idx_parent ON memories(parent_id)
+  idx_type ON memories(memory_type)
+  idx_activation ON memories(activation_count DESC) — G-QP1: NE query was 600-750ms; now SCAN USING INDEX
 
 DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045
