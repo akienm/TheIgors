@@ -942,6 +942,28 @@ The narrative engine IS the TWM — not two separate things. The TWM is the curr
 - **phrase_regression.py restarted**: 113-phrase file (`automated_phrase_response_test.txt`), 1 pass, 5-min delay. Running in background (PID 357138) after all fixes deployed.
 - **Igor rebooted**: 08:08:26 on 2026-03-15. Memory count: 8,479 habits=101 (was 5,279/82 at session start).
 
+### Session 2026-03-15e additions (memory architecture + three-session pattern + organizer)
+
+**Design decisions recorded (not gaps — load-bearing architecture):**
+
+- **Three-session CC pattern (D083, #249)**: Designer + Implementation Worker + Scribe Worker. Scribe handles all memory-coherence work (DSBs, GitHub, Igor flushes, commits). `flush_decision` / `flush_session` in `cc_queue.py` POST to Igor cc_notebook. `SCRIBE_CONTEXT.md` added as Scribe boot doc.
+- **Issue filing = mini savestate (D084)**: each GitHub issue filing pushes the decision to Igor's memory immediately. Decision not made until in Igor's memory — DSB commit is durable backup, not primary record.
+- **Training curriculum order (D085, #250)**: Layer 1 = Claude programming knowledge (organizational skeleton); Layer 2 = Akien's code + docs (lands on Layer 1 framework, used natively); Layer 3 = collaboration record (decisions_log + session narratives — what no other Igor will have). Order matters.
+
+**G-NE1 — NE episodic-to-semantic merge** *(M — designed, not yet implemented)*
+
+Current: each memory is a single narrative entry. Design (#250): `occurrence_dates` list in metadata — multiple occurrences of the same pattern stored as one semantic node with a list of when it occurred, not many EPISODIC entries. Enables proper semantic consolidation; frequency = semantic weight; NE can identify recurring patterns across sessions. Ticket: #250.
+
+**New vision epics:**
+
+- **#251 — Igor adaptive friction reducer (D086)**: milieu-driven interaction modes — high-energy: surface the lever; medium: walk through steps; low: do-the-thinking + queue + surface-one-thing. Data: Akien's writing patterns, Confluence, return frequency. Leah context with discretion.
+- **#252 — Organizer knowledge base (D087)**: Igor researches Franklin/GTD/ADHD-productivity/motivational-science → high-inertia FACTUAL nodes; Akien annotates with personal experience; science + patterns + live-state = complete organizer substrate.
+- **#253 — SuperClaude failover (D088)**: balance-check at launch: OR via API, Anthropic via Igor browser_use → `cc_channel/anthropic_balance.json`; pick endpoint + key before launching claude.
+
+*Updated: 2026-03-15e by Claude Code (Scribe).*
+
+---
+
 ### Session 2026-03-15d additions (design + implementation sprint)
 
 **New gaps discovered:**

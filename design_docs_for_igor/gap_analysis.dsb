@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-15b
+DOC|gap_analysis|v1|updated=2026-03-15e
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -327,3 +327,22 @@ G-D1|dsb-docs-remaining|ticket=#212
   what=failure_modes.dsb, inertia_registry.dsb, ethical_framework.dsb, subsystem_*.dsb (8-10 files)
   what=docs/ human docs: project_brief.md, architecture.md, subsystem pages, what_i_learned.md, timeline.md, future.md
   status=in_progress: FORMAT_SPEC, igor_identity_master, glossary, architecture_root, decisions_log done
+
+// ── NEW GAPS (2026-03-15e) ────────────────────────────────────────────────────
+
+G-NE1|ne-episodic-to-semantic-merge|defined|ticket=#250
+  what=occurrence_dates list in memory metadata; multiple occurrences→one semantic node; frequency=semantic weight; NE identifies recurring patterns across sessions
+  why_open=Memory schema design; requires models.py change + migration; D057 Instance refactor dependency
+
+G-ORG1|adaptive-friction-reducer|epic|ticket=#251
+  what=milieu-driven interaction modes: high-energy→surface lever; medium→walk through steps; low→do-thinking+queue+surface-one-thing
+  data=Akien writing patterns+Confluence+return frequency; Leah context with discretion; D086
+  why_open=epic level; requires milieu integration + habit subtree; #251
+
+G-ORG2|organizer-knowledge-base|defined|ticket=#252
+  what=Igor researches Franklin/GTD/ADHD-productivity/motivational-science → high-inertia FACTUAL nodes; Akien annotates; science+patterns+live-state=complete organizer substrate
+  why_open=research task; D087; blocked until reading list stable
+
+G-SC1|superclaude-or-failover|defined|ticket=#253
+  what=balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; pick endpoint+key before launching claude
+  why_open=Igor browser_use must be reliable; lower priority than Igor cognition; D088
