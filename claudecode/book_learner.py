@@ -506,6 +506,24 @@ def run(args) -> None:
         if at_end:
             break
 
+    # G-RL3: mark reading_list completed if we reached the end of the book
+    _reached_end = (live_handle.position >= total_sentences) and not args.limit
+    if args.run and _reached_end and args.calibre_id:
+        try:
+            import sqlite3 as _sqlite3
+
+            _conn = _sqlite3.connect(str(DB_PATH))
+            _conn.execute(
+                "UPDATE reading_list SET status='completed', completed_at=datetime('now')"
+                " WHERE source=? AND status IN ('in_progress','queued')",
+                (f"calibre://{args.calibre_id}",),
+            )
+            _conn.commit()
+            _conn.close()
+            print(f"reading_list: calibre://{args.calibre_id} → completed")
+        except Exception as _rl_e:
+            print(f"reading_list update failed: {_rl_e}")
+
     print("─" * 60)
     if args.run:
         print(

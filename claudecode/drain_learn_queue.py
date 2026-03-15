@@ -78,6 +78,31 @@ def _save_queue(q: list) -> None:
     QUEUE_FILE.write_text(json.dumps(q, indent=2))
 
 
+_IGOR_DB_PATH = Path(
+    os.environ.get(
+        "IGOR_DB_PATH",
+        Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db",
+    )
+)
+
+
+def _set_reading_list_in_progress(calibre_id: int) -> None:
+    """G-RL3: mark reading_list entry in_progress when drain launches it."""
+    try:
+        import sqlite3 as _sqlite3
+
+        conn = _sqlite3.connect(str(_IGOR_DB_PATH))
+        conn.execute(
+            "UPDATE reading_list SET status='in_progress', started_at=datetime('now')"
+            " WHERE source=? AND status='queued'",
+            (f"calibre://{calibre_id}",),
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        _log(f"reading_list update failed: {e}")
+
+
 def _launch(entry: dict) -> bool:
     python = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
     url = entry.get("url", "")
@@ -89,10 +114,12 @@ def _launch(entry: dict) -> bool:
     if use_local:
         cmd.append("--local")
 
+    calibre_id_for_status: int | None = None
     if url.startswith("calibre://"):
         try:
             cid = int(url[len("calibre://") :])
             cmd += ["--calibre-id", str(cid)]
+            calibre_id_for_status = cid
         except ValueError:
             _log(f"SKIP bad calibre URL: {url}")
             return False
@@ -106,6 +133,8 @@ def _launch(entry: dict) -> bool:
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         log_file = open(LOG_DIR / "book_learner.log", "a")
         subprocess.Popen(cmd, stdout=log_file, stderr=log_file, start_new_session=True)
+        if calibre_id_for_status is not None:
+            _set_reading_list_in_progress(calibre_id_for_status)
         return True
     except Exception as e:
         _log(f"LAUNCH ERROR: {e}")
