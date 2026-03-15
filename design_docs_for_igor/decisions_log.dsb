@@ -131,3 +131,7 @@ D073|llm-escalation-is-graph-exhaustion|defined|We reach up to LLM only when gra
 
 D074|habit-intent-gate|implemented|basal_ganglia.select_habit(): skip habit_type="threshold" always (handled by ResourceMonitorSource/pre-submit hook); skip habit_type in (action+proactive with code_ref) + (workflow,delegation,reactive) when parsed_intent in _QUESTION_INTENTS={factual_question,meta_question,explanation_request,general,conversation}; prevents calendar/swap/ssh habits misfiring on question vocabulary overlap; G-OVN-1
 D075|context-inject-habit-type|implemented|new habit_type="context_inject": fetches LTM identity+CP memories via cortex.search(), pushes SELF_CONTEXT to TWM (salience=0.75, ttl=90s), sets habit=None to fall through to LLM; LLM sees enriched context and answers introspectively; replaces canned WHO_AM_I response; G-HB3; main.py before if habit: block
+
+// ── Session 2026-03-15c additions ─────────────────────────────────────────────
+
+D076|designer-worker-cc-pattern|implemented|two persistent CC sessions: Designer (architecture+conversation+Akien relationship) + Worker (execution: loads files, runs code, writes results); shared queue ~/.TheIgors/cc_channel/queue.json; cc_queue.py CLI; WORKER_CONTEXT.md boot doc; Igor observer hook planned (T008)
