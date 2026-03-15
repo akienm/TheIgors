@@ -886,6 +886,12 @@ New issues:
 - **response_quality_cases.md**: Created `design_docs/response_quality_cases.md` — 6 manual regression test cases (TC-1 through TC-6). Each has: input text, expected behavior, known failure mode, what to watch for in web log. TC-3 documents G-HB3. TC-6 ("tell me about the igors") documents first-person interiority check.
 - **Naming discussion**: "ingest" proposed as unified term replacing separate "word_graph training" / "reading pipeline" concepts. Slow_read (per-book process) vs bulk_load (parallel ingest) naming for #RL1 process split. Also: drain_learn_queue.py system cron check — confirm it's running as a system cron, not just manually.
 
+### Session 2026-03-14n additions
+
+- **G-QP2 (new, open)**: DB grown to 8,132 memories from overnight book loading. Three query patterns consistently slow: (1) NE activation scan `SELECT * ... NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC` — p50=628ms, p99=1100ms — index used but SELECT * fetches all 8,125 rows; fix: add LIMIT 100. (2) EPISODIC fetch — p50=175ms — returns 4,294 rows; fix: LIMIT + column projection. (3) id IN PK lookups — p50=131ms — WAL contention; fix: PRAGMA wal_checkpoint(TRUNCATE) at boot. Issue #221.
+- **System crons wired**: drain_learn_queue.py every 30min; CC-bridge nudge ("keep picking up language") every 4 hours. Logs: `~/.TheIgors/logs/drain_cron.log`, `nudge_cron.log`.
+- **DSB format decision**: new GitHub issues = English header + DSB body; GitHub discussion #62 session entries = full DSB going forward.
+
 ### Session 2026-03-14k additions
 
 - **G-QP1 ~~CLOSED~~**: `SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC` was running 600–750ms on every NE cycle. Fix: added `CREATE INDEX IF NOT EXISTS idx_activation ON memories(activation_count DESC)` to `cortex.py` `_init_db()`. Index also applied to live DB directly. EXPLAIN QUERY PLAN confirms `SCAN memories USING INDEX idx_activation` — sort eliminated.
