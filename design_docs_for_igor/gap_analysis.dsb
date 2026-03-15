@@ -155,8 +155,8 @@ G-MP1|multi-pass-response-generation|urgent|~2h
   //
   // THE PROBLEM: no lateral inhibition. Highest-weight path wins immediately. No "too obvious" gate.
   // THE MECHANISM: gradient_flatness() on generation graph IS the vigilance signal.
-  //   fast settle (high flatness immediately) = reflexive answer = below-vigilance = reject
-  //   slow settle (flatness builds over time) = genuinely considered = commit
+  //   LOW flatness (close to 0) = STEEP gradient = strong dominant prediction = REFLEXIVE = inject warning
+  //   HIGH flatness (close to 1) = FLAT gradient = no dominant prediction = novel OR graph-empty → D073 escalation
   //
   // IMPLEMENTATION (no extra LLM call — pure graph machinery):
   //   1. Before reply LLM call, run predict_next() on generation graph seeded by current context
