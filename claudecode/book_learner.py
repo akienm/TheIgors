@@ -57,13 +57,45 @@ if env_path.exists():
             os.environ.setdefault(k.strip(), v.strip())
 
 from igor.memory.cortex import Cortex
+
+_CLOUD_OK_OVERRIDE_FILE = Path.home() / ".TheIgors" / "cloud_ok_override.json"
+
+
+def _should_use_local(explicit_local: bool = False) -> bool:
+    """
+    Decide whether to use local Ollama for this inference call (D071).
+    - If --local flag passed explicitly: always local.
+    - If cloud_ok_override file exists and is active: use cloud.
+    - Otherwise: default to local (background = economical, no surprise spend).
+    Called per-chunk so mode can change mid-book without restart.
+    """
+    if explicit_local:
+        return True
+    try:
+        if not _CLOUD_OK_OVERRIDE_FILE.exists():
+            return True  # no override = local
+        data = json.loads(_CLOUD_OK_OVERRIDE_FILE.read_text())
+        if not data.get("active", False):
+            return True
+        expires = data.get("expires")
+        if expires:
+            from datetime import datetime as _dt
+
+            if _dt.now() > _dt.fromisoformat(expires):
+                return True  # expired = back to local
+        return False  # override active = cloud OK
+    except Exception:
+        return True  # on any error, default to local
+
+
 from igor.memory.models import Memory, MemoryType
 from igor.tools.ebook_reader import open_book, read_chunk
 
-DB_PATH = Path(os.environ.get(
-    "IGOR_DB_PATH",
-    Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
-))
+DB_PATH = Path(
+    os.environ.get(
+        "IGOR_DB_PATH", Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+    )
+)
 PROGRESS_DIR = Path.home() / ".TheIgors" / "book_learner_progress"
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_REFERER = "https://github.com/akienm/TheIgors"
@@ -118,6 +150,7 @@ Rules:
 
 # ── Checkpoint management ──────────────────────────────────────────────────────
 
+
 def _progress_path(book_key: str) -> Path:
     PROGRESS_DIR.mkdir(parents=True, exist_ok=True)
     safe = hashlib.md5(book_key.encode()).hexdigest()[:12]
@@ -140,6 +173,7 @@ def _save_progress(book_key: str, state: dict) -> None:
 
 # ── LLM extraction ────────────────────────────────────────────────────────────
 
+
 def _clean_json(raw: str) -> str:
     """Strip markdown code fences if the model wraps its JSON output."""
     raw = raw.strip()
@@ -158,22 +192,24 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
     import urllib.request
 
     model = os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b").split("#")[0].strip()
-    host  = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
     user_content = "BOOK PASSAGE"
     if chapter_title:
         user_content += f" (from chapter: {chapter_title})"
     user_content += f":\n\n{chunk_text}"
 
-    payload = json.dumps({
-        "model": model,
-        "messages": [
-            {"role": "system", "content": _EXTRACT_PROMPT},
-            {"role": "user",   "content": user_content},
-        ],
-        "stream": False,
-        "options": {"temperature": 0.2},
-    }).encode()
+    payload = json.dumps(
+        {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": _EXTRACT_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+            "stream": False,
+            "options": {"temperature": 0.2},
+        }
+    ).encode()
 
     req = urllib.request.Request(
         f"{host}/api/chat",
@@ -188,13 +224,17 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
         raw = data.get("message", {}).get("content", "").strip()
         return json.loads(_clean_json(raw))
     except json.JSONDecodeError:
-        return {"nodes": [], "summary": f"local parse error: {raw[:100] if 'raw' in dir() else '?'}"}
+        return {
+            "nodes": [],
+            "summary": f"local parse error: {raw[:100] if 'raw' in dir() else '?'}",
+        }
     except Exception as e:
         return {"nodes": [], "summary": f"local inference error: {e}"}
 
 
-def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "",
-                   local: bool = False) -> dict:
+def _extract_nodes(
+    chunk_text: str, model: str, chapter_title: str = "", local: bool = False
+) -> dict:
     """
     Send one chunk to the LLM. Returns parsed JSON dict or error dict.
     If local=True, uses Ollama directly (free, no API key needed).
@@ -220,12 +260,14 @@ def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "",
     if _use_cache:
         _sys_msg["cache_control"] = {"type": "ephemeral"}
 
-    payload = json.dumps({
-        "model": model,
-        "messages": [_sys_msg, {"role": "user", "content": user_content}],
-        "temperature": 0.2,
-        "max_tokens": 500,
-    }).encode()
+    payload = json.dumps(
+        {
+            "model": model,
+            "messages": [_sys_msg, {"role": "user", "content": user_content}],
+            "temperature": 0.2,
+            "max_tokens": 500,
+        }
+    ).encode()
 
     req = urllib.request.Request(
         f"{OPENROUTER_BASE}/chat/completions",
@@ -244,30 +286,34 @@ def _extract_nodes(chunk_text: str, model: str, chapter_title: str = "",
         raw = data["choices"][0]["message"]["content"].strip()
         return json.loads(_clean_json(raw))
     except json.JSONDecodeError:
-        return {"nodes": [], "summary": f"parse error: {raw[:100] if 'raw' in dir() else '?'}"}
+        return {
+            "nodes": [],
+            "summary": f"parse error: {raw[:100] if 'raw' in dir() else '?'}",
+        }
     except Exception as e:
         return {"nodes": [], "summary": f"API error: {e}"}
 
 
 # ── Node deposit ──────────────────────────────────────────────────────────────
 
+
 def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int) -> int:
     """Deposit extracted nodes. Returns count successfully deposited."""
     deposited = 0
     for node in nodes:
         try:
-            ntype     = node.get("type", "factual").strip().lower()
+            ntype = node.get("type", "factual").strip().lower()
             narrative = node.get("narrative", "").strip()
             confidence = float(node.get("confidence", 0.6))
             parent_cp = node.get("parent_cp", "").strip()
-            trigger   = node.get("trigger", "").strip()
+            trigger = node.get("trigger", "").strip()
 
             if not narrative or confidence < 0.60:
                 continue
 
             mt = {
-                "procedural":   MemoryType.PROCEDURAL,
-                "factual":      MemoryType.FACTUAL,
+                "procedural": MemoryType.PROCEDURAL,
+                "factual": MemoryType.FACTUAL,
                 "interpretive": MemoryType.INTERPRETIVE,
             }.get(ntype, MemoryType.FACTUAL)
 
@@ -305,6 +351,7 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
 
 # ── Word graph training ────────────────────────────────────────────────────────
 
+
 def _train_word_graph(chunk_text: str) -> None:
     """Train the word graph from this chunk. Silently skips if unavailable."""
     try:
@@ -312,6 +359,7 @@ def _train_word_graph(chunk_text: str) -> None:
         if not wg_db.exists():
             return
         from igor.cognition.word_graph import WordGraph
+
         wg = WordGraph(str(wg_db))
         wg.train(chunk_text)
     except Exception:
@@ -320,6 +368,7 @@ def _train_word_graph(chunk_text: str) -> None:
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
+
 def run(args) -> None:
     cortex = Cortex(DB_PATH)
 
@@ -327,6 +376,7 @@ def run(args) -> None:
     print(f"Opening book...")
     if args.url:
         from igor.tools.ebook_reader import open_book_url
+
         handle = open_book_url(args.url, title=args.title or args.url)
     elif args.calibre_id:
         handle = open_book(calibre_id=args.calibre_id, resume=False)
@@ -338,8 +388,8 @@ def run(args) -> None:
         sys.exit(1)
 
     # open_book returns a serializable dict; the BookHandle lives in _HANDLE_CACHE
-    book_title      = handle["title"]
-    book_key        = f"{book_title}|{handle.get('calibre_id') or args.calibre_id or ''}"
+    book_title = handle["title"]
+    book_key = f"{book_title}|{handle.get('calibre_id') or args.calibre_id or ''}"
     total_sentences = handle["total_sentences"]
     # hold onto the handle_key for read_chunk calls
     handle_key = handle["_handle_key"]
@@ -348,7 +398,9 @@ def run(args) -> None:
     print(f"Author: {handle['author']}")
     print(f"Sentences: {total_sentences}")
     print(f"Chunk size: {args.chunk} sentences")
-    print(f"Model: {'local Ollama (' + os.getenv('OLLAMA_LOCAL_MODEL','qwen2.5:7b') + ')' if args.local else args.model}")
+    print(
+        f"Model: {'local Ollama (' + os.getenv('OLLAMA_LOCAL_MODEL','qwen2.5:7b') + ')' if args.local else args.model}"
+    )
     print(f"Mode: {'DRY RUN' if not args.run else 'LIVE'}")
 
     # ── Checkpoint ────────────────────────────────────────────────────────
@@ -358,14 +410,19 @@ def run(args) -> None:
 
     # ── Console note: new book vs resume ───────────────────────────────────
     if processed_positions and args.resume:
-        print(f"▶ Resuming absorption: \"{book_title}\" "
-              f"({len(processed_positions)} chunks done, {total_deposited} nodes deposited)")
+        print(
+            f'▶ Resuming absorption: "{book_title}" '
+            f"({len(processed_positions)} chunks done, {total_deposited} nodes deposited)"
+        )
     else:
-        print(f"★ New book — starting absorption: \"{book_title}\" by {handle['author']}")
+        print(
+            f"★ New book — starting absorption: \"{book_title}\" by {handle['author']}"
+        )
 
     # ── Seek to start position ─────────────────────────────────────────────
     # Access the live BookHandle from cache for position management
     from igor.tools.ebook_reader import _HANDLE_CACHE
+
     live_handle = _HANDLE_CACHE.get(handle_key)
     if live_handle is None:
         print("ERROR: BookHandle not found in cache after open_book")
@@ -393,15 +450,17 @@ def run(args) -> None:
             print(f"Read error: {result['error']}")
             break
 
-        sentences  = result["sentences"]
-        new_pos    = result["position"]
-        chapter    = result["chapter"]
+        sentences = result["sentences"]
+        new_pos = result["position"]
+        chapter = result["chapter"]
         chapter_title = result.get("chapter_title", "")
-        percent    = result["percent"]
-        at_end     = result["at_end"]
+        percent = result["percent"]
+        at_end = result["at_end"]
         chunk_text = " ".join(sentences)
 
-        chunk_label = f"[{chunks_done+1:03d}] ch.{chapter} pos={pos}-{new_pos} ({percent:.0f}%)"
+        chunk_label = (
+            f"[{chunks_done+1:03d}] ch.{chapter} pos={pos}-{new_pos} ({percent:.0f}%)"
+        )
 
         # Resume: skip if already processed
         if args.resume and pos in processed_positions:
@@ -412,9 +471,11 @@ def run(args) -> None:
             continue
 
         if args.run:
-            # Extract nodes
-            extraction = _extract_nodes(chunk_text, args.model, chapter_title,
-                                        local=args.local)
+            # Extract nodes — check cloud_ok override per chunk (D071: mode can change mid-book)
+            use_local = _should_use_local(args.local)
+            extraction = _extract_nodes(
+                chunk_text, args.model, chapter_title, local=use_local
+            )
             nodes = extraction.get("nodes", [])
             summary = extraction.get("summary", "")
 
@@ -447,7 +508,9 @@ def run(args) -> None:
 
     print("─" * 60)
     if args.run:
-        print(f"Done. {chunks_done} chunks processed. {total_deposited} total nodes deposited. {errors} errors.")
+        print(
+            f"Done. {chunks_done} chunks processed. {total_deposited} total nodes deposited. {errors} errors."
+        )
         print(f"Progress saved: {_progress_path(book_key)}")
     else:
         print(f"Dry run: {chunks_done} chunks would be processed.")
@@ -455,20 +518,48 @@ def run(args) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Book learner — extract graph nodes from a book")
-    parser.add_argument("--book",        default="", help="Book title (fuzzy search)")
-    parser.add_argument("--calibre-id",  type=int,   default=None, help="Exact Calibre book ID")
-    parser.add_argument("--url",         default="", help="URL to fetch and learn (web source)")
-    parser.add_argument("--title",       default="", help="Title override for URL sources")
-    parser.add_argument("--chunk",       type=int,   default=15,   help="Sentences per chunk (default 15)")
-    parser.add_argument("--delay",       type=float, default=1.5,  help="Seconds between API calls (default 1.5)")
-    parser.add_argument("--model",       default=os.getenv("BOOK_LEARNER_MODEL", "openai/gpt-4o-mini"),
-                        help="LLM model (default: BOOK_LEARNER_MODEL env or gpt-4o-mini)")
-    parser.add_argument("--local",       action="store_true", help="Use local Ollama instead of OpenRouter (free, no API cost)")
-    parser.add_argument("--run",         action="store_true", help="Actually call API and deposit (default: dry run)")
-    parser.add_argument("--resume",      action="store_true", help="Skip chunks already processed")
-    parser.add_argument("--limit",       type=int,   default=0,    help="Max chunks to process (0=all)")
-    parser.add_argument("--start",       type=int,   default=0,    help="Start at sentence position")
+    parser = argparse.ArgumentParser(
+        description="Book learner — extract graph nodes from a book"
+    )
+    parser.add_argument("--book", default="", help="Book title (fuzzy search)")
+    parser.add_argument(
+        "--calibre-id", type=int, default=None, help="Exact Calibre book ID"
+    )
+    parser.add_argument("--url", default="", help="URL to fetch and learn (web source)")
+    parser.add_argument("--title", default="", help="Title override for URL sources")
+    parser.add_argument(
+        "--chunk", type=int, default=15, help="Sentences per chunk (default 15)"
+    )
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=1.5,
+        help="Seconds between API calls (default 1.5)",
+    )
+    parser.add_argument(
+        "--model",
+        default=os.getenv("BOOK_LEARNER_MODEL", "openai/gpt-4o-mini"),
+        help="LLM model (default: BOOK_LEARNER_MODEL env or gpt-4o-mini)",
+    )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Use local Ollama instead of OpenRouter (free, no API cost)",
+    )
+    parser.add_argument(
+        "--run",
+        action="store_true",
+        help="Actually call API and deposit (default: dry run)",
+    )
+    parser.add_argument(
+        "--resume", action="store_true", help="Skip chunks already processed"
+    )
+    parser.add_argument(
+        "--limit", type=int, default=0, help="Max chunks to process (0=all)"
+    )
+    parser.add_argument(
+        "--start", type=int, default=0, help="Start at sentence position"
+    )
     args = parser.parse_args()
 
     if not args.book and not args.calibre_id and not args.url:

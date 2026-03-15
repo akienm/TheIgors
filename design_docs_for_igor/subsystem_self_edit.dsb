@@ -1,4 +1,4 @@
-DOC|subsystem_self_edit|v1|updated=2026-03-14c
+DOC|subsystem_self_edit|v1|updated=2026-03-14j
 META|inertia=LOW(tools)|parent=architecture_root.dsb
 META|files=tools/self_edit.py,tools/hot_reload.py,cognition/forensic_logger.py
 
@@ -10,7 +10,7 @@ DESIGN_POINTS|
   DP5|auto-commit+push after successful edit (Igor's edits only; CC edits do NOT)
   DP6|hot_reload: reload_module() after patch if module is stateless/hot-reloadable; else restart
   DP7|inertia_gate: validate_against_core() before response delivery; catches CP violations
-  DP8|PROC_RELOAD_AFTER_EDIT: _try_hot_reload() in self_edit.py fires after edit/patch if IGOR_HOT_RELOAD=true + LOW inertia; else restart message
+  DP8|post-edit actions (D070): _try_hot_reload(path, label, reason) always calls _push_edit_episodic() first (EPISODIC memory, portable=False, source=self_edit); then hot-reload if IGOR_HOT_RELOAD=true + LOW inertia
 
 SELF_EDIT_FLOW|
   1=check inertia_registry.dsb for target module
@@ -36,5 +36,5 @@ FORENSIC_LOGGING|
   path=~/.TheIgors/logs/
   key_fns=log_pipeline_step(),log_error(),log_anomaly(),get_turn_id()
 
-DECISIONS|D012,D024,D040,D041
+DECISIONS|D012,D024,D040,D041,D070
 KNOWN_FAILURES|F006(gateway-attr-error) — example of what bad self-edit looks like

@@ -22,19 +22,39 @@ import time
 from pathlib import Path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-REPO         = Path(__file__).parent.parent
-VENV_PYTHON  = REPO / "venv" / "bin" / "python"
+REPO = Path(__file__).parent.parent
+VENV_PYTHON = REPO / "venv" / "bin" / "python"
 BOOK_LEARNER = REPO / "claudecode" / "book_learner.py"
-QUEUE_FILE   = Path.home() / ".TheIgors" / "learn_queue.json"
-LOG_DIR      = Path.home() / ".TheIgors" / "logs"
-LOG_FILE     = LOG_DIR / "drain_learn_queue.log"
-PID_FILE     = Path.home() / ".TheIgors" / "drain_learn_queue.pid"
+QUEUE_FILE = Path.home() / ".TheIgors" / "learn_queue.json"
+LOG_DIR = Path.home() / ".TheIgors" / "logs"
+LOG_FILE = LOG_DIR / "drain_learn_queue.log"
+PID_FILE = Path.home() / ".TheIgors" / "drain_learn_queue.pid"
 
 DEFAULT_LAUNCH_DELAY = 60  # seconds between launches
+_CLOUD_OK_OVERRIDE_FILE = Path.home() / ".TheIgors" / "cloud_ok_override.json"
+
+
+def _is_cloud_ok_override() -> bool:
+    """True if a cloud_ok override is currently active (D071)."""
+    try:
+        if not _CLOUD_OK_OVERRIDE_FILE.exists():
+            return False
+        data = json.loads(_CLOUD_OK_OVERRIDE_FILE.read_text())
+        if not data.get("active", False):
+            return False
+        expires = data.get("expires")
+        if expires:
+            from datetime import datetime as _dt
+
+            if _dt.now() > _dt.fromisoformat(expires):
+                return False
+        return True
+    except Exception:
+        return False
 
 
 def _log(msg: str) -> None:
-    ts   = time.strftime("%Y-%m-%dT%H:%M:%S")
+    ts = time.strftime("%Y-%m-%dT%H:%M:%S")
     line = f"{ts}  {msg}\n"
     print(line, end="", flush=True)
     try:
@@ -60,13 +80,18 @@ def _save_queue(q: list) -> None:
 
 def _launch(entry: dict) -> bool:
     python = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
-    url    = entry.get("url", "")
-    title  = entry.get("title", url)[:80]
-    cmd    = [python, str(BOOK_LEARNER), "--run", "--resume", "--local"]
+    url = entry.get("url", "")
+    title = entry.get("title", url)[:80]
+    # D071: --local flag only if queue item has cloud_ok=False AND no override active.
+    # book_learner also checks cloud_ok_override per chunk, so this is belt-and-suspenders.
+    use_local = not entry.get("cloud_ok", True) and not _is_cloud_ok_override()
+    cmd = [python, str(BOOK_LEARNER), "--run", "--resume"]
+    if use_local:
+        cmd.append("--local")
 
     if url.startswith("calibre://"):
         try:
-            cid = int(url[len("calibre://"):])
+            cid = int(url[len("calibre://") :])
             cmd += ["--calibre-id", str(cid)]
         except ValueError:
             _log(f"SKIP bad calibre URL: {url}")
@@ -89,8 +114,12 @@ def _launch(entry: dict) -> bool:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Drain the Igor learn queue")
-    parser.add_argument("--delay", type=float, default=DEFAULT_LAUNCH_DELAY,
-                        help=f"Seconds between launches (default {DEFAULT_LAUNCH_DELAY})")
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=DEFAULT_LAUNCH_DELAY,
+        help=f"Seconds between launches (default {DEFAULT_LAUNCH_DELAY})",
+    )
     args = parser.parse_args()
 
     # Write PID file so learner.py can detect we're running
@@ -100,7 +129,7 @@ def main() -> None:
         _log(f"drain_learn_queue: starting (pid={os.getpid()}, delay={args.delay}s)")
 
         while True:
-            q       = _load_queue()
+            q = _load_queue()
             pending = [e for e in q if not e.get("done")]
 
             if not pending:

@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14i
+DOC|gap_analysis|v1|updated=2026-03-14j
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -106,6 +106,30 @@ G-DBM1|memory-last-accessed-not-updated|~~closed=2026-03-14h~~
   was=last_accessed=None on all memories; only updated by record_activation() on habit fires
   fix=cortex._touch_last_accessed(): single SQL UPDATE after Phase 2 + Phase 1 search paths; skips ROOT/CP
   result=verified: 10 memories got last_accessed timestamps after one search turn
+
+// ── CLOSED THIS SESSION (2026-03-14j) ────────────────────────────────────────
+
+G-SP1|auto-reload-with-episodic-memory|~~closed=2026-03-14j~~
+  was=self_edit success path had no memory write or auto-reload call
+  fix=_push_edit_episodic(): creates EPISODIC memory (portable=False, source="self_edit"); _try_hot_reload() calls it first; both callsites pass reason
+  result=every self-edit leaves a traceable EPISODIC record + triggers hot-reload for LOW inertia
+
+// ── NEW GAPS (2026-03-14j) ───────────────────────────────────────────────────
+
+G-HB1|resource-awareness-memory-keyword-collision|~~closed=2026-03-14j~~
+  was=PROC_RESOURCE_AWARENESS trigger had "memory"; matched cognitive questions ("what do you know about memory")
+  fix=live DB UPDATE removed "memory" from trigger; seed script not yet updated
+  result=cognitive questions no longer fire resource habit
+
+G-HB2|log-ticket-misfire-greeting|~1h
+  what="log a ticket that you're still having trouble sshing to yourself" → PROC_GREETING fired; PROC_GREETING trigger is clean
+  investigation=query live DB for habits matching "log" or "ticket"; check if self-seeded habit exists
+  trigger=next session
+
+G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
+  was=no runtime mechanism to switch cloud/local without subprocess restart
+  fix=cloud_mode.py: is_cloud_ok_override()/set()/clear() + ~/.TheIgors/cloud_ok_override.json (TTL file); inference_gateway InferenceContext.cloud_ok_override + make_context(); _cloud_ok()/_cloud_preferred() gate background calls; book_learner._should_use_local() per-chunk; drain_learn_queue._is_cloud_ok_override(); learner.py cloud_ok field + override set/clear; PROC_SET_CLOUD_NOW + PROC_NIGHT_READ seeded
+  result=human "do it now" → 4h cloud window → background processors adapt without restart; night mode auto-gates to local
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
   fix=PROC_GO_LEARN seeded; tools/learner.py wired; "go learn about X [tonight]" works end-to-end

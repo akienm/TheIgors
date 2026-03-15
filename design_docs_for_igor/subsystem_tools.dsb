@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-14g
+DOC|subsystem_tools|v1|updated=2026-03-14j
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -28,7 +28,8 @@ KEY_TOOLS|
   word_graph|index_text_into_word_graph,query_word_graph_stats,analyze_word_graph,train_word_graph
   interpretive|add_interpretive_edge,get_interpretive_edges,interpretive_traverse
   metrics|get_metrics_report — /metrics slash command output
-  filesystem_extra|check_resource_load,check_disk_usage,evaluate_threshold_habits
+  filesystem_extra|check_resource_load,check_disk_usage,evaluate_threshold_habits|_resource_load_dict() now includes night_mode (1 if 22:00-07:00)
+  cloud_ok|set_cloud_ok_override,clear_cloud_ok_override,is_cloud_ok_override|D071; wired in learn_about(); see cloud_mode.py
   cluster|ssh_exec,cluster_status,cluster_load,restart_ollama,bootstrap_ssh|restart_ollama: local=sudo systemctl, remote=SSH+sudo; 5s wait + health check; sudoers required
   arbiter|arbiter_submit|gate=IGOR_ARBITER_ENABLED=false
 

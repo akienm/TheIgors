@@ -1,4 +1,4 @@
-DOC|subsystem_reading|v1|updated=2026-03-13f
+DOC|subsystem_reading|v1|updated=2026-03-14j
 META|inertia=LOW|parent=architecture_root.dsb
 META|files=tools/ebook_reader.py,tools/training.py,cognition/word_graph.py
 META|purpose=book reading → graph training → realtime discussion
@@ -10,6 +10,7 @@ DESIGN_POINTS|
   DP4|training corpus: staged ~/.TheIgors/training_corpus/; fetch→train→evict; cursor=index.json
   DP5|word graph trained from book text: enriches predict_next() + habit pattern matching
   DP6|CIFS stale handle: _local_copy() copies to /tmp before read; transparent to caller
+  DP7|cloud_ok per-chunk (D071): book_learner._should_use_local() reads ~/.TheIgors/cloud_ok_override.json each chunk; mode can change mid-book without restart; --local flag still forces local
 
 EBOOK_READER|
   calibre=~/.TheIgors/akien/onedrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library

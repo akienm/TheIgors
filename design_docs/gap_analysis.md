@@ -834,6 +834,15 @@ New issues:
 - **WorkingWithClaude.md**: skills/hooks/compact added to Infrastructure; Part Three "How I Work with Akien" added; workflow step 6 = notify user to /compact
 - **New gap G-BRW1**: CC bridge messages fire PROC_GREETING instead of action habits for short action requests — PROC_GREETING threshold too high at tier.2; need habit scoring adjustment or CC bridge routing change
 
+### Session 2026-03-14j additions
+
+- **G-SP1 ~~CLOSED~~**: `self_edit.py` — `_push_edit_episodic()` added; `_try_hot_reload()` now accepts `reason` param and always pushes EPISODIC memory (portable=False, source="self_edit") before attempting hot-reload. Both callsites (edit_source_file + patch_source_file) pass reason through. D070 implemented.
+- **filesystem.py**: `_resource_load_dict()` now includes `night_mode` (1 if 22:00-07:00, else 0) — enables threshold habits gated on time of day.
+- **G-HB1 ~~CLOSED~~**: PROC_RESOURCE_AWARENESS trigger had "memory" — matched cognitive questions ("what do you know about memory and emotions") instead of resource-load questions. Fix: removed "memory" from trigger in live DB directly (`UPDATE memories SET metadata=... WHERE id='PROC_RESOURCE_AWARENESS'`). Seed script `seed_resource_gate_habits.py` still has old trigger — fix on next reseed.
+- **G-HB2 (new, open)**: "log a ticket that you're still having trouble sshing to yourself" → PROC_GREETING fired. PROC_GREETING trigger is clean (hello|hi|hey|...). Unknown cause — possibly a self-seeded habit with broad triggers. Needs: query live DB for habits matching "log" or "ticket".
+- **G-CK1 ~~CLOSED~~**: cloud_ok master switch fully implemented. `cloud_mode.py`: `is_cloud_ok_override()` reads `~/.TheIgors/cloud_ok_override.json` (TTL-based); `set_cloud_ok_override()` / `clear_cloud_ok_override()`. `inference_gateway.py`: `cloud_ok_override` field in `InferenceContext`; `_cloud_ok()` + `_cloud_preferred()` gate on it for background calls. `book_learner.py`: `_should_use_local()` reads override per-chunk. `drain_learn_queue.py`: `_is_cloud_ok_override()` belt-and-suspenders at launch. `learner.py`: `cloud_ok` in queue items; "now" writes override, "tonight" clears it. Habits seeded: PROC_SET_CLOUD_NOW + PROC_NIGHT_READ. D071.
+- **G-RL3 partial**: `cloud_ok` field in queue items + drain runner updated + override set/clear wired. Still open: `reading_list` status updates (in_progress/completed) and full PROC_NIGHT_READ wiring to reading_list table.
+
 ### Session 2026-03-14i additions
 
 - **G74 partial fix**: `learner.py` — `_discover_urls_direct()` added: constructs arXiv/Wikipedia/Gutenberg URLs directly without needing AI response (always delivers 3 URLs per topic). `_DISCOVERY_PROMPT` updated to force bare-URL-per-line output. `_parse_urls()` now also extracts markdown `[text](url)` links + deduplicates. Wired into `learn_about()`: direct channel runs first, then AI browser channel.
