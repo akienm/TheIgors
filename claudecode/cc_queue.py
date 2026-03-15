@@ -6,19 +6,24 @@ Queue file: ~/.TheIgors/cc_channel/queue.json
 Log file:   ~/.TheIgors/cc_channel/log.jsonl
 
 Usage:
-    cc_queue.py list              — show all tasks (pending first)
-    cc_queue.py add <json-file>   — add task from JSON file
-    cc_queue.py claim <id>        — mark task in_progress
-    cc_queue.py done <id> <msg>   — mark task completed with result
-    cc_queue.py block <id> <msg>  — mark task blocked with reason
-    cc_queue.py show <id>         — show full task detail
-    cc_queue.py log <msg>         — append a free-form log entry
+    cc_queue.py list                          — show all tasks (pending first)
+    cc_queue.py add <json-file>               — add task from JSON file
+    cc_queue.py claim <id>                    — mark task in_progress
+    cc_queue.py done <id> <msg>               — mark task completed with result
+    cc_queue.py block <id> <msg>              — mark task blocked with reason
+    cc_queue.py show <id>                     — show full task detail
+    cc_queue.py log <msg>                     — append a free-form log entry
+    cc_queue.py flush_decision <id> <summary> — flush decision to Igor memory
+    cc_queue.py flush_session <session> <summary> — flush session blob to Igor memory
 """
 
 import json
 import os
 import sys
+import urllib.request
 from datetime import datetime, timezone
+
+IGOR_NOTEBOOK_URL = "http://localhost:8080/api/cc_notebook"
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
@@ -181,6 +186,83 @@ def cmd_add(args):
     print(f"Added {added} task(s).")
 
 
+def _igor_post(payload: dict) -> bool:
+    """POST JSON to Igor's cc_notebook endpoint. Returns True on success."""
+    data = json.dumps(payload).encode()
+    req = urllib.request.Request(
+        IGOR_NOTEBOOK_URL,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5):
+            return True
+    except Exception as e:
+        _log(
+            {
+                "action": "flush_failed",
+                "error": str(e),
+                "payload_key": payload.get("key"),
+            }
+        )
+        print(f"  [Igor flush failed — Igor not running? {e}]")
+        return False
+
+
+def cmd_flush_decision(args):
+    """Flush a design decision to Igor's cc_notebook memory."""
+    if len(args) < 2:
+        print("Usage: flush_decision <id> <summary>")
+        sys.exit(1)
+    decision_id = args[0]
+    summary = " ".join(args[1:])
+    session = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    payload = {
+        "employer_id": "claude",
+        "key": decision_id,
+        "content": json.dumps(
+            {
+                "type": "decision",
+                "id": decision_id,
+                "summary": summary,
+                "session": session,
+            }
+        ),
+    }
+    if _igor_post(payload):
+        _log({"action": "flush_decision", "id": decision_id, "summary": summary})
+        print(f"Flushed {decision_id} to Igor: {summary[:80]}")
+    else:
+        print(f"  (decision logged locally only)")
+
+
+def cmd_flush_session(args):
+    """Flush a session summary blob to Igor's cc_notebook memory."""
+    if len(args) < 2:
+        print("Usage: flush_session <session_id> <summary>")
+        sys.exit(1)
+    session_id = args[0]
+    summary = " ".join(args[1:])
+    payload = {
+        "employer_id": "claude",
+        "key": f"session_{session_id}",
+        "content": json.dumps(
+            {
+                "type": "session_summary",
+                "session": session_id,
+                "summary": summary,
+                "ts": _now(),
+            }
+        ),
+    }
+    if _igor_post(payload):
+        _log({"action": "flush_session", "session": session_id})
+        print(f"Flushed session {session_id} to Igor")
+    else:
+        print(f"  (session logged locally only)")
+
+
 COMMANDS = {
     "list": cmd_list,
     "show": cmd_show,
@@ -189,6 +271,8 @@ COMMANDS = {
     "block": cmd_block,
     "log": cmd_log,
     "add": cmd_add,
+    "flush_decision": cmd_flush_decision,
+    "flush_session": cmd_flush_session,
 }
 
 if __name__ == "__main__":

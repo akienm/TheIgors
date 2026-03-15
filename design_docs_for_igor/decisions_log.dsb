@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15d|latest=D082
+DOC|decisions_log|v1|updated=2026-03-15e|latest=D083
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -144,3 +144,7 @@ D079|decision-capture-habit|implemented|PROC_DECISION_CAPTURE + PROC_DECISION_CA
 D080|watchlist-as-habit-subtree|defined|habit_type="watch" — fires salience boost instead of action; named inspectable list (Igor can answer 'what are you watching for?'); watch_expires in metadata (None=permanent); inward+outward facing entries; same BG scoring as all habits; #240
 D081|executive-function-is-inspection-topology|defined|executive function emerges from inter-layer inspection topology, not a module; PFC analog = dense bidirectional inspection edges; each inspection edge is a graph node; build more inspection edges, not a controller; #242
 D082|intrinsic-motivation-curiosity-state|defined|curiosity = idle state (low arousal + positive valence + open attractor) → habit fires to explore; NE internal_state → milieu reward signal on resolution; temporal credit assignment ('thanks past self') deferred; meaning-to-me level has highest milieu impact; #246
+
+// ── Session 2026-03-15e additions ─────────────────────────────────────────────
+
+D083|scribe-worker-three-session-pattern|implemented|three persistent CC sessions: Designer (architecture+Akien) + Implementation Worker (code) + Scribe Worker (memory coherence: DSB edits, Igor cc_notebook flushes, GitHub comments, commits); mirrors Igor's parallel focal points; flush_decision/flush_session in cc_queue.py; SCRIBE_CONTEXT.md boot doc; savestate skill reordered critical-first + Step 0.5 Igor flush; #249

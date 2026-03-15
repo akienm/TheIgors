@@ -38,13 +38,21 @@ Use `python3 ~/TheIgors/claudecode/cc_queue.py block <id> "<reason>"` if blocked
 - GitHub repo: `akienm/TheIgors`
 - CC→Igor bridge: `POST http://localhost:8080/api/cc_send {"content":"..."}`
 
-## Three-Session Pattern (#234)
+## Three-Session Pattern (D083)
 
-There are two Worker roles:
+Three concurrent CC sessions, each with a distinct role — mirrors Igor's own parallel focal points:
 
-**Long Worker** (you, by default): takes multi-step implementation tasks from the queue. Stays alive across tasks. Holds implementation context.
+| Session | Role | Touches |
+|---|---|---|
+| **Designer** | Architecture + Akien conversation | No files directly |
+| **Implementation Worker** (you) | Code execution | Source files, igor restart |
+| **Scribe Worker** | Memory coherence | design_docs, claudecode, memory files, Igor cc_notebook |
 
-**Short Worker**: launched by Designer for a single quick query — "check the logs", "what's the NE cursor status", "read this file and summarize". Reads WORKER_CONTEXT.md, does the one task, posts result to queue log, exits. Keeps Designer context clean from implementation noise.
+**Long Worker** (you, by default): takes multi-step implementation tasks from the queue. Stays alive across tasks. Holds implementation context. Claims tasks with `role: implementation` or `role: any`.
+
+**Short Worker**: launched by Designer for a single quick query — "check the logs", "what's the NE cursor status", "read this file and summarize". Reads WORKER_CONTEXT.md, does the one task, posts result to queue log, exits.
+
+**Scribe Worker**: reads `claudecode/SCRIBE_CONTEXT.md`. Claims tasks with `role: scribe`. Handles all savestate file work and Igor memory flushes.
 
 If Designer sends a task marked `size=query`, treat it as a Short Worker task: do it, post result, stop.
 
