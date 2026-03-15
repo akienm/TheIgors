@@ -64,20 +64,6 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 ---
 
-### Periodic Hygiene (every few sprints)
-
-Three reviews that don't belong to any single ticket but keep the codebase healthy over time:
-
-**1. English docs review.** The human-readable design docs drift behind the code. Walk through `design_docs/` and check whether the architecture it describes still matches what's actually there. Update anything stale. This is also when to catch gaps between what the DSB files say and what the code does.
-
-**2. Uncaught exception audit.** Ask Claude to scan for bare `except:` blocks, swallowed exceptions, and error paths that log nothing. The codebase grows fast; silent failures accumulate. A pass every few sprints catches the ones that would otherwise only surface as mysterious behavior at 2am.
-
-**3. Concern consolidation review.** Look for scattered code that's really one thing — and hasn't been named yet. The `db_proxy` gathered all DB timing, reconnect, and metrics concerns into one place. The `inference_gateway` gathered all routing, fallback, and cost concerns. The brain-region framing does the same thing conceptually: "all these lines are actually the thalamus." This is the inverse of separation of concerns — it's *recognizing* that concerns belong together and giving them a home, a name, and a clean interface.
-
-The signal: when you find yourself writing the same kind of logic in three places, or explaining a subsystem by listing scattered files instead of pointing at one module, consolidation is probably overdue.
-
----
-
 ### Each Work Step
 
 1. Claude reads tickets
@@ -174,10 +160,18 @@ The session narrative (sessions.md) stays with Designer because it requires synt
 
 ---
 
-### Periodic Automated Audit (added 2026-03-15)
+### Periodic Streamlining (every few sprints)
 
-Rather than discovering codebase health issues ad-hoc, run a scheduled Worker audit that checks everything in one batch pass. One context load covers all checks — batch costs 1×context, sequential would cost N×context.
+Reviews that don't belong to any single ticket but keep the codebase healthy over time. Run as a scheduled Worker audit — one context load covers all checks, batch costs 1×context rather than N×context.
 
-Audit runs daily at 2am while change rate is high; reduce to weekly when `git log --oneline --since='7 days ago' | wc -l` drops below 5.
+Runs daily at 2am while change rate is high; reduce to weekly when `git log --oneline --since='7 days ago' | wc -l` drops below 5.
 
-Checklist (see `claudecode/review_audit.md`): dead code, hardcoded values, circular deps, unexercised TTL/inertia, missing rollback paths, prompt token drift, async timeouts, inhibitory pattern gaps, architecture drift.
+**1. English docs review.** The human-readable design docs drift behind the code. Walk through `design_docs/` and check whether the architecture it describes still matches what's actually there. Update anything stale. Catch gaps between what the DSB files say and what the code does.
+
+**2. Uncaught exception audit.** Scan for bare `except:` blocks, swallowed exceptions, and error paths that log nothing. The codebase grows fast; silent failures accumulate. A pass every few sprints catches the ones that would otherwise only surface as mysterious behavior at 2am.
+
+**3. Concern consolidation review.** Look for scattered code that's really one thing — and hasn't been named yet. The `db_proxy` gathered all DB timing, reconnect, and metrics concerns into one place. The `inference_gateway` gathered all routing, fallback, and cost concerns. This is the inverse of separation of concerns — it's *recognizing* that concerns belong together and giving them a home, a name, and a clean interface.
+
+The signal: when you find yourself writing the same kind of logic in three places, or explaining a subsystem by listing scattered files instead of pointing at one module, consolidation is probably overdue.
+
+**4. Automated checklist** (see `claudecode/review_audit.md`): dead code, hardcoded values, circular deps, unexercised TTL/inertia, missing rollback paths, prompt token drift, async timeouts, inhibitory pattern gaps, architecture drift.
