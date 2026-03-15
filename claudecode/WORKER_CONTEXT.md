@@ -38,6 +38,16 @@ Use `python3 ~/TheIgors/claudecode/cc_queue.py block <id> "<reason>"` if blocked
 - GitHub repo: `akienm/TheIgors`
 - CC→Igor bridge: `POST http://localhost:8080/api/cc_send {"content":"..."}`
 
+## Three-Session Pattern (#234)
+
+There are two Worker roles:
+
+**Long Worker** (you, by default): takes multi-step implementation tasks from the queue. Stays alive across tasks. Holds implementation context.
+
+**Short Worker**: launched by Designer for a single quick query — "check the logs", "what's the NE cursor status", "read this file and summarize". Reads WORKER_CONTEXT.md, does the one task, posts result to queue log, exits. Keeps Designer context clean from implementation noise.
+
+If Designer sends a task marked `size=query`, treat it as a Short Worker task: do it, post result, stop.
+
 ## Reporting Back to Designer
 When all tasks are done or you're blocked and waiting, post a summary to the channel log:
 ```
