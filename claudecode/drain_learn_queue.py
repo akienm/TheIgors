@@ -31,6 +31,9 @@ LOG_FILE = LOG_DIR / "drain_learn_queue.log"
 PID_FILE = Path.home() / ".TheIgors" / "drain_learn_queue.pid"
 
 DEFAULT_LAUNCH_DELAY = 60  # seconds between launches
+MAX_CONCURRENT = (
+    2  # G-OVN-4: cap concurrent book_learner processes to avoid Ollama overload
+)
 _CLOUD_OK_OVERRIDE_FILE = Path.home() / ".TheIgors" / "cloud_ok_override.json"
 
 
@@ -103,6 +106,19 @@ def _set_reading_list_in_progress(calibre_id: int) -> None:
         _log(f"reading_list update failed: {e}")
 
 
+def _count_running_learners() -> int:
+    """Count currently running book_learner.py processes (G-OVN-4)."""
+    try:
+        result = subprocess.run(
+            ["pgrep", "-fc", "book_learner.py"],
+            capture_output=True,
+            text=True,
+        )
+        return int(result.stdout.strip()) if result.stdout.strip() else 0
+    except Exception:
+        return 0
+
+
 def _launch(entry: dict) -> bool:
     python = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
     url = entry.get("url", "")
@@ -167,7 +183,17 @@ def main() -> None:
 
             entry = pending[0]
             title = entry.get("title", entry.get("url", "?"))[:60]
-            _log(f"Launching: {title}")
+
+            # G-OVN-4: wait if already at concurrency cap
+            running = _count_running_learners()
+            if running >= MAX_CONCURRENT:
+                _log(
+                    f"Concurrency cap ({MAX_CONCURRENT}) reached ({running} running) — sleeping {args.delay}s"
+                )
+                time.sleep(args.delay)
+                continue
+
+            _log(f"Launching: {title} ({running} already running)")
 
             ok = _launch(entry)
             entry["done"] = True  # mark done regardless — skip permanent failures
