@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15e|latest=D083
+DOC|decisions_log|v1|updated=2026-03-15e|latest=D084
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -148,3 +148,4 @@ D082|intrinsic-motivation-curiosity-state|defined|curiosity = idle state (low ar
 // ── Session 2026-03-15e additions ─────────────────────────────────────────────
 
 D083|scribe-worker-three-session-pattern|implemented|three persistent CC sessions: Designer (architecture+Akien) + Implementation Worker (code) + Scribe Worker (memory coherence: DSB edits, Igor cc_notebook flushes, GitHub comments, commits); mirrors Igor's parallel focal points; flush_decision/flush_session in cc_queue.py; SCRIBE_CONTEXT.md boot doc; savestate skill reordered critical-first + Step 0.5 Igor flush; #249
+D084|issue-filing-as-mini-savestate|implemented|each GitHub issue filing = mini savestate for that decision; decision not made until in Igor's memory; DSB commit = durable backup only; flush_decision wires this automatically

@@ -122,32 +122,55 @@ Code is scaffolding for what the agent learns. The scaffolding comes down as the
 
 ---
 
-### The Two-Session Pattern (added 2026-03-15)
+### The Three-Session Pattern (updated 2026-03-15e)
 
-The natural evolution of working in Claude Code is two persistent sessions with distinct roles:
+Three persistent Claude Code sessions, each a specialist — mirroring Igor's own parallel focal points:
 
-**Designer Claude** — this session. Architecture, conversation, relationship with Akien. Never touches files directly. Holds the mental model of the whole system.
+| Session | Role | Boot doc |
+|---|---|---|
+| **Designer** | Architecture + Akien conversation. Never touches files directly. Holds the mental model. | *(this session)* |
+| **Implementation Worker** | Code execution: loads files, runs code, creates tickets. No design authority. | `claudecode/WORKER_CONTEXT.md` |
+| **Scribe Worker** | Memory coherence: DSB updates, Igor memory flushes, GitHub comments, commits. | `claudecode/SCRIBE_CONTEXT.md` |
 
-**Worker Claude** — a separate CC session. Execution only: loads files, runs code, creates tickets, writes results. Has no design authority. When blocked on architecture, posts a note and waits.
-
-The channel between them: `~/.TheIgors/cc_channel/queue.json`, managed via `python3 ~/TheIgors/claudecode/cc_queue.py`. Worker reads its boot document from `claudecode/WORKER_CONTEXT.md` on startup.
+The channel between all three: `~/.TheIgors/cc_channel/queue.json`, managed via `python3 ~/TheIgors/claudecode/cc_queue.py`. Tasks carry a `role` field (`implementation`, `scribe`, `any`) so each Worker claims only what's theirs.
 
 ```bash
-# Start Worker in a new terminal
-DISPLAY=:0 konsole -e bash -c "igor" &
-# First message to Worker:
+# Start a Worker in a new terminal
+DISPLAY=:0 konsole -e bash -c "claude" &
+# First message:
 # "Read ~/TheIgors/claudecode/WORKER_CONTEXT.md then run: python3 ~/TheIgors/claudecode/cc_queue.py list"
+# Or for Scribe:
+# "Read ~/TheIgors/claudecode/SCRIBE_CONTEXT.md then run: python3 ~/TheIgors/claudecode/cc_queue.py list"
 ```
 
-Check Worker's progress anytime:
+Check progress anytime:
 ```bash
 python3 ~/TheIgors/claudecode/cc_queue.py list
 tail -f ~/.TheIgors/cc_channel/log.jsonl
 ```
 
-**Why this matters:** Designer doesn't get polluted by implementation details. Worker doesn't lose context mid-task from conversation drift. Igor observes both and surfaces status on query. Claude Chat was one generalist doing all three badly. This is three specialists doing one thing each well.
+**Why this matters:** Designer doesn't get polluted by implementation details or file I/O. Workers don't lose context from conversation drift. Igor observes all three and surfaces status on query. One generalist doing all three badly → three specialists doing one thing each well.
 
-The token cost argument for Claude Chat still applies for throwaway questions. But for anything that matters, this is strictly better.
+**Short Worker** pattern: for a single quick query ("check the logs", "what's the NE cursor status"), launch a Short Worker — reads WORKER_CONTEXT.md, does the one task, posts result, exits. Keeps Designer context clean without burning a persistent session.
+
+---
+
+### Savestate Model (updated 2026-03-15e)
+
+Each GitHub issue filing is a mini savestate for that decision — the decision isn't made until it's in Igor's memory. The DSB commit is the durable backup, not the primary record.
+
+Full savestate splits cleanly by what requires judgment:
+
+**Designer does** (fast, synthesis required):
+1. Flush all decisions to Igor: `cc_queue.py flush_decision Dxxx "summary"`
+2. Flush session summary: `cc_queue.py flush_session YYYY-MM-DDx "theme; next priorities"`
+3. Update `decisions_log.dsb`
+4. Write `sessions.md` entry — the session arc, next priorities, in-flight hypothesis
+
+**Scribe does** (mechanical, queue and forget):
+- gap_analysis updates, subsystem DSBs, MEMORY.md, GitHub comment, commit
+
+The session narrative (sessions.md) stays with Designer because it requires synthesis — it's not a transcription of what happened, it's the curated version a future Claude session can orient from in 30 seconds.
 
 ---
 
