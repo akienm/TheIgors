@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14n
+DOC|gap_analysis|v1|updated=2026-03-15a
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -153,6 +153,29 @@ G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
   result=human "do it now" → 4h cloud window → background processors adapt without restart; night mode auto-gates to local
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
+
+G-OVN-1|wrong-habit-intent-mismatch|~3h|ticket=#222
+  what=10/13 regression phrases hit wrong habits; PROC_SWAP_THRESHOLD fires for memory questions; PROC_CALENDAR_CREATE for "remember yesterday"; PROC_CLUSTER_CHECK for "fields/understand"
+  why_open=threshold/tool-dispatch habits not gated by thalamus intent; trigger vocab overlaps question vocab
+  fix=basal_ganglia.py: skip threshold+tool-dispatch habits when intent=question|introspective_question
+  files=cognition/basal_ganglia.py(MEDIUM)+live_db_trigger_updates
+
+G-OVN-2|ebook-twm-stew-kwarg|~15m|ticket=#223
+  what=ebook_reader.read_chunk calls twm_push(content=...) but signature is content_csb; 799 errors; reading→TWM dead
+  why_open=kwarg name mismatch; one-line fix
+  fix=tools/ebook_reader.py:762 change content= to content_csb=
+
+G-OVN-3|drain-cron-relative-path|~5m|ticket=#224
+  what=crontab uses relative path claudecode/drain_learn_queue.py→resolves to /home/akien/claudecode/ (wrong); silent fail every 30min
+  fix=crontab: use absolute path /home/akien/TheIgors/claudecode/drain_learn_queue.py
+
+G-OVN-4|book-learner-local-404|~1h|ticket=#225
+  what=book_learner --local + 8 concurrent processes → Ollama 404 on every chunk; 400+ chunks, 0 nodes; cloud succeeds
+  fix=drain_learn_queue: remove --local flag; cap concurrency to 2; add cloud fallback in _extract_nodes()
+
+G-OVN-5|learner-cc-prefix-topic|~30m|ticket=#226
+  what=learn_about called with CC bridge thread-context prefix as topic; 6+ spurious Gemini navigations overnight
+  fix=tools/learner.py: add CC prefix patterns to _extract_topic() strip list; return None if <3 words remain
 
 G-QP2|db-growth-slow-queries|~2h|ticket=#221
   what=DB grown to 8132 memories; NE activation scan p50=628ms p99=1100ms; EPISODIC fetch p50=175ms; id IN p50=131ms

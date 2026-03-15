@@ -880,6 +880,17 @@ New issues:
 - **G-HB2 ~~CLOSED~~**: Root cause confirmed — all logged misfires are from before D066 (committed 15:33 2026-03-14). Pre-D066 pipe-trigger matching used plain substring (`"hi" in text`), matching `"hi"` inside `"relationship"` and similar. D066's `\b` word-boundary regex already fixed this. No new code needed.
 - **G-RL3 ~~CLOSED~~**: `drain_learn_queue.py` — `_set_reading_list_in_progress(calibre_id)` added; called after successful Popen launch for calibre entries; sets `status='in_progress'`, `started_at=now` where `status='queued'`. `book_learner.py` — at end of full run (`position >= total_sentences` and no `--limit`), sets `status='completed'`, `completed_at=now`.
 
+### Session 2026-03-15a additions (overnight analysis + workstep plan)
+
+- **G-OVN-1 (open)**: 10/13 regression phrases hit wrong habits. PROC_SWAP_THRESHOLD fires for "most vivid memory"/"how old is your oldest memory" (trigger contains "memory"). PROC_CALENDAR_CREATE fires for "what do you remember from yesterday". PROC_CLUSTER_SSH_CHECK fires for any question with "fields"/"understand". Fix: intent gate in basal_ganglia — skip threshold/tool-dispatch habits when intent=question/introspective_question. Issue #222.
+- **G-OVN-2 (open)**: `ebook_reader.read_chunk` calls `cortex.twm_push(content=...)` but signature wants `content_csb=`. 799 errors logged. Reading→TWM pipeline completely dead. One-line fix. Issue #223.
+- **G-OVN-3 (open)**: drain cron uses relative path `claudecode/drain_learn_queue.py` → resolves to `/home/akien/claudecode/` (not in repo). Silent failure every 30min since setup. Fix: absolute path in crontab. Issue #224.
+- **G-OVN-4 (open)**: book_learner `--local` flag + 8 concurrent processes → Ollama 404 on every chunk. 400+ chunks processed, 0 nodes deposited. Only cloud (gpt-4o-mini) succeeded (154 nodes from Wikipedia: language). Fix: remove `--local`, cap concurrency, add cloud fallback. Issue #225.
+- **G-OVN-5 (open)**: `learn_about` called 6+ times with raw CC bridge thread-context prefix as topic. `_extract_topic()` not stripping CC format. Fix: add CC prefix patterns to strip list in learner.py. Issue #226.
+- **Memory**: 8,061 → 8,460 (+399 overnight). FACTUAL +222, EPISODIC +112 (thin NE traces). 154 nodes from Wikipedia: language are quality content.
+- **phrase_regression.py**: created `claudecode/phrase_regression.py` — sends test phrases via CC bridge at configurable interval, random order, N passes. Log: `~/.TheIgors/logs/phrase_regression.log`. First run overnight with 13 phrases, 2 passes, 5min delay.
+- **Workstep plan for 2026-03-15**: fix G-OVN-2 (1 line) → G-OVN-3 (cron) → G-OVN-4 (drain) → G-OVN-1 (habit intent gate, coherence breakthrough) → G-HB3 (#220) → G-QP2 (#221 LIMIT).
+
 ### Session 2026-03-14m additions
 
 - **G-HB3 (new, open)**: Introspective inputs ("what are you inside", "tell me about the igors") route to `PROC_RESP_WHO_AM_I` habit, which returns a canned string. D072 vigilance gate never fires — habits bypass `_build_think_context()` entirely. Fix direction: convert `PROC_RESP_WHO_AM_I` from response habit to context-injection habit (inject LTM query + milieu state as LLM context, let LLM answer). Issue #220.
