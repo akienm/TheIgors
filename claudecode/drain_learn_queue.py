@@ -31,9 +31,33 @@ LOG_FILE = LOG_DIR / "drain_learn_queue.log"
 PID_FILE = Path.home() / ".TheIgors" / "drain_learn_queue.pid"
 
 DEFAULT_LAUNCH_DELAY = 60  # seconds between launches
-MAX_CONCURRENT = (
-    2  # G-OVN-4: cap concurrent book_learner processes to avoid Ollama overload
-)
+
+# G-OVN-4 / G-QP3: adaptive concurrency — scales with observed system load
+# cpu_pct < 40 and mem_gb > 4  → up to 4 concurrent (idle overnight machine)
+# cpu_pct < 70 and mem_gb > 2  → up to 2 concurrent (normal load)
+# otherwise                    → 1 (busy / low mem)
+_CONCURRENCY_TABLE = [
+    (40, 4.0, 4),
+    (70, 2.0, 2),
+    (100, 0.0, 1),
+]
+
+
+def _adaptive_max_concurrent() -> int:
+    """Return concurrency cap based on current CPU load and available memory."""
+    try:
+        import psutil
+
+        cpu = psutil.cpu_percent(interval=1)
+        mem_gb = psutil.virtual_memory().available / (1024**3)
+        for cpu_thresh, mem_thresh, cap in _CONCURRENCY_TABLE:
+            if cpu < cpu_thresh and mem_gb > mem_thresh:
+                return cap
+        return 1
+    except Exception:
+        return 2  # safe fallback if psutil unavailable
+
+
 _CLOUD_OK_OVERRIDE_FILE = Path.home() / ".TheIgors" / "cloud_ok_override.json"
 
 
@@ -184,16 +208,17 @@ def main() -> None:
             entry = pending[0]
             title = entry.get("title", entry.get("url", "?"))[:60]
 
-            # G-OVN-4: wait if already at concurrency cap
+            # G-OVN-4 / G-QP3: adaptive concurrency cap based on system load
             running = _count_running_learners()
-            if running >= MAX_CONCURRENT:
+            cap = _adaptive_max_concurrent()
+            if running >= cap:
                 _log(
-                    f"Concurrency cap ({MAX_CONCURRENT}) reached ({running} running) — sleeping {args.delay}s"
+                    f"Concurrency cap ({cap}) reached ({running} running, load-adaptive) — sleeping {args.delay}s"
                 )
                 time.sleep(args.delay)
                 continue
 
-            _log(f"Launching: {title} ({running} already running)")
+            _log(f"Launching: {title} ({running} running, cap={cap})")
 
             ok = _launch(entry)
             entry["done"] = True  # mark done regardless — skip permanent failures

@@ -119,3 +119,42 @@ Testing reasoning is harder and an area we're just stepping in to as of this wri
 AI-assisted development moves fast enough that testability, observability, and hot-reloadability have to be designed in from day one. The velocity is the problem, not just the opportunity.
 
 Code is scaffolding for what the agent learns. The scaffolding comes down as the graph densifies.
+
+---
+
+### The Two-Session Pattern (added 2026-03-15)
+
+The natural evolution of working in Claude Code is two persistent sessions with distinct roles:
+
+**Designer Claude** — this session. Architecture, conversation, relationship with Akien. Never touches files directly. Holds the mental model of the whole system.
+
+**Worker Claude** — a separate CC session. Execution only: loads files, runs code, creates tickets, writes results. Has no design authority. When blocked on architecture, posts a note and waits.
+
+The channel between them: `~/.TheIgors/cc_channel/queue.json`, managed via `python3 ~/TheIgors/claudecode/cc_queue.py`. Worker reads its boot document from `claudecode/WORKER_CONTEXT.md` on startup.
+
+```bash
+# Start Worker in a new terminal
+DISPLAY=:0 konsole -e bash -c "claude; exec bash" &
+# First message to Worker:
+# "Read ~/TheIgors/claudecode/WORKER_CONTEXT.md then run: python3 ~/TheIgors/claudecode/cc_queue.py list"
+```
+
+Check Worker's progress anytime:
+```bash
+python3 ~/TheIgors/claudecode/cc_queue.py list
+tail -f ~/.TheIgors/cc_channel/log.jsonl
+```
+
+**Why this matters:** Designer doesn't get polluted by implementation details. Worker doesn't lose context mid-task from conversation drift. Igor observes both and surfaces status on query. Claude Chat was one generalist doing all three badly. This is three specialists doing one thing each well.
+
+The token cost argument for Claude Chat still applies for throwaway questions. But for anything that matters, this is strictly better.
+
+---
+
+### Periodic Automated Audit (added 2026-03-15)
+
+Rather than discovering codebase health issues ad-hoc, run a scheduled Worker audit that checks everything in one batch pass. One context load covers all checks — batch costs 1×context, sequential would cost N×context.
+
+Audit runs daily at 2am while change rate is high; reduce to weekly when `git log --oneline --since='7 days ago' | wc -l` drops below 5.
+
+Checklist (see `claudecode/review_audit.md`): dead code, hardcoded values, circular deps, unexercised TTL/inertia, missing rollback paths, prompt token drift, async timeouts, inhibitory pattern gaps, architecture drift.
