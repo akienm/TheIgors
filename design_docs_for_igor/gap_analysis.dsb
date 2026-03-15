@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-14l
+DOC|gap_analysis|v1|updated=2026-03-14m
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -153,6 +153,13 @@ G-CK1|cloud-ok-master-switch|~~closed=2026-03-14j~~
   result=human "do it now" → 4h cloud window → background processors adapt without restart; night mode auto-gates to local
 
 // ── OPEN GAPS (priority order) ────────────────────────────────────────────────
+
+G-HB3|introspective-habit-bypasses-d072|~2h|ticket=#220
+  what=PROC_RESP_WHO_AM_I (+ similar introspective habits) return canned string; bypass _build_think_context()
+  why_open=D072 vigilance gate only fires on LLM turns; habit response never reaches it
+  fix=convert to context-injection habit: inject LTM+milieu as LLM context, let LLM answer
+  trigger=input: "what are you inside", "tell me about the igors", introspective register
+  test=response_quality_cases.md TC-3 TC-6
 
 G-MP1|multi-pass-response-generation|~~closed=2026-03-14l~~
   what=Igor's output is single-pass LLM; feels "too automatic, too low level" (Akien flag)
