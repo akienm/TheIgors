@@ -107,6 +107,35 @@ Testing reasoning is harder and an area we're just stepping in to as of this wri
 
 ---
 
+### Periodic Streamlining (every few sprints)
+Reviews that don't belong to any single ticket but keep the codebase healthy over time. Run as a scheduled Worker audit — one context load covers all checks, batch costs 1×context rather than N×context.
+
+Runs daily at 2am while change rate is high; reduce to weekly when git log --oneline --since='7 days ago' | wc -l drops below 5.
+
+#### Includes:
+
+English docs review. The human-readable design docs drift behind the code. Walk through design_docs/ and check whether the architecture it describes still matches what's actually there. Update anything stale. Catch gaps between what the DSB files say and what the code does.
+
+Uncaught exception audit. Scan for bare except: blocks, swallowed exceptions, and error paths that log nothing. The codebase grows fast; silent failures accumulate. A pass every few sprints catches the ones that would otherwise only surface as mysterious behavior at 2am.
+
+Concern consolidation review. Look for scattered code that's really one thing — and hasn't been named yet. The db_proxy gathered all DB timing, reconnect, and metrics concerns into one place. The inference_gateway gathered all routing, fallback, and cost concerns. This is the inverse of separation of concerns — it's recognizing that concerns belong together and giving them a home, a name, and a clean interface. The signal: when you find yourself writing the same kind of logic in three places, or explaining a subsystem by listing scattered files instead of pointing at one module, consolidation is probably overdue.
+
+The items below are in the Automated checklist (see claudecode/review_audit.md):
+
+Architectural - Scattered resource managers (DB, HTTP, config, loggers instantiated ad hoc), Parallel conditional trees (same if/elif logic duplicated across multiple locations), Implicit god objects (classes that grew beyond a single clear responsibility), Missing abstraction layers (raw SQL/HTTP in business logic, no service/repository layer), Hardcoded values (magic numbers, model names, ports, thresholds in logic)
+
+Error Handling - Bare except or except Exception: pass (swallowed errors), Unlogged exceptions (caught but only printed, not sent to logging system), Silent None returns after catch (caller has no idea something failed), Missing timeouts and fallback paths on network/API calls
+
+Dead & Zombie Code - Unused imports (especially post-refactor), Unreachable branches (conditions that can never be true), Commented-out code blocks (Claude's "safety net" habit), Functions defined but never called (old versions left behind), Stale TODO/FIXME comments (promises Claude made to himself)
+
+Dependency & Coupling - Circular imports, Tight coupling via direct instantiation inside constructors, Hidden globals (functions silently reading module-level state)
+
+Igor Cognitive Code Smells - Hardcoded weights/thresholds in cognition logic (salience, TTL, urgency — should be in DB or config), Bypassed TWM (direct writes to long-term memory skipping the, working memory layer), Emotional milieu mutation outside the diffusion function, Thread-local state leaking into shared state, Behavioral responses hardcoded instead of being weighted graph traversals (violates "code is the player, data is the character"), Boot sequence assumptions (code that assumes cold-start rather than being warm-context safe), Missing provenance metadata on new habit nodes
+
+Performance & Token Efficiency - Redundant LLM calls (same question asked without checking TWM first), Missing memoization on deterministic lookups, Oversized context assembly (full blob built when only a slice is needed)
+
+---
+
 ### The Bigger Picture
 
 AI-assisted development moves fast enough that testability, observability, and hot-reloadability have to be designed in from day one. The velocity is the problem, not just the opportunity.
