@@ -1,2 +1,67 @@
 #!/bin/bash
-claude --dangerously-skip-permissions
+# superclaude — Claude Code launcher with Anthropic→OR failover (D088)
+# If Anthropic balance <= $10, routes through OpenRouter to avoid credit exhaustion.
+
+ENV_FILE="${HOME}/.TheIgors/igor_wild_0001/.env"
+BALANCE_FILE="${HOME}/.TheIgors/cc_channel/anthropic_balance.json"
+LOG_FILE="${HOME}/.TheIgors/logs/superclaude.log"
+BALANCE_THRESHOLD=10.00
+
+# Source .env to get keys
+if [[ -f "$ENV_FILE" ]]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "$ENV_FILE"
+    set +a
+fi
+
+REAL_ANTHROPIC_KEY="${ANTHROPIC_API_KEY:-}"
+OR_KEY="${OPENROUTER_API_KEY:-}"
+
+# Read balance file if it exists and is < 24h old
+USE_OR=false
+BALANCE_USD=""
+
+if [[ -f "$BALANCE_FILE" ]]; then
+    # Check age: mtime within last 86400 seconds
+    FILE_AGE=$(( $(date +%s) - $(date -r "$BALANCE_FILE" +%s) ))
+    if [[ "$FILE_AGE" -lt 86400 ]]; then
+        BALANCE_USD=$(python3 -c "
+import json, sys
+try:
+    d = json.load(open('$BALANCE_FILE'))
+    print(d.get('balance_usd', ''))
+except Exception:
+    print('')
+" 2>/dev/null)
+        if [[ -n "$BALANCE_USD" ]]; then
+            # Compare as float
+            LOW=$(python3 -c "print('yes' if float('$BALANCE_USD') <= $BALANCE_THRESHOLD else 'no')" 2>/dev/null)
+            if [[ "$LOW" == "yes" ]]; then
+                USE_OR=true
+            fi
+        fi
+    fi
+fi
+
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+if [[ "$USE_OR" == "true" ]]; then
+    DECISION="OR_FAILOVER"
+    LOG_MSG="$TIMESTAMP decision=$DECISION balance_usd=$BALANCE_USD — routing via OpenRouter"
+    export ANTHROPIC_API_KEY="$OR_KEY"
+    export ANTHROPIC_BASE_URL="https://openrouter.ai/api"
+else
+    DECISION="ANTHROPIC_DIRECT"
+    if [[ -z "$BALANCE_USD" ]]; then
+        LOG_MSG="$TIMESTAMP decision=$DECISION balance=unknown (file missing or stale) — using Anthropic direct"
+    else
+        LOG_MSG="$TIMESTAMP decision=$DECISION balance_usd=$BALANCE_USD — using Anthropic direct"
+    fi
+    export ANTHROPIC_API_KEY="$REAL_ANTHROPIC_KEY"
+    unset ANTHROPIC_BASE_URL
+fi
+
+echo "$LOG_MSG" >> "$LOG_FILE"
+
+exec claude --dangerously-skip-permissions "$@"
