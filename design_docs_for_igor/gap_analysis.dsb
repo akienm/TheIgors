@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-16f
+DOC|gap_analysis|v1|updated=2026-03-16g
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -390,5 +390,28 @@ G-DB1|db-proxy-universal-gateway|defined|ticket=#263
 
 // D094: POST /api/execute_habit — direct habit execution bypassing NLU/thalamus; CC_CHECK_PROCESS/RUN_BASH/RUN_PYTHON seeded; cc_session_YYYYMMDD.log forensic log
 // D095: lists table in cortex — list_set/get/remove/all; Registry:Tags(5); lists.projects(Project:TheIgors); runner.py: git_log/find_tickets/list_projects; CC_GIT_LOG/CC_FIND_TICKETS/CC_LIST_PROJECTS seeded
-// D096-D099: defined (not yet implemented) — .now files, EN↔CSB↔DSB conversion habits, identity graph, TWM global workspace
+// D096-D098: defined (not yet implemented) — .now files, EN↔CSB↔DSB conversion habits, identity graph
 // P1: tools/ops.py — store_decision/store_session_note/queue_task; CC_STORE_DECISION/SESSION/QUEUE_TASK/CREATE_TICKET seeded; CC now routes through Igor not bash
+
+// ── BUILT (2026-03-16g) ────────────────────────────────────────────────────────
+
+// D099 implemented: cortex.py — TWM_MAX_SLOTS=7, parent_obs_id migration, twm_get_slots(), twm_decay_slot(), twm_set_attractor() multi-slot aware; narrative_engine.py — comparison pass decays solo slots (factor=0.7)
+// D100 defined: live salience-as-co-activation — most co-activated node across active slots IS most salient; computed not stored; no new tables needed
+// D101 defined: milieu time series — ring of V/A/D rows; gradient detects runaway arousal loops; parent habit fires on slope threshold; canonical use case: conflicting attractor slots (insecurity vs autonomy-respect) looping upward
+
+// ── NEW GAPS (2026-03-16g) ─────────────────────────────────────────────────────
+
+G-SQ1|slow-query-analysis|open|ticket=T-slow-query-analysis
+  what=db_proxy now routes all DB traffic; db_queries.log has per-query timing; no tool to surface patterns
+  why_open=tooling not built yet; data is there
+  trigger=implement get_slow_query_report() in tools/metrics.py + PROC habit for on-request surfacing
+
+G-ML1|milieu-time-series|open|D101
+  what=milieu currently a static 3-vector JSON; needs ring buffer of timestamped V/A/D rows + recency-weighted sum + gradient computation
+  why_open=D101 defined; not yet implemented
+  trigger=implement after D100 (live salience); parent habit (arousal slope threshold) depends on gradient API
+
+G-SAL1|live-salience-co-activation|open|D100
+  what=salience currently a stored field on twm_observations; should be computed from co-activation density across active attractor slots
+  why_open=D100 defined; not yet implemented; D099 comparison pass is the first sketch
+  trigger=implement after D099 stabilizes; NE cycle walk: count node appearances across all slots; that count IS salience

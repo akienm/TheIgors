@@ -1,4 +1,16 @@
 
+## Session 2026-03-16g
+**Theme**: D099 implemented (TWM multi-slot attractor); D100+D101 defined via sphere model vision + milieu gradient insight
+**Decisions**: D099, D100, D101
+**Key changes**:
+- `cortex.py`: TWM_MAX_SLOTS=7 constant; parent_obs_id migration; twm_push() gains parent_obs_id param; twm_set_attractor() keeps top (MAX_SLOTS-1) on non-emergency path; twm_get_slots(); twm_decay_slot(obs_id, factor)
+- `narrative_engine.py`: D099 comparison pass — get slots, action_pointer set intersection, decay solo slots at 0.7; wrapped in try/except
+- Slow query analysis task queued (T-slow-query-analysis): db_proxy now routes all traffic; db_queries.log has the data; get_slow_query_report() tool + habit to surface patterns
+- D100 defined: salience computed live from attractor slot co-activation density; not stored; node appearing in most active slots IS most salient
+- D101 defined: milieu as time series (ring of V/A/D rows); gradient detects runaway loops; reactivation creates new row at NOW; parent habit fires on arousal slope threshold; canonical use case: insecurity vs autonomy-respect slot loop
+**Next session**: D100 live salience implementation; D101 milieu ring buffer; slow query analysis tool
+**In-flight**: NONE
+
 ## Session 2026-03-16b
 **Theme**: D094 implemented — direct habit execution endpoint working end-to-end; CC ops habits seeded
 **Decisions**: D094

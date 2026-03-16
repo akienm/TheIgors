@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-16f
+DOC|subsystem_memory|v1|updated=2026-03-16g
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -22,7 +22,7 @@ MEMORY_TYPES|ROOT,CP,ID,RM,EPISODIC,PROCEDURAL,INTERPRETIVE,EXPERIENTIAL,FACTUAL
 TABLES|
   memories|main graph|id,narrative,memory_type,parent_id,children_ids,valence,arousal,dominance,activation_count,inertia_override,portable,embedding,metadata
   ring_memory|FIFO-50|category,content,timestamp,turn_id,thread_id
-  twm_observations|push-only sandbox|source,content_csb,salience,urgency,ttl_seconds,expires_at,attractor_weight,instance_id (D099 planned: parent_obs_id for slot branching, multiple attractor slots <7)
+  twm_observations|push-only sandbox|source,content_csb,salience,urgency,ttl_seconds,expires_at,attractor_weight,instance_id,parent_obs_id (D099: slot branching; TWM_MAX_SLOTS=7)
   lists|D095: cross-type enumeration|list_name,item_key,item_value,ref_type,ref_id,instance_id,updated_at
   interpretive_edges|4-part directed|source_id,target_id,direction,condition,meaning_payload,action_pointer
   word_graph|(separate DB ~/.TheIgors/word_graph.db)|nodes+edges+bigrams
@@ -63,4 +63,9 @@ INDEXES|
   idx_type_timestamp ON memories(memory_type, timestamp DESC) — G-QP2 fix2: composite for type+recency queries
   idx_source ON memories(source) — G-QP2 fix2: source-filtered lookups; applied directly to live DB 2026-03-15
 
-DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084,D091
+  cortex.twm_get_slots()|D099: return all active attractor slots (attractor_weight>0.05) ordered by weight desc
+  cortex.twm_decay_slot(obs_id,factor)|D099: decay single slot weight; solo slots decayed at 0.7 by NE comparison pass
+  cortex.twm_set_attractor()|D099 updated: keeps top MAX_SLOTS-1 existing slots; evicts weakest on overflow; emergency path (urgency≥0.8 in twm_push) still zeros all
+  NE comparison pass|D099: after _filter_obs(), get slots, action_pointer set intersection, decay solo slots at 0.7; wrapped try/except; first sketch of D100 live salience
+
+DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084,D091,D099,D100,D101
