@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16b|latest=D094
+DOC|decisions_log|v1|updated=2026-03-16c|latest=D095
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -172,3 +172,6 @@ D093|remote-instance-architecture|defined|distributed reading farm: each Windows
 
 // ── Session 2026-03-16a additions ─────────────────────────────────────────────
 D094|cc-direct-habit-execution|implemented|POST /api/execute_habit live: habit_id + args dict, bypasses NLU/thalamus, multi-arg dispatch via explicit args; cc_session_YYYYMMDD.log (newest-first); server.py _igor_fn; main.py execute_habit(); GET /api/execute_habit/{id} discoverability; CC ops habits: CC_CHECK_PROCESS (pgrep -af), CC_RUN_BASH, CC_RUN_PYTHON; genesis PROC_RUN_BASH/PYTHON preserved; #268
+
+// ── Session 2026-03-16c additions ─────────────────────────────────────────────
+D095|lists-table|defined|first-class DB table for cross-type enumeration/indexing: list_name+item_key+item_value+ref_type+ref_id+instance_id; one table for all lists (tags, projects, capabilities, per-master); cortex gets list_set/list_get/list_remove/list_all; prerequisite for Registry:Tags, Project:TheIgors, and CC git log/ticket habits; projects stored as FACTUAL memories tagged "project", listed in lists.projects; Project:TheIgors becomes Template:SoftwareProject in a later step

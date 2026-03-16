@@ -1,10 +1,10 @@
-DOC|capabilities_index|v1|updated=2026-03-15
+DOC|capabilities_index|v1|updated=2026-03-16
 
 META|purpose=quick lookup index of all registered tools and integrations|inertia=LOW
 // This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
 // Update whenever a tool is added or removed. Total count tracked in TOTALS section.
 
-TOTALS|tools=121|integrations=13|env_gates=8|updated=2026-03-15
+TOTALS|tools=125|integrations=13|env_gates=8|updated=2026-03-16
 
 SECTION_SYSTEM|
   run_bash|runner.py|run shell commands in workspace (30s timeout)
@@ -153,6 +153,14 @@ SECTION_INTERPRETIVE|
   add_interpretive_edge|interpretive.py|add directed edge in interpretive tree
   interpretive_traverse|interpretive.py|BFS from seed nodes (activation only)
   get_interpretive_edges|interpretive.py|list outgoing edges from memory node
+
+SECTION_LISTS|
+  list_set|cortex.py|upsert one item in a named list (list_name, item_key, item_value, ref_type, ref_id, instance_id="")
+  list_get|cortex.py|return one list item as dict, or None (list_name, item_key, instance_id="")
+  list_remove|cortex.py|delete one item from a named list (list_name, item_key, instance_id="")
+  list_all|cortex.py|return all items in a named list ordered by item_key (list_name, instance_id="")
+  // instance_id="" = global; set = per-master-notebook; PRIMARY KEY=(list_name, item_key, instance_id)
+  // seed: Registry:Tags (5 tags); Project:TheIgors (pending)
 
 SECTION_GITHUB|
   create_work_order|github.py|create GitHub issue as work order
