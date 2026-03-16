@@ -29,6 +29,7 @@ Use `python3 ~/TheIgors/claudecode/cc_queue.py block <id> "<reason>"` if blocked
 - Never commit code during a task unless the task explicitly says to.
 - Write forensic log entries for any non-trivial change.
 - If a task touches HIGH-inertia files — block it and note why.
+- **Never queue Scribe tasks** — only Designer queues Scribe work, at savestate time. Note what docs changed in your done message; Scribe reads the task log and decides what to update.
 
 ## Project Context
 - Working dir: `/home/akien/TheIgors/`

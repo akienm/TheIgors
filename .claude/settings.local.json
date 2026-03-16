@@ -42,7 +42,8 @@
       "Bash(/home/akien/.TheIgors/igor_wild_0001/cc_pending.txt:*)",
       "Bash(pkill:*)",
       "Bash(kill:*)",
-      "Bash(journalctl:*)"
+      "Bash(journalctl:*)",
+      "Bash(cd:*)"
     ]
   }
 }

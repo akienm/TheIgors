@@ -1,10 +1,10 @@
-DOC|capabilities_index|v1|updated=2026-03-14
+DOC|capabilities_index|v1|updated=2026-03-15
 
 META|purpose=quick lookup index of all registered tools and integrations|inertia=LOW
 // This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
 // Update whenever a tool is added or removed. Total count tracked in TOTALS section.
 
-TOTALS|tools=118|integrations=13|env_gates=8|updated=2026-03-14
+TOTALS|tools=121|integrations=13|env_gates=8|updated=2026-03-15
 
 SECTION_SYSTEM|
   run_bash|runner.py|run shell commands in workspace (30s timeout)
@@ -105,6 +105,10 @@ SECTION_LEARNING|
   get_reading_list|learner.py|show reading list (filter by status/book_type)
   add_to_reading_list|learner.py|add book to permanent reading list
   update_reading_status|learner.py|update reading list entry status
+  // learn queue direct management (beyond learn_about auto-discovery)
+  add_url_to_learn_queue|learner.py|run_python: from wild_igor.igor.tools.learner import _queue_url; _queue_url(url, title, topic) → appends to ~/.TheIgors/learn_queue.json
+  add_txt_urls_to_learn_queue|claudecode/|batch: parse .txt (title line then url line, repeat) → json append to learn_queue.json via run_python; handles one-per-line or title+url pairs
+  book_learner_url|claudecode/book_learner.py|CLI (run_bash): --url URL --run — fetch single web source, LLM extracts nodes, deposits into graph; --resume to skip completed chunks
 
 SECTION_TRAINING|
   fetch_training_text|training.py|fetch URL into staged training corpus

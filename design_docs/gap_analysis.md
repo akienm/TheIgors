@@ -938,7 +938,7 @@ The narrative engine IS the TWM — not two separate things. The TWM is the curr
 - **G-OVN-4 ~~CLOSED~~**: `drain_learn_queue.py` — `_count_running_learners()` via `pgrep -fc book_learner.py`; `MAX_CONCURRENT=2` gate checks before each `_launch()` call; sleeps + continues if at cap. Issue #225. Commit: 326f433.
 - **G-OVN-5 ~~CLOSED~~**: `learner.py` `_extract_topic()` — strips `[Thread context: ...]` + `[xxx]: ` CC bridge prefixes before trigger search; returns `""` if < 2 trigger words or < 3 total words after stripping. Issue #226. Commit: 326f433.
 - **G-HB3 ~~CLOSED~~**: `main.py` — new `context_inject` habit type handler (before `if habit:` block): fetches identity+CP memories via `cortex.search()`, gets milieu state, pushes `SELF_CONTEXT|milieu=...|{id_lines}` to TWM (salience=0.75, ttl=90s), sets `habit=None` to fall through to LLM. `PROC_RESP_WHO_AM_I` DB updated: `habit_type="context_inject"`, trigger converted to pipe-separated (`what are you made of|who are you|...`), `context_query` added. Result: introspective questions get real LLM answers using identity context. Verified: `habit_fired: true` in turn trace + rich architectural response. Issue #220. Commit: 326f433.
-- **G-QP2 ~~CLOSED~~**: `cortex.py` `search()` Phase 1 query: added `LIMIT 300` to candidate pool fetch (`ORDER BY activation_count DESC`). `_init_db()`: added `PRAGMA wal_checkpoint(TRUNCATE)` at end of init block. Issue #221. Commit: 326f433.
+- **G-QP2 ~~CLOSED~~**: `cortex.py` `search()` Phase 1 query: added `LIMIT 300` to candidate pool fetch (`ORDER BY activation_count DESC`). `_init_db()`: added `PRAGMA wal_checkpoint(TRUNCATE)` at end of init block. Issue #221. Commit: 326f433. *Additional fix 2026-03-15: added three DB indexes directly in live DB — `idx_timestamp (timestamp DESC)`, `idx_type_timestamp (memory_type, timestamp DESC)`, `idx_source (source)`. NE episodic fetch dropped from 45-57ms to <3ms. No code change — indexes survive restarts.*
 - **phrase_regression.py restarted**: 113-phrase file (`automated_phrase_response_test.txt`), 1 pass, 5-min delay. Running in background (PID 357138) after all fixes deployed.
 - **Igor rebooted**: 08:08:26 on 2026-03-15. Memory count: 8,479 habits=101 (was 5,279/82 at session start).
 
@@ -949,6 +949,8 @@ The narrative engine IS the TWM — not two separate things. The TWM is the curr
 - **Three-session CC pattern (D083, #249)**: Designer + Implementation Worker + Scribe Worker. Scribe handles all memory-coherence work (DSBs, GitHub, Igor flushes, commits). `flush_decision` / `flush_session` in `cc_queue.py` POST to Igor cc_notebook. `SCRIBE_CONTEXT.md` added as Scribe boot doc.
 - **Issue filing = mini savestate (D084)**: each GitHub issue filing pushes the decision to Igor's memory immediately. Decision not made until in Igor's memory — DSB commit is durable backup, not primary record.
 - **Training curriculum order (D085, #250)**: Layer 1 = Claude programming knowledge (organizational skeleton); Layer 2 = Akien's code + docs (lands on Layer 1 framework, used natively); Layer 3 = collaboration record (decisions_log + session narratives — what no other Igor will have). Order matters.
+
+**G-QP2 additional optimization (2026-03-15):** Added three indexes directly to live DB: `idx_timestamp (timestamp DESC)`, `idx_type_timestamp (memory_type, timestamp DESC)`, `idx_source (source)`. NE episodic fetch: 45-57ms → <3ms. No code change needed — indexes survive restarts.
 
 **G-NE1 — NE episodic-to-semantic merge** *(M — designed, not yet implemented)*
 
@@ -961,6 +963,34 @@ Current: each memory is a single narrative entry. Design (#250): `occurrence_dat
 - **#253 — SuperClaude failover (D088)**: balance-check at launch: OR via API, Anthropic via Igor browser_use → `cc_channel/anthropic_balance.json`; pick endpoint + key before launching claude.
 
 *Updated: 2026-03-15e by Claude Code (Scribe).*
+
+---
+
+### Session 2026-03-15f additions (Igor starts using his reading — winnow live, habits fixed, Workers headless)
+
+**Decisions:**
+
+- **D089 — headless Worker script**: `claudecode/worker` bash script — `claude -p` loop, one task per invocation, logs to `~/.TheIgors/logs/worker_role.log`; launch via `nohup ~/TheIgors/claudecode/worker &`. No terminal needed.
+- **D090 — Scribe batch discipline**: Scribe self-directs from task log (reads Worker done messages, derives what docs changed); one commit per session when queue empties; Implementation Worker never queues Scribe tasks. `SCRIBE_CONTEXT.md` + `WORKER_CONTEXT.md` updated.
+
+**G-OVN-1d — D074 expansion: response habits gate on knowledge_request (#254) ~~CLOSED~~**
+`basal_ganglia.py`: added `knowledge_request` to `_QUESTION_INTENTS`; added G-OVN-1d gate — ALL response habits skip on `factual_question` or `knowledge_request`, fall through to LLM+winnow. PROC_RESP_DONT_KNOW trigger trimmed (removed `what do you know about`/`have you heard of` which were misfiring on knowledge queries). `cognitive`/`passive_capture` habits with no action template now fall through to LLM with `HABIT_FALLTHROUGH` ring entry instead of leaking debug text. PROC_LIST_ABSORBED_BOOKS trigger tightened. Issue #254.
+
+**G-DSP1 ~~CLOSED~~**: Dashboard `Cloud%` label now distinct from CloudMode ON/OFF gate — Performance line shows `Cloud%: X%  CloudMode: ON/off`. p95 latency now filters out samples >60s before computing (excluded count shown when nonzero). Issue #247.
+
+**G-RSP1 ~~CLOSED~~**: Three response bugs fixed: (1) `cognitive`/`passive_capture` habit fallthrough to LLM; (2) PROC_RESP_DONT_KNOW knowledge query misrouting; (3) G-OVN-1c suppress_on_factual_intent gate. Issue #248.
+
+**G-QP2 ~~CLOSED (complete)~~**: COST DISCIPLINE habit (fba0d412) removed — superseded by inference gateway local-first routing. `IGOR_CONTEXT_WINNOW=true` enabled — 2278 FACTUAL reading nodes now reachable during conversations.
+
+**Cortex performance (#258 + #258b)**:
+- `_MEM_COLS_NO_EMBED`: explicit 19-column SELECT excluding embedding blob at all batch `id IN` fetch sites (5 sites) — reduces I/O on 8k+ memory DBs.
+- `_mem_cache`: in-process dict cache; genesis types (ROOT/CP/ID) cached permanently; others TTL=60s; patched all 5 id IN batch fetch sites.
+
+**Knowledge retrieval pipeline designed (#255)**: graph → web → LLM synthesis → deposit. Filed; not yet implemented.
+
+**Filed**: #256 Tailscale remote access; #257 needs-Designer async design channel.
+
+*Updated: 2026-03-15f by Claude Code (Scribe).*
 
 ---
 

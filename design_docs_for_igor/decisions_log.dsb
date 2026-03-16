@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15e|latest=D088
+DOC|decisions_log|v1|updated=2026-03-15f|latest=D090
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -153,3 +153,8 @@ D085|training-curriculum-order|defined|Layer 1: Claude programming knowledge (or
 D086|igor-adaptive-friction-reducer|defined|three milieu-driven modes: high-energy=surface lever, medium=walk through steps, low=do-the-thinking+queue+surface-one-thing; data: writing patterns+Confluence+return frequency; Leah context with discretion; epic #251
 D087|organizer-knowledge-base|defined|Igor researches Franklin/GTD/ADHD-productivity/motivational-science → high-inertia FACTUAL nodes; Akien annotates with personal experience; science+patterns+live-state = complete organizer substrate; #252
 D088|superclaude-or-failover|defined|balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; pick endpoint+key before launching claude; lower priority than Igor cognition; #253
+
+// ── Session 2026-03-15f additions ─────────────────────────────────────────────
+
+D089|headless-worker-script|implemented|claudecode/worker bash script: claude -p loop, one task per invocation, bash loops until queue empty, logs to ~/.TheIgors/logs/worker_role.log; no terminal needed; launch: nohup ~/TheIgors/claudecode/worker &
+D090|scribe-batch-discipline|implemented|Scribe self-directs from task log (reads Worker done messages, derives what docs changed); one commit per session when queue empties; Implementation Worker never queues Scribe tasks; SCRIBE_CONTEXT.md + WORKER_CONTEXT.md updated

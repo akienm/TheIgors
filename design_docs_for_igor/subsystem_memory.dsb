@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-15e
+DOC|subsystem_memory|v1|updated=2026-03-15f
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -38,6 +38,8 @@ KEY_METHODS|
   employer_model|Akien/Leah/Claude are peer employers; each has notebook in DB via metadata.employer_id; /api/cc_notebook GET/POST; D078
   cortex.interpretive_traverse(seed_id)|BFS from seed via interpretive_edges
   cortex.expand_blob_memories(memories)|append blob content for relevance≥0.5
+  cortex._MEM_COLS_NO_EMBED|#258: explicit 19-column SELECT excluding embedding blob; used in all batch id IN fetches; reduces I/O on large DBs
+  cortex._mem_cache|#258b: in-process dict cache; genesis types (ROOT/CP/ID) cached permanently; others TTL=60s; _cache_get/_cache_put/_cache_fetch_ids helpers; patched all 5 id IN batch fetch sites
   db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count
   db_proxy SQL tracing|set_trace_callback() captures last SQL per block; slow queries logged to db_queries.log with turn_id; D064
   db_queries.log|~/.TheIgors/logs/db_queries.log|format: timestamp turn=X elapsed=Xms sql=...
@@ -51,5 +53,8 @@ INDEXES|
   idx_type ON memories(memory_type)
   idx_activation ON memories(activation_count DESC) — G-QP1: NE query was 600-750ms; now SCAN USING INDEX
   wal_checkpoint|PRAGMA wal_checkpoint(TRUNCATE) in _init_db() at boot — G-QP2: reduces WAL scan overhead
+  idx_timestamp ON memories(timestamp DESC) — G-QP2 fix2: NE episodic fetch 45-57ms→<3ms
+  idx_type_timestamp ON memories(memory_type, timestamp DESC) — G-QP2 fix2: composite for type+recency queries
+  idx_source ON memories(source) — G-QP2 fix2: source-filtered lookups; applied directly to live DB 2026-03-15
 
 DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084

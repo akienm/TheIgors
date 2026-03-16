@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-15e
+DOC|subsystem_cognition|v1|updated=2026-03-15f
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py
 
@@ -17,7 +17,8 @@ BASAL_GANGLIA|
   lateral_inhibition=max scorer wins; tiebreak by activation_count
   compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection
   trigger_formats=3 formats: pipe-separated(hello|hi|hey), legacy-space(min5-token), single-token(routing_decision)
-  intent_gate=D074: skip habit_type="threshold" always; skip (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in {factual_question,meta_question,explanation_request,general,conversation}
+  intent_gate=D074: skip habit_type="threshold" always; skip (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in {factual_question,meta_question,explanation_request,general,conversation}; D074 expansion (#254, G-OVN-1d): knowledge_request added to _QUESTION_INTENTS; ALL response habits skip on factual_question or knowledge_request → fall through to LLM+winnow
+  response_habit_fixes=2026-03-15f: cognitive/passive_capture habits with no action template fall through to LLM (HABIT_FALLTHROUGH ring entry — was leaking 'Habit executed' debug text); G-OVN-1c: response habits with suppress_on_factual_intent=true skip on factual_question; PROC_RESP_DONT_KNOW trigger trimmed (removed 'what do you know about'/'have you heard of' — was misfiring on knowledge queries)
   habit_types=threshold(resource monitor only)|action(tool dispatch)|workflow(calendar/orchestration)|delegation|reactive|response(canned text)|question(emits question_template)|context_inject(push LTM to TWM, fall through to LLM)|cognitive|tool|passive_capture
   habit_response=question→question_template; code_ref→tool dispatch; context_inject→push SELF_CONTEXT TWM + habit=None; response/action→metadata.action (str) OR metadata.actions (list→random); fallback to narrative
   audit=score= field in HABIT_EXEC ring entries; low scores = trigger too broad

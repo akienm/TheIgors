@@ -1,0 +1,38 @@
+#!/bin/bash
+# Igor Worker — headless task processor
+# Usage: worker [scribe]
+# Runs until queue is empty. Logs to ~/.TheIgors/logs/worker.log
+# Designed to run in background: nohup ~/TheIgors/claudecode/worker &
+
+ROLE="${1:-implementation}"
+
+if [ "$ROLE" = "scribe" ]; then
+    CONTEXT="SCRIBE_CONTEXT.md"
+    ROLE_FILTER="scribe"
+else
+    CONTEXT="WORKER_CONTEXT.md"
+    ROLE_FILTER="implementation"
+fi
+
+LOG=~/.TheIgors/logs/worker_${ROLE}.log
+BOOT_MSG="Read ~/TheIgors/claudecode/$CONTEXT. Claim and complete ONE pending task from the queue (role=$ROLE_FILTER or role=any). Do all the work, mark it done, then stop. Do not loop to the next task — this script handles the loop."
+
+mkdir -p ~/.TheIgors/logs
+
+echo "$(date -Iseconds) Worker starting (role=$ROLE)" >> "$LOG"
+
+while true; do
+    PENDING=$(python3 ~/TheIgors/claudecode/cc_queue.py list 2>/dev/null | grep -c "pending" || echo 0)
+
+    if [ "$PENDING" -eq 0 ]; then
+        echo "$(date -Iseconds) Queue empty — Worker done" >> "$LOG"
+        break
+    fi
+
+    echo "$(date -Iseconds) Tasks pending=$PENDING — starting task" >> "$LOG"
+    claude --dangerously-skip-permissions -p "$BOOT_MSG" >> "$LOG" 2>&1
+    EXIT=$?
+    echo "$(date -Iseconds) Task complete (exit=$EXIT)" >> "$LOG"
+
+    sleep 2
+done

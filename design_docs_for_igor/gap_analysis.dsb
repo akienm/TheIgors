@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-15e
+DOC|gap_analysis|v1|updated=2026-03-15f
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -159,6 +159,10 @@ G-OVN-1|wrong-habit-intent-mismatch|~~closed=2026-03-15b~~
   fix=basal_ganglia.py: skip habit_type="threshold" always; skip habit_type in (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in _QUESTION_INTENTS; DB: PROC_CALENDAR_CREATE + PROC_RESP_CLARIFY triggers tightened to pipe-separated
   result=memory questions no longer fire calendar/swap habits; "tell me about fields" no longer fires SSH check; commits: 326f433 c8e8f79; ticket=#222
 
+G-OVN-1d|response-habits-misfire-on-knowledge-queries|~~closed=2026-03-15f~~
+  was=response habits (e.g. PROC_RESP_DONT_KNOW) firing on factual_question/knowledge_request intents; 'what do you know about grammar?' → canned 'don't know'; cognitive/passive_capture habits leaking 'Habit executed. [...]' debug text
+  fix=basal_ganglia.py: knowledge_request added to _QUESTION_INTENTS; G-OVN-1d gate: ALL response habits skip on factual_question or knowledge_request; G-OVN-1c: suppress_on_factual_intent=true flag per habit; cognitive/passive_capture no action template→HABIT_FALLTHROUGH ring entry+LLM fallthrough; PROC_RESP_DONT_KNOW trigger trimmed; ticket=#254,#248
+
 G-OVN-2|ebook-twm-stew-kwarg|~~closed=2026-03-15b~~
   was=ebook_reader.read_chunk calls twm_push(content=...) but signature is content_csb=; 799 errors; reading→TWM dead
   fix=tools/ebook_reader.py:762 changed content= to content_csb=; commit:326f433; ticket=#223
@@ -178,6 +182,7 @@ G-OVN-5|learner-cc-prefix-topic|~~closed=2026-03-15b~~
 G-QP2|db-growth-slow-queries|~~closed=2026-03-15b~~
   was=DB at 8460 memories; cortex.search() Phase 1 fetched ALL non-ROOT/CP rows (8460); p50=628ms per call
   fix=cortex.py search(): LIMIT 300 on Phase 1 candidate fetch (ORDER BY activation_count DESC); _init_db(): PRAGMA wal_checkpoint(TRUNCATE) at boot end; commit:326f433; ticket=#221
+  fix2=2026-03-15: added three indexes to live DB — idx_timestamp(timestamp DESC), idx_type_timestamp(memory_type,timestamp DESC), idx_source(source); NE episodic fetch 45-57ms→<3ms; no code change; indexes survive restarts
 
 G-HB3|introspective-habit-bypasses-d072|~~closed=2026-03-15b~~
   was=PROC_RESP_WHO_AM_I returned canned string; bypassed _build_think_context() entirely; D072 never fired

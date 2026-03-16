@@ -48,14 +48,22 @@ python3 ~/TheIgors/claudecode/cc_queue.py list
 
 ## Savestate Delegation
 
-When Designer queues a savestate task, you receive it with a body listing decisions, gaps, and session theme. Execute steps 4–9 of the savestate skill:
+Designer queues ONE savestate task per session. You derive everything you need to update from:
+1. The savestate task body (decisions, gaps, session theme)
+2. The completed Implementation Worker tasks in the queue (read their `done` messages to see what changed)
+
+**You are self-directing from the task log — Designer does not tell you what each doc needs.**
+
+Execute steps 4–9 of the savestate skill in one pass:
 
 1. Update `design_docs/gap_analysis.md`
 2. Update `design_docs_for_igor/gap_analysis.dsb`
-3. Update affected subsystem DSBs
+3. Update affected subsystem DSBs (derive from Worker done messages — only touch what actually changed)
 4. Update `memory/MEMORY.md`
 5. Post GitHub discussion #62 comment (use GraphQL — REST returns 404)
-6. Stage + commit with message `docs: savestate session YYYY-MM-DDx — [theme]`
+6. Stage + commit **once** at the end — all doc changes in a single commit: `docs: savestate session YYYY-MM-DDx — [theme]`
+
+**Never commit after individual tasks — accumulate all changes and commit once when your queue empties.**
 
 ## GitHub Discussion GraphQL
 
