@@ -1,4 +1,17 @@
 
+## Session 2026-03-16j
+**Theme**: D102 IgorBase — GC instance naming + per-class logging + perf tracking wired into all components; G-WG2/G-WG3 perf fixes shipped
+**Decisions**: D102 (impl); G-WG2 (closed), G-WG3 (closed)
+**Key changes**:
+- `wild_igor/igor/igor_base.py`: NEW — IgorBase base class; GC _get_instance_names() via gc.get_referrers(); per-class lazy _logger; time_it() context manager; record_perf() → perf_{ClassName}.log; _perf_summary() p50/p95/p99; dump(); _get_caller()
+- `wild_igor/igor/memory/db_proxy.py`: inherits IgorBase; _db_log owner= param; every slow query entry now identifies which component generated it
+- `wild_igor/igor/memory/cortex.py`: inherits IgorBase
+- `wild_igor/igor/cognition/thalamus.py`, `narrative_engine.py`, `milieu.py`, `inference_gateway.py`, `push_sources.py` (BasePushSource), `word_graph.py`, `job_manager.py`: all inherit IgorBase
+- `wild_igor/igor/main.py`: Igor class inherits IgorBase
+- `wild_igor/igor/cognition/word_graph.py`: G-WG2 predict_next LRU cache (512 slots) — p95 2580ms→~0.1ms on hit; G-WG3 doc_count batch flush every 10 docs — was 37s per index() call
+**Next session**: pull slow query report to verify G-WG2/G-WG3 impact; continue offender list; check drain_learn_queue accumulation
+**In-flight**: NONE
+
 ## Session 2026-03-16i
 **Theme**: G-MEM2 closed (embedding blob drop); D096 pipeline state files; D097 format conversion tool
 **Decisions**: G-MEM2 (closed), D096 (impl), D097 (impl)

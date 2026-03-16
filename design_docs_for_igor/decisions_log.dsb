@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16i|latest=D101
+DOC|decisions_log|v1|updated=2026-03-16j|latest=D102
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -195,3 +195,9 @@ D101|milieu-time-series|implemented|milieu is 3D+time: ring buffer of timestampe
 // G-MEM2 closed: cortex.py search() Phase 1 SELECT *→SELECT _MEM_COLS_NO_EMBED; drops 6KB embedding blob×300 rows per search call; idx_activation was fine — I/O was the bottleneck
 // D096 implemented: pipeline_manager.py; .now=transient(one active)+.txt=terminal(permanent audit); mtime IS the timestamp; no redundant fields
 // D097 implemented: converter.py convert_text tool + seed_conv_graph.py; CONV:ROOT hub + 6 PROCEDURAL memories with PROMPT_START/END templates; lists.conv fast-path; chunked for long inputs
+
+// ── Session 2026-03-16j additions ─────────────────────────────────────────────
+D102|igor-base|implemented|IgorBase: base class for all long-lived Igor components; GC _get_instance_names() finds enclosing namespace dict via gc.get_referrers(); per-class lazy _logger; time_it() context manager with log_threshold_ms; record_perf() writes to perf_{ClassName}.log (prepend); _perf_summary() p50/p95/p99/max; dump() __dict__ truncated; _get_caller(depth) via inspect.stack(); wired into: DatabaseProxy, Cortex, Thalamus, NarrativeEngine, Milieu, InferenceGateway, BasePushSource, WordGraph, JobManager, Igor
+// G-WG2 closed: word_graph predict_next LRU cache (512 slots); key=(sorted words, lang, fetch_n); skips 29M-row GROUP BY+ORDER BY on repeated context; evict-half on overflow; cleared on every index() call; p95 2580ms→~0.1ms on cache hit
+// G-WG3 closed: doc_count batching; _pending_doc_count accumulates; flush every 10 docs via _DOC_FLUSH_EVERY=10; _doc_count property returns db+pending; was 116x×320ms per index() run → near-zero
+// db_proxy.py: _db_log owner= parameter; DatabaseProxy._record() passes self.get_name() → every slow query entry identifies which component generated it
