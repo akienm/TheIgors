@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-15f
+DOC|gap_analysis|v1|updated=2026-03-15g
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -351,3 +351,28 @@ G-ORG2|organizer-knowledge-base|defined|ticket=#252
 G-SC1|superclaude-or-failover|defined|ticket=#253
   what=balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; pick endpoint+key before launching claude
   why_open=Igor browser_use must be reliable; lower priority than Igor cognition; D088
+  URGENT=worker bug burned ~$90 Anthropic credits (2026-03-15g); failover now high priority — build D088 FIRST next session
+
+// ── CLOSED THIS SESSION (2026-03-15g) ────────────────────────────────────────
+
+G-QP3|boot-episodic-factual-select-star|~~closed=2026-03-15g~~|ticket=#259
+  was=cortex.get_by_type() used SELECT * for EPISODIC/FACTUAL scans; 332ms+63ms at boot; embedding blob loaded unnecessarily
+  fix=get_by_type(): SELECT * → SELECT {_MEM_COLS_NO_EMBED}; consolidation.py: same fix + ORDER BY created_at→timestamp
+  result=blob excluded from type scans; consolidation.py ORDER BY corrected; syntax OK
+
+G-QP4|habit-trigger-like-scan|~~closed=2026-03-15g~~|ticket=#260
+  was=basal_ganglia.py called cortex.get_habits() per-turn; each call did SELECT * + LIKE metadata scan → 55ms×multiple per turn
+  fix=cortex._habit_cache (Optional[list]); populated on first get_habits() call; invalidated by store() when is_habit=True; cache persists session lifetime
+  result=habit list loaded once per session; no repeated LIKE scans; syntax OK
+
+G-QP5|meaning-to-me-migration-every-restart|~~closed=2026-03-15g~~|ticket=#261
+  was=meaning_to_me layer UPDATE ran on every restart (80ms LIKE scan); no migration guard
+  fix=cortex._migrations table added in _init_db(); meaning_to_me_layer_tag marker guards UPDATE — runs once, skipped after
+  result=migration fires once; subsequent restarts skip 80ms scan; syntax OK
+
+// ── NEW GAPS (2026-03-15g) ────────────────────────────────────────────────────
+
+G-MEM1|memory-store-epic|defined|ticket=#262
+  what=consolidate all memory access concerns: cache, _MEM_COLS_NO_EMBED, boot scans, migration flags, habit trigger index; MemoryStore = data layer, Cortex = reasoning layer
+  why_open=children #259-261 done; MemoryStore design pending; D091; mirrors db_proxy/inference_gateway consolidations
+  trigger=after cortex stabilizes + another perf session needed

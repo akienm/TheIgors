@@ -994,6 +994,24 @@ Current: each memory is a single narrative entry. Design (#250): `occurrence_dat
 
 ---
 
+### Session 2026-03-15g additions (slow query whack-a-mole + MemoryStore epic; worker bug burned credits)
+
+**G-QP3 ~~CLOSED~~**: `cortex.get_by_type()` used `SELECT *` for EPISODIC/FACTUAL boot scans — loaded embedding blob on every type scan (332ms + 63ms at boot). Fix: `SELECT {_MEM_COLS_NO_EMBED}` in `get_by_type()`; same fix in `consolidation.py` + corrected `ORDER BY created_at → timestamp`. Issue #259.
+
+**G-QP4 ~~CLOSED~~**: `cortex.get_habits()` called per-turn; each call did full-table `LIKE` metadata scan → 55ms × multiple hits per turn. Fix: `_habit_cache` (Optional[list]) on Cortex; populated on first `get_habits()` call; invalidated by `store()` when `is_habit=True`; cache persists session lifetime. Issue #260.
+
+**G-QP5 ~~CLOSED~~**: `meaning_to_me` layer `UPDATE` ran on every restart (80ms LIKE scan; no migration guard). Fix: `_migrations` table added in `_init_db()`; `meaning_to_me_layer_tag` marker prevents re-running — fires once, skipped thereafter. Issue #261.
+
+**Worker integer bug fixed**: `PENDING` variable had trailing newline from `grep -c` output; `[ "$PENDING" -eq 0 ]` comparison treated newline-tainted value as non-zero → infinite loop; Worker kept spawning Claude instances burning ~$90 Anthropic credits. Fix: `tr -d '[:space:]'` strip on `PENDING` + defensive `2>/dev/null` on comparison. `claudecode/worker` updated.
+
+**D091 — MemoryStore epic filed (#262)**: Consolidate all memory access concerns (cache, `_MEM_COLS_NO_EMBED`, boot scans, migration flags, habit trigger index) into a `MemoryStore` data layer; `Cortex` = reasoning layer only. Mirrors the `db_proxy`/`inference_gateway` architectural split. Children #259-261 done first; MemoryStore design next.
+
+**G-SC1 urgency elevated**: D088 OR failover still not built. Worker bug burned ~$90 Anthropic credits in one session — failover is now high-priority. Build D088 FIRST next session before any other work.
+
+*Updated: 2026-03-15g by Claude Code (Scribe).*
+
+---
+
 ### Session 2026-03-15d additions (design + implementation sprint)
 
 **New gaps discovered:**

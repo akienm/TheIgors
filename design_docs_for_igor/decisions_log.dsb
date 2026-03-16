@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15f|latest=D090
+DOC|decisions_log|v1|updated=2026-03-15g|latest=D091
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -158,3 +158,7 @@ D088|superclaude-or-failover|defined|balance-check at launch: OR via API, Anthro
 
 D089|headless-worker-script|implemented|claudecode/worker bash script: claude -p loop, one task per invocation, bash loops until queue empty, logs to ~/.TheIgors/logs/worker_role.log; no terminal needed; launch: nohup ~/TheIgors/claudecode/worker &
 D090|scribe-batch-discipline|implemented|Scribe self-directs from task log (reads Worker done messages, derives what docs changed); one commit per session when queue empties; Implementation Worker never queues Scribe tasks; SCRIBE_CONTEXT.md + WORKER_CONTEXT.md updated
+
+// ── Session 2026-03-15g additions ─────────────────────────────────────────────
+
+D091|memory-store-epic|defined|consolidate all memory access concerns: cache, _MEM_COLS_NO_EMBED, boot scans, migration flags, habit trigger index; MemoryStore = data layer, Cortex = reasoning layer; mirrors db_proxy/inference_gateway consolidations; children #259-261 first, then design; #262

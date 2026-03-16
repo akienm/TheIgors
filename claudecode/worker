@@ -22,9 +22,10 @@ mkdir -p ~/.TheIgors/logs
 echo "$(date -Iseconds) Worker starting (role=$ROLE)" >> "$LOG"
 
 while true; do
-    PENDING=$(python3 ~/TheIgors/claudecode/cc_queue.py list 2>/dev/null | grep -c "pending" || echo 0)
+    PENDING=$(python3 ~/TheIgors/claudecode/cc_queue.py list 2>/dev/null | grep -c "pending" 2>/dev/null || echo "0")
+    PENDING=$(echo "$PENDING" | tr -d '[:space:]')
 
-    if [ "$PENDING" -eq 0 ]; then
+    if [ "$PENDING" -eq 0 ] 2>/dev/null; then
         echo "$(date -Iseconds) Queue empty — Worker done" >> "$LOG"
         break
     fi

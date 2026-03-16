@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-15f
+DOC|subsystem_memory|v1|updated=2026-03-15g
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -40,6 +40,10 @@ KEY_METHODS|
   cortex.expand_blob_memories(memories)|append blob content for relevance≥0.5
   cortex._MEM_COLS_NO_EMBED|#258: explicit 19-column SELECT excluding embedding blob; used in all batch id IN fetches; reduces I/O on large DBs
   cortex._mem_cache|#258b: in-process dict cache; genesis types (ROOT/CP/ID) cached permanently; others TTL=60s; _cache_get/_cache_put/_cache_fetch_ids helpers; patched all 5 id IN batch fetch sites
+  cortex.get_by_type()|#259: SELECT * → SELECT {_MEM_COLS_NO_EMBED} for EPISODIC/FACTUAL boot scans; eliminates embedding blob load; consolidation.py same fix + ORDER BY created_at→timestamp corrected
+  cortex._habit_cache|#260: Optional[list]; populated on first get_habits(); invalidated by store() when is_habit=True; eliminates 55ms LIKE trigger scan per turn; session-lifetime cache
+  cortex._migrations table|#261: created in _init_db(); meaning_to_me_layer_tag marker prevents meaning_to_me UPDATE running every restart (was 80ms LIKE scan per boot)
+  G-MEM1|D091: MemoryStore epic — consolidate cache/_MEM_COLS_NO_EMBED/boot scans/migration flags into MemoryStore data layer; Cortex = reasoning layer; mirrors db_proxy/inference_gateway split; #262
   db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count
   db_proxy SQL tracing|set_trace_callback() captures last SQL per block; slow queries logged to db_queries.log with turn_id; D064
   db_queries.log|~/.TheIgors/logs/db_queries.log|format: timestamp turn=X elapsed=Xms sql=...
@@ -57,4 +61,4 @@ INDEXES|
   idx_type_timestamp ON memories(memory_type, timestamp DESC) — G-QP2 fix2: composite for type+recency queries
   idx_source ON memories(source) — G-QP2 fix2: source-filtered lookups; applied directly to live DB 2026-03-15
 
-DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084
+DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084,D091
