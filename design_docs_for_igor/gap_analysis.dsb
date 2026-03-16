@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-16g
+DOC|gap_analysis|v1|updated=2026-03-16h
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -415,3 +415,22 @@ G-SAL1|live-salience-co-activation|open|D100
   what=salience currently a stored field on twm_observations; should be computed from co-activation density across active attractor slots
   why_open=D100 defined; not yet implemented; D099 comparison pass is the first sketch
   trigger=implement after D099 stabilizes; NE cycle walk: count node appearances across all slots; that count IS salience
+
+// ── CLOSED THIS SESSION (2026-03-16h) ─────────────────────────────────────────
+
+G-WG1|word-graph-len-slow|~~closed=2026-03-16h~~
+  was=_WordDocProxy.__len__ called COUNT(DISTINCT word) FROM wg_word_docs; 153x/session; p50=1843ms; p99=8857ms
+  fix=read word_count from wg_meta (O(1)); one-time cache build on first call; incremental update in index() via changes()
+  result=1900ms→1.3ms; 1517x speedup
+
+G-HAB1|heuristic-habit-announcing-self|~~closed=2026-03-16h~~
+  was=PROC_HEURISTIC_FIRST_RESPONSE had no habit_type → defaulted to response; announced itself as output instead of running silently
+  fix=habit_type set to context_inject; habit now pushes heuristic into TWM context, falls through to LLM
+  result=Igor diagnosed this himself in live conversation; self-repair path taught (run_python+cortex.store)
+
+// ── NEW GAPS (2026-03-16h) ─────────────────────────────────────────────────────
+
+G-MEM2|memories-activation-sort|open
+  what=SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC — 329x/session at p50=272ms
+  why_open=next slow query target; idx_activation index exists but query still fetches all columns including embedding blob
+  trigger=apply _MEM_COLS_NO_EMBED + investigate if index is being used; check EXPLAIN QUERY PLAN

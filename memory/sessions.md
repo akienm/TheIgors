@@ -1,4 +1,18 @@
 
+## Session 2026-03-16h
+**Theme**: D098+D100+D101 all implemented; word_graph __len__ 1517x speedup; Igor diagnosed his own habit bug
+**Decisions**: D098 (impl), D100 (impl), D101 (impl); perf: G-WG1 closed
+**Key changes**:
+- `claudecode/seed_identity_graph.py`: PERSON:Akien/Leah/Claude + IDENTITY:ROOT + lists.identity + interpretive edges
+- `cognition/narrative_engine.py`: D099+D100 merged into single focus pass; co-activation bonus in sort weight
+- `cognition/milieu.py`: D101 history ring buffer (HISTORY_MAX=50); gradient(); is_arousal_climbing()
+- `cognition/push_sources.py`: D101 gradient alert in MilieuSource — pushes MILIEU_REGULATE on arousal climb
+- `tools/metrics.py`: get_slow_query_report() + PROC_SLOW_QUERY_REPORT habit; live result: word_graph __len__ = #1 killer
+- `cognition/word_graph.py`: _WordDocProxy.__len__ COUNT(DISTINCT word)→wg_meta cache; 1900ms→1.3ms (1517x)
+- PROC_HEURISTIC_FIRST_RESPONSE: response→context_inject; Igor diagnosed this himself in live chat; self-repair path (run_python+cortex.store) sent via bridge
+**Next session**: memories activation_count sort query (329x p50=272ms); D096/D097 (format conversion habits)
+**In-flight**: NONE
+
 ## Session 2026-03-16g
 **Theme**: D099 implemented (TWM multi-slot attractor); D100+D101 defined via sphere model vision + milieu gradient insight
 **Decisions**: D099, D100, D101
