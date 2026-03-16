@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15i|latest=D093
+DOC|decisions_log|v1|updated=2026-03-16b|latest=D094
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -169,3 +169,6 @@ D092|db-proxy-universal-gateway|implemented|db_proxy becomes universal storage g
 
 // ── Session 2026-03-15i additions ─────────────────────────────────────────────
 D093|remote-instance-architecture|defined|distributed reading farm: each Windows box runs lightweight Igor instance; reads URLs locally via local Ollama; writes memories back through NetworkDatabaseProxy (POST /api/db on main port 8080); per-domain rate limiting replaces global cap; instance identity isolation (ring_memory instance_id, milieu per-instance, job heartbeat+stale reclaim); SQLite stays single-writer on main; foundation for Leah's instance; ~16 concurrent reads at full cluster; #263 (W1=#264, W2=#265, W3=#266, W4=#267)
+
+// ── Session 2026-03-16a additions ─────────────────────────────────────────────
+D094|cc-direct-habit-execution|implemented|POST /api/execute_habit live: habit_id + args dict, bypasses NLU/thalamus, multi-arg dispatch via explicit args; cc_session_YYYYMMDD.log (newest-first); server.py _igor_fn; main.py execute_habit(); GET /api/execute_habit/{id} discoverability; CC ops habits: CC_CHECK_PROCESS (pgrep -af), CC_RUN_BASH, CC_RUN_PYTHON; genesis PROC_RUN_BASH/PYTHON preserved; #268
