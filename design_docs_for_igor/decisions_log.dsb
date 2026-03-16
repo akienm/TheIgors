@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16c|latest=D095
+DOC|decisions_log|v1|updated=2026-03-16d|latest=D098
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -174,4 +174,9 @@ D093|remote-instance-architecture|defined|distributed reading farm: each Windows
 D094|cc-direct-habit-execution|implemented|POST /api/execute_habit live: habit_id + args dict, bypasses NLU/thalamus, multi-arg dispatch via explicit args; cc_session_YYYYMMDD.log (newest-first); server.py _igor_fn; main.py execute_habit(); GET /api/execute_habit/{id} discoverability; CC ops habits: CC_CHECK_PROCESS (pgrep -af), CC_RUN_BASH, CC_RUN_PYTHON; genesis PROC_RUN_BASH/PYTHON preserved; #268
 
 // ── Session 2026-03-16c additions ─────────────────────────────────────────────
-D095|lists-table|defined|first-class DB table for cross-type enumeration/indexing: list_name+item_key+item_value+ref_type+ref_id+instance_id; one table for all lists (tags, projects, capabilities, per-master); cortex gets list_set/list_get/list_remove/list_all; prerequisite for Registry:Tags, Project:TheIgors, and CC git log/ticket habits; projects stored as FACTUAL memories tagged "project", listed in lists.projects; Project:TheIgors becomes Template:SoftwareProject in a later step
+D095|lists-table|implemented|first-class DB table: list_name+item_key+item_value+ref_type+ref_id+instance_id("" global); cortex list_set/list_get/list_remove/list_all; seeded: Registry:Tags(5 tags), lists.projects(Project:TheIgors); CC habits: CC_GIT_LOG/CC_FIND_TICKETS/CC_LIST_PROJECTS; git_log+find_tickets+list_projects in runner.py; project_id→DB path lookup; #269
+
+// ── Session 2026-03-16d additions ─────────────────────────────────────────────
+D096|now-file-convention|defined|pipeline+job resume state: ~/.TheIgors/{instance}/pipelines/{name}/state.now + jobs/{name}/state.now; .now extension = file mtime IS the timestamp; no redundant timestamp field; instance_id from IGOR_INSTANCE_ID env
+D097|format-conversion-habits|defined|EN<->CSB<->DSB conversion via CONV:ROOT interpretive entry point + child habits; prompt templates live in PROCEDURAL memories (not code); chunked_pipeline primitive for long inputs; converter.py thin wrapper: find memory→extract template→call LLM; design pending Akien vision
+D098|identity-graph|defined|PERSON:* nodes in memories table (IDENTITY type, structured metadata) + lists.identity fast-path index (key→memory_id) + IDENTITY:ROOT interpretive entry; contacts-style (name/email/address/relationships); edges: married_to/employer_of/works_on; cheap "what's my name" via list_get; rich context via traversal; full design pending Akien vision
