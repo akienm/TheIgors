@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15h|latest=D092
+DOC|decisions_log|v1|updated=2026-03-15i|latest=D093
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -165,4 +165,7 @@ D091|memory-store-epic|defined|consolidate all memory access concerns: cache, _M
 
 // ── Session 2026-03-15h additions ─────────────────────────────────────────────
 
-D092|db-proxy-universal-gateway|planned|db_proxy becomes universal storage gateway for ALL databases (memories, notebook, budget, word_graph); W1: no raw sqlite3.connect anywhere — every DB goes through DatabaseProxy instance; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table; foundation for LMDB migration (word/habit graph) without touching callers; #263
+D092|db-proxy-universal-gateway|implemented|db_proxy becomes universal storage gateway for ALL databases (memories, notebook, budget, word_graph); W1: no raw sqlite3.connect anywhere — every DB goes through DatabaseProxy instance; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table; foundation for LMDB migration (word/habit graph) without touching callers; #263
+
+// ── Session 2026-03-15i additions ─────────────────────────────────────────────
+D093|remote-instance-architecture|defined|distributed reading farm: each Windows box runs lightweight Igor instance; reads URLs locally via local Ollama; writes memories back through NetworkDatabaseProxy (POST /api/db on main port 8080); per-domain rate limiting replaces global cap; instance identity isolation (ring_memory instance_id, milieu per-instance, job heartbeat+stale reclaim); SQLite stays single-writer on main; foundation for Leah's instance; ~16 concurrent reads at full cluster; #263 (W1=#264, W2=#265, W3=#266, W4=#267)
