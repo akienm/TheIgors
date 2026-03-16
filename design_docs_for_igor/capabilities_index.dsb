@@ -4,7 +4,7 @@ META|purpose=quick lookup index of all registered tools and integrations|inertia
 // This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
 // Update whenever a tool is added or removed. Total count tracked in TOTALS section.
 
-TOTALS|tools=125|integrations=13|env_gates=8|updated=2026-03-16
+TOTALS|tools=126|integrations=13|env_gates=8|updated=2026-03-16
 
 SECTION_SYSTEM|
   run_bash|runner.py|run shell commands in workspace (30s timeout)
@@ -175,6 +175,7 @@ SECTION_REASONING|
   compare_cloud_costs|openrouter_reasoner.py|cheapest OR model for task complexity
   inner_cc|inner_cc.py|internal code reasoning; deposits reusable graph nodes
   // inner_cc modes: architecture|code_review|pattern|debug|curriculum
+  convert_text|converter.py|convert text between EN/CSB/DSB formats; templates live in CONV:* memories
 
 SECTION_ENV_GATES|
   IGOR_SELF_EDIT_ENABLED|gates all source file writes (default false)

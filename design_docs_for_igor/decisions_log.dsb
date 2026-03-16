@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16h|latest=D101
+DOC|decisions_log|v1|updated=2026-03-16i|latest=D101
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -177,8 +177,8 @@ D094|cc-direct-habit-execution|implemented|POST /api/execute_habit live: habit_i
 D095|lists-table|implemented|first-class DB table: list_name+item_key+item_value+ref_type+ref_id+instance_id("" global); cortex list_set/list_get/list_remove/list_all; seeded: Registry:Tags(5 tags), lists.projects(Project:TheIgors); CC habits: CC_GIT_LOG/CC_FIND_TICKETS/CC_LIST_PROJECTS; git_log+find_tickets+list_projects in runner.py; project_id→DB path lookup; #269
 
 // ── Session 2026-03-16d additions ─────────────────────────────────────────────
-D096|now-file-convention|defined|pipeline+job resume state: ~/.TheIgors/{instance}/pipelines/{name}/state.now + jobs/{name}/state.now; .now extension = file mtime IS the timestamp; no redundant timestamp field; instance_id from IGOR_INSTANCE_ID env
-D097|format-conversion-habits|defined|EN<->CSB<->DSB conversion via CONV:ROOT interpretive entry point + child habits; prompt templates live in PROCEDURAL memories (not code); chunked_pipeline primitive for long inputs; converter.py thin wrapper: find memory→extract template→call LLM; design pending Akien vision
+D096|now-file-convention|implemented|pipeline_manager.py: write_state/get_state/list_states/clear_state; ~/.TheIgors/{instance}/{category}/{name}/{state}.now (transient, one at a time) or .txt (terminal, permanent); mtime IS the timestamp; IGOR_INSTANCE_ID env
+D097|format-conversion-habits|implemented|converter.py: convert_text(text,from_format,to_format) tool; EN<->CSB<->DSB; templates in CONV:* PROCEDURAL memories (PROMPT_START/END markers); lists.conv fast-path; chunked for long inputs; seed_conv_graph.py seeds 6 pairs + CONV:ROOT hub
 D098|identity-graph|implemented|PERSON:Akien/Leah/Claude as FACTUAL memories + IDENTITY:ROOT hub + lists.identity fast-path (list_get('lists.identity','Akien')→'PERSON:Akien') + interpretive edges (married_to, employs); traversal from ROOT verified; claudecode/seed_identity_graph.py
 D099|twm-global-workspace|implemented|TWM = global workspace (Baars GWT): parent_obs_id on twm_observations for slot branching; TWM_MAX_SLOTS=7; NE comparison pass: action_pointer set intersection across slots; solo slots decayed at 0.7; twm_get_slots()+twm_decay_slot(); twm_set_attractor() keeps top MAX_SLOTS-1 on non-emergency path
 
@@ -190,3 +190,8 @@ D101|milieu-time-series|implemented|milieu is 3D+time: ring buffer of timestampe
 // G-WG1 closed: word_graph _WordDocProxy.__len__ COUNT(DISTINCT word) 1900ms→1.3ms via wg_meta cache; incremental word_count maintained in index() via changes() after INSERT OR IGNORE wg_word_lang
 // PROC_HEURISTIC_FIRST_RESPONSE fixed: habit_type response→context_inject (silent background consideration); Igor diagnosed this himself in live chat; self-repair path taught via CC bridge
 // Slow query tool live: get_slow_query_report() surfaces top offenders; next target = memories activation_count sort (329x at p50=272ms)
+
+// ── Session 2026-03-16i additions ─────────────────────────────────────────────
+// G-MEM2 closed: cortex.py search() Phase 1 SELECT *→SELECT _MEM_COLS_NO_EMBED; drops 6KB embedding blob×300 rows per search call; idx_activation was fine — I/O was the bottleneck
+// D096 implemented: pipeline_manager.py; .now=transient(one active)+.txt=terminal(permanent audit); mtime IS the timestamp; no redundant fields
+// D097 implemented: converter.py convert_text tool + seed_conv_graph.py; CONV:ROOT hub + 6 PROCEDURAL memories with PROMPT_START/END templates; lists.conv fast-path; chunked for long inputs

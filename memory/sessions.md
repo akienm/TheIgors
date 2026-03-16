@@ -1,4 +1,17 @@
 
+## Session 2026-03-16i
+**Theme**: G-MEM2 closed (embedding blob drop); D096 pipeline state files; D097 format conversion tool
+**Decisions**: G-MEM2 (closed), D096 (impl), D097 (impl)
+**Key changes**:
+- `wild_igor/igor/memory/cortex.py`: search() Phase 1 SELECT *→SELECT _MEM_COLS_NO_EMBED; drops 6KB embedding blob from 300-row candidate fetch; idx_activation was fine — I/O was the bottleneck
+- `wild_igor/igor/cognition/pipeline_manager.py`: write_state/get_state/list_states/clear_state; .now=transient (one active, cleaned on transition); .txt=terminal (permanent audit trail); mtime IS the timestamp
+- `wild_igor/igor/tools/converter.py`: convert_text(text, from_format, to_format) tool; EN↔CSB↔DSB; looks up CONV:* PROCEDURAL memory template, chunks long input, calls gpt-4o-mini, recombines
+- `claudecode/seed_conv_graph.py`: CONV:ROOT + 6 conversion pairs (EN_TO_CSB, CSB_TO_EN, EN_TO_DSB, DSB_TO_EN, CSB_TO_DSB, DSB_TO_CSB); lists.conv fast-path; interpretive edges
+- `tools/__init__.py`: added converter import
+- `capabilities_index.dsb`: convert_text added; TOTALS 125→126
+**Next session**: remaining slow queries from get_slow_query_report(); D102+ new decisions; any live bugs surfaced
+**In-flight**: NONE
+
 ## Session 2026-03-16h
 **Theme**: D098+D100+D101 all implemented; word_graph __len__ 1517x speedup; Igor diagnosed his own habit bug
 **Decisions**: D098 (impl), D100 (impl), D101 (impl); perf: G-WG1 closed
