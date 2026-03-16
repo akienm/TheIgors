@@ -10,6 +10,7 @@ Igor is a Python AI agent with persistent SQLite memory, running on akiendelllin
 - venv: `/home/akien/TheIgors/venv/` (Python 3.12)
 - Launch: `igor` bash alias (loops on exit code 42 = restart); visible terminal: `DISPLAY=:0 konsole -e bash -c "igor" &` (add `; exec bash` to keep terminal open after crash)
 - Source/runtime split: `~/TheIgors/` = source; `~/.TheIgors/` = all runtime data
+- **Environment split (CRITICAL)**: Claude Code always runs with the REAL Anthropic key (`REAL_ANTHROPIC_API_KEY`). Igor's `.env` sets OR routing (`ANTHROPIC_BASE_URL=openrouter`, `ANTHROPIC_API_KEY=OR key`) — this does NOT affect Claude Code. `superclaude` and `cc.sh` handle the key swap. Never read Igor's `.env` and assume it reflects the Claude Code environment.
 
 ## Developer Conventions
 <!-- last-updated: 2026-03-15c -->

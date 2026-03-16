@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-14j
+DOC|subsystem_tools|v1|updated=2026-03-15h
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -58,6 +58,7 @@ BROWSER|
   display=real display while debugging (DISPLAY set → skip Xvfb); headless=Xvfb when DISPLAY unset
   log=~/.TheIgors/logs/browser_use.log; start/complete/error logged at INFO level
   discovery=_discover_urls_via_browser() logs errors; status+URL count logged; _extract_topic() uses find() not startswith()
+  check_claude_balance=scrapes console.anthropic.com/settings/billing using employer Chrome profile; parses balance; writes {balance_usd,fetched_at} to ~/.TheIgors/cc_channel/anthropic_balance.json; trust gate=repl/web only; added 2026-03-15h (D088)
 
 KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 // silent-exception audit 2026-03-14c: ebook_reader EBOOK_TWM_STEW_FAIL+EBOOK_EXTRACT_STORE_FAIL+READING_STATE_LOAD_FAIL + learner LEARN_QUEUE_LOAD_FAIL now log_error(); MEDIUM-inertia files (BG/NE/gateway) deferred

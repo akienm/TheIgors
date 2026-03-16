@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-15g
+DOC|gap_analysis|v1|updated=2026-03-15h
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -348,10 +348,9 @@ G-ORG2|organizer-knowledge-base|defined|ticket=#252
   what=Igor researches Franklin/GTD/ADHD-productivity/motivational-science → high-inertia FACTUAL nodes; Akien annotates; science+patterns+live-state=complete organizer substrate
   why_open=research task; D087; blocked until reading list stable
 
-G-SC1|superclaude-or-failover|defined|ticket=#253
-  what=balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; pick endpoint+key before launching claude
-  why_open=Igor browser_use must be reliable; lower priority than Igor cognition; D088
-  URGENT=worker bug burned ~$90 Anthropic credits (2026-03-15g); failover now high priority — build D088 FIRST next session
+G-SC1|superclaude-or-failover|~~closed=2026-03-15h~~|ticket=#253
+  was=no balance-check at launch; OR/Anthropic selection manual; worker bug burned ~$90 credits (2026-03-15g)
+  fix=superclaude rewritten: sources .env, reads anthropic_balance.json (24h TTL), falls over to OR (ANTHROPIC_BASE_URL=openrouter) when balance≤$10; logs decisions+balance to ~/.TheIgors/logs/superclaude.log; check_claude_balance Igor tool added to browser.py (scrapes console.anthropic.com, writes balance JSON); D088
 
 // ── CLOSED THIS SESSION (2026-03-15g) ────────────────────────────────────────
 
@@ -376,3 +375,13 @@ G-MEM1|memory-store-epic|defined|ticket=#262
   what=consolidate all memory access concerns: cache, _MEM_COLS_NO_EMBED, boot scans, migration flags, habit trigger index; MemoryStore = data layer, Cortex = reasoning layer
   why_open=children #259-261 done; MemoryStore design pending; D091; mirrors db_proxy/inference_gateway consolidations
   trigger=after cortex stabilizes + another perf session needed
+
+// ── CLOSED THIS SESSION (2026-03-15h) ────────────────────────────────────────
+
+G-SC1|superclaude-or-failover|~~closed=2026-03-15h~~
+
+// ── NEW GAPS (2026-03-15h) ────────────────────────────────────────────────────
+
+G-DB1|db-proxy-universal-gateway|defined|ticket=#263
+  what=db_proxy becomes universal storage gateway for ALL databases (memories, notebook, budget, word_graph); W1: no raw sqlite3.connect anywhere; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table
+  why_open=D092; in_progress (T-d092-proxy-w1w2); foundation for LMDB migration without touching callers

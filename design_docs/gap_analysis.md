@@ -1008,7 +1008,15 @@ Current: each memory is a single narrative entry. Design (#250): `occurrence_dat
 
 **G-SC1 urgency elevated**: D088 OR failover still not built. Worker bug burned ~$90 Anthropic credits in one session — failover is now high-priority. Build D088 FIRST next session before any other work.
 
-*Updated: 2026-03-15g by Claude Code (Scribe).*
+---
+
+### Session 2026-03-15h additions (cost control + performance foundation; D088 done; D092 designed)
+
+**G-SC1 ~~CLOSED~~**: D088 fully implemented. `superclaude` rewritten: sources `.env`, reads `anthropic_balance.json` (24h TTL), falls over to OR (`ANTHROPIC_BASE_URL=https://openrouter.ai/api`) when balance ≤ $10; logs every decision + balance to `~/.TheIgors/logs/superclaude.log`. `check_claude_balance` Igor tool added to `browser.py` — scrapes `console.anthropic.com/settings/billing` using employer Chrome profile, parses balance, writes `{balance_usd, fetched_at}` to `~/.TheIgors/cc_channel/anthropic_balance.json`.
+
+**G-DB1 — db_proxy universal gateway (D092, #263)**: `db_proxy` becomes the universal storage gateway for ALL databases (memories, notebook, budget, word_graph). W1: no raw `sqlite3.connect()` anywhere — every DB goes through a `DatabaseProxy` instance. W2: `ensure_index()` + EXPLAIN-based usage tracking + `_cc_index_registry` table. Foundation for LMDB migration (word/habit graph) without touching callers. In-progress (T-d092-proxy-w1w2).
+
+*Updated: 2026-03-15h by Claude Code (Scribe).*
 
 ---
 

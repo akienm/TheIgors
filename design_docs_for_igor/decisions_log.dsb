@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-15g|latest=D091
+DOC|decisions_log|v1|updated=2026-03-15h|latest=D092
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -152,7 +152,7 @@ D084|issue-filing-as-mini-savestate|implemented|each GitHub issue filing = mini 
 D085|training-curriculum-order|defined|Layer 1: Claude programming knowledge (organizational skeleton); Layer 2: Akien code+docs (lands on Layer 1, used natively); Layer 3: collaboration record (decisions_log+sessions — what no other Igor will have); order matters — Layer 2 without Layer 1 = stored but not organized
 D086|igor-adaptive-friction-reducer|defined|three milieu-driven modes: high-energy=surface lever, medium=walk through steps, low=do-the-thinking+queue+surface-one-thing; data: writing patterns+Confluence+return frequency; Leah context with discretion; epic #251
 D087|organizer-knowledge-base|defined|Igor researches Franklin/GTD/ADHD-productivity/motivational-science → high-inertia FACTUAL nodes; Akien annotates with personal experience; science+patterns+live-state = complete organizer substrate; #252
-D088|superclaude-or-failover|defined|balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; pick endpoint+key before launching claude; lower priority than Igor cognition; #253
+D088|superclaude-or-failover|implemented|balance-check at launch: OR via API, Anthropic via Igor browser_use→cc_channel/anthropic_balance.json; sources .env, reads anthropic_balance.json (24h TTL), falls over to OR when balance≤$10; logs every decision to ~/.TheIgors/logs/superclaude.log; check_claude_balance Igor tool added to browser.py; #253
 
 // ── Session 2026-03-15f additions ─────────────────────────────────────────────
 
@@ -162,3 +162,7 @@ D090|scribe-batch-discipline|implemented|Scribe self-directs from task log (read
 // ── Session 2026-03-15g additions ─────────────────────────────────────────────
 
 D091|memory-store-epic|defined|consolidate all memory access concerns: cache, _MEM_COLS_NO_EMBED, boot scans, migration flags, habit trigger index; MemoryStore = data layer, Cortex = reasoning layer; mirrors db_proxy/inference_gateway consolidations; children #259-261 first, then design; #262
+
+// ── Session 2026-03-15h additions ─────────────────────────────────────────────
+
+D092|db-proxy-universal-gateway|planned|db_proxy becomes universal storage gateway for ALL databases (memories, notebook, budget, word_graph); W1: no raw sqlite3.connect anywhere — every DB goes through DatabaseProxy instance; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table; foundation for LMDB migration (word/habit graph) without touching callers; #263
