@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-15h
+DOC|gap_analysis|v1|updated=2026-03-16f
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -385,3 +385,10 @@ G-SC1|superclaude-or-failover|~~closed=2026-03-15h~~
 G-DB1|db-proxy-universal-gateway|defined|ticket=#263
   what=db_proxy becomes universal storage gateway for ALL databases (memories, notebook, budget, word_graph); W1: no raw sqlite3.connect anywhere; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table
   why_open=D092; in_progress (T-d092-proxy-w1w2); foundation for LMDB migration without touching callers
+
+// ── BUILT (2026-03-16a-f) — no gaps opened/closed; capability expansion ──────
+
+// D094: POST /api/execute_habit — direct habit execution bypassing NLU/thalamus; CC_CHECK_PROCESS/RUN_BASH/RUN_PYTHON seeded; cc_session_YYYYMMDD.log forensic log
+// D095: lists table in cortex — list_set/get/remove/all; Registry:Tags(5); lists.projects(Project:TheIgors); runner.py: git_log/find_tickets/list_projects; CC_GIT_LOG/CC_FIND_TICKETS/CC_LIST_PROJECTS seeded
+// D096-D099: defined (not yet implemented) — .now files, EN↔CSB↔DSB conversion habits, identity graph, TWM global workspace
+// P1: tools/ops.py — store_decision/store_session_note/queue_task; CC_STORE_DECISION/SESSION/QUEUE_TASK/CREATE_TICKET seeded; CC now routes through Igor not bash

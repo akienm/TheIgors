@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-15g
+DOC|subsystem_memory|v1|updated=2026-03-16f
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
 
@@ -22,7 +22,8 @@ MEMORY_TYPES|ROOT,CP,ID,RM,EPISODIC,PROCEDURAL,INTERPRETIVE,EXPERIENTIAL,FACTUAL
 TABLES|
   memories|main graph|id,narrative,memory_type,parent_id,children_ids,valence,arousal,dominance,activation_count,inertia_override,portable,embedding,metadata
   ring_memory|FIFO-50|category,content,timestamp,turn_id,thread_id
-  twm_observations|push-only sandbox|source,content_csb,salience,urgency,ttl_seconds,expires_at,attractor_weight,instance_id
+  twm_observations|push-only sandbox|source,content_csb,salience,urgency,ttl_seconds,expires_at,attractor_weight,instance_id (D099 planned: parent_obs_id for slot branching, multiple attractor slots <7)
+  lists|D095: cross-type enumeration|list_name,item_key,item_value,ref_type,ref_id,instance_id,updated_at
   interpretive_edges|4-part directed|source_id,target_id,direction,condition,meaning_payload,action_pointer
   word_graph|(separate DB ~/.TheIgors/word_graph.db)|nodes+edges+bigrams
 
@@ -43,6 +44,7 @@ KEY_METHODS|
   cortex.get_by_type()|#259: SELECT * → SELECT {_MEM_COLS_NO_EMBED} for EPISODIC/FACTUAL boot scans; eliminates embedding blob load; consolidation.py same fix + ORDER BY created_at→timestamp corrected
   cortex._habit_cache|#260: Optional[list]; populated on first get_habits(); invalidated by store() when is_habit=True; eliminates 55ms LIKE trigger scan per turn; session-lifetime cache
   cortex._migrations table|#261: created in _init_db(); meaning_to_me_layer_tag marker prevents meaning_to_me UPDATE running every restart (was 80ms LIKE scan per boot)
+  cortex.list_set/list_get/list_remove/list_all|D095: lists table; cross-type enumeration; PRIMARY KEY(list_name,item_key,instance_id); instance_id=""=global; idx_lists_name index; seeded: Registry:Tags, lists.projects
   G-MEM1|D091: MemoryStore epic — consolidate cache/_MEM_COLS_NO_EMBED/boot scans/migration flags into MemoryStore data layer; Cortex = reasoning layer; mirrors db_proxy/inference_gateway split; #262
   db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count
   db_proxy SQL tracing|set_trace_callback() captures last SQL per block; slow queries logged to db_queries.log with turn_id; D064

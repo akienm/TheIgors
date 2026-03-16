@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-15h
+DOC|subsystem_tools|v1|updated=2026-03-16f
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -32,6 +32,9 @@ KEY_TOOLS|
   cloud_ok|set_cloud_ok_override,clear_cloud_ok_override,is_cloud_ok_override|D071; wired in learn_about(); see cloud_mode.py
   cluster|ssh_exec,cluster_status,cluster_load,restart_ollama,bootstrap_ssh|restart_ollama: local=sudo systemctl, remote=SSH+sudo; 5s wait + health check; sudoers required
   arbiter|arbiter_submit|gate=IGOR_ARBITER_ENABLED=false
+  runner_ext|git_log(repo_path,project_id,n),find_tickets(repo_path,project_id,query,state),list_projects()|D095; project_id→DB path lookup; fallback ~/TheIgors
+  ops|store_decision(decision_id,summary,status),store_session_note(session_id,summary),queue_task(task_json)|P1; CC routes through Igor not bash; replaces cc_queue.py flush_* + add
+  execute_habit|POST /api/execute_habit {habit_id,args}|D094; direct habit dispatch bypassing NLU/thalamus; GET /api/execute_habit/{id} discoverability; cc_session_YYYYMMDD.log
 
 EBOOK_READER|
   calibre_library=~/.TheIgors/akien/onedrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library
