@@ -218,7 +218,11 @@ D105|claude-bridge|implemented|persistent Claude API session (port 8082) for hab
 D106|habit-repair-term|defined|"habit repair" adopted as term for surgical habit calibration work (Igor's suggestion); "habit calibration" = the broader practice; session 2026-03-17a
 
 // ── Session 2026-03-17b additions ──────────────────────────────────────────────
-D107|foreground-reading-habits|planned|PROC_READ_NOW + PROC_STOP_READING + PROC_QUEUE_FOR_INGESTION + start_foreground_reading() in ebook_reader.py; sentence-by-sentence loop (n=1, 1s pause, stop flag); "one moment please" interrupt-ack pattern; URL/path/paste detection; queue path for explicit "queue this for ingestion"
+D107|foreground-reading-habits|implemented|PROC_READ_NOW + PROC_STOP_READING + PROC_QUEUE_FOR_INGESTION seeded; start_foreground_reading()+stop_foreground_reading()+_fg_reading_loop() in ebook_reader.py; sentence-by-sentence loop (n=1, 1s pause, stop flag, chapter-boundary soft prompt); "one moment please" interrupt-ack pattern; URL/path/paste/raw-text detection; queue path disambiguation
+
+// ── Session 2026-03-17c additions ──────────────────────────────────────────────
+D108|cross-platform-path-manager|planned|global PathManager system object resolves all disk paths (DB, logs, runtime, library) platform-aware (Windows/Linux/Mac); first-start wizard: "Database (current 127.0.0.1)?:" prompts for remote DB IP; all path constants replaced with PathManager calls; prerequisite for Windows round; epic #275
+D109|multi-attention-center-reading|planned|extends D093: main attention center surfaces new memory in remote instances; remote instance picks up memory as task and executes (reading); external ebook_reader.py tools migrate to internal PROCEDURAL habits; all three platforms (akiendelllinux+yoga9i+windows) run as separate attention centers on same DB; DB optimization becomes critical at this scale; epic #276
 
 // ── Session 2026-03-16n additions ──────────────────────────────────────────────
 // GitHub Actions installed: claude.yml (@claude mention trigger) + claude-code-review.yml (auto PR review); ANTHROPIC_API_KEY set as GH secret
