@@ -142,3 +142,17 @@
 - D108 plan written: paths.py PathManager singleton (IGOR_RUNTIME_ROOT escape hatch); first_start.py wizard (instance name default=wild_igor_YYYYMMDDHHMMSS, DB host default=127.0.0.1); igor bash script updated; full cutover of 138 path refs across ~20 files
 **Next session**: D108 implementation (PathManager cutover — paths.py + first_start.py + igor bash script + ~20 files)
 **In-flight**: About to implement D108 — paths.py + first_start.py + igor bash script; plan approved; need compact before starting
+
+## Session 2026-03-17j
+**Theme**: Architecture crystallization — SystemGateway + service layer + split storage + Postgres migration approved
+**Decisions**: D112, D113, D114, D115
+**Key changes**:
+- D112 SystemGateway defined: PathManager grown up; platform abstraction + service lifecycle manager; paths/CPU/process/shell/file-watch all platform-specific; Igor attaches to services, doesn't own them
+- D113 degrade-gracefully-habit-recovery: core principle everywhere; dependency failure → habit chain for recovery + graceful tier fallback; not special-case code
+- D114 service layer always-on: DB + web server + future services as persistent daemons; Igor attaches/detaches; CC bridge always up even when Igor loop is down; prerequisite for D109 multi-instance
+- D115 split storage by access pattern: memories+habits→Postgres, wg_cooccur→LMDB/RocksDB, blobs→keyed store; memory graph IS the index into blob tree (trees as indexes into trees)
+- Postgres installed on akiendelllinux; migration plan approved: SQLite→Postgres before Windows round
+- Slow query analysis: #1=UPDATE wg_cooccur 8291ms (boost_cooccurrence batching), #2=LIKE trigger scan 2445ms (get_habits), #3=predict_next cache miss 673ms; 29M rows in wg_cooccur
+- akienasus: being rebuilt (memtest86+ → fresh OS → verdict); akienpi: voice terminal role (STT/TTS, thin client to main Igor)
+**Next session**: SQLite→Postgres migration script; DatabaseProxy layer update to use Postgres; migrate + validate
+**In-flight**: NONE

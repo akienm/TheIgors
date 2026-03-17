@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17i|latest=D111
+DOC|decisions_log|v1|updated=2026-03-17j|latest=D115
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -250,3 +250,9 @@ D111|habit-author-filter|implemented|author_filter metadata field on habits gate
 // ── Session 2026-03-17f additions ──────────────────────────────────────────────
 // D108 implemented: paths.py PathManager singleton (IGOR_RUNTIME_ROOT + IGOR_INSTANCE_ID env overrides); all 54 Path.home()/.TheIgors refs replaced across ~32 files; first_start.py wizard (instance name default=wild_igor_YYYYMMDDHHMMSS, DB host default=127.0.0.1); igor bash script updated for dynamic .env discovery + wizard integration; full cutover identical to DatabaseProxy pattern; commits cda9ba0 + 63729e0
 // D108 status: implemented (was planned)
+
+// ── Session 2026-03-17j additions ──────────────────────────────────────────────
+D112|system-gateway|defined|SystemGateway = PathManager grown up; singleton wrapping all platform-specific behavior (paths, resource metrics, process ops, shell execution, file watching, temp/socket dirs); same pattern as D108 PathManager; paths() delegates to PathManager; Windows round epic; implement on Linux first (wraps what exists), then swap implementations per platform
+D113|degrade-gracefully-habit-recovery|defined|core principle everywhere: any dependency failure (service down, DB unreachable, inference tier unavailable) triggers habit chain for recovery + graceful tier fallback; not special-case code — same habit substrate handles it; relevant habit fires, pushes status to TWM, response tier adjusts automatically
+D114|service-layer-always-on|defined|DB, web server, and future services run as persistent daemons independent of Igor; Igor attaches on start, detaches on shutdown without taking infrastructure down; CC bridge always available even when Igor's loop is down; enables multi-instance (D109) — all boxes attach to same running services; SystemGateway manages service lifecycle
+D115|split-storage-by-access-pattern|defined|memories+habits→Postgres (concurrent multi-box writes, relational); wg_cooccur→LMDB or RocksDB (pure KV, write-heavy, hot subset in page cache); blobs→keyed store accessed by ID only, never scanned; memory graph IS the index into blob tree — traverse graph first, fetch blob only when node confirmed relevant
