@@ -382,9 +382,9 @@ G-SC1|superclaude-or-failover|~~closed=2026-03-15h~~
 
 // ── NEW GAPS (2026-03-15h) ────────────────────────────────────────────────────
 
-G-DB1|db-proxy-universal-gateway|defined|ticket=#263
-  what=db_proxy becomes universal storage gateway for ALL databases (memories, notebook, budget, word_graph); W1: no raw sqlite3.connect anywhere; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table
-  why_open=D092; in_progress (T-d092-proxy-w1w2); foundation for LMDB migration without touching callers
+G-DB1|db-proxy-universal-gateway|~~closed=2026-03-17d~~
+  what=db_proxy becomes universal storage gateway for ALL databases; W1: no raw sqlite3.connect anywhere; W2: ensure_index()+EXPLAIN-based usage tracking+_cc_index_registry table
+  fix=W2 done in prior sessions; W1 done 2026-03-17d: learner.py list_absorbed_books+_rl_db+3 callers converted to DatabaseProxy singleton; Calibre+DRM DBs intentionally exempt (external 3rd-party)
 
 // ── BUILT (2026-03-16a-f) — no gaps opened/closed; capability expansion ──────
 
