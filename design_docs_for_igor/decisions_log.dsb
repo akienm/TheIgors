@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16j|latest=D102
+DOC|decisions_log|v1|updated=2026-03-16l|latest=D104
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -200,4 +200,10 @@ D101|milieu-time-series|implemented|milieu is 3D+time: ring buffer of timestampe
 D102|igor-base|implemented|IgorBase: base class for all long-lived Igor components; GC _get_instance_names() finds enclosing namespace dict via gc.get_referrers(); per-class lazy _logger; time_it() context manager with log_threshold_ms; record_perf() writes to perf_{ClassName}.log (prepend); _perf_summary() p50/p95/p99/max; dump() __dict__ truncated; _get_caller(depth) via inspect.stack(); wired into: DatabaseProxy, Cortex, Thalamus, NarrativeEngine, Milieu, InferenceGateway, BasePushSource, WordGraph, JobManager, Igor
 // G-WG2 closed: word_graph predict_next LRU cache (512 slots); key=(sorted words, lang, fetch_n); skips 29M-row GROUP BY+ORDER BY on repeated context; evict-half on overflow; cleared on every index() call; p95 2580ms→~0.1ms on cache hit
 // G-WG3 closed: doc_count batching; _pending_doc_count accumulates; flush every 10 docs via _DOC_FLUSH_EVERY=10; _doc_count property returns db+pending; was 116x×320ms per index() run → near-zero
-// db_proxy.py: _db_log owner= parameter; DatabaseProxy._record() passes self.get_name() → every slow query entry identifies which component generated it
+// db_proxy.py: _db_log owner= parameter; DatabaseProxy._record() passes self.get_name() → every slow query entry identifies which component generates it
+
+// ── Session 2026-03-16k additions ─────────────────────────────────────────────
+// G-EMB1 closed: memory_embeddings separate table implemented; cortex.py _init_db+_get_or_compute_embedding+_get_embeddings_batch+backfill+search Phase2 batch; migration ran: 5531 embeddings moved, memories.embedding NULLed, VACUUM 185MB→95MB
+// G-WG4 closed: idx_wgc_covering ON wg_cooccur(word_a,word_b,score) added to _SCHEMA + applied to live word_graph.db; EXPLAIN confirms USING COVERING INDEX
+D103|no-turn-pipeline|defined|pipeline is continuous always; "turn" is LLM API artifact; no commit points; high-salience events enter pipeline at any time and produce outputs; interval = pipeline stage latency not turn duration
+D104|the-watcher|defined|high-salience search result arriving = new pipeline input event (not passive context); Watcher is a graph tree in same substrate (habits watching habits); Zen witness pattern — observes without suppressing; grows with experience; named session 2026-03-16l
