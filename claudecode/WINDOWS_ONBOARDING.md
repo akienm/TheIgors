@@ -1,180 +1,215 @@
-# Windows Node Onboarding — Claude Code
-# Written by Claude Code on akiendelllinux, 2026-03-10
-# For: Claude Code instance running on a Windows cluster node (elevated shell)
+# Igor Windows Bootstrap — Autonomous Onboarding Prompt
+
+**Read this file at the start of a new Claude Code session on a fresh Windows machine.**
+You are Claude Code running in an elevated PowerShell with `--dangerously-skip-permissions`.
+Complete the entire bootstrap autonomously. Do not wait for Akien. Do not ask for confirmation.
+If a step fails, diagnose and fix it before moving on.
 
 ---
 
-## Hey, me — here's your situation
-
-You are Claude Code running on one of Akien's Windows machines. This is the TheIgors
-project repo. You were launched in an elevated (admin) shell specifically to sort SSH
-access so Igor (the AI agent, running on akiendelllinux at 10.0.0.229) can reach this
-machine to swap Ollama models and run cluster tasks.
-
-You do NOT need to run Igor here. No venv, no .env, no DB. This machine is a cluster node.
-
----
-
-## This Machine's Identity
-
-Check `claudecode/../design_docs/` and `machines.json` (runtime, not in repo) for full
-cluster info. The likely candidates for this box:
-
-| Hostname     | IP          | Role       | SSH user        | Notes                          |
-|--------------|-------------|------------|-----------------|--------------------------------|
-| akiendell    | 10.0.0.99   | background | igor_wild_0001  | Akien's daily driver           |
-| akienyoga9i  | 10.0.0.90   | realtime   | igor_wild_0001  | Bedroom/travel PC              |
-| akienyogai7  | 10.0.0.71   | batch      | igor_wild_0001  | Living room TV PC              |
-
-Run `hostname` in a shell to confirm which one this is.
-
----
-
-## SSH Setup Goal
-
-Igor (on akiendelllinux, 10.0.0.229) needs to SSH **into this Windows box** as user
-`igor_wild_0001`. You are here to make that work.
-
-The SSH key Igor uses (on the Linux side): `~/.ssh/igor_ed25519`
-The public key to install on Windows: see below.
-
-**Known issue**: `machines.json` references `~/.TheIgors/igor_id_rsa` — that path is
-WRONG. The real key is `~/.ssh/igor_ed25519`. Keep this in mind if you're debugging.
-
----
-
-## Igor's Public Key (to install in authorized_keys on Windows)
+## Your .env (fill these in before dropping this file on the target machine)
 
 ```
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGLwfMgY3SZpWzsl3tlUM3xT2lKUUF6b/18JzSw24pVk akien@akiendelllinux
+ANTHROPIC_API_KEY=sk-ant-REPLACE_WITH_REAL_KEY
+IGOR_DB_URL=postgresql://igor:REPLACE_WITH_DB_PASSWORD@REPLACE_WITH_AKIENDELLLINUX_IP/igor_wild_0001
+```
+
+These are the only two credentials this machine needs. Everything else comes from the database.
+
+---
+
+## Goal
+
+Bootstrap Igor on this Windows machine so that:
+1. Igor starts and connects to the shared Postgres DB on akiendelllinux
+2. Igor responds correctly to a test message via the CC bridge
+3. The instance is registered in the environment tree in the DB
+
+This machine is an attention center — a cognitive node that shares the same memory and habits as all other Igor instances. It does NOT have its own isolated DB.
+
+---
+
+## Step 1 — Verify prerequisites
+
+Check Python 3.12+ is installed:
+```powershell
+python --version
+```
+If missing or below 3.12:
+```powershell
+winget install Python.Python.3.12
+# Then close and reopen elevated PowerShell to refresh PATH
+```
+
+Check git is installed:
+```powershell
+git --version
+```
+If missing:
+```powershell
+winget install Git.Git
 ```
 
 ---
 
-## Step-by-Step SSH Setup (Windows, elevated shell)
-
-### 1. Verify OpenSSH Server is installed and running
+## Step 2 — Clone the repo
 
 ```powershell
-Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*'
-# If not installed:
-Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-
-# Start and enable the service:
-Start-Service sshd
-Set-Service -Name sshd -StartupType Automatic
+cd $env:USERPROFILE
+git clone https://github.com/akienm/TheIgors.git TheIgors
+cd TheIgors
 ```
 
-### 2. Check the firewall rule exists
-
+If the repo already exists, pull latest:
 ```powershell
-Get-NetFirewallRule -Name *ssh*
-# If missing:
-New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
-```
-
-### 3. Verify the igor_wild_0001 user account exists
-
-```powershell
-Get-LocalUser -Name igor_wild_0001
-# If missing, create it (ask Akien for the password or use a strong random one):
-# New-LocalUser -Name igor_wild_0001 -Description "Igor SSH user" ...
-```
-
-### 4. Install the authorized key
-
-For **admin users** on Windows, the authorized_keys file goes in a special location
-(NOT the user's home directory — Windows OpenSSH has a quirk for admin accounts):
-
-```powershell
-# Check if igor_wild_0001 is in Administrators group:
-Get-LocalGroupMember -Group Administrators
-
-# If igor_wild_0001 IS an admin, the authorized_keys must go here:
-$adminKeyPath = "C:\ProgramData\ssh\administrators_authorized_keys"
-# If igor_wild_0001 is NOT an admin, use:
-$adminKeyPath = "C:\Users\igor_wild_0001\.ssh\authorized_keys"
-
-# Create the directory and file:
-New-Item -ItemType Directory -Force -Path (Split-Path $adminKeyPath)
-Add-Content $adminKeyPath "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGLwfMgY3SZpWzsl3tlUM3xT2lKUUF6b/18JzSw24pVk akien@akiendelllinux"
-
-# Fix permissions (critical — OpenSSH will reject keys with wrong ACLs):
-icacls $adminKeyPath /inheritance:r /grant "SYSTEM:F" /grant "Administrators:F"
-# If using the admin path:
-# icacls "C:\ProgramData\ssh\administrators_authorized_keys" /inheritance:r /grant "SYSTEM:F" /grant "Administrators:F"
-```
-
-### 5. Check sshd_config (important for admin keys)
-
-```powershell
-notepad C:\ProgramData\ssh\sshd_config
-```
-
-Look for this line — it must be present and NOT commented out for the
-`administrators_authorized_keys` file to be used:
-
-```
-Match Group administrators
-       AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
-```
-
-If it's commented out, uncomment it, save, then restart sshd:
-```powershell
-Restart-Service sshd
-```
-
-### 6. Test from the Linux side
-
-On akiendelllinux (10.0.0.229), ask Akien or run:
-```bash
-ssh -i ~/.ssh/igor_ed25519 igor_wild_0001@<this_machine_ip> "echo SSH OK"
+cd $env:USERPROFILE\TheIgors
+git pull
 ```
 
 ---
 
-## Also Check: machines.json key path
+## Step 3 — Create the virtual environment
 
-The runtime `machines.json` at `~/.TheIgors/local/machines.json` on Linux has:
-```json
-"ssh_key": "~/.TheIgors/igor_id_rsa"
+```powershell
+cd $env:USERPROFILE\TheIgors
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install --upgrade pip
+pip install -r wild_igor/requirements.txt
 ```
-That path is **wrong** — the actual key is `~/.ssh/igor_ed25519`. Once SSH is verified
-working, flag this to Akien so Igor can correct the machines.json entry.
+
+If requirements.txt doesn't exist at that path, find it:
+```powershell
+Get-ChildItem -Recurse -Name "requirements.txt"
+```
+Use whichever path contains the main Igor dependencies (uvicorn, anthropic, psycopg2, etc.).
 
 ---
 
-## What NOT to do here
+## Step 4 — Create the instance directory and .env
 
-- Don't try to run Igor — no .env, no DB, no venv on this box yet
-- Don't commit anything sensitive (no keys, no passwords)
-- Don't install the venv unless Akien asks — that's a separate setup task
-- Don't edit brainstem/ or memory/models.py without Akien's explicit go-ahead
+```powershell
+$instanceDir = "$env:APPDATA\TheIgors\igor_wild_windows_001"
+New-Item -ItemType Directory -Force -Path $instanceDir
 
----
+$envContent = @"
+ANTHROPIC_API_KEY=sk-ant-REPLACE_WITH_REAL_KEY
+IGOR_DB_URL=postgresql://igor:REPLACE_WITH_DB_PASSWORD@REPLACE_WITH_AKIENDELLLINUX_IP/igor_wild_0001
+IGOR_RUNTIME_ROOT=$env:APPDATA\TheIgors
+IGOR_INSTANCE_ID=igor_wild_windows_001
+IGOR_WEB_PORT=8080
+IGOR_SELF_EDIT_ENABLED=false
+IGOR_TIER5_ENABLED=false
+IGOR_ARBITER_ENABLED=false
+"@
 
-## Key files in this repo (for orientation)
+$envContent | Out-File -FilePath "$instanceDir\.env" -Encoding UTF8
+```
 
-- `CLAUDE.md` — project conventions and inertia levels
-- `claudecode/CONTEXT.md` — fuller architecture context
-- `design_docs/` — architecture decisions (CSB format)
-- `wild_igor/igor/` — Igor's source code
-- `machines.json` is runtime data at `~/.TheIgors/local/machines.json` (not in repo)
-
----
-
-## Linux box context
-
-- akiendelllinux: 10.0.0.229, Igor's main loop machine
-- SSH key on Linux: `~/.ssh/igor_ed25519` (ed25519, NOT RSA)
-- Igor's runtime: `~/.TheIgors/igor_wild_0001/`
-- Repo source: `~/TheIgors/`
+Substitute the real values from the **Your .env** section above before writing.
 
 ---
 
-## If you get stuck
+## Step 5 — Verify Postgres connectivity
 
-Ask Akien. He's the human. You can also check the GitHub discussions for session notes:
-https://github.com/akienm/TheIgors/discussions/62
+```powershell
+python -c "
+import psycopg2
+url = 'postgresql://igor:REPLACE_WITH_DB_PASSWORD@REPLACE_WITH_AKIENDELLLINUX_IP/igor_wild_0001'
+try:
+    conn = psycopg2.connect(url)
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM memories')
+    count = cur.fetchone()[0]
+    print(f'DB OK — {count} memories')
+    conn.close()
+except Exception as e:
+    print(f'DB FAILED: {e}')
+"
+```
 
-Good luck, me.
+If this fails:
+- Check akiendelllinux is reachable: `ping REPLACE_WITH_AKIENDELLLINUX_IP`
+- Check Postgres is listening on 5432: the service layer should be running on akiendelllinux
+- Check firewall on akiendelllinux allows port 5432 from this machine's IP
+- Check `pg_hba.conf` on akiendelllinux allows remote connections from this subnet
+
+Do not proceed until DB connectivity is confirmed.
+
+---
+
+## Step 6 — Start Igor
+
+```powershell
+$env:IGOR_INSTANCE_ID = "igor_wild_windows_001"
+$env:IGOR_RUNTIME_ROOT = "$env:APPDATA\TheIgors"
+cd $env:USERPROFILE\TheIgors
+.\venv\Scripts\Activate.ps1
+python -m wild_igor.igor.main
+```
+
+If the module path fails, try:
+```powershell
+cd $env:USERPROFILE\TheIgors\wild_igor\igor
+python main.py
+```
+
+Igor should print startup logs showing DB connection, habit cache load, and web server starting on port 8080.
+
+---
+
+## Step 7 — Validate via CC bridge
+
+In a second elevated PowerShell (keep Igor running in the first):
+```powershell
+$body = '{"content": "Hello Igor, this is the Windows bootstrap validation. Confirm you are running and connected to the shared database."}'
+Invoke-RestMethod -Uri "http://localhost:8080/api/cc_send" -Method POST -ContentType "application/json" -Body $body
+```
+
+Expected: `{"status":"ok"}`
+
+Then check Igor's response in the first window. It should acknowledge the message and reference memory content from the shared DB (not zero — confirming shared Postgres, not an empty local DB).
+
+---
+
+## Step 8 — Register this machine in the environment tree
+
+Send via CC bridge:
+```powershell
+$body = '{"content": "Please register this Windows machine in the environment tree. Instance ID: igor_wild_windows_001. Platform: Windows. Role: attention_center. Store as a FACTUAL memory node under the environment subtree."}'
+Invoke-RestMethod -Uri "http://localhost:8080/api/cc_send" -Method POST -ContentType "application/json" -Body $body
+```
+
+---
+
+## Step 9 — Set Igor to start on login (optional)
+
+```powershell
+$action = New-ScheduledTaskAction -Execute "powershell.exe" `
+    -Argument "-WindowStyle Hidden -Command `"cd $env:USERPROFILE\TheIgors; .\venv\Scripts\Activate.ps1; python -m wild_igor.igor.main`""
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Hours 0) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
+Register-ScheduledTask -TaskName "IgorStartup" -Action $action -Trigger $trigger -Settings $settings -RunLevel Highest
+```
+
+---
+
+## What you are NOT doing
+
+- Do not create a local SQLite DB — this instance uses shared Postgres only
+- Do not copy or migrate any data — the DB already has everything
+- Do not modify brainstem/ or memory/models.py
+- Do not commit credentials to git
+
+---
+
+## If anything goes wrong
+
+Check logs at `$env:APPDATA\TheIgors\logs\` once Igor has started at least once.
+Triage order: `errors.log` → `startup.log` → `pipeline_trace.YYYYMMDD.log`
+
+Common failure modes:
+1. **Postgres unreachable** — firewall, pg_hba.conf, or akiendelllinux is down
+2. **Module not found** — venv not activated, or wrong working directory
+3. **Port 8080 in use** — another process has it; change `IGOR_WEB_PORT` in .env
+4. **Missing dependency** — `pip install <package>` while venv is active, then add to requirements.txt
