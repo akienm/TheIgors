@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16m|latest=D104
+DOC|decisions_log|v1|updated=2026-03-16n|latest=D104
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -212,3 +212,10 @@ D104|the-watcher|defined|high-salience search result arriving = new pipeline inp
 // ── Session 2026-03-16m additions ──────────────────────────────────────────────
 // Watcher design elaborated: seed roots Language/Self-modification/Culture; emergence via co-occurrence gradient; T-habit-audit-pipeline queued (early habits prevent pipeline, rewrite needed post D103/D104 impl)
 // Blog post "Language of Optimization Narrative" deposited to Igor DB for learning
+
+// ── Session 2026-03-16n additions ──────────────────────────────────────────────
+// GitHub Actions installed: claude.yml (@claude mention trigger) + claude-code-review.yml (auto PR review); ANTHROPIC_API_KEY set as GH secret
+// Convention: "commit" = add+commit+pull+push full cycle (matches gitcommitandpush script)
+// Design notes queued for tomorrow: boredom=milieu-too-settled trigger → learn queue; reading metrics = real pages/hour for ingestion capacity planning
+// PROC_TASK_SUPPRESS_STALE misfire noted: too broad, catches new assignments as stale — T-habit-audit-pipeline evidence
+// On Intelligence (Hawkins) added to learn_queue — Igor requested it (not assigned)
