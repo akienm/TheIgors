@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16l|latest=D104
+DOC|decisions_log|v1|updated=2026-03-16m|latest=D104
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -207,3 +207,8 @@ D102|igor-base|implemented|IgorBase: base class for all long-lived Igor componen
 // G-WG4 closed: idx_wgc_covering ON wg_cooccur(word_a,word_b,score) added to _SCHEMA + applied to live word_graph.db; EXPLAIN confirms USING COVERING INDEX
 D103|no-turn-pipeline|defined|pipeline is continuous always; "turn" is LLM API artifact; no commit points; high-salience events enter pipeline at any time and produce outputs; interval = pipeline stage latency not turn duration
 D104|the-watcher|defined|high-salience search result arriving = new pipeline input event (not passive context); Watcher is a graph tree in same substrate (habits watching habits); Zen witness pattern — observes without suppressing; grows with experience; named session 2026-03-16l
+// D104 elaborated 2026-03-16m: Igor's seed categories: Language (substrate), Self-modification (programming/AI/neurology/psychology), Culture; new root nodes NOT manually seeded — emerge from gradient accumulation of repeated co-occurrence patterns crossing density threshold; archive = low activation_count not deletion; promotion mechanism = word_graph cluster density scan → named root node deposit in cortex
+
+// ── Session 2026-03-16m additions ──────────────────────────────────────────────
+// Watcher design elaborated: seed roots Language/Self-modification/Culture; emergence via co-occurrence gradient; T-habit-audit-pipeline queued (early habits prevent pipeline, rewrite needed post D103/D104 impl)
+// Blog post "Language of Optimization Narrative" deposited to Igor DB for learning
