@@ -1,4 +1,15 @@
 
+## Session 2026-03-17h
+**Theme**: Habit repair round 3 — PROC_RESP_DONE + 60-habit bulk passive_capture sweep + design crystallizations
+**Decisions**: none new
+**Key changes**:
+- DB: PROC_RESP_DONE → passive_capture, trigger tightened (removed bare "done/finished/complete"), action template removed
+- DB: 60 habits with trigger but no habit_type and no code_ref → passive_capture (BL_*, CONV:*, HABIT_Q/R_*, PROC_TASK_CLOSE, PROC_TASK_DEFER, PROC_RESOURCE_*, PROC_ROUTING_*, backchannel habits, PROC_GREETING, PROC_HABIT_COMPILER)
+- Design banked: parallel input fork (emotional register + content, concurrent); milieu as first-class TWM desk slot; TemporalGradient primitive (6 special-cased decays → one); "everything is habits" third crystallization
+- superclaude: D088 OR failover wrapped in `if false` (direct Anthropic while balance healthy)
+**Next session**: surface-driven habit repair — whatever misfires show up in live use; search depth tiers ticket
+**In-flight**: NONE
+
 ## Session 2026-03-17g
 **Theme**: Habit repair round 2 — author_filter mechanism + 4 habit misfires fixed + design insights banked
 **Decisions**: D111 (author_filter, implemented)
