@@ -303,10 +303,9 @@ G16|global-milieu-sync|~6h|ticket=none
   requires=sync protocol (G48)
   why_open=blocked on G48
 
-G37p2|dual-word-graphs|ongoing|ticket=#160
+G37p2|dual-word-graphs|~~closed=2026-03-17d~~
   what=generation_graph trained on Igor's replies only; comprehension signal reinforces what worked
-  status=Phase 1 implemented (gated IGOR_DUAL_WORD_GRAPHS); Phase 2 = comprehension feedback loop
-  why_open=needs more data; observe then enable
+  fix=Phase 2: all three gates defaulted true (IGOR_DUAL_WORD_GRAPHS, IGOR_NPASS_REPLY, IGOR_COMPREHENSION_SIGNAL); generation graph now trains on every reply; flatness logged to cognition_metrics.log; comprehension signal reinforces on positive-valence turns; Phase 3=addendum pass when graph has data
 
 // ── SELF-PROGRAMMING EPIC (new, 2026-03-13) ──────────────────────────────────
 
