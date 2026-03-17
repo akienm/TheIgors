@@ -31,6 +31,7 @@ LOG_FILE = LOG_DIR / "drain_learn_queue.log"
 PID_FILE = Path.home() / ".TheIgors" / "drain_learn_queue.pid"
 
 DEFAULT_LAUNCH_DELAY = 60  # seconds between launches
+MAX_BOOK_LEARNER_AGE_MINUTES = 45  # kill book_learner if stuck longer than this
 
 # G-OVN-4 / G-QP3: adaptive concurrency — scales with observed system load
 # cpu_pct < 40 and mem_gb > 4  → up to 4 concurrent (idle overnight machine)
@@ -130,15 +131,63 @@ def _set_reading_list_in_progress(calibre_id: int) -> None:
         _log(f"reading_list update failed: {e}")
 
 
-def _count_running_learners() -> int:
-    """Count currently running book_learner.py processes (G-OVN-4)."""
+def _another_drain_running() -> bool:
+    """True if another drain_learn_queue.py Python process is already running (not us).
+
+    Matches only processes where the script path appears as a standalone cmdline
+    argument (i.e., the Python interpreter's argv[1]), not shell wrapper processes
+    where the path is embedded inside a -c string.
+    """
     try:
-        result = subprocess.run(
-            ["pgrep", "-fc", "book_learner.py"],
-            capture_output=True,
-            text=True,
-        )
-        return int(result.stdout.strip()) if result.stdout.strip() else 0
+        import psutil
+
+        my_pid = os.getpid()
+        script_path = str(Path(__file__).resolve())
+        for proc in psutil.process_iter(["pid", "cmdline"]):
+            if proc.pid == my_pid:
+                continue
+            cmdline = proc.info.get("cmdline") or []
+            # Match Python processes where our script is an explicit argument,
+            # not shell processes with it buried in a -c "..." string.
+            if any(c == script_path for c in cmdline):
+                return True
+        return False
+    except Exception:
+        return False
+
+
+def _reap_hung_learners() -> int:
+    """Kill book_learner processes older than MAX_BOOK_LEARNER_AGE_MINUTES. Returns kill count."""
+    killed = 0
+    try:
+        import psutil
+
+        now = time.time()
+        for proc in psutil.process_iter(["pid", "cmdline", "create_time"]):
+            cmdline = proc.info.get("cmdline") or []
+            if not any("book_learner" in c for c in cmdline):
+                continue
+            age_minutes = (now - proc.info["create_time"]) / 60
+            if age_minutes > MAX_BOOK_LEARNER_AGE_MINUTES:
+                _log(f"Killing hung book_learner pid={proc.pid} age={age_minutes:.0f}m")
+                proc.kill()
+                killed += 1
+    except Exception as e:
+        _log(f"_reap_hung_learners error: {e}")
+    return killed
+
+
+def _count_running_learners() -> int:
+    """Count currently running book_learner.py processes via psutil (G-OVN-4)."""
+    try:
+        import psutil
+
+        count = 0
+        for proc in psutil.process_iter(["cmdline"]):
+            cmdline = proc.info.get("cmdline") or []
+            if any("book_learner" in c for c in cmdline):
+                count += 1
+        return count
     except Exception:
         return 0
 
@@ -191,6 +240,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    # Single-instance guard: exit if another drain is already running.
+    # (Cron fires every 30 min; without this every invocation stacks up.)
+    if _another_drain_running():
+        print(f"drain_learn_queue: already running — exiting", flush=True)
+        return
+
     # Write PID file so learner.py can detect we're running
     PID_FILE.write_text(str(os.getpid()))
 
@@ -208,12 +263,15 @@ def main() -> None:
             entry = pending[0]
             title = entry.get("title", entry.get("url", "?"))[:60]
 
-            # G-OVN-4 / G-QP3: adaptive concurrency cap based on system load
+            # G-OVN-4 / G-QP3: adaptive concurrency cap based on system load.
+            # Reap hung learners before checking count so stale processes don't
+            # block the queue indefinitely.
+            _reap_hung_learners()
             running = _count_running_learners()
             cap = _adaptive_max_concurrent()
             if running >= cap:
                 _log(
-                    f"Concurrency cap ({cap}) reached ({running} running, load-adaptive) — sleeping {args.delay}s"
+                    f"Concurrency cap ({cap}) reached ({running} running, cap={cap}) — sleeping {args.delay}s"
                 )
                 time.sleep(args.delay)
                 continue

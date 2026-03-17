@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-16n|latest=D104
+DOC|decisions_log|v1|updated=2026-03-17a|latest=D106
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -212,6 +212,10 @@ D104|the-watcher|defined|high-salience search result arriving = new pipeline inp
 // ── Session 2026-03-16m additions ──────────────────────────────────────────────
 // Watcher design elaborated: seed roots Language/Self-modification/Culture; emergence via co-occurrence gradient; T-habit-audit-pipeline queued (early habits prevent pipeline, rewrite needed post D103/D104 impl)
 // Blog post "Language of Optimization Narrative" deposited to Igor DB for learning
+
+// ── Session 2026-03-17a additions ──────────────────────────────────────────────
+D105|claude-bridge|planned|persistent Claude API session (port 8082) for habit repair — shared+back channel; seeded with habits+logs+gaps on startup; survives Igor restarts; model=claude-sonnet-4-6 via REAL_ANTHROPIC_API_KEY
+D106|habit-repair-term|defined|"habit repair" adopted as term for surgical habit calibration work (Igor's suggestion); "habit calibration" = the broader practice; session 2026-03-17a
 
 // ── Session 2026-03-16n additions ──────────────────────────────────────────────
 // GitHub Actions installed: claude.yml (@claude mention trigger) + claude-code-review.yml (auto PR review); ANTHROPIC_API_KEY set as GH secret
