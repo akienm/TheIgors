@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17j|latest=D115
+DOC|decisions_log|v1|updated=2026-03-17j|latest=D117
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -256,3 +256,5 @@ D112|system-gateway|defined|SystemGateway = PathManager grown up; singleton wrap
 D113|degrade-gracefully-habit-recovery|defined|core principle everywhere: any dependency failure (service down, DB unreachable, inference tier unavailable) triggers habit chain for recovery + graceful tier fallback; not special-case code — same habit substrate handles it; relevant habit fires, pushes status to TWM, response tier adjusts automatically
 D114|service-layer-always-on|defined|DB, web server, and future services run as persistent daemons independent of Igor; Igor attaches on start, detaches on shutdown without taking infrastructure down; CC bridge always available even when Igor's loop is down; enables multi-instance (D109) — all boxes attach to same running services; SystemGateway manages service lifecycle
 D115|split-storage-by-access-pattern|defined|memories+habits→Postgres (concurrent multi-box writes, relational); wg_cooccur→LMDB or RocksDB (pure KV, write-heavy, hot subset in page cache); blobs→keyed store accessed by ID only, never scanned; memory graph IS the index into blob tree — traverse graph first, fetch blob only when node confirmed relevant
+D116|minimal-env-per-instance|defined|each instance .env contains only: API key (so Claude can run) + DB connection string; all other runtime config (machine capabilities, service endpoints, routing) lives in the DB environment tree; .env is bootstrap credential not config store
+D117|environment-tree-in-db|defined|FACTUAL node subtree in DB describes runtime environment (machines, services, capabilities, connection strings); machines.json becomes seed file not source of truth; MachinesFileSource in push_sources.py watches mtime hourly (or on-demand via habit), syncs changes into DB nodes; SystemGateway reads this tree to locate services; new box registers itself here on first boot
