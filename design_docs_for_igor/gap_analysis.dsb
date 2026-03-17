@@ -260,11 +260,9 @@ G42|thread-context-complexity-inflation|~~closed=2026-03-14b~~
   fix=already done at main.py:2334 (_preparse_input = parsed.core_input); thalamus._assess_complexity also uses core_text not raw text
   result=complexity scoring reflects user's actual message only
 
-G46|memory-model-fields|~3h|HIGH_INERTIA_CAREFUL
-  what=Memory dataclass missing: source(str), confidence(float 0-1), context_of_encoding(dict VAD+note)
-  why=source enables trust tiers; confidence affects retrieval weighting; context_of_encoding = amygdala analog (high-arousal encoding → crystallized)
-  blocker=models.py HIGH inertia; requires cortex.py migration + all seed scripts updated
-  trigger=when Memory model design is stable enough to commit to schema change
+G46|memory-model-fields|~~closed=2026-03-17e~~
+  what=Memory dataclass source+confidence+context_of_encoding; cortex.py DB columns; caller population
+  fix=models.py+cortex.py done prior sessions; 2026-03-17e: main.py episodic sets source="interaction"+context_of_encoding(intent/valence/arousal/complexity); NE _apply_output sets source="narrative_engine"+context_of_encoding(ne_run/importance/arousal); requires Igor restart
 
 G63|routing-self-awareness|~~closed=2026-03-14c~~
   was=Igor wrote plans claiming "local inference" for interactive turns; contradicts D035 (interactive→t3.5 floor)
