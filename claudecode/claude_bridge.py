@@ -273,6 +273,33 @@ def _compact_history() -> str:
     return summary
 
 
+# ── Igor forwarding ───────────────────────────────────────────────────────────
+
+IGOR_WEB_PORT = int(os.environ.get("IGOR_WEB_PORT", "8080"))
+
+
+async def _forward_to_igor(reply: str) -> None:
+    """POST Claude's reply to Igor's /api/cc_send so he sees it (shared channel only)."""
+    import urllib.request as _ur
+
+    payload = json.dumps({"content": f"[claude] {reply}"}).encode()
+
+    def _post():
+        try:
+            req = _ur.Request(
+                f"http://localhost:{IGOR_WEB_PORT}/api/cc_send",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            _ur.urlopen(req, timeout=5)
+        except Exception as e:
+            _log(f"WARN: _forward_to_igor failed: {e}")
+
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, _post)
+
+
 # ── Route handlers ─────────────────────────────────────────────────────────────
 
 
@@ -317,6 +344,9 @@ async def _api_chat(request: Request) -> JSONResponse:
             f"claude_bridge: {channel} [{len(_history)} msgs] "
             f"in={message[:60]!r} out={reply[:60]!r}"
         )
+        # Shared channel: forward Claude's reply to Igor's UI so he can see it
+        if channel == "shared":
+            asyncio.ensure_future(_forward_to_igor(reply))
         return JSONResponse(
             {
                 "reply": reply,
