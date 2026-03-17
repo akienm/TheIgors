@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17a|latest=D106
+DOC|decisions_log|v1|updated=2026-03-17b|latest=D107
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -214,8 +214,11 @@ D104|the-watcher|defined|high-salience search result arriving = new pipeline inp
 // Blog post "Language of Optimization Narrative" deposited to Igor DB for learning
 
 // ── Session 2026-03-17a additions ──────────────────────────────────────────────
-D105|claude-bridge|planned|persistent Claude API session (port 8082) for habit repair — shared+back channel; seeded with habits+logs+gaps on startup; survives Igor restarts; model=claude-sonnet-4-6 via REAL_ANTHROPIC_API_KEY
+D105|claude-bridge|implemented|persistent Claude API session (port 8082) for habit repair — shared+back channel; seeded with habits+logs+gaps on startup; survives Igor restarts; model=claude-sonnet-4-6 via REAL_ANTHROPIC_API_KEY; web UI dual-pane; PROC_CC_JOIN seeded; @reboot cron; bridge replies forwarded to Igor on shared channel
 D106|habit-repair-term|defined|"habit repair" adopted as term for surgical habit calibration work (Igor's suggestion); "habit calibration" = the broader practice; session 2026-03-17a
+
+// ── Session 2026-03-17b additions ──────────────────────────────────────────────
+D107|foreground-reading-habits|planned|PROC_READ_NOW + PROC_STOP_READING + PROC_QUEUE_FOR_INGESTION + start_foreground_reading() in ebook_reader.py; sentence-by-sentence loop (n=1, 1s pause, stop flag); "one moment please" interrupt-ack pattern; URL/path/paste detection; queue path for explicit "queue this for ingestion"
 
 // ── Session 2026-03-16n additions ──────────────────────────────────────────────
 // GitHub Actions installed: claude.yml (@claude mention trigger) + claude-code-review.yml (auto PR review); ANTHROPIC_API_KEY set as GH secret
