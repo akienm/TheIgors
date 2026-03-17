@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17e|latest=D110
+DOC|decisions_log|v1|updated=2026-03-17g|latest=D111
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -221,7 +221,7 @@ D106|habit-repair-term|defined|"habit repair" adopted as term for surgical habit
 D107|foreground-reading-habits|implemented|PROC_READ_NOW + PROC_STOP_READING + PROC_QUEUE_FOR_INGESTION seeded; start_foreground_reading()+stop_foreground_reading()+_fg_reading_loop() in ebook_reader.py; sentence-by-sentence loop (n=1, 1s pause, stop flag, chapter-boundary soft prompt); "one moment please" interrupt-ack pattern; URL/path/paste/raw-text detection; queue path disambiguation
 
 // ── Session 2026-03-17c additions ──────────────────────────────────────────────
-D108|cross-platform-path-manager|planned|global PathManager system object resolves all disk paths (DB, logs, runtime, library) platform-aware (Windows/Linux/Mac); first-start wizard: "Database (current 127.0.0.1)?:" prompts for remote DB IP; all path constants replaced with PathManager calls; prerequisite for Windows round; epic #275
+D108|cross-platform-path-manager|implemented|global PathManager singleton (paths.py); IGOR_RUNTIME_ROOT + IGOR_INSTANCE_ID env overrides; all 54 hardcoded ~/.TheIgors refs replaced across ~32 files; first_start.py wizard (instance name + DB host prompts); igor bash script dynamic .env discovery; prerequisite for Windows round; epic #275
 D109|multi-attention-center-reading|planned|extends D093: main attention center surfaces new memory in remote instances; remote instance picks up memory as task and executes (reading); external ebook_reader.py tools migrate to internal PROCEDURAL habits; all three platforms (akiendelllinux+yoga9i+windows) run as separate attention centers on same DB; DB optimization becomes critical at this scale; epic #276
 D110|project-self-model-log-to-db|planned|Igor builds traversable graph of project itself (files/purpose/relationships/architecture as FACTUAL+interpretive nodes); logs move from flat files to DB table (timestamp/level/category/source/message/turn_id/instance_id); both Igor and Claude traverse same graph for context; PROC_CC_CONTEXT_SEED habit delivers Claude startup context via traversal not file reads; deepest self-model + fastest context load; epic #277
 
@@ -240,3 +240,13 @@ D110|project-self-model-log-to-db|planned|Igor builds traversable graph of proje
 // ── Session 2026-03-17e additions ──────────────────────────────────────────────
 // G46 closed: source + context_of_encoding fields already in Memory + DB; callers were not populating them; fixed in main.py (source="interaction", context_of_encoding=f"intent=... valence=... arousal=... complexity=...") and NE _apply_output (source="narrative_engine", context_of_encoding=f"ne_run=... importance=... arousal=...")
 // #252 closed: annotate_learning() tool in learner.py deposits EXPERIENTIAL node (source="user_annotated", confidence=0.95) via DatabaseProxy; seed_annotation_habit.py seeds PROC_ANNOTATE_LEARNING (13 trigger patterns, habit_type=action, code_ref=tools.learner:annotate_learning, inertia=0.30, parent_id=CP2)
+
+D111|habit-author-filter|implemented|author_filter metadata field on habits gates scoring by input author; CC-only habits (CC_RUN_BASH) skip on human messages; author plumbed through _process/_process_inner to select_habit; basal_ganglia.py + main.py
+
+// ── Session 2026-03-17g additions ──────────────────────────────────────────────
+// Habit repair round 2: CC_RUN_BASH author_filter (D111); PROC_TASK_SUPPRESS_STALE+PROC_HEURISTIC_FITS_HERE passive_capture; PROC_QUEUE_FOR_INGEST trigger tightened; PROC_RESP_ON_IT 'please' removed; flush_habit_cache tool added to ops.py
+// Design banked: search depth tiers (cortex.search depth gated by TWM attractor_weight); post-habit ack fork; savestate endgame (dissolves into continuous DB saves); skills decomposition
+
+// ── Session 2026-03-17f additions ──────────────────────────────────────────────
+// D108 implemented: paths.py PathManager singleton (IGOR_RUNTIME_ROOT + IGOR_INSTANCE_ID env overrides); all 54 Path.home()/.TheIgors refs replaced across ~32 files; first_start.py wizard (instance name default=wild_igor_YYYYMMDDHHMMSS, DB host default=127.0.0.1); igor bash script updated for dynamic .env discovery + wizard integration; full cutover identical to DatabaseProxy pattern; commits cda9ba0 + 63729e0
+// D108 status: implemented (was planned)

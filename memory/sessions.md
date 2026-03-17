@@ -1,4 +1,16 @@
 
+## Session 2026-03-17g
+**Theme**: Habit repair round 2 — author_filter mechanism + 4 habit misfires fixed + design insights banked
+**Decisions**: D111 (author_filter, implemented)
+**Key changes**:
+- `basal_ganglia.py`: `author` param added to `select_habit`; habits with `metadata.author_filter` skip when author doesn't match
+- `main.py`: `author` param plumbed through `_process` + `_process_inner`; passed from `_process_network_msg`
+- `tools/ops.py`: `flush_habit_cache` tool added — invalidates Igor's in-process habit cache without restart
+- DB patches: `CC_RUN_BASH` author_filter=claude-code; `PROC_TASK_SUPPRESS_STALE` + `PROC_HEURISTIC_FITS_HERE` → passive_capture; `PROC_QUEUE_FOR_INGEST` trigger tightened + suppress flags; `PROC_RESP_ON_IT` "please" removed
+- Design banked: search depth tiers (post-Windows); post-habit ack fork; savestate endgame; skills decomposition
+**Next session**: PROC_RESP_DONE fix; search depth tiers design ticket; Akien's "please" insight (politeness as emotional milieu modulator — not noise, a social signal that forks the processing trajectory)
+**In-flight**: PROC_RESP_DONE — fires on "done" in conversational context; fix is tighter trigger + conversation intent suppression
+
 ## Session 2026-03-17f
 **Theme**: D108 PathManager full cutover — 54 hardcoded path refs replaced across ~32 files
 **Decisions**: D108 (implemented)
