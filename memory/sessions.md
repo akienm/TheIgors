@@ -156,3 +156,17 @@
 - akienasus: being rebuilt (memtest86+ → fresh OS → verdict); akienpi: voice terminal role (STT/TTS, thin client to main Igor)
 **Next session**: SQLite→Postgres migration script; DatabaseProxy layer update to use Postgres; migrate + validate
 **In-flight**: NONE
+
+## Session 2026-03-17k
+**Theme**: SQLite→Postgres migration plan approved; ready to implement
+**Decisions**: D112-D117 (prior), migration plan approved
+**Key changes**:
+- Migration plan approved (L-size): PGDatabaseProxy + _PGConnWrapper in db_proxy.py; make_db_proxy factory; 1-line change in cortex.py; migrate_sqlite_to_postgres.py script
+- metadata column → JSONB + GIN index (fixes 2445ms get_habits slow query)
+- get_habits() query: LIKE '%"trigger"%' → metadata ? 'trigger'
+- psycopg2-binary added to requirements
+- pg_trgm extension enabled in migration script
+- FK violation check before data copy
+- word_graph.db migration deferred
+**Next session**: implement migration — db_proxy.py PGDatabaseProxy, migration script, cortex.py factory + get_habits fix, validate
+**In-flight**: About to implement SQLite→Postgres migration per approved plan above
