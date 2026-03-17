@@ -1,4 +1,15 @@
 
+## Session 2026-03-17f
+**Theme**: D108 PathManager full cutover — 54 hardcoded path refs replaced across ~32 files
+**Decisions**: D108 (implemented)
+**Key changes**:
+- `wild_igor/igor/paths.py`: NEW — PathManager singleton; IGOR_RUNTIME_ROOT + IGOR_INSTANCE_ID env overrides; 25 named path properties covering all runtime dirs
+- `wild_igor/igor/first_start.py`: NEW — first-start wizard; instance name prompt (default wild_igor_YYYYMMDDHHMMSS); DB host prompt (default 127.0.0.1); creates instance dir + .env
+- `igor` bash script: removed hardcoded ENV_FILE; dynamic .env discovery + wizard fallback
+- ~32 files cutover: all 54 Path.home()/.TheIgors refs replaced with paths().* calls
+**Next session**: D109 (multi-attention-center reading) or D110 (project self-model + log-to-DB)
+**In-flight**: NONE
+
 ## Session 2026-03-16j
 **Theme**: D102 IgorBase — GC instance naming + per-class logging + perf tracking wired into all components; G-WG2/G-WG3 perf fixes shipped
 **Decisions**: D102 (impl); G-WG2 (closed), G-WG3 (closed)
