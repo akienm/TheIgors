@@ -75,3 +75,24 @@
 - Created #268 for implementation
 **Next session**: Implement #268 (execute_habit endpoint + cc_session_logger + server.py route)
 **In-flight**: About to implement #268 — POST /api/execute_habit; plan approved; pre-compact savestate done
+
+## Session 2026-03-17d
+**Theme**: G-DB1 + G-NE1 + G37p2 closed — DatabaseProxy in learner.py, episodic consolidation merge, dual word graphs on by default
+**Decisions**: G-DB1 (closed), G-NE1 (closed), G37p2 (closed)
+**Key changes**:
+- `wild_igor/igor/tools/learner.py`: DatabaseProxy singleton _igor_db_proxy(); raw _rl_db() removed; 4 reading-list functions converted; annotate_learning() tool added (#252); PROC_ANNOTATE_LEARNING seeded (13 triggers, action habit)
+- `wild_igor/igor/cognition/narrative_engine.py`: _consolidation_merge_pass() + _merge_cluster(); cosine threshold=0.85, min_cluster=3, window=10; occurrence_dates preserved in metadata; no gate (defaults are the safety)
+- `wild_igor/igor/main.py`: IGOR_DUAL_WORD_GRAPHS + IGOR_NPASS_REPLY + IGOR_COMPREHENSION_SIGNAL default→true; stale comments updated
+- `claudecode/seed_annotation_habit.py`: NEW — seeds PROC_ANNOTATE_LEARNING habit to live DB
+**Next session**: G46, #252, then D108 PathManager
+**In-flight**: NONE
+
+## Session 2026-03-17e
+**Theme**: G46 + #252 closed; D108 PathManager full cutover planned and approved
+**Decisions**: G46 (closed), #252 (closed), D108 (plan approved)
+**Key changes**:
+- `wild_igor/igor/main.py`: EPISODIC Memory gets source="interaction" + context_of_encoding with intent/valence/arousal/complexity (~line 4184)
+- `wild_igor/igor/cognition/narrative_engine.py`: _apply_output() Memory gets source="narrative_engine" + context_of_encoding with run/importance/arousal
+- D108 plan written: paths.py PathManager singleton (IGOR_RUNTIME_ROOT escape hatch); first_start.py wizard (instance name default=wild_igor_YYYYMMDDHHMMSS, DB host default=127.0.0.1); igor bash script updated; full cutover of 138 path refs across ~20 files
+**Next session**: D108 implementation (PathManager cutover — paths.py + first_start.py + igor bash script + ~20 files)
+**In-flight**: About to implement D108 — paths.py + first_start.py + igor bash script; plan approved; need compact before starting

@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17c|latest=D110
+DOC|decisions_log|v1|updated=2026-03-17e|latest=D110
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -231,3 +231,12 @@ D110|project-self-model-log-to-db|planned|Igor builds traversable graph of proje
 // Design notes queued for tomorrow: boredom=milieu-too-settled trigger → learn queue; reading metrics = real pages/hour for ingestion capacity planning
 // PROC_TASK_SUPPRESS_STALE misfire noted: too broad, catches new assignments as stale — T-habit-audit-pipeline evidence
 // On Intelligence (Hawkins) added to learn_queue — Igor requested it (not assigned)
+
+// ── Session 2026-03-17d additions ──────────────────────────────────────────────
+// G-DB1 closed: learner.py converted to DatabaseProxy singleton (_igor_db_proxy()); removed raw _rl_db(); list_absorbed_books+get_reading_list+add_to_reading_list+update_reading_status all use with _igor_db_proxy()() as conn; Calibre DB exempt (3rd-party external)
+// G-NE1 closed: narrative_engine.py _consolidation_merge_pass() + _merge_cluster(); cosine clustering (threshold=0.85, min_cluster=3, window=10); metadata.occurrence_dates preserves source timestamps; originals deleted via cortex.delete_memory(); no gate (conservative defaults ARE the safety)
+// G37 Phase 2 closed: IGOR_DUAL_WORD_GRAPHS + IGOR_NPASS_REPLY + IGOR_COMPREHENSION_SIGNAL all default true; generation graph trains on every Igor reply; flatness logged to cognition_metrics.log
+
+// ── Session 2026-03-17e additions ──────────────────────────────────────────────
+// G46 closed: source + context_of_encoding fields already in Memory + DB; callers were not populating them; fixed in main.py (source="interaction", context_of_encoding=f"intent=... valence=... arousal=... complexity=...") and NE _apply_output (source="narrative_engine", context_of_encoding=f"ne_run=... importance=... arousal=...")
+// #252 closed: annotate_learning() tool in learner.py deposits EXPERIENTIAL node (source="user_annotated", confidence=0.95) via DatabaseProxy; seed_annotation_habit.py seeds PROC_ANNOTATE_LEARNING (13 trigger patterns, habit_type=action, code_ref=tools.learner:annotate_learning, inertia=0.30, parent_id=CP2)
