@@ -335,9 +335,9 @@ G-D1|dsb-docs-remaining|ticket=#212
 
 // ── NEW GAPS (2026-03-15e) ────────────────────────────────────────────────────
 
-G-NE1|ne-episodic-to-semantic-merge|defined|ticket=#250
-  what=occurrence_dates list in memory metadata; multiple occurrences→one semantic node; frequency=semantic weight; NE identifies recurring patterns across sessions
-  why_open=Memory schema design; requires models.py change + migration; D057 Instance refactor dependency
+G-NE1|ne-episodic-to-semantic-merge|~~closed=2026-03-17d~~
+  what=occurrence_dates list in memory metadata; multiple occurrences→one semantic node; NE identifies recurring patterns
+  fix=_consolidation_merge_pass()+_merge_cluster() added to narrative_engine.py; runs after promotion pass every cycle; cosine clustering (threshold=0.85, min_cluster=3, window=10); occurrence_dates preserved in merged node metadata; originals deleted; no models.py change needed (JSON blob); requires Igor restart
 
 G-ORG1|adaptive-friction-reducer|epic|ticket=#251
   what=milieu-driven interaction modes: high-energy→surface lever; medium→walk through steps; low→do-thinking+queue+surface-one-thing
