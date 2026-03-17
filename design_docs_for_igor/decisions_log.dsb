@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17b|latest=D107
+DOC|decisions_log|v1|updated=2026-03-17c|latest=D110
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -223,6 +223,7 @@ D107|foreground-reading-habits|implemented|PROC_READ_NOW + PROC_STOP_READING + P
 // ── Session 2026-03-17c additions ──────────────────────────────────────────────
 D108|cross-platform-path-manager|planned|global PathManager system object resolves all disk paths (DB, logs, runtime, library) platform-aware (Windows/Linux/Mac); first-start wizard: "Database (current 127.0.0.1)?:" prompts for remote DB IP; all path constants replaced with PathManager calls; prerequisite for Windows round; epic #275
 D109|multi-attention-center-reading|planned|extends D093: main attention center surfaces new memory in remote instances; remote instance picks up memory as task and executes (reading); external ebook_reader.py tools migrate to internal PROCEDURAL habits; all three platforms (akiendelllinux+yoga9i+windows) run as separate attention centers on same DB; DB optimization becomes critical at this scale; epic #276
+D110|project-self-model-log-to-db|planned|Igor builds traversable graph of project itself (files/purpose/relationships/architecture as FACTUAL+interpretive nodes); logs move from flat files to DB table (timestamp/level/category/source/message/turn_id/instance_id); both Igor and Claude traverse same graph for context; PROC_CC_CONTEXT_SEED habit delivers Claude startup context via traversal not file reads; deepest self-model + fastest context load; epic #277
 
 // ── Session 2026-03-16n additions ──────────────────────────────────────────────
 // GitHub Actions installed: claude.yml (@claude mention trigger) + claude-code-review.yml (auto PR review); ANTHROPIC_API_KEY set as GH secret
