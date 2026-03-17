@@ -1,4 +1,16 @@
 
+## Session 2026-03-17i
+**Theme**: Fourth crystallization — trees + gradients + habits/memory; BG trigger system as embryonic emotional relevance tree
+**Decisions**: none
+**Key changes**:
+- Memory banked: `project_three_primitives.md` — entire architecture = three primitives; BG trigger scoring IS the embryonic Stream 1 (emotional relevance), densifies without architecture change
+- Memory banked: `project_temporal_gradient_primitive.md` updated — parallel input fork (Stream 1 emotional + Stream 2 content, concurrent); milieu as first-class NE desk slot
+- Memory banked: `project_everything_is_habits.md` — cognitive operations as action nodes; fight-or-flight and relationship energy as habit chains
+- Memory banked: `project_savestate_endgame.md`, `project_skills_decomposition.md`
+- Live testing: habit repairs from sessions g+h holding
+**Next session**: surface-driven habit repair; search depth tiers ticket (#new); whatever misfires in live use
+**In-flight**: NONE
+
 ## Session 2026-03-17h
 **Theme**: Habit repair round 3 — PROC_RESP_DONE + 60-habit bulk passive_capture sweep + design crystallizations
 **Decisions**: none new
