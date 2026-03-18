@@ -1,4 +1,20 @@
 
+## Session 2026-03-18b
+**Theme**: SQLite elimination — Redis for word graph (D121) + Postgres streaming replication (D122); path consistency sweep; word graph batching; book_learner silent bug
+**Decisions**: D121, D122
+**Key changes**:
+- D121 decided: Redis on akienasus for word graph (sorted sets = co-occurrence, network-accessible, centralized, no per-box divergence)
+- D122 decided: Postgres streaming replication (akienasus primary, akiendelllinux hot standby); PGDatabaseProxy gains IGOR_DB_FALLBACK_URL
+- G-WG1: word_graph.py co-occurrence batching — `_cooccur_buffer` dict, flush every 50 docs; 50x fewer SQLite write transactions
+- book_learner: `wg.train()` → `wg.index()` + `wg.flush_cooccur()`; was silently failing all book word graph training
+- Path consistency: milieu.py, main.py, runner.py, push_restart.py all use `paths().instance` (not `igor_{id.replace}` transforms)
+- PROC_EXIT_IGOR trigger tightened (removed "please"/"stop"/"turn off"); live DB updated
+- IGOR_INSTANCE_ID env var fallback in main.py — enables instance rename without arg change
+- Dashboard header: "Igor instance:{id}" (not "Igor-{id}")
+- ollama_reasoner.py log path: source tree → `IGOR_RUNTIME_ROOT/logs/ollama_calls.log`
+**Next session**: D121 Redis implementation; kill outer loop on akiendell + relaunch for Igor-wild-0001 rename to fully take; user's "part 3" (not yet revealed); G-DB1 db_proxy gateway
+**In-flight**: D121 + D122 decided; akienasus not yet up; outer loop on akiendell needs manual kill+relaunch for rename to activate
+
 ## Session 2026-03-17i
 **Theme**: Fourth crystallization — trees + gradients + habits/memory; BG trigger system as embryonic emotional relevance tree
 **Decisions**: none

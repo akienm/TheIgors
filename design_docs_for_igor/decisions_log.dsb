@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18b|latest=D120
+DOC|decisions_log|v1|updated=2026-03-18c|latest=D122
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -279,3 +279,13 @@ D119|db-first-boot|defined|Boot sequence: (1) read IGOR_INSTANCE_ID + IGOR_DB_UR
 // seed_training_corpus.py: 165 pre-extracted training corpus files queued as file:// entries in learn_queue; drain runner processing via book_learner --local
 // Root cause confirmed: Ollama at 398% CPU is load source, not DB queries; DB queries contend because machine is already saturated by inference
 D120|cluster-aware-inference-router|defined|Replace fixed inference edges with dynamic routing that scores each machine by (1) CPU/mem load via Ollama /api/ps + localhost /proc/loadavg, (2) time of day, (3) model capability per host, (4) manual override; route each call type (NE, winnow, preparse, tier.2, extraction) to best available target; cluster_router.py in cognition/; inference_gateway.py edges consult router; book_learner gains --host option defaulting to router selection; supersedes hardcoded OLLAMA_REASONING_HOST split
+
+// ── Session 2026-03-18b additions ──────────────────────────────────────────────
+// Path consistency: milieu.py, main.py, runner.py, push_restart.py all fixed to use paths().instance instead of igor_{id.replace('-','_')} transforms
+// PROC_EXIT_IGOR trigger tightened: removed generic words (please/stop/turn off); kept only exit-specific phrases; live DB updated
+// G-WG1: word_graph.py co-occurrence write batching — _cooccur_buffer dict, flush every 50 docs (WG_COOCCUR_FLUSH_EVERY); 50x fewer SQLite transactions
+// book_learner silent bug fixed: wg.train() doesn't exist → wg.index() + wg.flush_cooccur(); was silently failing for all book training
+// IGOR_INSTANCE_ID env var fallback added to main.py for instance_id when --id arg absent; enables rename without code change
+// Instance rename bootstrap: outer bash loop bakes --id at start; full rename requires killing outer loop and relaunching with updated launcher
+D121|redis-word-graph|defined|Replace SQLite word graph with Redis on akienasus; network-accessible (unlike LMDB/SQLite); sorted sets (ZREVRANGE) = single key lookup for co-occurrence, no GROUP BY; wg:cooccur:{word} sorted sets; all boxes share one graph = no divergence; per-instance TTL cache for day-to-day load; short/no TTL for creative work; Redis Sentinel for HA; eliminates G-WG1 SQLite contention entirely
+D122|postgres-streaming-replication|defined|akienasus = Postgres primary, akiendelllinux = hot standby; streaming replication for instant failover; PGDatabaseProxy gains IGOR_DB_FALLBACK_URL; Redis Sentinel for word graph HA; together D121+D122 eliminate SQLite from all Igor subsystems (memories/ring/TWM/edges/budget → Postgres; word graph → Redis)
