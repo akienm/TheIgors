@@ -1,4 +1,18 @@
 
+## Session 2026-03-18g
+**Theme**: D126 architecture designed — two-channel Postgres + GraphCache + Worry signal + ResourceManager vision
+**Decisions**: D126, #284 (ResourceManager)
+**Key changes**:
+- decisions_log.dsb: D126 defined (two-channel Postgres, GraphCache, Worry, home+local table placement)
+- decisions_log.dsb: ResourceManager note + #284 filed
+- D121 fully superseded by D126; redis_word_graph.py skeleton retained as reference
+- Table placement finalized: HOME=memories/edges/wg_cooccur/notebooks/ResourceManager; LOCAL=ring/TWM/pending_replies/cache_tracking
+- make_db_proxy() splits into make_home_proxy() + make_local_proxy()
+- Worry = new TWM signal class (internal uncertainty, arousal↑ valence↓, persists until resolved)
+- Remote Igor boot sequence: connect → home DB → world unfolds → local self-creates
+**Next session**: D126 Step 1 implementation — make_home_proxy()+make_local_proxy() factories, wire word_graph/budget/notebook/learner, data migration script
+**In-flight**: D126 Step 1 approved and ready to code — split make_db_proxy() into two-channel factories, wire all SQLite callers to Postgres, write migrate_to_postgres.py
+
 ## Session 2026-03-18c
 **Theme**: Windows fixes + resource auto-config design (D123+D124) + akienasus migration plan deposited in Igor's cortex
 **Decisions**: D123, D124
