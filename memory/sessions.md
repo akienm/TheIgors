@@ -143,6 +143,34 @@
 **Next session**: D108 implementation (PathManager cutover — paths.py + first_start.py + igor bash script + ~20 files)
 **In-flight**: About to implement D108 — paths.py + first_start.py + igor bash script; plan approved; need compact before starting
 
+## Session 2026-03-17l
+**Theme**: SQLite→Postgres migration live; Windows instance bootstrapped; multi-instance architecture locked in
+**Decisions**: D118 (SensorTree, defined)
+**Key changes**:
+- `db_proxy.py`: PGDatabaseProxy + _PGConnWrapper (savepoint-per-DML, INSERT OR REPLACE/IGNORE translation, ?→%s) + make_db_proxy() factory
+- `cortex.py`: make_db_proxy factory wired; _init_db() early-return for Postgres; jsonb_exists() in get_habits(); metadata isinstance guard in _to_memory()
+- `claudecode/migrate_sqlite_to_postgres.py`: one-shot migration script; 8,681 memories + 179 habits across 9 tables migrated and verified
+- Perf fixes: idx_memories_ne_scan partial index; idx_twm_instance_integrated composite; SELECT savepoint skip
+- `claudecode/WINDOWS_ONBOARDING.md`: Windows bootstrap guide; credentials via env vars not .env
+- Tickets: #279 Journals, #280 Matter epic, #281 D118 SensorTree, #282 ephemeral split (blocker)
+- `requirements.txt`: psycopg2-binary==2.9.10
+**Next session**: #282 ephemeral split (hard blocker before 3rd instance); Windows Claude working #281/#282/DB tickets; wg_cooccur LMDB deferred
+**In-flight**: NONE
+
+## Session 2026-03-17k
+**Theme**: SQLite→Postgres migration plan approved; ready to implement
+**Decisions**: D112-D117 (prior), migration plan approved
+**Key changes**:
+- Migration plan approved (L-size): PGDatabaseProxy + _PGConnWrapper in db_proxy.py; make_db_proxy factory; 1-line change in cortex.py; migrate_sqlite_to_postgres.py script
+- metadata column → JSONB + GIN index (fixes 2445ms get_habits slow query)
+- get_habits() query: LIKE '%\"trigger\"%' → metadata ? 'trigger'
+- psycopg2-binary added to requirements
+- pg_trgm extension enabled in migration script
+- FK violation check before data copy
+- word_graph.db migration deferred
+**Next session**: implement migration — db_proxy.py PGDatabaseProxy, migration script, cortex.py factory + get_habits fix, validate
+**In-flight**: About to implement SQLite→Postgres migration per approved plan above
+
 ## Session 2026-03-17j
 **Theme**: Architecture crystallization — SystemGateway + service layer + split storage + Postgres migration approved
 **Decisions**: D112, D113, D114, D115

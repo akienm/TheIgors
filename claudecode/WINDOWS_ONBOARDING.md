@@ -7,14 +7,16 @@ If a step fails, diagnose and fix it before moving on.
 
 ---
 
-## Your .env (fill these in before dropping this file on the target machine)
+## Credentials
 
-```
-ANTHROPIC_API_KEY=sk-ant-REPLACE_WITH_REAL_KEY
-IGOR_DB_URL=postgresql://igor:REPLACE_WITH_DB_PASSWORD@REPLACE_WITH_AKIENDELLLINUX_IP/igor_wild_0001
+`ANTHROPIC_API_KEY` and `IGOR_DB_URL` are set as Windows system environment variables on this machine — do not write them to any file. Verify they are present before proceeding:
+
+```powershell
+echo $env:ANTHROPIC_API_KEY
+echo $env:IGOR_DB_URL
 ```
 
-These are the only two credentials this machine needs. Everything else comes from the database.
+Both must be non-empty. If either is missing, stop and ask Akien.
 
 ---
 
@@ -93,8 +95,6 @@ $instanceDir = "$env:APPDATA\TheIgors\igor_wild_windows_001"
 New-Item -ItemType Directory -Force -Path $instanceDir
 
 $envContent = @"
-ANTHROPIC_API_KEY=sk-ant-REPLACE_WITH_REAL_KEY
-IGOR_DB_URL=postgresql://igor:REPLACE_WITH_DB_PASSWORD@REPLACE_WITH_AKIENDELLLINUX_IP/igor_wild_0001
 IGOR_RUNTIME_ROOT=$env:APPDATA\TheIgors
 IGOR_INSTANCE_ID=igor_wild_windows_001
 IGOR_WEB_PORT=8080
@@ -114,8 +114,8 @@ Substitute the real values from the **Your .env** section above before writing.
 
 ```powershell
 python -c "
-import psycopg2
-url = 'postgresql://igor:REPLACE_WITH_DB_PASSWORD@REPLACE_WITH_AKIENDELLLINUX_IP/igor_wild_0001'
+import psycopg2, os
+url = os.environ['IGOR_DB_URL']
 try:
     conn = psycopg2.connect(url)
     cur = conn.cursor()
@@ -129,7 +129,7 @@ except Exception as e:
 ```
 
 If this fails:
-- Check akiendelllinux is reachable: `ping REPLACE_WITH_AKIENDELLLINUX_IP`
+- Check akiendelllinux is reachable: `ping` the host from `$env:IGOR_DB_URL`
 - Check Postgres is listening on 5432: the service layer should be running on akiendelllinux
 - Check firewall on akiendelllinux allows port 5432 from this machine's IP
 - Check `pg_hba.conf` on akiendelllinux allows remote connections from this subnet
@@ -196,7 +196,6 @@ Register-ScheduledTask -TaskName "IgorStartup" -Action $action -Trigger $trigger
 
 ## What you are NOT doing
 
-- Do not create a local SQLite DB — this instance uses shared Postgres only
 - Do not copy or migrate any data — the DB already has everything
 - Do not modify brainstem/ or memory/models.py
 - Do not commit credentials to git
