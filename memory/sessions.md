@@ -1,4 +1,19 @@
 
+## Session 2026-03-18c
+**Theme**: Windows fixes + resource auto-config design (D123+D124) + akienasus migration plan deposited in Igor's cortex
+**Decisions**: D123, D124
+**Key changes**:
+- milieu.py: fcntl → msvcrt on Windows (cross-platform file lock)
+- word_graph.py: missing `import os` added (my bug from G-WG1 last session)
+- main.py: startup message `Igor-{id}` → `Igor instance:{id}`
+- local_pool warning on Windows: confirmed expected/benign
+- D123: sudo relay daemon design settled — sudoer_daemon.sh keepalive, file handshake at ~/.TheIgors/sudo_relay/
+- D124: resource auto-config — Igor sizes box, assigns role, installs autonomously; consent = running daemon
+- akienasus FACTUAL memory deposited in Igor's cortex: migration event, db_primary, Redis+Postgres+replication plan
+- Agency framing confirmed: Igor decides, no confirmation step needed — that's the designed agency
+**Next session**: review priority queue; D121 Redis implementation (when akienasus up); kill outer loop on akiendell for Igor-wild-0001 rename
+**In-flight**: NONE
+
 ## Session 2026-03-18b
 **Theme**: SQLite elimination — Redis for word graph (D121) + Postgres streaming replication (D122); path consistency sweep; word graph batching; book_learner silent bug
 **Decisions**: D121, D122
