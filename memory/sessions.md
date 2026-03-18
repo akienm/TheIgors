@@ -1,4 +1,17 @@
 
+## Session 2026-03-18h
+**Theme**: D126 Step 1 implemented — two-channel Postgres factories + all SQLite callers wired
+**Decisions**: D126 (implemented-poc)
+**Key changes**:
+- db_proxy.py: make_home_proxy() + make_local_proxy() factories; make_db_proxy() kept as backward-compat alias
+- cortex.py: self._home_db + self._local_db; _local_conn() shim; 20 ring/TWM methods routed to local channel
+- word_graph.py: DatabaseProxy → make_home_proxy() (wg_cooccur at home)
+- budget.py, notebook.py, learner.py: all swapped to make_home_proxy(); learner unused sqlite3 import removed
+- claudecode/migrate_to_postgres.py: new two-channel migration script with HOME/LOCAL schema + --dry-run
+- All imports verified; Cortex dual-proxy init tested and confirmed working
+**Next session**: D126 Step 2 (GraphCache class), Step 3 (pending-replies + retry), Step 4 (Worry signal)
+**In-flight**: NONE
+
 ## Session 2026-03-18g
 **Theme**: D126 architecture designed — two-channel Postgres + GraphCache + Worry signal + ResourceManager vision
 **Decisions**: D126, #284 (ResourceManager)
