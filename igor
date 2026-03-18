@@ -75,6 +75,9 @@ fi
 # Restart loop: exit code 42 means "please restart"
 # .env is re-read on every restart so env changes take effect immediately.
 while true; do
+    # Re-pin ENV_FILE from IGOR_INSTANCE_ID (may have been updated by a prior .env read)
+    _candidate="$RUNTIME_ROOT/${IGOR_INSTANCE_ID:-Igor-wild-0001}/.env"
+    [ -f "$_candidate" ] && ENV_FILE="$_candidate"
     set -a; source "$ENV_FILE"; set +a
     if [ -e "$REPO_DIR/pause.wait" ]; then
         echo "Waiting for $REPO_DIR/pause.wait to clear."
