@@ -25,8 +25,8 @@ if (-not (Test-Path $venvPython)) {
 }
 
 Write-Host "Starting Igor (igor_wild_windows_0001)..." -ForegroundColor Cyan
-Set-Location $repoRoot
-& $venvPython -m wild_igor.igor.main
+Set-Location "$repoRoot\wild_igor"
+& $venvPython -m igor.main
 
 # SIG # Begin signature block
 # MIIFcwYJKoZIhvcNAQcCoIIFZDCCBWACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
