@@ -115,6 +115,21 @@ IGOR_WEB_PORT=8080
 IGOR_SELF_EDIT_ENABLED=false
 IGOR_TIER5_ENABLED=false
 IGOR_ARBITER_ENABLED=false
+
+# ── Models (same on all boxes) ───────────────────────────────────────────────
+OLLAMA_LOCAL_MODEL=qwen2.5:7b
+IGOR_NE_LOCAL_MODEL=qwen2.5:7b
+IGOR_WINNOW_LOCAL_MODEL=qwen2.5:7b
+OPENROUTER_WINNOW_MODEL=qwen/qwen2.5-7b-instruct
+OPENROUTER_CHEAP_MODEL=openai/gpt-4o-mini
+OPENROUTER_DEFAULT_MODEL=anthropic/claude-haiku-4.5
+OPENROUTER_INTERACTIVE_MODEL=anthropic/claude-sonnet-4.6
+IGOR_CLOUD_TRAINING_ENABLED=true
+IGOR_TWO_PHASE_CALLS=true
+IGOR_NPASS_REPLY=true
+IGOR_CONTEXT_WINNOW=true
+IGOR_READING_EXTRACT=true
+IGOR_HABIT_EXTRACT=true
 "@
 
 $envContent | Out-File -FilePath "$instanceDir\.env" -Encoding UTF8
