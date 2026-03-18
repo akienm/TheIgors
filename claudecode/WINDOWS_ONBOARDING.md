@@ -29,8 +29,10 @@ Both must be non-empty. If either is missing, stop and ask Akien.
 - Runtime root is `C:\Users\akien\.TheIgors` (not `%APPDATA%\TheIgors`)
 - Instance ID convention: `igor_wild_windows_XXXX` with **four** zeros (e.g. `igor_wild_windows_0001`)
 - akiendelllinux IP: `10.0.0.229` — Postgres port 5432 must be open in firewall AND `listen_addresses = '*'` in postgresql.conf AND subnet allowed in pg_hba.conf
-- `start_igor_windows.ps1` in repo root — use this to launch Igor; it loads `.env` automatically
-- `sign_igor_script.ps1` in repo root — run this (elevated) after any edit to `start_igor_windows.ps1`
+- **`igor_loop.ps1`** in repo root — primary launcher; git pull + restart loop (mirrors Linux `igor` wrapper)
+- `start_igor_windows.ps1` in repo root — single-run inner script (called by `igor_loop.ps1`; also usable directly)
+- `igor.bat` in repo root — thin CMD entry point; `igor` command if repo root is in PATH
+- `sign_igor_script.ps1` in repo root — run this (elevated) after any edit to `igor_loop.ps1` or `start_igor_windows.ps1`; signs both
 
 ---
 
@@ -172,9 +174,14 @@ Do not proceed until DB connectivity is confirmed and memory count is non-zero.
 
 ## Step 6 — Start Igor
 
-Use the launch script in the repo root — it loads `.env` automatically:
+Use `igor_loop.ps1` — it does a `git pull` then starts Igor and restarts on exit code 42:
 ```powershell
-& "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors\start_igor_windows.ps1"
+& "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors\igor_loop.ps1"
+```
+
+Or if the repo root is in your PATH, just:
+```powershell
+igor
 ```
 
 Igor should print startup logs showing DB connection, habit cache load, and web server starting on port 8080.
@@ -208,16 +215,23 @@ Invoke-RestMethod -Uri "http://localhost:8080/api/cc_send" -Method POST -Content
 
 ## Step 9 — Set Igor to start on login
 
-The repo contains `sign_igor_script.ps1` — run it (elevated, double-click) to create a self-signed cert and sign `start_igor_windows.ps1`. This only needs to be done once per machine (and again after any edit to the script).
+Run `sign_igor_script.ps1` (elevated, double-click) to create a self-signed cert and sign both `igor_loop.ps1` and `start_igor_windows.ps1`. Do this once per machine and again after any edit to either script.
 
-Then register the scheduled task:
+Then register the scheduled task pointing to `igor_loop.ps1` (includes git pull + restart loop):
 ```powershell
-$scriptPath = "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors\start_igor_windows.ps1"
+$scriptPath = "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors\igor_loop.ps1"
 $action = New-ScheduledTaskAction -Execute "powershell.exe" `
     -Argument "-WindowStyle Normal -ExecutionPolicy Bypass -File `"$scriptPath`""
 $trigger = New-ScheduledTaskTrigger -AtLogOn
 $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Hours 0) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
 Register-ScheduledTask -TaskName "IgorStartup" -Action $action -Trigger $trigger -Settings $settings -RunLevel Highest -Force
+```
+
+**Add repo root to PATH** (optional — lets you type `igor` from anywhere):
+```powershell
+$repoRoot = "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors"
+[System.Environment]::SetEnvironmentVariable("PATH", "$env:PATH;$repoRoot", "User")
+# Restart shell to pick up the new PATH
 ```
 
 ---

@@ -1,7 +1,7 @@
 # sign_igor_script.ps1
-# Signs start_igor_windows.ps1 with the local AkienLocalSigning cert.
+# Signs start_igor_windows.ps1 and igor_loop.ps1 with the local AkienLocalSigning cert.
 # Creates the cert if it doesn't exist yet.
-# Run this after any edit to start_igor_windows.ps1, or on a fresh machine.
+# Run this after any edit to either script, or on a fresh machine.
 # Will self-elevate to admin if needed.
 
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -9,7 +9,11 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$scriptPath = "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors\start_igor_windows.ps1"
+$repoRoot = "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors"
+$scriptsToSign = @(
+    "$repoRoot\start_igor_windows.ps1",
+    "$repoRoot\igor_loop.ps1"
+)
 
 $cert = Get-ChildItem Cert:\CurrentUser\My |
     Where-Object { $_.Subject -eq 'CN=AkienLocalSigning' -and $_.HasPrivateKey } |
@@ -30,11 +34,17 @@ if (-not $cert) {
     Write-Host 'Found existing cert.' -ForegroundColor Cyan
 }
 
-$result = Set-AuthenticodeSignature -FilePath $scriptPath -Certificate $cert
-if ($result.Status -eq 'Valid') {
-    Write-Host 'Script signed successfully.' -ForegroundColor Green
-} else {
-    Write-Host ('Signing result: ' + $result.Status) -ForegroundColor Red
+foreach ($scriptPath in $scriptsToSign) {
+    if (-not (Test-Path $scriptPath)) {
+        Write-Host "SKIP (not found): $scriptPath" -ForegroundColor Yellow
+        continue
+    }
+    $result = Set-AuthenticodeSignature -FilePath $scriptPath -Certificate $cert
+    if ($result.Status -eq 'Valid') {
+        Write-Host "Signed: $(Split-Path -Leaf $scriptPath)" -ForegroundColor Green
+    } else {
+        Write-Host ("Signing failed for $(Split-Path -Leaf $scriptPath): " + $result.Status) -ForegroundColor Red
+    }
 }
 
 Read-Host 'Press Enter to close'
