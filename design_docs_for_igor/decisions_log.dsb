@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-17l|latest=D118
+DOC|decisions_log|v1|updated=2026-03-18a|latest=D119
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -259,6 +259,9 @@ D115|split-storage-by-access-pattern|defined|memories+habits→Postgres (concurr
 D116|minimal-env-per-instance|defined|each instance .env contains only: API key (so Claude can run) + DB connection string; all other runtime config (machine capabilities, service endpoints, routing) lives in the DB environment tree; .env is bootstrap credential not config store
 D118|sensor-tree|defined|generalized observation source — sensor nodes in memory graph define what to watch + condition + habit to fire; replaces ResourceMonitorSource; devices/services as sensor nodes; no special-case drivers; ticket #281
 D117|environment-tree-in-db|defined|FACTUAL node subtree in DB describes runtime environment (machines, services, capabilities, connection strings); machines.json becomes seed file not source of truth; MachinesFileSource in push_sources.py watches mtime hourly (or on-demand via habit), syncs changes into DB nodes; SystemGateway reads this tree to locate services; new box registers itself here on first boot
+
+// ── Session 2026-03-18a additions ──────────────────────────────────────────────
+D119|db-first-boot|defined|Boot sequence: (1) read IGOR_INSTANCE_ID + IGOR_DB_URL from .env — only these two ever required; (2) connect to DB; (3) compare .env mtime against last_env_read timestamp in instance DB record; (4) if newer: re-read full .env, push changed vars into system config subtree in DB, update last_env_read; (5) all runtime config comes from DB. .env is a change-trigger not a config store. If DB unreachable: fail fast, no env-var fallback. Two companion abstractions: System abstraction = DB subtree of shared config (model names, API key refs, feature flags, OR routing); Swarm abstraction = DB subtree of live instance topology (who is running, IP/port, role, last heartbeat) — replaces machines.json. Supersedes D116. Per-machine overrides stay in .env only when genuinely instance-specific; currently none beyond the two bootstrap vars.
 
 // ── Session 2026-03-17l additions ──────────────────────────────────────────────
 // SQLite→Postgres migration executed: 8,681 memories + 179 habits across 9 tables; all counts verified; Igor boots clean on Postgres
