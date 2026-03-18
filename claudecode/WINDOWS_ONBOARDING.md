@@ -30,7 +30,7 @@ Both must be non-empty. If either is missing, stop and ask Akien.
 - Instance ID convention: `igor_wild_windows_XXXX` with **four** zeros (e.g. `igor_wild_windows_0001`)
 - akiendelllinux IP: `10.0.0.229` — Postgres port 5432 must be open in firewall AND `listen_addresses = '*'` in postgresql.conf AND subnet allowed in pg_hba.conf
 - `start_igor_windows.ps1` in repo root — use this to launch Igor; it loads `.env` automatically
-- `sign_igor_script.bat` in repo root — run this (elevated) after any edit to `start_igor_windows.ps1`
+- `sign_igor_script.ps1` in repo root — run this (elevated) after any edit to `start_igor_windows.ps1`
 
 ---
 
@@ -193,7 +193,7 @@ Invoke-RestMethod -Uri "http://localhost:8080/api/cc_send" -Method POST -Content
 
 ## Step 9 — Set Igor to start on login
 
-The repo contains `sign_igor_script.bat` — run it (elevated, double-click) to create a self-signed cert and sign `start_igor_windows.ps1`. This only needs to be done once per machine (and again after any edit to the script).
+The repo contains `sign_igor_script.ps1` — run it (elevated, double-click) to create a self-signed cert and sign `start_igor_windows.ps1`. This only needs to be done once per machine (and again after any edit to the script).
 
 Then register the scheduled task:
 ```powershell
@@ -274,4 +274,4 @@ Common failure modes:
 3. **Module not found** — wrong working directory, or ran with system Python instead of venv
 4. **Port 8080 in use** — another process has it; change `IGOR_WEB_PORT` in .env
 5. **Missing dependency** — `pip install <package>` while venv is active, then add to requirements.txt
-6. **Script signing prompt** — run `sign_igor_script.bat` elevated to sign `start_igor_windows.ps1`
+6. **Script signing prompt** — run `sign_igor_script.ps1` elevated to sign `start_igor_windows.ps1`
