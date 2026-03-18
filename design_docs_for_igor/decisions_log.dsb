@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18h|latest=D126
+DOC|decisions_log|v1|updated=2026-03-18i|latest=D126
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined

@@ -1,4 +1,14 @@
 
+## Session 2026-03-18i
+**Theme**: Audit P4+P5 complete + DSB/CSB architecture clarified
+**Decisions**: none new (audit completion)
+**Key changes**:
+- P4: 40 seed_*.py archived to claudecode/archive/; seed_resource_gate_habits marked DO_NOT_RERUN; archive/README.md created
+- P5: paths.py learn_queue+drain_pid moved to paths().instance (was runtime root — race condition); drain_learn_queue.py hardcoded paths replaced with PathManager; existing learn_queue.json migrated to igor_wild_0001/
+- DSB/CSB architecture clarified: .md files = human-readable source maintained by Claude; .dsb/.csb = compressed token-efficient form for Claude/Igor; DB = eventual runtime home; Claude maintains .md, Igor will eventually take over; update cadence = lazy not per-session
+**Next session**: new concept chunk from Akien (pending)
+**In-flight**: NONE
+
 ## Session 2026-03-18h
 **Theme**: D126 Step 1 implemented — two-channel Postgres factories + all SQLite callers wired
 **Decisions**: D126 (implemented-poc)
