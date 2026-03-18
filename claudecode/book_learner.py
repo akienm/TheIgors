@@ -187,12 +187,24 @@ def _clean_json(raw: str) -> str:
 def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
     """
     Extract nodes using local Ollama — zero API cost.
-    Uses OLLAMA_LOCAL_MODEL (default qwen2.5:7b) at OLLAMA_HOST.
+    D120: asks cluster_router for best (host, model) for "extraction" call type.
+    Falls back to OLLAMA_LOCAL_MODEL at OLLAMA_HOST if router unavailable.
     """
     import urllib.request
 
-    model = os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b").split("#")[0].strip()
-    host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    # D120: dynamic routing — pick least-loaded machine that has a local model
+    host = None
+    model = None
+    try:
+        from igor.cognition.cluster_router import router as _router
+
+        host, model = _router.route("extraction")
+    except Exception:
+        pass
+    if not host:
+        host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    if not model:
+        model = os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b").split("#")[0].strip()
 
     user_content = "BOOK PASSAGE"
     if chapter_title:

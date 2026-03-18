@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18a|latest=D119
+DOC|decisions_log|v1|updated=2026-03-18b|latest=D120
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -271,3 +271,11 @@ D119|db-first-boot|defined|Boot sequence: (1) read IGOR_INSTANCE_ID + IGOR_DB_UR
 // Windows instance bootstrapped: WINDOWS_ONBOARDING.md; ANTHROPIC_API_KEY + IGOR_DB_URL set as Windows env vars; igor_wild_windows_001
 // Tickets created: #279 (Journals + Master's Notebook), #280 (Matter epic / home automation), #281 (D118 SensorTree), #282 (DB audit + split ephemeral storage — blocker for multi-instance)
 // #282 is hard blocker before adding 3rd instance: shared ring_memory on Postgres = all instances' short-term context bleeds together
+
+// ── Session 2026-03-18a additions ──────────────────────────────────────────────
+// D119 env_sync.py implemented + live: boot_env_sync() runs after Cortex init in main.py; 48 SYSCFG nodes in Postgres; Windows hydrates model vars automatically
+// igor_loop.ps1 + igor.bat: Windows outer restart loop (git pull + exit-code 42 loop); sign_igor_script.ps1 signs both; igor.bat = CMD entry point; repo root in PATH = type igor anywhere
+// exit_self() + exit.flag + PROC_EXIT_IGOR: clean shutdown without restart (code 0); parallel to restart_self()/restart.flag/code 42
+// seed_training_corpus.py: 165 pre-extracted training corpus files queued as file:// entries in learn_queue; drain runner processing via book_learner --local
+// Root cause confirmed: Ollama at 398% CPU is load source, not DB queries; DB queries contend because machine is already saturated by inference
+D120|cluster-aware-inference-router|defined|Replace fixed inference edges with dynamic routing that scores each machine by (1) CPU/mem load via Ollama /api/ps + localhost /proc/loadavg, (2) time of day, (3) model capability per host, (4) manual override; route each call type (NE, winnow, preparse, tier.2, extraction) to best available target; cluster_router.py in cognition/; inference_gateway.py edges consult router; book_learner gains --host option defaulting to router selection; supersedes hardcoded OLLAMA_REASONING_HOST split
