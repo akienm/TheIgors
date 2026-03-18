@@ -95,6 +95,7 @@ CREATE INDEX IF NOT EXISTS idx_memories_metadata_gin ON memories USING GIN (meta
 CREATE INDEX IF NOT EXISTS idx_memories_memory_type  ON memories (memory_type);
 CREATE INDEX IF NOT EXISTS idx_memories_parent_id    ON memories (parent_id);
 CREATE INDEX IF NOT EXISTS idx_memories_activation   ON memories (activation_count DESC);
+CREATE INDEX IF NOT EXISTS idx_memories_ne_scan      ON memories (activation_count DESC) WHERE memory_type NOT IN ('ROOT', 'CORE_PATTERN');
 
 CREATE TABLE IF NOT EXISTS ring_memory (
     id          SERIAL PRIMARY KEY,
@@ -122,9 +123,10 @@ CREATE TABLE IF NOT EXISTS twm_observations (
     parent_obs_id       INTEGER
 );
 
-CREATE INDEX IF NOT EXISTS idx_twm_integrated   ON twm_observations (integrated);
-CREATE INDEX IF NOT EXISTS idx_twm_expires_at   ON twm_observations (expires_at);
-CREATE INDEX IF NOT EXISTS idx_twm_instance_id  ON twm_observations (instance_id);
+CREATE INDEX IF NOT EXISTS idx_twm_integrated            ON twm_observations (integrated);
+CREATE INDEX IF NOT EXISTS idx_twm_expires_at            ON twm_observations (expires_at);
+CREATE INDEX IF NOT EXISTS idx_twm_instance_id           ON twm_observations (instance_id);
+CREATE INDEX IF NOT EXISTS idx_twm_instance_integrated   ON twm_observations (instance_id, integrated, id ASC);
 
 CREATE TABLE IF NOT EXISTS memory_blobs (
     id          SERIAL PRIMARY KEY,
