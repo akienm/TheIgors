@@ -29,16 +29,16 @@ cortex = Cortex(DB_PATH, instance_id="wild-0001")
 habit = Memory(
     id="PROC_EXIT_IGOR",
     narrative=(
-        "When Akien says 'stop igor', 'exit igor', 'shutdown', 'please exit', "
-        "'shut yourself down', 'halt', or 'turn off', I call exit_self() to write "
-        "the exit flag. The main loop picks it up and exits with code 0 — the wrapper "
-        "does not restart. I confirm: 'Shutting down cleanly.'"
+        "When Akien says 'exit igor', 'shutdown igor', 'shut yourself down', "
+        "'halt', 'stop yourself', 'quit igor', or 'exit cleanly', I call exit_self() "
+        "to write the exit flag. The main loop picks it up and exits with code 0 — "
+        "the wrapper does not restart. I confirm: 'Shutting down cleanly.'"
     ),
     memory_type=MemoryType.PROCEDURAL,
     metadata={
         "trigger": (
-            "stop igor exit igor shutdown please exit shut yourself down halt "
-            "turn off stop yourself exit cleanly shut down"
+            "exit igor shutdown igor shut yourself down halt "
+            "stop yourself exit cleanly quit igor terminate igor"
         ),
         "habit_type": "action",
         "code_ref": "tools.runner.exit_self",
