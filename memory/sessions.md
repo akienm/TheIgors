@@ -1,4 +1,14 @@
 
+## Session 2026-03-18j
+**Theme**: Process Development Tools crystallization + D126 execution plan locked
+**Decisions**: none new (concept capture + planning)
+**Key changes**:
+- SIXTH crystallization: Process Development Tools — services→habits→Claude skills; 5-phase loop with 3 human touchpoints; /decided replaces savestate; single root node for Claude startup; matrix debugger future; saved to project_process_development_tools.md
+- Reading validation test defined: 5 already-absorbed language books + Watcher pre-filter; delta nodes = acceptance test for all of D126+multi-box+extraction work; saved to project_reading_validation_test.md
+- D126 completion plan approved: IGOR_HOME_DB_URL+IGOR_LOCAL_DB_URL env vars + PendingReplyStore wiring into WordGraph/GraphCache + 29M wg_cooccur rows migrated from word_graph.db → Postgres; execution next
+**Next session**: Execute D126 completion (env vars → wiring → migration → Igor restart + verify)
+**In-flight**: D126 completion — about to set env vars, wire PendingReplyStore, migrate wg_cooccur; needed for Windows second-box and reading validation test
+
 ## Session 2026-03-18i
 **Theme**: Audit P4+P5 complete + DSB/CSB architecture clarified
 **Decisions**: none new (audit completion)
