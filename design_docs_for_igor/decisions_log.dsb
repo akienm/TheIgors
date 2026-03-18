@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18c|latest=D122
+DOC|decisions_log|v1|updated=2026-03-18d|latest=D124
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -289,3 +289,11 @@ D120|cluster-aware-inference-router|defined|Replace fixed inference edges with d
 // Instance rename bootstrap: outer bash loop bakes --id at start; full rename requires killing outer loop and relaunching with updated launcher
 D121|redis-word-graph|defined|Replace SQLite word graph with Redis on akienasus; network-accessible (unlike LMDB/SQLite); sorted sets (ZREVRANGE) = single key lookup for co-occurrence, no GROUP BY; wg:cooccur:{word} sorted sets; all boxes share one graph = no divergence; per-instance TTL cache for day-to-day load; short/no TTL for creative work; Redis Sentinel for HA; eliminates G-WG1 SQLite contention entirely
 D122|postgres-streaming-replication|defined|akienasus = Postgres primary, akiendelllinux = hot standby; streaming replication for instant failover; PGDatabaseProxy gains IGOR_DB_FALLBACK_URL; Redis Sentinel for word graph HA; together D121+D122 eliminate SQLite from all Igor subsystems (memories/ring/TWM/edges/budget → Postgres; word graph → Redis)
+
+// ── Session 2026-03-18c additions ──────────────────────────────────────────────
+// milieu.py fcntl → msvcrt on Windows (cross-platform file lock); word_graph.py missing import os added; startup message Igor-{id} → Igor instance:{id}
+// local_pool warning on Windows is expected/benign — KoboldCpp not on Windows, falls through to OR tier.3
+// Resource agency: Igor decides box role and installs autonomously; human consent = act of running sudoer daemon; no confirmation step needed (agency already baked in)
+// akienasus special case: NOT generic new box — migration event; plan deposited as FACTUAL memory in Igor's cortex
+D123|sudo-relay-daemon|defined|sudoer_daemon.sh: asks pw once, sudo -v keepalive every 2min; watches ~/.TheIgors/sudo_relay/pending.sh; sources+deletes it; writes done file; Igor polls done file; human consent = explicit act of running daemon; ephemeral privilege window, not persistent
+D124|resource-auto-config|defined|Igor sizes up any new box (RAM/CPU/storage/OS/existing services), assigns roles from taxonomy (db_primary/db_replica/inference_heavy/inference_light/reader/thin), installs what role needs via D123 relay; Igor decides autonomously — agency already designed in; akienasus is special case: db_primary + migration (D121+D122) per FACTUAL memory deposited in cortex; plan covers phones, Pi400, any future resource
