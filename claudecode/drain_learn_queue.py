@@ -25,10 +25,13 @@ from pathlib import Path
 REPO = Path(__file__).parent.parent
 VENV_PYTHON = REPO / "venv" / "bin" / "python"
 BOOK_LEARNER = REPO / "claudecode" / "book_learner.py"
-QUEUE_FILE = Path.home() / ".TheIgors" / "learn_queue.json"
-LOG_DIR = Path.home() / ".TheIgors" / "logs"
+sys.path.insert(0, str(REPO))
+from wild_igor.igor.paths import paths as _igor_paths  # noqa: E402
+
+QUEUE_FILE = _igor_paths().learn_queue
+LOG_DIR = _igor_paths().logs
 LOG_FILE = LOG_DIR / "drain_learn_queue.log"
-PID_FILE = Path.home() / ".TheIgors" / "drain_learn_queue.pid"
+PID_FILE = _igor_paths().drain_pid
 
 DEFAULT_LAUNCH_DELAY = 60  # seconds between launches
 MAX_BOOK_LEARNER_AGE_MINUTES = 45  # kill book_learner if stuck longer than this
