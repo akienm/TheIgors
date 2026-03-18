@@ -1,4 +1,18 @@
 
+## Session 2026-03-18k
+**Theme**: D126 execution — code complete, migration running, 14 tests passing
+**Decisions**: none new (D126 implementation)
+**Key changes**:
+- db_proxy.py: _PGConnWrapper.executescript() shim + PRAGMA no-op (Postgres compat)
+- word_graph.py: PendingReplyStore wired into WordGraph.__init__, passed to GraphCache
+- db_proxy.py: _TABLE_PK extended with wg_meta/wg_word_lang/wg_idf/wg_word_docs/wg_cooccur/config
+- .env: IGOR_HOME_DB_URL + IGOR_LOCAL_DB_URL added (both = same Postgres for single-box)
+- claudecode/migrate_wg_to_postgres.py: batched migration script, dry-run verified
+- tests/test_d126_postgres.py: 14 unit tests all passing
+- Migration running: wg_meta+wg_word_lang+wg_idf+wg_word_docs done; wg_cooccur at 57%
+**Next session**: wait for wg_cooccur to finish → restart Igor → fix boot failures → verify clean run
+**In-flight**: wg_cooccur migration ~57% done; after completion restart Igor on two-channel Postgres and triage any boot errors
+
 ## Session 2026-03-18j
 **Theme**: Process Development Tools crystallization + D126 execution plan locked
 **Decisions**: none new (concept capture + planning)
