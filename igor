@@ -79,6 +79,9 @@ while true; do
     _candidate="$RUNTIME_ROOT/${IGOR_INSTANCE_ID:-Igor-wild-0001}/.env"
     [ -f "$_candidate" ] && ENV_FILE="$_candidate"
     set -a; source "$ENV_FILE"; set +a
+    # Pin IGOR_INSTANCE_ID to the canonical dir name — overrides any stale .env value.
+    # This is the authoritative source: the dir that contains the .env IS the instance.
+    export IGOR_INSTANCE_ID=$(basename "$(dirname "$ENV_FILE")")
     if [ -e "$REPO_DIR/pause.wait" ]; then
         echo "Waiting for $REPO_DIR/pause.wait to clear."
         while [ -e "$REPO_DIR/pause.wait" ]; do

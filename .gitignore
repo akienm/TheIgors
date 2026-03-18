@@ -2,10 +2,17 @@ venv/
 wild_igor/.env
 wild_igor/data/
 wild_igor/workspace/
+workspace/
 __pycache__/
 *.pyc
 *.db
 *.bak
 *.log
+*.pid
+*.lock
 .env
 .aider*
+.claude/settings.local.json
+change_request*.txt
+warm_context*.json
+benchmarks/results/
