@@ -27,7 +27,7 @@ fi
 
 # Locate .env — check IGOR_INSTANCE_ID or default instance dir
 RUNTIME_ROOT="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
-INSTANCE_ID="${IGOR_INSTANCE_ID:-igor_wild_0001}"
+INSTANCE_ID="${IGOR_INSTANCE_ID:-Igor-wild-0001}"
 ENV_FILE="$RUNTIME_ROOT/$INSTANCE_ID/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
@@ -69,7 +69,7 @@ cd "$WILD_DIR"
 # Default instance ID if --id not specified
 IGOR_ARGS=("$@")
 if [[ ! " $* " =~ " --id " ]]; then
-    IGOR_ARGS=("--id" "wild-0001" "$@")
+    IGOR_ARGS=("--id" "Igor-wild-0001" "$@")
 fi
 
 # Restart loop: exit code 42 means "please restart"
