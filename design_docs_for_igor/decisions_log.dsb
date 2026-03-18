@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18e|latest=D125
+DOC|decisions_log|v1|updated=2026-03-18f|latest=D125
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -304,3 +304,12 @@ D124|resource-auto-config|defined|Igor sizes up any new box (RAM/CPU/storage/OS/
 // Pattern engineering: 5th crystallization — pattern = one or more habits at right granularity; unit of design/repair/debug; code in the data
 // Bash logging convention: all bash scripts use logcmd/logecho/timestamp() from akientools logger_for_bash (inline for self-contained scripts)
 // D121 unblocked: Redis installed on akiendelllinux — Redis WG backend can start now, not blocked by akienasus
+
+// ── Session 2026-03-18f additions ──────────────────────────────────────────────
+// P1 instance ID bugs fixed: paths.py default → Igor-wild-0001; igor launcher pins IGOR_INSTANCE_ID from dir name post-.env; google_contacts.py + ollama_reasoner.py log path use paths()
+// D125 implemented: BaseReasoner(ABC,IgorBase) + BaseInterruptor(ABC,IgorBase); igor_base.py import fixed (relative); lazy _ensure_perf_history() for subclasses without super().__init__()
+// D123 habits seeded: PROC_SUDO_RELAY_CHECK (context_inject) + PROC_SUDO_RELAY_RUN (action) + PROC_SUDO_RELAY_WAKE (response) in live DB
+// G-DB1/D092 closed: no remaining raw sqlite3.connect in Igor source (Calibre + DRM exempt as third-party)
+// .gitignore additions: workspace/, *.pid, *.lock, .claude/settings.local.json, change_request*.txt, warm_context*.json, benchmarks/results/
+// D121 skeleton built: redis_word_graph.py + redis_migrate_wg.py + main.py make_word_graph factory; migration BLOCKED — 29M rows × Redis ZSET overhead ≈ 70GB RAM vs 3.8GB SQLite; redesign needed (hot-cache top-N or Postgres co-occur)
+// D121 redesign needed: hot-word cache (top 10K × top 50 co-occur = ~250MB Redis) OR Postgres wg_cooccur table — architectural decision deferred to next session

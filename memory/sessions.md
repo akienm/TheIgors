@@ -244,3 +244,19 @@
 - D125 defined: global base class for all Igor objects (diagnostics/monitoring consolidation)
 **Next session**: Full audit sprint (P1 bugs → P2 cleanup → P3 gitignore) + global base class + seed sudo relay pattern + G-DB1 + D121 Redis WG backend
 **In-flight**: About to execute full audit sprint + feature queue top-to-bottom; Redis installed, D121 unblocked
+
+## Session 2026-03-18f
+**Theme**: Audit sprint — P1/P2/P3 bugs + D125 IgorBase wiring + D123 habits seeded + D121 Redis skeleton (migration blocked)
+**Decisions**: D121 (skeleton built, redesign needed), D123 (habits seeded), D125 (implemented), G-DB1 closed
+**Key changes**:
+- P1: paths.py default → Igor-wild-0001; igor launcher pins IGOR_INSTANCE_ID from canonical dir name after .env source
+- P1: google_contacts.py both DB fallback paths use paths().instance; ollama_reasoner.py log path via paths().logs
+- P2: .gitignore additions: workspace/, *.pid, *.lock, .claude/settings.local.json, change_request*.txt, warm_context*.json, benchmarks/results/
+- D125 implemented: BaseReasoner(ABC,IgorBase) + BaseInterruptor(ABC,IgorBase); lazy _ensure_perf_history(); igor_base.py absolute import fixed → relative
+- D123 habits seeded: PROC_SUDO_RELAY_CHECK (context_inject) + PROC_SUDO_RELAY_RUN (action) + PROC_SUDO_RELAY_WAKE (response) in live DB
+- G-DB1/D092 verified closed: no raw sqlite3.connect in Igor source (Calibre+DRM exempt)
+- D121 skeleton: redis_word_graph.py (RedisWordGraph + make_word_graph factory) + redis_migrate_wg.py + main.py factory wiring + redis in requirements.txt
+- D121 migration aborted: started at 32k/s → 5k/s collapse; 29M rows × Redis ZSET overhead ≈ 70GB RAM vs 3.8GB SQLite; FLUSHDB done; redesign needed
+- Architectural insight: full Redis WG migration not viable at current row count; need hot-word cache (top 10K × top 50) or Postgres co-occur table
+**Next session**: D121 redesign decision (hot-cache vs Postgres co-occur), D124 resource-auto-config, G-NE1 episodic-to-semantic merge, commit D121 skeleton files
+**In-flight**: D121 Redis sorted sets for 29M co-occurrence pairs require ~70GB RAM. Redesign: hot-word cache (top 10K words × top 50 co-occur = ~250MB Redis) OR Postgres wg_cooccur table (already running)
