@@ -364,7 +364,7 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
 # ── Word graph training ────────────────────────────────────────────────────────
 
 
-def _train_word_graph(chunk_text: str) -> None:
+def _train_word_graph(chunk_text: str, doc_id: str = "") -> None:
     """Train the word graph from this chunk. Silently skips if unavailable."""
     try:
         wg_db = Path.home() / ".TheIgors" / "word_graph.db"
@@ -372,8 +372,11 @@ def _train_word_graph(chunk_text: str) -> None:
             return
         from igor.cognition.word_graph import WordGraph
 
-        wg = WordGraph(str(wg_db))
-        wg.train(chunk_text)
+        wg = WordGraph(db_path=wg_db)
+        wg.index(doc_id or chunk_text[:32], chunk_text)
+        # Fresh instance per chunk — flush co-occurrence buffer immediately
+        # (G-WG1 batching helps the main loop; book_learner reuses no state)
+        wg.flush_cooccur()
     except Exception:
         pass
 
@@ -497,7 +500,7 @@ def run(args) -> None:
             else:
                 n_dep = _deposit_nodes(nodes, cortex, book_title, pos)
                 total_deposited += n_dep
-                _train_word_graph(chunk_text)
+                _train_word_graph(chunk_text, doc_id=f"{book_key}:{pos}")
 
                 status = f"→ {n_dep} node(s)" if n_dep else "→ no nodes"
                 print(f"{chunk_label} {status}  {summary[:60]}")
