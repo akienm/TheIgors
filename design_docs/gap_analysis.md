@@ -1040,4 +1040,7 @@ Current: each memory is a single narrative entry. Design (#250): `occurrence_dat
 - **Salience elevation (#245)**: distributed, no single owner — watchlist, NE, meaning-to-me, attractor all contribute independently.
 - **Intrinsic motivation (#246)**: curiosity as idle state (low arousal + positive valence + open attractor); NE internal_state → milieu reward signal; temporal credit assignment ('thanks past self') deferred.
 
-*Updated: 2026-03-15d by Claude Code.*
+**G-WG1 — wg_cooccur INSERT contention (SQLite word graph)** *(S)*
+`INSERT INTO wg_cooccur` hitting 1000-4000ms. Word graph uses its own SQLite DB (DatabaseProxy, not PGDatabaseProxy) — contention when multiple turns write co-occurrence data simultaneously. Fix candidates: (1) WAL mode on word graph DB, (2) batch inserts, (3) migrate wg_cooccur to Postgres. Classification: SQLite write-lock limit (not a bad query). Observed: 2026-03-17.
+
+*Updated: 2026-03-17m by Claude Code.*

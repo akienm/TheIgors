@@ -207,6 +207,50 @@ Register-ScheduledTask -TaskName "IgorStartup" -Action $action -Trigger $trigger
 
 ---
 
+## Step 10 — Enable background reading (optional)
+
+Background reading lets this instance ingest ebooks from the Calibre library into Igor's memory graph while idle.
+
+**Install ebook dependencies** (with venv active):
+```powershell
+& "$env:USERPROFILE\.TheIgors\venv\Scripts\python.exe" -m pip install ebooklib mobi pdfminer.six nltk
+& "$env:USERPROFILE\.TheIgors\venv\Scripts\python.exe" -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+```
+
+**Enable in `.env`** — add to `$instanceDir\.env`:
+```
+IGOR_RESEARCH_MODE=true
+IGOR_READING_EXTRACT=true
+```
+
+**Calibre library path is auto-detected on Windows** — no env var needed.
+`PathManager.ebooks_root` resolves to `~/OneDrive/AkiensMedia/Ebooks` on Windows automatically.
+The Calibre Library is expected at `~/OneDrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library`.
+
+Override only if your OneDrive path differs:
+```
+EBOOKS_ROOT=C:\path\to\AkiensMedia\Ebooks
+```
+
+**Verify Calibre is accessible:**
+```powershell
+& "$env:USERPROFILE\.TheIgors\venv\Scripts\python.exe" -c "
+from igor.paths import paths
+p = paths()
+print('ebooks_root:', p.ebooks_root)
+print('calibre_library:', p.calibre_library)
+print('exists:', p.calibre_library.exists())
+"
+```
+
+**Kick off a test read** via CC bridge:
+```powershell
+$body = '{"content": "find a book and read the first chunk"}'
+Invoke-RestMethod -Uri "http://localhost:8080/api/cc_send" -Method POST -ContentType "application/json" -Body $body
+```
+
+---
+
 ## What you are NOT doing
 
 - Do not create a local SQLite DB — this instance uses shared Postgres only
