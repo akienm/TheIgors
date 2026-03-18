@@ -1,4 +1,20 @@
 
+## Session 2026-03-18l
+**Theme**: Process Development Tools deep design — executor question, test-fix loop, context package, persistent instance, Delta Dental methodology
+**Decisions**: none new (design refinement session)
+**Key changes**:
+- Clarified Phase 4 executor: CC now, Igor eventually (after reading+retention validated)
+- Test-fix loop: 3-attempt bounded retry in skill near-term; Igor orchestrates via cc_queue long-term
+- Skills must work without Igor present — Igor integration is additive, not required
+- Active slate → first-class DB artifact (not implicit in conversation)
+- Context package = structured object Igor assembles per task; quality of Igor's task descriptions determines unattended success
+- Persistent instance all-day = D105 bridge compact strategy + sharper rationale (per-task context load cost)
+- Scribe tasks → Igor does them (DB is already the context source)
+- DB = live truth; GitHub = archived truth (except source code → git)
+- Delta Dental methodology: this project is the proving ground; paper comes after both satisfied
+**Next session**: design slate → tickets; wg_cooccur migration should be done → restart Igor → fix boot failures
+**In-flight**: NONE (design session; wg_cooccur migration running in background ~62%)
+
 ## Session 2026-03-18k
 **Theme**: D126 execution — code complete, migration running, 14 tests passing
 **Decisions**: none new (D126 implementation)
