@@ -229,3 +229,18 @@
 - word_graph.db migration deferred
 **Next session**: implement migration — db_proxy.py PGDatabaseProxy, migration script, cortex.py factory + get_habits fix, validate
 **In-flight**: About to implement SQLite→Postgres migration per approved plan above
+
+## Session 2026-03-18d
+**Theme**: D123 sudo relay fully implemented + Redis installed via relay + pattern engineering crystallization
+**Decisions**: D123 (implemented), D125 (defined)
+**Key changes**:
+- sudoer_daemon.sh: one-time pw, keepalive, pending.sh watcher, --test 3/3; set +e PIPESTATUS fix
+- sudo_relay.py: Igor tool with liveness check, concurrency guard, poll loop, log tail; registered in tools/__init__.py
+- sudo_relay.sh: repo-root shim via exec
+- Redis installed on akiendelllinux via relay — D121 now unblocked
+- igor launcher: ENV_FILE re-pinned at each restart loop iteration (stale IGOR_INSTANCE_ID fix)
+- Bash logging convention locked: logcmd/logecho/timestamp() inlined in all bash scripts
+- 5th crystallization: "pattern" = one or more habits at right granularity; pattern engineering/repair/design/debugging; code in the data
+- D125 defined: global base class for all Igor objects (diagnostics/monitoring consolidation)
+**Next session**: Full audit sprint (P1 bugs → P2 cleanup → P3 gitignore) + global base class + seed sudo relay pattern + G-DB1 + D121 Redis WG backend
+**In-flight**: About to execute full audit sprint + feature queue top-to-bottom; Redis installed, D121 unblocked

@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18d|latest=D124
+DOC|decisions_log|v1|updated=2026-03-18e|latest=D125
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -295,5 +295,12 @@ D122|postgres-streaming-replication|defined|akienasus = Postgres primary, akiend
 // local_pool warning on Windows is expected/benign — KoboldCpp not on Windows, falls through to OR tier.3
 // Resource agency: Igor decides box role and installs autonomously; human consent = act of running sudoer daemon; no confirmation step needed (agency already baked in)
 // akienasus special case: NOT generic new box — migration event; plan deposited as FACTUAL memory in Igor's cortex
-D123|sudo-relay-daemon|defined|sudoer_daemon.sh: asks pw once, sudo -v keepalive every 2min; watches ~/.TheIgors/sudo_relay/pending.sh; sources+deletes it; writes done file; Igor polls done file; human consent = explicit act of running daemon; ephemeral privilege window, not persistent
+D125|global-base-class|defined|Global base class for all Igor objects; moves diagnostics, monitoring, and common concerns onto one substrate; ticket already exists; consolidates scattered per-class boilerplate
+D123|sudo-relay-daemon|implemented|sudoer_daemon.sh: asks pw once, sudo -v keepalive every 2min; watches ~/.TheIgors/sudo_relay/pending.sh; sources+deletes it; writes done file; Igor polls done file; human consent = explicit act of running daemon; ephemeral privilege window, not persistent
 D124|resource-auto-config|defined|Igor sizes up any new box (RAM/CPU/storage/OS/existing services), assigns roles from taxonomy (db_primary/db_replica/inference_heavy/inference_light/reader/thin), installs what role needs via D123 relay; Igor decides autonomously — agency already designed in; akienasus is special case: db_primary + migration (D121+D122) per FACTUAL memory deposited in cortex; plan covers phones, Pi400, any future resource
+
+// ── Session 2026-03-18d additions ──────────────────────────────────────────────
+// D123 implemented: sudoer_daemon.sh (--test 3/3) + sudo_relay.py tool + shim; Redis installed via relay; igor launcher ENV_FILE re-pin fix
+// Pattern engineering: 5th crystallization — pattern = one or more habits at right granularity; unit of design/repair/debug; code in the data
+// Bash logging convention: all bash scripts use logcmd/logecho/timestamp() from akientools logger_for_bash (inline for self-contained scripts)
+// D121 unblocked: Redis installed on akiendelllinux — Redis WG backend can start now, not blocked by akienasus
