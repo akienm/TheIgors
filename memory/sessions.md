@@ -1,4 +1,19 @@
 
+## Session 2026-03-19b
+**Theme**: Tailscale HTTPS setup for phone access to Igor web UI
+**Decisions**: none
+**Key changes**:
+- Tailscale installed on akiendelllinux + Pixel 8; both joined same tailnet (akienm@)
+- Linux IP: 100.93.75.116; Phone IP: 100.84.255.79
+- Tailscale MagicDNS + HTTPS Certificates enabled in admin console
+- TLS cert provisioned: `akiendelllinux.tail6dd047.ts.net.crt/.key` → `~/.TheIgors/local/`
+- `wild_igor/igor/web/server.py`: uvicorn Config now reads `IGOR_SSL_CERT` + `IGOR_SSL_KEY` env vars
+- `wild_igor/igor/web/server.py`: WebSocket URL now dynamic `wss://` vs `ws://` based on `location.protocol`
+- `.env` (Igor-wild-0001): `IGOR_SSL_CERT` + `IGOR_SSL_KEY` added
+- Web server went down after restart with these changes — not yet diagnosed
+**Next session**: diagnose why web server is down (uvicorn SSL startup failure?); check Igor logs for traceback; verify cert file permissions + uvicorn ssl param names
+**In-flight**: Web server down after SSL+wss:// fix restart — likely uvicorn startup error; check `~/.TheIgors/logs/` for traceback on next boot
+
 ## Session 2026-03-18l
 **Theme**: Process Development Tools deep design — executor question, test-fix loop, context package, persistent instance, Delta Dental methodology
 **Decisions**: none new (design refinement session)
