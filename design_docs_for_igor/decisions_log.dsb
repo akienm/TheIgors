@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-19a|latest=D129
+DOC|decisions_log|v1|updated=2026-03-19
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -339,4 +339,11 @@ D126|graph-cache-postgres-migration|implemented-poc|Full substrate migration: SQ
 // In-flight: Tailscale + token auth on channel WebSocket for phone access
 D127|config-arch|defined|.env=secrets only; switches.ini=instance flags with safe defaults; machines DB table=routing; every value has a default that won't break a new box
 D128|ClaudeAndAkien|implemented|General agentic framework repo extracted from TheIgors — channel, minion sessions, trail-based context, slash skills; exportable to non-Igor projects
+D132|slate-schema|implemented|slates table in Postgres (position/name/done_when/tickets JSONB/notes); slate_manager.py seed/show/render/advance; slate.md is rendered output not source of truth
+D131|docs-tree-in-db|defined|DSB/CSB design docs mirrored as nodes in Postgres; file remains canonical for editing; DB copy enables graph traversal + token-efficient context load; sync on boot or on-demand
+D130|db-as-truth-trails-first|defined|DB is source of truth for all state (tickets, discussions, logs, docs, decisions); GitHub/files are sync targets; all traversals are newest-first (trail pattern); Organizer step 0 syncs GitHub→DB before summarising; logs written DB-first, echoed to filesystem
 D129|shared-channel|implemented|append-only JSONL at ~/.TheIgors/cc_channel/messages.jsonl; all participants (Igor, CC sessions, human) post/read; server.py mirrors; channel.py CLI+API
+D133|session-in-db|implemented|sessions table in Postgres; session_manager.py; sessions.md rendered from DB
+D134|decision-manager|implemented|decision_manager.py: atomic DSB+DB+Igor flush in one CLI call; replaces manual DSB editing in /decided skill
+D135|crash-safe-session|implemented|session accumulates progressively: start at context-load, append-change/append-decision at each /decided, finalize optional; crash loses only next+in_flight
+D136|day-close-skill|implemented|day-close skill replaces savestate Steps 4-9; docs_sync pre-commit hook in /commit skill

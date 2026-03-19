@@ -1,3 +1,35 @@
+## Session 2026-03-19d
+**Theme**: Crash-safe session accumulation — start/append/finalize commands
+**Decisions**: D135, D135, D136
+**Key changes**:
+- session_manager.py: start/append-change/append-decision/finalize commands
+- decided/savestate/context-load skills updated to use incremental session accumulation
+- session_manager.py: state file + ID-free append-change/append-decision
+- decision_manager.py: new — atomic DSB+DB+Igor flush in one CLI call
+- workstep/sprint/savestate/decided/context-load skills: updated for incremental session accumulation
+- T-sessions-in-db closed, T-decided-habit closed
+- day-close skill: new — docs sync + gap_analysis + subsystem DSBs + GitHub discussion + commit
+- commit skill: docs_sync pre-step added for staged .dsb files
+- ClaudeAndAkien repo genericized + pushed: session_manager, decision_manager, slate_manager, github_sync; 6 skills; 4 human docs (getting_started, crash_safe_sessions, slate_workflow, skills_guide); README with crash-safe pattern section
+**Next session**: 1. Run /day-close (T-scribe-20260319d queued). 2. T-test-debt-tooling (session_manager + decision_manager tests). 3. TRAILS infrastructure — first-class trail table; unlocks edge strengthening, matrix debugger, wg_cooccur replacement.
+**In-flight**: NONE
+
+## Session 2026-03-19c
+**Theme**: Slate 0 complete — workflow tooling, CC→Igor web, DB as truth
+**Decisions**: D130, D131, D132
+**Key changes**:
+- budget.py fixed: reverted to SQLite (was erroneously using Postgres via make_home_proxy)
+- igor_talk.py, cc_bridge.py, phrase_regression.py, cc_queue.py: wss://+https:// with ssl ctx
+- channel.py: Postgres dual-write activated (channel_messages table)
+- slate_manager.py: new — slates table in Postgres, seed/show/render/advance commands
+- github_sync.py: new — Organizer step 0; 80 open + 30 closed GH issues synced to Postgres
+- docs_sync.py: new — 18 DSB files → 1450 entries in docs_entries table
+- server.py: plain HTTP fallback on port+1 (8081) when SSL active — fixes LAN http:// access
+- run_phrase_test.py: new — sends phrase test file to Igor at 5-min intervals, resumable
+- Slate concept defined (D132): named/themed ~day bundle; horizon cascade 0-3; advance() shifts
+- slate.md now rendered from Postgres, not hand-edited
+**Next session**: Slate 1 — DB optimization. Start with T-slow-query-analysis.
+**In-flight**: NONE — Slate 0 closed clean.
 
 ## Session 2026-03-19b
 **Theme**: Tailscale HTTPS setup for phone access to Igor web UI
@@ -13,6 +45,22 @@
 - Web server went down after restart with these changes — not yet diagnosed
 **Next session**: diagnose why web server is down (uvicorn SSL startup failure?); check Igor logs for traceback; verify cert file permissions + uvicorn ssl param names
 **In-flight**: Web server down after SSL+wss:// fix restart — likely uvicorn startup error; check `~/.TheIgors/logs/` for traceback on next boot
+
+## Session 2026-03-19a
+**Theme**: Postgres stability + multi-session CC architecture + ClaudeAndAkien framework born
+**Decisions**: D127, D128, D129
+**Key changes**:
+- Postgres compat: wg_meta ambiguous column (×3), SELECT changes() _pending_scalar shim, preparse 30s timeout fix
+- igor bash launcher: stale process kill + fuser port release on each restart
+- channel.py: shared JSONL channel, post/read/listen/sessions CLI + importable API
+- server.py: mirrors Igor/CC/user messages to shared channel
+- Skills: /context-load, /sprint built and auto-discovered
+- ClaudeAndAkien repo created: https://github.com/akienm/ClaudeAndAkien
+- Slate at ~/.TheIgors/cc_channel/slate.md
+- Dropped 41 scribe tasks from queue permanently
+- Tickets added: T-trails-infra (p0), T-pipeline-arch, T-channel-extract, T-context-load-skill, T-sprint-skill
+**Next session**: Tailscale + token auth on channel WebSocket (phone access); then T-trails-infra design conversation
+**In-flight**: Tailscale on akiendelllinux + phone, token auth on channel WebSocket — was about to implement
 
 ## Session 2026-03-18l
 **Theme**: Process Development Tools deep design — executor question, test-fix loop, context package, persistent instance, Delta Dental methodology
@@ -91,6 +139,37 @@
 **Next session**: D126 Step 1 implementation — make_home_proxy()+make_local_proxy() factories, wire word_graph/budget/notebook/learner, data migration script
 **In-flight**: D126 Step 1 approved and ready to code — split make_db_proxy() into two-channel factories, wire all SQLite callers to Postgres, write migrate_to_postgres.py
 
+## Session 2026-03-18f
+**Theme**: Audit sprint — P1/P2/P3 bugs + D125 IgorBase wiring + D123 habits seeded + D121 Redis skeleton (migration blocked)
+**Decisions**: D121 (skeleton built, redesign needed), D123 (habits seeded), D125 (implemented), G-DB1 closed
+**Key changes**:
+- P1: paths.py default → Igor-wild-0001; igor launcher pins IGOR_INSTANCE_ID from canonical dir name after .env source
+- P1: google_contacts.py both DB fallback paths use paths().instance; ollama_reasoner.py log path via paths().logs
+- P2: .gitignore additions: workspace/, *.pid, *.lock, .claude/settings.local.json, change_request*.txt, warm_context*.json, benchmarks/results/
+- D125 implemented: BaseReasoner(ABC,IgorBase) + BaseInterruptor(ABC,IgorBase); lazy _ensure_perf_history(); igor_base.py absolute import fixed → relative
+- D123 habits seeded: PROC_SUDO_RELAY_CHECK (context_inject) + PROC_SUDO_RELAY_RUN (action) + PROC_SUDO_RELAY_WAKE (response) in live DB
+- G-DB1/D092 verified closed: no raw sqlite3.connect in Igor source (Calibre+DRM exempt)
+- D121 skeleton: redis_word_graph.py (RedisWordGraph + make_word_graph factory) + redis_migrate_wg.py + main.py factory wiring + redis in requirements.txt
+- D121 migration aborted: started at 32k/s → 5k/s collapse; 29M rows × Redis ZSET overhead ≈ 70GB RAM vs 3.8GB SQLite; FLUSHDB done; redesign needed
+- Architectural insight: full Redis WG migration not viable at current row count; need hot-word cache (top 10K × top 50) or Postgres co-occur table
+**Next session**: D121 redesign decision (hot-cache vs Postgres co-occur), D124 resource-auto-config, G-NE1 episodic-to-semantic merge, commit D121 skeleton files
+**In-flight**: D121 Redis sorted sets for 29M co-occurrence pairs require ~70GB RAM. Redesign: hot-word cache (top 10K words × top 50 co-occur = ~250MB Redis) OR Postgres wg_cooccur table (already running)
+
+## Session 2026-03-18d
+**Theme**: D123 sudo relay fully implemented + Redis installed via relay + pattern engineering crystallization
+**Decisions**: D123 (implemented), D125 (defined)
+**Key changes**:
+- sudoer_daemon.sh: one-time pw, keepalive, pending.sh watcher, --test 3/3; set +e PIPESTATUS fix
+- sudo_relay.py: Igor tool with liveness check, concurrency guard, poll loop, log tail; registered in tools/__init__.py
+- sudo_relay.sh: repo-root shim via exec
+- Redis installed on akiendelllinux via relay — D121 now unblocked
+- igor launcher: ENV_FILE re-pinned at each restart loop iteration (stale IGOR_INSTANCE_ID fix)
+- Bash logging convention locked: logcmd/logecho/timestamp() inlined in all bash scripts
+- 5th crystallization: "pattern" = one or more habits at right granularity; pattern engineering/repair/design/debugging; code in the data
+- D125 defined: global base class for all Igor objects (diagnostics/monitoring consolidation)
+**Next session**: Full audit sprint (P1 bugs → P2 cleanup → P3 gitignore) + global base class + seed sudo relay pattern + G-DB1 + D121 Redis WG backend
+**In-flight**: About to execute full audit sprint + feature queue top-to-bottom; Redis installed, D121 unblocked
+
 ## Session 2026-03-18c
 **Theme**: Windows fixes + resource auto-config design (D123+D124) + akienasus migration plan deposited in Igor's cortex
 **Decisions**: D123, D124
@@ -121,6 +200,48 @@
 - ollama_reasoner.py log path: source tree → `IGOR_RUNTIME_ROOT/logs/ollama_calls.log`
 **Next session**: D121 Redis implementation; kill outer loop on akiendell + relaunch for Igor-wild-0001 rename to fully take; user's "part 3" (not yet revealed); G-DB1 db_proxy gateway
 **In-flight**: D121 + D122 decided; akienasus not yet up; outer loop on akiendell needs manual kill+relaunch for rename to activate
+
+## Session 2026-03-17l
+**Theme**: SQLite→Postgres migration live; Windows instance bootstrapped; multi-instance architecture locked in
+**Decisions**: D118 (SensorTree, defined)
+**Key changes**:
+- `db_proxy.py`: PGDatabaseProxy + _PGConnWrapper (savepoint-per-DML, INSERT OR REPLACE/IGNORE translation, ?→%s) + make_db_proxy() factory
+- `cortex.py`: make_db_proxy factory wired; _init_db() early-return for Postgres; jsonb_exists() in get_habits(); metadata isinstance guard in _to_memory()
+- `claudecode/migrate_sqlite_to_postgres.py`: one-shot migration script; 8,681 memories + 179 habits across 9 tables migrated and verified
+- Perf fixes: idx_memories_ne_scan partial index; idx_twm_instance_integrated composite; SELECT savepoint skip
+- `claudecode/WINDOWS_ONBOARDING.md`: Windows bootstrap guide; credentials via env vars not .env
+- Tickets: #279 Journals, #280 Matter epic, #281 D118 SensorTree, #282 ephemeral split (blocker)
+- `requirements.txt`: psycopg2-binary==2.9.10
+**Next session**: #282 ephemeral split (hard blocker before 3rd instance); Windows Claude working #281/#282/DB tickets; wg_cooccur LMDB deferred
+**In-flight**: NONE
+
+## Session 2026-03-17k
+**Theme**: SQLite→Postgres migration plan approved; ready to implement
+**Decisions**: D112-D117 (prior), migration plan approved
+**Key changes**:
+- Migration plan approved (L-size): PGDatabaseProxy + _PGConnWrapper in db_proxy.py; make_db_proxy factory; 1-line change in cortex.py; migrate_sqlite_to_postgres.py script
+- metadata column → JSONB + GIN index (fixes 2445ms get_habits slow query)
+- get_habits() query: LIKE '%"trigger"%' → metadata ? 'trigger'
+- psycopg2-binary added to requirements
+- pg_trgm extension enabled in migration script
+- FK violation check before data copy
+- word_graph.db migration deferred
+**Next session**: implement migration — db_proxy.py PGDatabaseProxy, migration script, cortex.py factory + get_habits fix, validate
+**In-flight**: About to implement SQLite→Postgres migration per approved plan above
+
+## Session 2026-03-17j
+**Theme**: Architecture crystallization — SystemGateway + service layer + split storage + Postgres migration approved
+**Decisions**: D112, D113, D114, D115
+**Key changes**:
+- D112 SystemGateway defined: PathManager grown up; platform abstraction + service lifecycle manager; paths/CPU/process/shell/file-watch all platform-specific; Igor attaches to services, doesn't own them
+- D113 degrade-gracefully-habit-recovery: core principle everywhere; dependency failure → habit chain for recovery + graceful tier fallback; not special-case code
+- D114 service layer always-on: DB + web server + future services as persistent daemons; Igor attaches/detaches; CC bridge always up even when Igor loop is down; prerequisite for D109 multi-instance
+- D115 split storage by access pattern: memories+habits→Postgres, wg_cooccur→LMDB/RocksDB, blobs→keyed store; memory graph IS the index into blob tree (trees as indexes into trees)
+- Postgres installed on akiendelllinux; migration plan approved: SQLite→Postgres before Windows round
+- Slow query analysis: #1=UPDATE wg_cooccur 8291ms (boost_cooccurrence batching), #2=LIKE trigger scan 2445ms (get_habits), #3=predict_next cache miss 673ms; 29M rows in wg_cooccur
+- akienasus: being rebuilt (memtest86+ → fresh OS → verdict); akienpi: voice terminal role (STT/TTS, thin client to main Igor)
+**Next session**: SQLite→Postgres migration script; DatabaseProxy layer update to use Postgres; migrate + validate
+**In-flight**: NONE
 
 ## Session 2026-03-17i
 **Theme**: Fourth crystallization — trees + gradients + habits/memory; BG trigger system as embryonic emotional relevance tree
@@ -166,6 +287,27 @@
 - `igor` bash script: removed hardcoded ENV_FILE; dynamic .env discovery + wizard fallback
 - ~32 files cutover: all 54 Path.home()/.TheIgors refs replaced with paths().* calls
 **Next session**: D109 (multi-attention-center reading) or D110 (project self-model + log-to-DB)
+**In-flight**: NONE
+
+## Session 2026-03-17e
+**Theme**: G46 + #252 closed; D108 PathManager full cutover planned and approved
+**Decisions**: G46 (closed), #252 (closed), D108 (plan approved)
+**Key changes**:
+- `wild_igor/igor/main.py`: EPISODIC Memory gets source="interaction" + context_of_encoding with intent/valence/arousal/complexity (~line 4184)
+- `wild_igor/igor/cognition/narrative_engine.py`: _apply_output() Memory gets source="narrative_engine" + context_of_encoding with run/importance/arousal
+- D108 plan written: paths.py PathManager singleton (IGOR_RUNTIME_ROOT escape hatch); first_start.py wizard (instance name default=wild_igor_YYYYMMDDHHMMSS, DB host default=127.0.0.1); igor bash script updated; full cutover of 138 path refs across ~20 files
+**Next session**: D108 implementation (PathManager cutover — paths.py + first_start.py + igor bash script + ~20 files)
+**In-flight**: About to implement D108 — paths.py + first_start.py + igor bash script; plan approved; need compact before starting
+
+## Session 2026-03-17d
+**Theme**: G-DB1 + G-NE1 + G37p2 closed — DatabaseProxy in learner.py, episodic consolidation merge, dual word graphs on by default
+**Decisions**: G-DB1 (closed), G-NE1 (closed), G37p2 (closed)
+**Key changes**:
+- `wild_igor/igor/tools/learner.py`: DatabaseProxy singleton _igor_db_proxy(); raw _rl_db() removed; 4 reading-list functions converted; annotate_learning() tool added (#252); PROC_ANNOTATE_LEARNING seeded (13 triggers, action habit)
+- `wild_igor/igor/cognition/narrative_engine.py`: _consolidation_merge_pass() + _merge_cluster(); cosine threshold=0.85, min_cluster=3, window=10; occurrence_dates preserved in metadata; no gate (defaults are the safety)
+- `wild_igor/igor/main.py`: IGOR_DUAL_WORD_GRAPHS + IGOR_NPASS_REPLY + IGOR_COMPREHENSION_SIGNAL default→true; stale comments updated
+- `claudecode/seed_annotation_habit.py`: NEW — seeds PROC_ANNOTATE_LEARNING habit to live DB
+**Next session**: G46, #252, then D108 PathManager
 **In-flight**: NONE
 
 ## Session 2026-03-16j
@@ -244,130 +386,3 @@
 - Created #268 for implementation
 **Next session**: Implement #268 (execute_habit endpoint + cc_session_logger + server.py route)
 **In-flight**: About to implement #268 — POST /api/execute_habit; plan approved; pre-compact savestate done
-
-## Session 2026-03-17d
-**Theme**: G-DB1 + G-NE1 + G37p2 closed — DatabaseProxy in learner.py, episodic consolidation merge, dual word graphs on by default
-**Decisions**: G-DB1 (closed), G-NE1 (closed), G37p2 (closed)
-**Key changes**:
-- `wild_igor/igor/tools/learner.py`: DatabaseProxy singleton _igor_db_proxy(); raw _rl_db() removed; 4 reading-list functions converted; annotate_learning() tool added (#252); PROC_ANNOTATE_LEARNING seeded (13 triggers, action habit)
-- `wild_igor/igor/cognition/narrative_engine.py`: _consolidation_merge_pass() + _merge_cluster(); cosine threshold=0.85, min_cluster=3, window=10; occurrence_dates preserved in metadata; no gate (defaults are the safety)
-- `wild_igor/igor/main.py`: IGOR_DUAL_WORD_GRAPHS + IGOR_NPASS_REPLY + IGOR_COMPREHENSION_SIGNAL default→true; stale comments updated
-- `claudecode/seed_annotation_habit.py`: NEW — seeds PROC_ANNOTATE_LEARNING habit to live DB
-**Next session**: G46, #252, then D108 PathManager
-**In-flight**: NONE
-
-## Session 2026-03-17e
-**Theme**: G46 + #252 closed; D108 PathManager full cutover planned and approved
-**Decisions**: G46 (closed), #252 (closed), D108 (plan approved)
-**Key changes**:
-- `wild_igor/igor/main.py`: EPISODIC Memory gets source="interaction" + context_of_encoding with intent/valence/arousal/complexity (~line 4184)
-- `wild_igor/igor/cognition/narrative_engine.py`: _apply_output() Memory gets source="narrative_engine" + context_of_encoding with run/importance/arousal
-- D108 plan written: paths.py PathManager singleton (IGOR_RUNTIME_ROOT escape hatch); first_start.py wizard (instance name default=wild_igor_YYYYMMDDHHMMSS, DB host default=127.0.0.1); igor bash script updated; full cutover of 138 path refs across ~20 files
-**Next session**: D108 implementation (PathManager cutover — paths.py + first_start.py + igor bash script + ~20 files)
-**In-flight**: About to implement D108 — paths.py + first_start.py + igor bash script; plan approved; need compact before starting
-
-## Session 2026-03-17l
-**Theme**: SQLite→Postgres migration live; Windows instance bootstrapped; multi-instance architecture locked in
-**Decisions**: D118 (SensorTree, defined)
-**Key changes**:
-- `db_proxy.py`: PGDatabaseProxy + _PGConnWrapper (savepoint-per-DML, INSERT OR REPLACE/IGNORE translation, ?→%s) + make_db_proxy() factory
-- `cortex.py`: make_db_proxy factory wired; _init_db() early-return for Postgres; jsonb_exists() in get_habits(); metadata isinstance guard in _to_memory()
-- `claudecode/migrate_sqlite_to_postgres.py`: one-shot migration script; 8,681 memories + 179 habits across 9 tables migrated and verified
-- Perf fixes: idx_memories_ne_scan partial index; idx_twm_instance_integrated composite; SELECT savepoint skip
-- `claudecode/WINDOWS_ONBOARDING.md`: Windows bootstrap guide; credentials via env vars not .env
-- Tickets: #279 Journals, #280 Matter epic, #281 D118 SensorTree, #282 ephemeral split (blocker)
-- `requirements.txt`: psycopg2-binary==2.9.10
-**Next session**: #282 ephemeral split (hard blocker before 3rd instance); Windows Claude working #281/#282/DB tickets; wg_cooccur LMDB deferred
-**In-flight**: NONE
-
-## Session 2026-03-17k
-**Theme**: SQLite→Postgres migration plan approved; ready to implement
-**Decisions**: D112-D117 (prior), migration plan approved
-**Key changes**:
-- Migration plan approved (L-size): PGDatabaseProxy + _PGConnWrapper in db_proxy.py; make_db_proxy factory; 1-line change in cortex.py; migrate_sqlite_to_postgres.py script
-- metadata column → JSONB + GIN index (fixes 2445ms get_habits slow query)
-- get_habits() query: LIKE '%\"trigger\"%' → metadata ? 'trigger'
-- psycopg2-binary added to requirements
-- pg_trgm extension enabled in migration script
-- FK violation check before data copy
-- word_graph.db migration deferred
-**Next session**: implement migration — db_proxy.py PGDatabaseProxy, migration script, cortex.py factory + get_habits fix, validate
-**In-flight**: About to implement SQLite→Postgres migration per approved plan above
-
-## Session 2026-03-17j
-**Theme**: Architecture crystallization — SystemGateway + service layer + split storage + Postgres migration approved
-**Decisions**: D112, D113, D114, D115
-**Key changes**:
-- D112 SystemGateway defined: PathManager grown up; platform abstraction + service lifecycle manager; paths/CPU/process/shell/file-watch all platform-specific; Igor attaches to services, doesn't own them
-- D113 degrade-gracefully-habit-recovery: core principle everywhere; dependency failure → habit chain for recovery + graceful tier fallback; not special-case code
-- D114 service layer always-on: DB + web server + future services as persistent daemons; Igor attaches/detaches; CC bridge always up even when Igor loop is down; prerequisite for D109 multi-instance
-- D115 split storage by access pattern: memories+habits→Postgres, wg_cooccur→LMDB/RocksDB, blobs→keyed store; memory graph IS the index into blob tree (trees as indexes into trees)
-- Postgres installed on akiendelllinux; migration plan approved: SQLite→Postgres before Windows round
-- Slow query analysis: #1=UPDATE wg_cooccur 8291ms (boost_cooccurrence batching), #2=LIKE trigger scan 2445ms (get_habits), #3=predict_next cache miss 673ms; 29M rows in wg_cooccur
-- akienasus: being rebuilt (memtest86+ → fresh OS → verdict); akienpi: voice terminal role (STT/TTS, thin client to main Igor)
-**Next session**: SQLite→Postgres migration script; DatabaseProxy layer update to use Postgres; migrate + validate
-**In-flight**: NONE
-
-## Session 2026-03-17k
-**Theme**: SQLite→Postgres migration plan approved; ready to implement
-**Decisions**: D112-D117 (prior), migration plan approved
-**Key changes**:
-- Migration plan approved (L-size): PGDatabaseProxy + _PGConnWrapper in db_proxy.py; make_db_proxy factory; 1-line change in cortex.py; migrate_sqlite_to_postgres.py script
-- metadata column → JSONB + GIN index (fixes 2445ms get_habits slow query)
-- get_habits() query: LIKE '%"trigger"%' → metadata ? 'trigger'
-- psycopg2-binary added to requirements
-- pg_trgm extension enabled in migration script
-- FK violation check before data copy
-- word_graph.db migration deferred
-**Next session**: implement migration — db_proxy.py PGDatabaseProxy, migration script, cortex.py factory + get_habits fix, validate
-**In-flight**: About to implement SQLite→Postgres migration per approved plan above
-
-## Session 2026-03-18d
-**Theme**: D123 sudo relay fully implemented + Redis installed via relay + pattern engineering crystallization
-**Decisions**: D123 (implemented), D125 (defined)
-**Key changes**:
-- sudoer_daemon.sh: one-time pw, keepalive, pending.sh watcher, --test 3/3; set +e PIPESTATUS fix
-- sudo_relay.py: Igor tool with liveness check, concurrency guard, poll loop, log tail; registered in tools/__init__.py
-- sudo_relay.sh: repo-root shim via exec
-- Redis installed on akiendelllinux via relay — D121 now unblocked
-- igor launcher: ENV_FILE re-pinned at each restart loop iteration (stale IGOR_INSTANCE_ID fix)
-- Bash logging convention locked: logcmd/logecho/timestamp() inlined in all bash scripts
-- 5th crystallization: "pattern" = one or more habits at right granularity; pattern engineering/repair/design/debugging; code in the data
-- D125 defined: global base class for all Igor objects (diagnostics/monitoring consolidation)
-**Next session**: Full audit sprint (P1 bugs → P2 cleanup → P3 gitignore) + global base class + seed sudo relay pattern + G-DB1 + D121 Redis WG backend
-**In-flight**: About to execute full audit sprint + feature queue top-to-bottom; Redis installed, D121 unblocked
-
-## Session 2026-03-18f
-**Theme**: Audit sprint — P1/P2/P3 bugs + D125 IgorBase wiring + D123 habits seeded + D121 Redis skeleton (migration blocked)
-**Decisions**: D121 (skeleton built, redesign needed), D123 (habits seeded), D125 (implemented), G-DB1 closed
-**Key changes**:
-- P1: paths.py default → Igor-wild-0001; igor launcher pins IGOR_INSTANCE_ID from canonical dir name after .env source
-- P1: google_contacts.py both DB fallback paths use paths().instance; ollama_reasoner.py log path via paths().logs
-- P2: .gitignore additions: workspace/, *.pid, *.lock, .claude/settings.local.json, change_request*.txt, warm_context*.json, benchmarks/results/
-- D125 implemented: BaseReasoner(ABC,IgorBase) + BaseInterruptor(ABC,IgorBase); lazy _ensure_perf_history(); igor_base.py absolute import fixed → relative
-- D123 habits seeded: PROC_SUDO_RELAY_CHECK (context_inject) + PROC_SUDO_RELAY_RUN (action) + PROC_SUDO_RELAY_WAKE (response) in live DB
-- G-DB1/D092 verified closed: no raw sqlite3.connect in Igor source (Calibre+DRM exempt)
-- D121 skeleton: redis_word_graph.py (RedisWordGraph + make_word_graph factory) + redis_migrate_wg.py + main.py factory wiring + redis in requirements.txt
-- D121 migration aborted: started at 32k/s → 5k/s collapse; 29M rows × Redis ZSET overhead ≈ 70GB RAM vs 3.8GB SQLite; FLUSHDB done; redesign needed
-- Architectural insight: full Redis WG migration not viable at current row count; need hot-word cache (top 10K × top 50) or Postgres co-occur table
-**Next session**: D121 redesign decision (hot-cache vs Postgres co-occur), D124 resource-auto-config, G-NE1 episodic-to-semantic merge, commit D121 skeleton files
-**In-flight**: D121 Redis sorted sets for 29M co-occurrence pairs require ~70GB RAM. Redesign: hot-word cache (top 10K words × top 50 co-occur = ~250MB Redis) OR Postgres wg_cooccur table (already running)
-
-## Session 2026-03-19a
-**Theme**: Postgres stability + multi-session CC architecture + ClaudeAndAkien framework born
-**Decisions**: D127, D128, D129
-**Key changes**:
-- Postgres compat: wg_meta ambiguous column (×3), SELECT changes() _pending_scalar shim, preparse 30s timeout fix
-- igor bash launcher: stale process kill + fuser port release on each restart
-- channel.py: shared JSONL channel, post/read/listen/sessions CLI + importable API
-- server.py: mirrors Igor/CC/user messages to shared channel
-- Skills: /context-load, /sprint built and auto-discovered
-- ClaudeAndAkien repo created: https://github.com/akienm/ClaudeAndAkien
-- Slate at ~/.TheIgors/cc_channel/slate.md
-- Dropped 41 scribe tasks from queue permanently
-- Tickets added: T-trails-infra (p0), T-pipeline-arch, T-channel-extract, T-context-load-skill, T-sprint-skill
-**Crystallizations**:
-- SEVENTH: embeddings = trail through meaning dimensions; wg_cooccur wrong primitive; matrix IS embedding space made traversable; free cosine compare via graph topology
-- Trails = query path = training signal; visible for debugging AND Igor self-inspection
-**Next session**: Tailscale + token auth on channel WebSocket (phone access); then T-trails-infra design conversation
-**In-flight**: Tailscale on akiendelllinux + phone, token auth on channel WebSocket — was about to implement
