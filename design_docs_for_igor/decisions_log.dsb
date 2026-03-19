@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-18l|latest=D126
+DOC|decisions_log|v1|updated=2026-03-19a|latest=D129
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -329,3 +329,14 @@ D124|resource-auto-config|defined|Igor sizes up any new box (RAM/CPU/storage/OS/
 // Reading validation test: 5 already-absorbed language books re-run after Watcher pre-filter added; delta nodes = acceptance test for D126 + extraction quality; failure → thread/trace debugging
 // D126 completion plan: env vars (IGOR_HOME_DB_URL+IGOR_LOCAL_DB_URL) + PendingReplyStore wiring + 29M wg_cooccur migration from word_graph.db SQLite → Postgres
 D126|graph-cache-postgres-migration|implemented-poc|Full substrate migration: SQLite eliminated everywhere. Two Postgres channels: IGOR_HOME_DB_URL (global truth, all Igor instances) + IGOR_LOCAL_DB_URL (box-scoped, shared by all instances on same box). make_db_proxy() splits into make_home_proxy() + make_local_proxy(). HOME tables: memories, interpretive_edges, wg_cooccur (WG master), notebooks, ResourceManager ledger/policy. LOCAL tables: ring_memory, twm_observations, pending_replies, my_top_N cache tracking, per-box resource metrics. Redis hot-cache per box for large frequently-traversed graphs (GraphCache abstraction): top N=10K words × M=50 co-occur, ~250MB, pre-warmed on boot, env-configurable, Igor-tunable at runtime. Write path: dual-write Redis + home; if home unreachable → write local + enqueue pending-replies row (key/value/attempt_count/last_attempt/resolved); retry on next access; 3rd failure → Worry to TWM. Worry = new TWM signal class: internal uncertainty, arousal↑ valence↓, high attractor_weight, persists until resolved. Cache maintenance: daily global_cache_refresh() prunes to top-N; each box tracks my_top_N; composition change → global_cache_flush() all boxes. Remote Igor boot: connect to home → world unfolds → local self-creates as needed. Supersedes D121, refines D122.
+// ── Session 2026-03-19a additions ──────────────────────────────────────────────
+// Postgres compat fixes: wg_meta ambiguous column (wg_meta.value), SELECT changes() shim via _pending_scalar, preparse 30s hang fixed (ThreadPoolExecutor + PREPARSE_TIMEOUT=8s)
+// Shared channel: claudecode/channel.py — append-only JSONL, post/read/listen/sessions; server.py mirrors Igor+CC+user messages; no Igor required to read/post
+// Multi-session CC architecture: channel=coordination substrate; minion sessions=ephemeral focused workers; leave-running pattern; ticket IS the brief; result to queue IS the savestate
+// Trail+gradient crystallization (SEVENTH): embeddings are trail through meaning dimensions; wg_cooccur is wrong primitive; edges should derive from trail proximity not corpus stats; matrix IS embedding space made traversable; free cosine compare via graph topology
+// ClaudeAndAkien repo: https://github.com/akienm/ClaudeAndAkien — general framework extracted from TheIgors; channel/, db/, web/, skills/, docs/ structure
+// Skills built: /context-load (slate+blob tops), /sprint (claim+work+report), /commit updated; all auto-discovered by Claude Code
+// In-flight: Tailscale + token auth on channel WebSocket for phone access
+D127|config-arch|defined|.env=secrets only; switches.ini=instance flags with safe defaults; machines DB table=routing; every value has a default that won't break a new box
+D128|ClaudeAndAkien|implemented|General agentic framework repo extracted from TheIgors — channel, minion sessions, trail-based context, slash skills; exportable to non-Igor projects
+D129|shared-channel|implemented|append-only JSONL at ~/.TheIgors/cc_channel/messages.jsonl; all participants (Igor, CC sessions, human) post/read; server.py mirrors; channel.py CLI+API

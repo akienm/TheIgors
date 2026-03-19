@@ -337,3 +337,22 @@
 - Architectural insight: full Redis WG migration not viable at current row count; need hot-word cache (top 10K × top 50) or Postgres co-occur table
 **Next session**: D121 redesign decision (hot-cache vs Postgres co-occur), D124 resource-auto-config, G-NE1 episodic-to-semantic merge, commit D121 skeleton files
 **In-flight**: D121 Redis sorted sets for 29M co-occurrence pairs require ~70GB RAM. Redesign: hot-word cache (top 10K words × top 50 co-occur = ~250MB Redis) OR Postgres wg_cooccur table (already running)
+
+## Session 2026-03-19a
+**Theme**: Postgres stability + multi-session CC architecture + ClaudeAndAkien framework born
+**Decisions**: D127, D128, D129
+**Key changes**:
+- Postgres compat: wg_meta ambiguous column (×3), SELECT changes() _pending_scalar shim, preparse 30s timeout fix
+- igor bash launcher: stale process kill + fuser port release on each restart
+- channel.py: shared JSONL channel, post/read/listen/sessions CLI + importable API
+- server.py: mirrors Igor/CC/user messages to shared channel
+- Skills: /context-load, /sprint built and auto-discovered
+- ClaudeAndAkien repo created: https://github.com/akienm/ClaudeAndAkien
+- Slate at ~/.TheIgors/cc_channel/slate.md
+- Dropped 41 scribe tasks from queue permanently
+- Tickets added: T-trails-infra (p0), T-pipeline-arch, T-channel-extract, T-context-load-skill, T-sprint-skill
+**Crystallizations**:
+- SEVENTH: embeddings = trail through meaning dimensions; wg_cooccur wrong primitive; matrix IS embedding space made traversable; free cosine compare via graph topology
+- Trails = query path = training signal; visible for debugging AND Igor self-inspection
+**Next session**: Tailscale + token auth on channel WebSocket (phone access); then T-trails-infra design conversation
+**In-flight**: Tailscale on akiendelllinux + phone, token auth on channel WebSocket — was about to implement
