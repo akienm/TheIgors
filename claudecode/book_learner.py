@@ -374,9 +374,6 @@ def _train_word_graph(chunk_text: str, doc_id: str = "") -> None:
 
         wg = WordGraph(db_path=wg_db)
         wg.index(doc_id or chunk_text[:32], chunk_text)
-        # Fresh instance per chunk — flush co-occurrence buffer immediately
-        # (G-WG1 batching helps the main loop; book_learner reuses no state)
-        wg.flush_cooccur()
     except Exception:
         pass
 
