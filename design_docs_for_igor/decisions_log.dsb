@@ -347,3 +347,5 @@ D133|session-in-db|implemented|sessions table in Postgres; session_manager.py; s
 D134|decision-manager|implemented|decision_manager.py: atomic DSB+DB+Igor flush in one CLI call; replaces manual DSB editing in /decided skill
 D135|crash-safe-session|implemented|session accumulates progressively: start at context-load, append-change/append-decision at each /decided, finalize optional; crash loses only next+in_flight
 D136|day-close-skill|implemented|day-close skill replaces savestate Steps 4-9; docs_sync pre-commit hook in /commit skill
+D137|wg-ambiguous-score-fix|implemented|Fix Postgres ambiguous column 'score' in wg_cooccur upsert (graph_cache.py + pending_replies.py)
+D138|wg-lemmatize|implemented|Add WordNet lemmatization to tokenize(); migrate wg_word_lang+wg_word_docs to canonical lemma forms
