@@ -82,6 +82,21 @@ while true; do
     # Pin IGOR_INSTANCE_ID to the canonical dir name — overrides any stale .env value.
     # This is the authoritative source: the dir that contains the .env IS the instance.
     export IGOR_INSTANCE_ID=$(basename "$(dirname "$ENV_FILE")")
+
+    # Kill any stale igor.main processes left over from a prior crash.
+    # pgrep returns PIDs of all matching processes; exclude current shell's children
+    # by comparing against $$. fuser frees the web port if something else holds it.
+    _stale=$(pgrep -f "igor\.main" 2>/dev/null | grep -v "^$$\$")
+    if [ -n "$_stale" ]; then
+        echo "[igor] Cleaning up stale processes: $_stale"
+        kill $_stale 2>/dev/null
+        sleep 1
+        # Force-kill anything that didn't exit cleanly
+        kill -9 $_stale 2>/dev/null || true
+    fi
+    _web_port="${IGOR_WEB_PORT:-8080}"
+    fuser -k "${_web_port}/tcp" 2>/dev/null || true
+
     if [ -e "$REPO_DIR/pause.wait" ]; then
         echo "Waiting for $REPO_DIR/pause.wait to clear."
         while [ -e "$REPO_DIR/pause.wait" ]; do
