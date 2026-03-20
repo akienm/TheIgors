@@ -383,3 +383,7 @@ D162|spreading-activation-from-tails|implemented|_get_recently_activated uses ta
 D163|memory-sync-full-db-per-box|planned|T-memory-sync #293: full Postgres replica per box; bidirectional sync via GREATEST(activation_count); offline-resilient; every box = automatic backup
 D164|chrome-employer-dedicated-profile|implemented|EMPLOYER_CHROME_PROFILE_PATH changed to ~/.config/igor-employer-chrome — avoids DevTools remote debugging restriction on real Chrome default profile
 D165|test-debt-claudecode-managers|implemented|16 unit tests for session_manager + decision_manager: _parse_sessions_md, current_session_id, _update_dsb, cmd_add, cmd_start; all pure/file, no Postgres needed
+D166|env-sync-heartbeat|implemented|boot_env_sync wired into HeartbeatSource — .env changes picked up every 5 min without restart
+D167|traces-get-mcp|implemented|traces_get(trace_id) MCP tool — full ordered activation sequence for a trace; closes #294 (Igor's own bug report)
+D168|db-perf-already-fixed|implemented|#258/#259/#260/#261 — all already fixed in cortex.py; closed as done
+D169|memory-sync-hub-spoke|implemented|T-memory-sync: hub-and-spoke via IGOR_SWARM_DB; updated_at on every store(); PROC_MEMORY_SYNC every 6h; full=true bootstraps new box
