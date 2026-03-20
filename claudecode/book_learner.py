@@ -103,18 +103,22 @@ OPENROUTER_REFERER = "https://github.com/akienm/TheIgors"
 # ── Extraction system prompt ───────────────────────────────────────────────────
 _EXTRACT_PROMPT = """\
 You are a graph-node extractor for a cognitive AI. Given a passage from a book,
-extract knowledge worth storing as permanent nodes in a semantic memory graph.
+extract nodes that enable the AI to reason about and answer these questions:
 
-Extract ONLY nodes that are:
-- Generalizable principles or concepts (not summaries of just this passage)
-- Conceptual connections that reduce future reasoning (A implies B, X is a form of Y)
-- Empirical facts about how minds, bodies, or systems work
-- Action patterns (procedural nodes) only if the passage implies a clear "when X, do Y"
+  1. How must the models described in this book work? (mechanism, not just what)
+  2. Who are the key thinkers and what is their core insight?
+  3. What claims in this book are most empirically supported?
+  4. What claims are least supported or most speculative?
+  5. How would one evaluate whether this idea is personally emotionally relevant?
+     (extract the HOW-TO-EVALUATE procedure, not a specific emotional response)
 
 NODE TYPES:
   factual      — a concept, definition, or empirical fact
   interpretive — a connection: "when X, it means/implies Y"
   procedural   — an action pattern with a clear trigger (rare in prose)
+  mechanism    — a causal chain: how A produces B produces C; state domain-agnostically
+                 so it can connect to the same pattern in other fields
+                 e.g. "rapid feedback loop stabilizes a system" not "the amygdala fires"
 
 PARENT_CP MAPPING (use the best fit):
   CP1 — learning, growth, capability
@@ -128,22 +132,23 @@ RESPONSE FORMAT — output ONLY valid JSON, no markdown, no extra text:
 {
   "nodes": [
     {
-      "type": "factual|interpretive|procedural",
+      "type": "factual|interpretive|procedural|mechanism",
       "narrative": "1-2 sentences: the generalizable knowledge, present tense",
       "confidence": 0.0-1.0,
       "parent_cp": "CP1-CP6 or empty string",
-      "trigger": "2-8 words that fire this habit (procedural only, else empty string)"
+      "trigger": "2-8 words that fire this habit (procedural/mechanism only, else empty string)"
     }
   ],
   "summary": "1 sentence: what this passage is about (for progress logging)"
 }
 
 Rules:
-- 0-4 nodes max per chunk. Quality over quantity.
+- 0-5 nodes max per chunk. Quality over quantity.
 - Minimum confidence 0.65 to include a node.
+- Mechanism nodes: always state at the pattern level, never domain-locked.
+  Good: "compressed signal bypasses slow deliberation to produce fast action"
+  Bad:  "somatic markers in the vmPFC influence decision-making"
 - Skip: plot summaries, obvious truisms, author biography, hedged speculation.
-- For neuroscience/Damasio: prioritize somatic markers, homeostasis, emotion-cognition
-  integration, consciousness layers, body-mind continuity.
 - Narratives must be self-contained — no "in this chapter" or "the author says".
 """
 
@@ -327,6 +332,7 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
                 "procedural": MemoryType.PROCEDURAL,
                 "factual": MemoryType.FACTUAL,
                 "interpretive": MemoryType.INTERPRETIVE,
+                "mechanism": MemoryType.INTERPRETIVE,  # stored as INTERPRETIVE, flagged in meta
             }.get(ntype, MemoryType.FACTUAL)
 
             uid = f"BL_{str(uuid.uuid4())[:8].upper()}"
@@ -335,6 +341,8 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
                 "book": book_title[:60],
                 "chunk_position": chunk_pos,
             }
+            if ntype == "mechanism":
+                meta["mechanism"] = True
             if trigger:
                 meta["trigger"] = trigger
 

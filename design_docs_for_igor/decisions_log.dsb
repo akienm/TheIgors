@@ -349,3 +349,5 @@ D135|crash-safe-session|implemented|session accumulates progressively: start at 
 D136|day-close-skill|implemented|day-close skill replaces savestate Steps 4-9; docs_sync pre-commit hook in /commit skill
 D137|wg-ambiguous-score-fix|implemented|Fix Postgres ambiguous column 'score' in wg_cooccur upsert (graph_cache.py + pending_replies.py)
 D138|wg-lemmatize|implemented|Add WordNet lemmatization to tokenize(); migrate wg_word_lang+wg_word_docs to canonical lemma forms
+D139|wg-edges-live|implemented|wg_cooccur replaced by wg_edges (1.24M semantic similarity edges via nomic-embed-text); predict_next verified; gradient_flatness /50→/1; memory_embeddings backfilled (9457 Postgres + 296 SQLite)
+D140|habit-loop-prevention|implemented|pipe-separated triggers required for action habits; space-separated token matching caused PROC_CHECK_PROCESS feedback loop (any 'running' matched, echoed full message as pgrep name, ring memory re-triggered); fixed + CC_CHECK_PROCESS duplicate removed
