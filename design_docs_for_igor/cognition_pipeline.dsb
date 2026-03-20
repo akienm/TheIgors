@@ -1,0 +1,244 @@
+DOC|cognition_pipeline|v1|updated=2026-03-20
+META|purpose=map all cognition trees and pipelines — signals, thresholds, what fires, milieu writes
+META|format=section headers + pipe-delimited rows
+META|source=T-pipeline-inventory (read-only analysis of push_sources.py, thalamus.py, basal_ganglia.py, milieu.py, backchannel.py, inference_gateway.py, main.py)
+
+// ── SECTION 1: TWM Push Sources ───────────────────────────────────────────────
+// What each source pushes to TWM (cortex.twm_push), when, and at what salience/urgency
+
+SOURCE|HeartbeatSource|interval=300s
+  PUSH|HEARTBEAT|time+session_age|salience=0.4|urgency=0.3|ttl=600s|always
+  PUSH|BUDGET_LOW|budget low (<20% remaining)|salience=0.7|urgency=0.5|ttl=600s|conditional
+  PUSH|BUDGET_CRITICAL|budget critical|salience=0.9|urgency=0.9|ttl=600s|conditional
+  PUSH|BUDGET_EXHAUSTED|balance at zero|salience=1.0|urgency=0.9|ttl=600s|conditional
+  PUSH|HEARTBEAT_CONDITIONS|PROCEDURAL memories with trigger=heartbeat_check|salience=0.5|urgency=0.3|ttl=600s|conditional
+  SIDE_EFFECT|attractor_decay|cortex.twm_decay_attractor(factor=0.90)|every_heartbeat
+
+SOURCE|MemorySurfacer|interval=120s
+  PUSH|LTM|relevant LTM memories keyed from ring top-5 keywords|salience=0.3-0.6|urgency=0.1|ttl=600s
+  GATE|skip if ring unchanged since last run (change.43 dedup)
+  GATE|skip if all candidates were surfaced in last 10 runs
+
+SOURCE|UserInputSource|event_driven=on_message_arrival
+  PUSH|MSG|user/network message|salience=0.7|urgency=0.7|ttl=1800s|always
+  SIDE_EFFECT|twm_set_attractor(obs_id, weight=1.0)|sets user msg as primary focus (G50)
+
+SOURCE|MachinesWatcher|interval=30s
+  PUSH|MACHINES_JSON|cluster machine inventory|salience=0.8|urgency=0.5|ttl=3600s
+  GATE|only on first run or file mtime change
+
+SOURCE|InboxWatcher|interval=5s
+  PUSH|INBOX_FILE|new file in inbox dir|salience=0.9|urgency=0.8|ttl=3600s|per_file
+  GATE|only when new files appear in INBOX_DIR
+
+SOURCE|MilieuSource|interval=60s
+  PUSH|MOOD_STATE|current VAD state CSB|salience=0.4|urgency=0.3|ttl=600s
+  PUSH|MILIEU_REGULATE|arousal climbing alert|salience=0.8|urgency=0.75|ttl=120s|if arousal slope >= 0.03
+  GATE|push only if significant state change (delta>0.08) OR arousal>0.6 OR valence<-0.4
+  SIDE_EFFECT|m.tick()|natural decay toward neutral every push
+
+SOURCE|HabitCandidateSource|interval=600s
+  PUSH|HABIT_CANDIDATE|non-PROC memories with activation_count >= 5|salience=0.4-0.7|urgency=0.3|ttl=1800s
+  GATE|top-5 candidates per cycle; dedup 1h per candidate
+  SKIP_TYPES|ROOT|CORE_PATTERN|PROCEDURAL
+
+SOURCE|ProactiveHabitSource|interval=60s
+  PUSH|ACTION_IMPULSE:PROACTIVE_HABIT|habits with habit_type=proactive|salience=0.6|urgency=0.4|ttl=1800s
+  SCHEDULES|session_start=once per session|interval:N=every N seconds
+
+SOURCE|ResourceMonitorSource|interval=60s
+  PUSH|THRESHOLD_HABIT|tripped threshold habit (cpu/ram/swap over limit)|salience=0.6-0.8|urgency=0.5-0.7|ttl=habit.twm_ttl_seconds(default=120s)
+  GATE|only on warn or critical; suppress repeats at same severity level until condition clears
+
+SOURCE|SelfObservationSource|interval=30s
+  PUSH|SELF_OBS_HIT|inward watch habit match on Igor's own IGOR_SAID TWM entries|salience=0.5|urgency=0.3|ttl=300s
+  GATE|habit_type=watch + watch_direction=inward; dedup 5min per (habit_id, content_hash)
+
+SOURCE|CuriositySource|interval=300s
+  PUSH|ACTION_IMPULSE:CURIOSITY|idle curiosity topic from outward watch habits|salience=0.5|urgency=0.4|ttl=600s
+  GATE|no active attractor (weight < 0.1) AND max TWM urgency < 0.35
+
+SOURCE|main.py:pre_submit_threshold|event_driven=before_each_turn
+  PUSH|THRESHOLD_WARN|threshold habits tripped at submit time|salience=0.7|urgency=0.6|ttl=habit.twm_ttl_seconds
+
+SOURCE|main.py:igor_response|event_driven=after_LLM_response
+  PUSH|IGOR_SAID|Igor's response text (first 300 chars)|consumed by SelfObservationSource
+
+// ── SECTION 2: Thalamus Intent Taxonomy ───────────────────────────────────────
+// 13-intent taxonomy; intent gates BG habit type eligibility (D074)
+
+INTENT|command|starts_with=/
+INTENT|greeting|hello|hi|hey|howdy|good morning|good evening
+INTENT|meta_question|how do you work|what are you|who are you|what can you do
+INTENT|memory_instruction|remember that|save this|note that|learn that|don't forget
+INTENT|code_task|write code|fix the code|debug|implement|refactor|function that|script to|patch
+INTENT|analysis_task|analyse|analyze|compare|summarize|audit|what patterns|review
+INTENT|explanation_request|why did you|explain|reasoning|how does|walk me through
+INTENT|factual_question|capital of|what is|what's|tell me about|who invented|when did|where is
+INTENT|creative_request|read me|read to me|tell me a story|write me a poem|start at chapter|sentence by sentence
+INTENT|action_request|run|execute|search for|find|browse|open|launch|stop|restart
+INTENT|complaint|broken|not working|wrong|fail|error|bug|doesn't work|can't|won't
+INTENT|conversation|think|feel|opinion|thoughts on|agree|disagree|interesting
+INTENT|general|catch-all fallback
+
+INTENT_GATE|_QUESTION_INTENTS|factual_question|knowledge_request|meta_question|explanation_request|general|conversation
+  EFFECT|action+proactive habits with code_ref skipped|workflow+delegation+reactive habits skipped
+
+INTENT_GATE|_KNOWLEDGE_INTENTS|factual_question|knowledge_request
+  EFFECT|ALL response habits skipped → fall through to LLM+winnow (D074 expansion, G-OVN-1d)
+
+INTENT_GATE|_NO_BACKCHANNEL|command|greeting|action_request|memory_instruction
+  EFFECT|backchannel suppressed
+
+// ── SECTION 3: BG Scoring + Milieu Modulation ─────────────────────────────────
+
+BG_SCORE|formula|trigger_score(1.0) + keyword_bonus(0-0.15) + activation_bonus(0-0.15) + inertia_bonus(0-0.10) + valence_bonus(0-0.10) + meaning_to_me_bonus(0.08) + wg_bonus(0-0.10)
+BG_SCORE|decay_factor|exponential; tau=30d*(1+activation*0.5) capped at 360d; unused habits fade
+
+BG_THRESHOLD|base=0.50|min=0.30|max=0.70
+BG_THRESHOLD|milieu_modulation|t -= arousal*0.08; t += (0.3 - dominance)*0.06
+  MEANING|high_arousal → lower threshold (more reactive)|low_dominance → higher threshold (escalate sooner)
+
+BG_SPECIAL|PROC_HABIT_COMPILER|fires at 0.95 on any compile-phrase (build a habit|whenever|every time|from now on)
+BG_SPECIAL|PROC_NOTEBOOK_SAVE|fires at 0.93 on notebook-save-intent phrases
+BG_SPECIAL|threshold habits|never scored by BG — evaluated by ResourceMonitorSource + pre_submit_threshold only
+BG_SPECIAL|author_filter|habits with metadata.author_filter skip if input author doesn't match
+
+BG_WINNER|lateral_inhibition|max score wins; tiebreak by activation_count
+BG_WINNER|wg_reinforce|winning habit ID reinforced in word graph on every win
+
+// ── SECTION 4: What Writes to Milieu ─────────────────────────────────────────
+// All calls into milieu.update() / ingest_ne_state() / ingest_resolution_reward() / ingest_surprise() / tick() / gap_reset()
+
+MILIEU_WRITE|main.py:end_of_interactive_turn|method=update(valence, friction, roi)|source=PFC assess_valence+measure_friction
+  DIMS|valence←direct|arousal←friction*2-1|dominance←friction+roi blend
+  ALPHA|up=0.25|down=0.05
+
+MILIEU_WRITE|NE_worker_thread|method=ingest_ne_state(ne_state)|source=NarrativeEngine internal_state
+  DIMS|valence+arousal only (NE doesn't assess dominance)
+  ALPHA|up=0.10|down=0.03 (softer than direct interaction)
+
+MILIEU_WRITE|main.py:_apply_resolution_reward|method=ingest_resolution_reward(last_ne_valence)|called=after each turn return
+  DIMS|valence only
+  ALPHA|up=0.15|down=0.04
+
+MILIEU_WRITE|main.py:ingest_surprise|method=ingest_surprise(predicted_tier, actual_tier)|called=after tier used is known
+  DIMS|dominance+arousal on escalation; dominance restoration on success
+  TRIGGER|actual_tier > predicted_tier → dominance erodes + arousal spikes
+
+MILIEU_WRITE|MilieuSource.tick|method=tick()|called=every MilieuSource interval (60s)
+  DIMS|all three → natural decay toward neutral
+  RATES|valence*=0.96|arousal*=0.97|dominance=dominance*0.99 + 0.3*0.01
+
+MILIEU_WRITE|boot:gap_reset|method=gap_reset()|called=on session start after >4h gap
+  DIMS|arousal*=0.3|valence*=0.5|dominance drift toward 0.3
+
+MILIEU_WRITE|global_sync|method=_contribute_to_global|on every update; cross-machine via IGOR_GLOBAL_MILIEU_URL POST
+MILIEU_WRITE|global_blend|method=tick() G16|every 10 ticks blend 2% toward global baseline
+
+// ── SECTION 5: Backchannel Gate Conditions ─────────────────────────────────────
+
+BACKCHANNEL|gate|IGOR_BACKCHANNEL=true (default false — observe first)
+BACKCHANNEL|intent_filter|_BACKCHANNEL_INTENTS=conversation|creative_request|explanation_request|analysis_task|factual_question
+BACKCHANNEL|length_filter|core_input must be >= 40 chars
+BACKCHANNEL|form_selection
+  high_complexity OR arousal>0.6 → nod_think "(nods in thought)"
+  tone=friendly/positive AND arousal>0.4 → verbal_affirm "Indeed."
+  default → nod "(nods)"
+BACKCHANNEL|habit_override|PROC_BACKCHANNEL_* habits can replace default forms via form_key/form_text metadata
+
+// ── SECTION 6: Tier Ladder + skip_to Logic ────────────────────────────────────
+
+TIER_LADDER|tier.1|habit fires → no LLM call at all
+TIER_LADDER|tier.2|Ollama local (llama3.2:1b) — interactive timeout; currently idle (falls through)
+TIER_LADDER|tier.2/batch|Ollama batch pool — quality priority; background_batch level
+TIER_LADDER|tier.2/impulse|Ollama local — background level (cloud inactive)
+TIER_LADDER|tier.3|OR gpt-4o-mini — impulse/cheap turns; background if cloud active
+TIER_LADDER|tier.3.5|OR haiku (claude-haiku-4.5) — default interactive minimum (D035)
+TIER_LADDER|tier.4|OR sonnet (claude-sonnet-4.6) — complex/high-complexity turns
+TIER_LADDER|tier.5|Anthropic direct — inhibited (IGOR_TIER5_ENABLED=false)
+TIER_LADDER|tier.6|all cloud failed → arbiter alert
+
+SKIP_TO_BASE|source=preparse CSB tier_minimum field
+SKIP_TO_BUMP|D035|interactive turns: tier.3 → tier.3.5 (minimum for persona capability)
+SKIP_TO_BUMP|thalamus_complexity=high|tier.3 or tier.3.5 → tier.4
+SKIP_TO_BUMP|milieu_dominance<0.0|bump one tier (mildly low dominance)
+SKIP_TO_BUMP|milieu_dominance<-0.3|bump two tiers (very low dominance)
+SKIP_TO_BUMP|session_character=stressed|tier.3 or tier.3.5 → one tier up
+SKIP_TO_DOWN|session_character=focused|tier.3.5 → tier.3
+SKIP_TO_BUMP|NE_ambiguity|NE predicted habit but none fired (gate: IGOR_NE_ROUTING)|bump one tier
+SKIP_TO_OVERRIDE|latency|preparse p50 > PREPARSE_SLOW_MS → skip LLM preparse; slow p50 → tier.3 override
+SKIP_TO_OVERRIDE|routing_directive=local_only|cloud escalation disabled
+
+PREPARSE_GATE|skip_conditions
+  thalamus_confident=true (low/high complexity already certain — medium uses preparse)
+  short_input (<=6 words)
+  cloud_mode_active (cloud routes fine without preparse overhead)
+  latency_p50 > PREPARSE_SLOW_MS (adaptive skip)
+  habit fires before preparse (tier.1 — preparse irrelevant)
+
+INFERENCE_GATEWAY|preparse|Ollama→OR fallback|max_tokens=120|timeout=5s|temp=0.1
+INFERENCE_GATEWAY|winnow|Ollama→OR fallback|max_tokens=60|timeout=3s|temp=0.1
+INFERENCE_GATEWAY|ne|cloud_mode→OR; ne_local→Ollama→OR; fallback=OR always|max_tokens=1024|timeout=45s|temp=0.3
+INFERENCE_GATEWAY|think|Ollama only (no cloud fallback)|max_tokens=80|timeout=8s|temp=0.2
+
+// ── SECTION 7: Ring → Context → LLM Data Flow ─────────────────────────────────
+
+RING_MEMORY|store=SQLite ring_memory table|FIFO-50|survives restarts
+RING_WRITE|user message|write_ring on arrival|category=default
+RING_WRITE|Igor response|write_ring after LLM response|category=default
+RING_WRITE|system events|JOB_CREATED|THRESHOLD_WARN|NE_ROUTING|category=system_info
+RING_WRITE|NE narrative|write_ring after NE run|category=narrative
+RING_WRITE|session control|boot message|category=session_control
+RING_WRITE|latency trace|LATENCY|preparse_ms|reasoning_ms|tier|category=latency_trace
+
+RING_READS|MemorySurfacer|limit=5|keywords for LTM surfacing
+RING_READS|MilieuSource|not direct; SelfObservationSource reads TWM igor_response entries
+RING_READS|HeartbeatSource|not direct; reads procedural memories
+RING_READS|metrics|limit=N|category=latency_trace|for p50/p95 computation
+RING_READS|NE|limit=5|category=narrative|recent NE state
+RING_READS|LLM_context_build|limit=10 (reasoner injects into system prompt)
+
+CONTEXT_BUILD_FLOW
+  step1|UserInputSource.push_message() → TWM push + set_attractor
+  step2|thalamus.process() → ParsedInput (intent, complexity, traversal_strategy)
+  step3|backchannel.should_backchannel() → optional immediate ack sent before reasoning
+  step4|BG.select_habit() → winner or None + near_misses
+  step5|if habit fires (tier.1): return action/response text; skip LLM
+  step6|preparse: thalamus CSB or Ollama/OR → pre_csb with tier_minimum + memory_queries
+  step7|parallel: memory search (cortex.search + embedding rerank) + LLM preparse
+  step8|skip_to computed from preparse + thalamus + milieu signals
+  step9|cortex.expand_blob_memories() → blob content appended to relevant memories
+  step10|_winnow_context() (gate: IGOR_CONTEXT_WINNOW): Ollama/OR reads ring+WG, fetches targeted memories
+  step11|reasoner.reason(user_input, relevant, core) → response_text (via gateway, skip_to tier)
+  step12|response written: ring.write_ring(response) + TWM IGOR_SAID push (source=igor_response)
+  step13|milieu.update(valence, friction, roi) — end of interactive turn
+  step14|milieu.ingest_surprise(predicted_tier, actual_tier) — if tier mismatch
+  step15|NE thread spawned → ingest_ne_state + _apply_resolution_reward
+
+MEMORY_SEARCH_FLOW
+  phase1|text keyword scan → cortex.search() candidates
+  phase2|embedding rerank via nomic-embed-text cosine similarity (when Ollama up)
+  weight|inertia + confidence + activation_count
+  type_routing|D083: _route_types_from_query() selects memory types before searching
+  spreading_activation|_get_recently_activated() seeds candidate pool at 0.1 base score
+
+// ── SECTION 8: Traversal Strategies (from Thalamus) ───────────────────────────
+// Question form → traversal strategy → entry point → direction
+
+TRAVERSAL|semantic_depth|how/explain/walk me through|entry=semantic_anchor|direction=down
+TRAVERSAL|causal_trace|why/what caused/how did|entry=semantic_anchor|direction=up
+TRAVERSAL|broad_search|what would/what could/what if|entry=twm_attractor|direction=lateral
+TRAVERSAL|factual_leaf|what is/when/where/who|entry=cp_closest|direction=down
+TRAVERSAL|memory_verify|do you remember/did you save|entry=ring_recent|direction=lookup
+TRAVERSAL|attractor_hold|what do you think/your opinion|entry=twm_attractor|direction=lookup
+TRAVERSAL|lever_trace|where's the lever/what's driving/root cause|entry=semantic_anchor|direction=up
+TRAVERSAL|none|command|memory_instruction|code_task|direction=none
+
+// ── SECTION 9: Open Gaps Identified ───────────────────────────────────────────
+
+GAP|traversal_strategies_not_wired|ParsedInput.traversal_strategy is computed but cortex.search() doesn't use it yet (no traversal dispatch in main.py flow)
+GAP|backchannel_knowledge_request|knowledge_request not in _BACKCHANNEL_INTENTS — if added to thalamus taxonomy later, update backchannel too
+GAP|ne_routing_gate|IGOR_NE_ROUTING=false by default; NE ambiguity signal collected but not used in production
+GAP|winnow_not_in_gateway|_winnow_context() uses gateway for "winnow" purpose but call path unclear — verify wiring
+GAP|milieu_ingest_surprise_caller|ingest_surprise() called at line 4065 after tier used; predicted_tier=_skip_to (pre-escalation value) — needs verification this is correct baseline

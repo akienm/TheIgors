@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-19
+DOC|decisions_log|v1|updated=2026-03-20
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -368,3 +368,18 @@ D147|habit-fires-before-meaning|decided|action habits fire on surface token prox
 D148|thalamus-word-boundary|implemented|intent classification uses \b regex not substring — 'hey ' matched 'they', 'compare' matched 'compared'; fixes greeting/analysis_task misclassification
 D149|habit-fallthrough-rule|implemented|habits with no action+no code_ref fall through to LLM regardless of type; response habits without action text also emit debug noise — systematic bug class in early seeds
 D150|habit-audit-function-names|defined|function names in action field (close_task_memory, defer_task_memory etc.) are systematic early-seed bug; fix: remove action, set habit_type=cognitive; T-habit-audit-pipeline does full sweep
+D151|slow-query-tool-pattern|implemented|db_queries.log is source of truth for DB perf; analyze_slow_queries() tool surfaces patterns; PROC_SLOW_QUERY_REPORT habit wired; top bug: CREATE INDEX running 710x + memories SELECT avg 506ms
+D152|clone-drone-worker-taxonomy|implemented|two worker classes: clones (hot context, code work) and drones (bounded, no project knowledge); both have skill entry points
+D153|graph-calving-design|planned|no trees table; attractors emergent (high activation+inbound edges); calving = attractor divergence, depth>5 proxy; bridge via interpretive_edge
+D154|trail-training-hebbian|planned|Hebbian learning from traces: ΔW=lr×heat_A×heat_B; STDP directionality from trace order; no pairwise counter table; tails decay handles recency weighting
+D155|parent-id-as-bootstrap|defined|parent_id = first edge only (training wheels); nodes have many tree memberships via interpretive_edges; trail shows which tree called a node this time
+D156|watch-habits-to-context-inject|implemented|5 PROC_WATCH_* habits converted from watch type to context_inject; silent TWM push on trigger, no canned response
+D157|chrome-headless-no-sandbox|implemented|browse_as_employer timeout fixed: --no-sandbox + --disable-gpu added to launch args; stale SingletonLock auto-cleared before launch
+D158|proactive-scheduler-ticket|planned|T-proactive-scheduler #291: ProactiveHabitSource wires schedule:interval:N habits; note: needs Google Calendar API key
+D159|memory-verify-in-knowledge-intents|implemented|memory_verify added to _KNOWLEDGE_INTENTS in basal_ganglia — suppresses canned response habits on knowledge/retrieval queries (#248)
+D160|thalamus-learned-about-patterns|implemented|what-have-you-learned-about + 3 variants added to _MEMORY_LOOKUP_PHRASES and memory_verify detection block in thalamus
+D161|trails-infra-trail-id|implemented|tails table: trail_id + sequence_pos added; _record_trace returns trace_id; _record_tails links tails to traces; matrix debugger prerequisite
+D162|spreading-activation-from-tails|implemented|_get_recently_activated uses tail heat (last 48h) not last_accessed; fallback to last_accessed if tails empty
+D163|memory-sync-full-db-per-box|planned|T-memory-sync #293: full Postgres replica per box; bidirectional sync via GREATEST(activation_count); offline-resilient; every box = automatic backup
+D164|chrome-employer-dedicated-profile|implemented|EMPLOYER_CHROME_PROFILE_PATH changed to ~/.config/igor-employer-chrome — avoids DevTools remote debugging restriction on real Chrome default profile
+D165|test-debt-claudecode-managers|implemented|16 unit tests for session_manager + decision_manager: _parse_sessions_md, current_session_id, _update_dsb, cmd_add, cmd_start; all pure/file, no Postgres needed
