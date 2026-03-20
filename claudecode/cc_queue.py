@@ -15,6 +15,8 @@ Usage:
     cc_queue.py log <msg>                     — append a free-form log entry
     cc_queue.py flush_decision <id> <summary> — flush decision to Igor memory
     cc_queue.py flush_session <session> <summary> — flush session blob to Igor memory
+    cc_queue.py worker-launch <ticket-id>         — launch a worker konsole and record its PID
+    cc_queue.py inject <ticket-id> <text>         — send keystrokes to worker terminal via xdotool
 """
 
 import json
@@ -272,6 +274,89 @@ def cmd_flush_session(args):
         print(f"  (session logged locally only)")
 
 
+WORKER_PIDS_PATH = os.path.expanduser("~/.TheIgors/cc_channel/worker_pids.json")
+
+
+def _load_worker_pids():
+    if not os.path.exists(WORKER_PIDS_PATH):
+        return {}
+    with open(WORKER_PIDS_PATH) as f:
+        return json.load(f)
+
+
+def _save_worker_pids(pids):
+    os.makedirs(os.path.dirname(WORKER_PIDS_PATH), exist_ok=True)
+    with open(WORKER_PIDS_PATH, "w") as f:
+        json.dump(pids, f, indent=2)
+
+
+def cmd_worker_launch(args):
+    """Launch a worker konsole for a ticket and record its PID."""
+    import subprocess
+
+    if not args:
+        print("Usage: worker-launch <ticket-id>")
+        sys.exit(1)
+    ticket_id = args[0]
+    # Launch konsole with worker context
+    proc = subprocess.Popen(
+        [
+            "konsole",
+            "--separate",
+            "-e",
+            "bash",
+            "-c",
+            (
+                f"source ~/TheIgors/venv/bin/activate && "
+                f"export WORKER_TICKET={ticket_id} && "
+                f"claude --dangerously-skip-permissions "
+                f'"/sprint {ticket_id}"; exec bash'
+            ),
+        ],
+        start_new_session=True,
+    )
+    pids = _load_worker_pids()
+    pids[ticket_id] = {
+        "konsole_pid": proc.pid,
+        "launched_at": datetime.now(timezone.utc).isoformat(),
+    }
+    _save_worker_pids(pids)
+    print(f"Launched worker for {ticket_id} — konsole PID {proc.pid}")
+    print(f"Recorded in {WORKER_PIDS_PATH}")
+
+
+def cmd_inject(args):
+    """Send keystrokes to a worker terminal via xdotool."""
+    import subprocess
+
+    if len(args) < 2:
+        print("Usage: inject <ticket-id> <text>")
+        sys.exit(1)
+    ticket_id = args[0]
+    text = " ".join(args[1:])
+    pids = _load_worker_pids()
+    entry = pids.get(ticket_id)
+    if not entry:
+        print(f"No worker PID recorded for {ticket_id}. Run worker-launch first.")
+        sys.exit(1)
+    konsole_pid = entry["konsole_pid"]
+    # Find the window ID for this konsole process
+    result = subprocess.run(
+        ["xdotool", "search", "--pid", str(konsole_pid)], capture_output=True, text=True
+    )
+    wids = result.stdout.strip().splitlines()
+    if not wids:
+        print(
+            f"No xdotool window found for konsole PID {konsole_pid}. Is it still running?"
+        )
+        sys.exit(1)
+    wid = wids[-1]  # use last window (most recently created)
+    subprocess.run(
+        ["xdotool", "type", "--window", wid, "--clearmodifiers", text + "\n"]
+    )
+    print(f"Injected into {ticket_id} (window {wid}): {text!r}")
+
+
 COMMANDS = {
     "list": cmd_list,
     "show": cmd_show,
@@ -282,6 +367,8 @@ COMMANDS = {
     "add": cmd_add,
     "flush_decision": cmd_flush_decision,
     "flush_session": cmd_flush_session,
+    "worker-launch": cmd_worker_launch,
+    "inject": cmd_inject,
 }
 
 if __name__ == "__main__":
