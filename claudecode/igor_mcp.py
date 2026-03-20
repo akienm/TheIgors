@@ -131,6 +131,25 @@ async def list_tools() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="traces_get",
+            description=(
+                "Fetch the full ordered activation sequence for a specific trace by ID. "
+                "Returns all nodes that fired (node_id, sequence_pos, relevance, "
+                "memory_type, narrative snippet) — lets you replay a reasoning chain. "
+                "Get trace IDs from traces_recent."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "trace_id": {
+                        "type": "string",
+                        "description": "Trace UUID from traces_recent",
+                    },
+                },
+                "required": ["trace_id"],
+            },
+        ),
+        types.Tool(
             name="traces_recent",
             description=(
                 "Return the N most recent search traces — what memory nodes activated, "
@@ -297,6 +316,8 @@ def _dispatch(name: str, args: dict) -> str:
         return _memory_get(args["memory_id"])
     elif name == "memory_list_by_type":
         return _memory_list_by_type(args["memory_type"], args.get("limit", 20))
+    elif name == "traces_get":
+        return _traces_get(args["trace_id"])
     elif name == "traces_recent":
         return _traces_recent(args.get("limit", 10), args.get("since_minutes"))
     elif name == "tail_heat":
@@ -390,6 +411,48 @@ def _memory_list_by_type(memory_type: str, limit: int) -> str:
     for r in rows:
         snippet = (r["narrative"] or "")[:100].replace("\n", " ")
         lines.append(f"  [{r['activation_count']}] {r['id']}\n    {snippet}")
+    return "\n".join(lines)
+
+
+# ── traces_get ────────────────────────────────────────────────────────────────
+
+
+def _traces_get(trace_id: str) -> str:
+    rows = _q(
+        "SELECT id, recorded_at, query, nodes FROM traces WHERE id = %s LIMIT 1",
+        (trace_id,),
+    )
+    if not rows:
+        return f"Trace {trace_id!r} not found."
+    r = rows[0]
+    nodes = (
+        json.loads(r["nodes"]) if isinstance(r["nodes"], str) else (r["nodes"] or [])
+    )
+    node_ids = [n["node_id"] for n in nodes]
+
+    # Fetch narrative snippets in one batch
+    narratives: dict[str, str] = {}
+    if node_ids:
+        placeholders = ",".join(["%s"] * len(node_ids))
+        mem_rows = _q(
+            f"SELECT id, narrative FROM memories WHERE id IN ({placeholders})",
+            node_ids,
+        )
+        for m in mem_rows:
+            narratives[m["id"]] = str(m["narrative"] or "")[:80]
+
+    lines = [
+        f"Trace {trace_id[:8]}…  {r['recorded_at'][:19]}",
+        f"Query: {repr((r['query'] or '')[:80])}",
+        f"{len(nodes)} nodes activated:\n",
+    ]
+    for n in sorted(nodes, key=lambda x: x.get("sequence_pos", 0)):
+        nid = n["node_id"]
+        narrative = narratives.get(nid, "")
+        lines.append(
+            f"  [{n.get('sequence_pos', '?'):>3}] rel={n.get('relevance', 0):.3f} "
+            f"[{n.get('memory_type', '?')}] {nid}  {narrative}"
+        )
     return "\n".join(lines)
 
 
