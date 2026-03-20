@@ -17,6 +17,7 @@ Log: ~/.TheIgors/logs/phrase_regression.log (prepend newest-first).
 import argparse
 import json
 import random
+import ssl
 import sys
 import time
 import urllib.request
@@ -24,7 +25,14 @@ from datetime import datetime
 from pathlib import Path
 
 LOG_PATH = Path.home() / ".TheIgors" / "logs" / "phrase_regression.log"
-CC_BRIDGE = "http://localhost:8080/api/cc_send"
+CC_BRIDGE = "https://localhost:8080/api/cc_send"
+
+
+def _ssl_ctx() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
 
 
 def _log(msg: str) -> None:
@@ -46,7 +54,7 @@ def _send(phrase: str) -> bool:
             data=payload,
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10, context=_ssl_ctx()) as resp:
             return resp.status == 200
     except Exception as e:
         _log(f"SEND_FAIL phrase='{phrase[:40]}' err={e}")

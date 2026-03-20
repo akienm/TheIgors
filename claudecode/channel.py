@@ -32,8 +32,16 @@ _MESSAGES_FILE = _CHANNEL_DIR / "messages.jsonl"
 _SESSION_NAME = os.getenv("CC_SESSION_NAME", f"cc-{os.getpid()}")
 
 # Postgres optional — use if IGOR_HOME_DB_URL set and psycopg2 available
-_USE_PG = False
-_PG_URL = os.getenv("IGOR_HOME_DB_URL", "")
+_PG_URL = os.getenv("IGOR_HOME_DB_URL", "") or os.getenv("IGOR_DB_URL", "")
+try:
+    if _PG_URL:
+        import psycopg2 as _psycopg2
+
+        _USE_PG = True
+    else:
+        _USE_PG = False
+except ImportError:
+    _USE_PG = False
 
 
 def _ts() -> str:
@@ -48,11 +56,28 @@ def _ensure_dir():
 
 
 def _append(entry: dict):
-    """Append one JSON entry to the messages file. Atomic enough for our purposes."""
+    """Append one JSON entry to the messages file and Postgres (if available)."""
     _ensure_dir()
     line = json.dumps(entry, ensure_ascii=False) + "\n"
     with open(_MESSAGES_FILE, "a", encoding="utf-8") as f:
         f.write(line)
+    if _USE_PG:
+        try:
+            conn = _psycopg2.connect(_PG_URL)
+            with conn:
+                with conn.cursor() as c:
+                    c.execute(
+                        "INSERT INTO channel_messages (ts, author, type, content) VALUES (%s, %s, %s, %s)",
+                        (
+                            entry["ts"],
+                            entry["author"],
+                            entry.get("type", "message"),
+                            entry["content"],
+                        ),
+                    )
+            conn.close()
+        except Exception:
+            pass  # JSONL is the fallback — never block on PG failure
 
 
 def _read_tail(n: int = 20) -> list[dict]:

@@ -22,6 +22,7 @@ import asyncio
 import json
 import logging
 import shutil
+import ssl
 import subprocess
 import sys
 from datetime import datetime
@@ -30,17 +31,29 @@ from pathlib import Path
 try:
     import websockets
 except ImportError:
-    print("ERROR: websockets not installed. Run: pip install websockets", file=sys.stderr)
+    print(
+        "ERROR: websockets not installed. Run: pip install websockets", file=sys.stderr
+    )
     sys.exit(1)
 
-WS_URL      = "ws://localhost:8080/ws"
-CLAUDE_BIN  = shutil.which("claude") or "/home/akien/.local/bin/claude"
-CLAUDE_TIMEOUT = 120   # seconds per CC response
-RECONNECT_DELAY = 5    # seconds between reconnect attempts
+WS_URL = "wss://localhost:8080/ws"
+
+
+def _ssl_ctx() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+CLAUDE_BIN = shutil.which("claude") or "/home/akien/.local/bin/claude"
+CLAUDE_TIMEOUT = 120  # seconds per CC response
+RECONNECT_DELAY = 5  # seconds between reconnect attempts
 
 LOG_PATH = Path.home() / ".TheIgors" / "logs" / "cc_bridge.log"
 
 # ── Logging ───────────────────────────────────────────────────────────────────
+
 
 def _setup_logging(verbose: bool) -> logging.Logger:
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -58,6 +71,7 @@ def _setup_logging(verbose: bool) -> logging.Logger:
 
 # ── CC invocation ─────────────────────────────────────────────────────────────
 
+
 def _call_claude(prompt: str, log: logging.Logger) -> str | None:
     """Invoke `claude -p` and return the response text, or None on failure."""
     if not CLAUDE_BIN or not Path(CLAUDE_BIN).exists():
@@ -65,6 +79,7 @@ def _call_claude(prompt: str, log: logging.Logger) -> str | None:
         return None
     try:
         import os
+
         env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
         # cc.sh pattern: Igor's env uses REAL_ANTHROPIC_API_KEY to avoid
         # conflicts with the outer CC session; bridge must map it back.
@@ -91,6 +106,7 @@ def _call_claude(prompt: str, log: logging.Logger) -> str | None:
 
 # ── Bridge loop ───────────────────────────────────────────────────────────────
 
+
 def _is_cc_addressed(content: str) -> bool:
     """True if Igor is addressing CC in this message."""
     low = content.strip().lower()
@@ -108,14 +124,18 @@ def _strip_cc_prefix(content: str) -> str:
 async def _bridge(ws_url: str, log: logging.Logger) -> None:
     """One connected session — reconnects on exit."""
     log.info("connecting to %s", ws_url)
-    async with websockets.connect(ws_url) as ws:
+    async with websockets.connect(ws_url, ssl=_ssl_ctx()) as ws:
         log.info("connected")
         # Announce presence
-        await ws.send(json.dumps({
-            "type": "message",
-            "content": "CC> bridge online — say 'CC: <message>' to address me",
-            "author": "claude-code",
-        }))
+        await ws.send(
+            json.dumps(
+                {
+                    "type": "message",
+                    "content": "CC> bridge online — say 'CC: <message>' to address me",
+                    "author": "claude-code",
+                }
+            )
+        )
 
         async for raw in ws:
             try:
@@ -126,7 +146,7 @@ async def _bridge(ws_url: str, log: logging.Logger) -> None:
             if msg.get("type") != "message":
                 continue
 
-            author  = msg.get("author", "")
+            author = msg.get("author", "")
             content = msg.get("content", "").strip()
 
             # Only respond to Igor addressing CC directly
@@ -151,11 +171,15 @@ async def _bridge(ws_url: str, log: logging.Logger) -> None:
             else:
                 reply = "CC> (no response — claude invocation failed)"
 
-            await ws.send(json.dumps({
-                "type": "message",
-                "content": reply,
-                "author": "claude-code",
-            }))
+            await ws.send(
+                json.dumps(
+                    {
+                        "type": "message",
+                        "content": reply,
+                        "author": "claude-code",
+                    }
+                )
+            )
 
 
 async def _run_forever(ws_url: str, log: logging.Logger) -> None:
@@ -163,8 +187,11 @@ async def _run_forever(ws_url: str, log: logging.Logger) -> None:
     while True:
         try:
             await _bridge(ws_url, log)
-        except (OSError, ConnectionRefusedError,
-                websockets.exceptions.WebSocketException) as e:
+        except (
+            OSError,
+            ConnectionRefusedError,
+            websockets.exceptions.WebSocketException,
+        ) as e:
             log.warning("disconnected (%s) — retrying in %ds", e, RECONNECT_DELAY)
             await asyncio.sleep(RECONNECT_DELAY)
         except KeyboardInterrupt:
@@ -177,9 +204,10 @@ async def _run_forever(ws_url: str, log: logging.Logger) -> None:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="CC↔Igor bridge daemon")
-    parser.add_argument("--url",     default=WS_URL, help="Igor WebSocket URL")
+    parser.add_argument("--url", default=WS_URL, help="Igor WebSocket URL")
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 

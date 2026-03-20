@@ -20,8 +20,10 @@ conversation by calling this script again.
 Igor sees author="claude-code" in the incoming queue (not "web-user") so he
 knows the message is machine-to-machine.
 """
+
 import asyncio
 import json
+import ssl
 import sys
 import argparse
 from datetime import datetime
@@ -29,10 +31,21 @@ from datetime import datetime
 try:
     import websockets
 except ImportError:
-    print("ERROR: websockets not installed. Run: pip install websockets", file=sys.stderr)
+    print(
+        "ERROR: websockets not installed. Run: pip install websockets", file=sys.stderr
+    )
     sys.exit(1)
 
-WS_URL = "ws://localhost:8080/ws"
+WS_URL = "wss://localhost:8080/ws"
+
+
+def _ssl_ctx() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
 DEFAULT_TIMEOUT = 90  # Igor can take a while on complex turns
 
 
@@ -40,28 +53,32 @@ def _csb_wrap(content: str) -> str:
     """Wrap message in a CSB block so Igor recognises it as CC → Igor."""
     ts = datetime.now().strftime("%Y-%m-%dT%H:%M")
     return (
-        f"[CC_MESSAGE|{ts}|from=claude-code]\n"
-        f"{content.strip()}\n"
-        f"[/CC_MESSAGE]"
+        f"[CC_MESSAGE|{ts}|from=claude-code]\n" f"{content.strip()}\n" f"[/CC_MESSAGE]"
     )
 
 
 async def _talk(message: str, timeout: int, url: str = WS_URL) -> int:
     try:
-        async with websockets.connect(url) as ws:
-            payload = json.dumps({"type": "message", "content": message, "author": "claude-code"})
+        async with websockets.connect(url, ssl=_ssl_ctx()) as ws:
+            payload = json.dumps(
+                {"type": "message", "content": message, "author": "claude-code"}
+            )
             await ws.send(payload)
 
             deadline = asyncio.get_event_loop().time() + timeout
             while True:
                 remaining = deadline - asyncio.get_event_loop().time()
                 if remaining <= 0:
-                    print("ERROR: Timed out waiting for Igor's response.", file=sys.stderr)
+                    print(
+                        "ERROR: Timed out waiting for Igor's response.", file=sys.stderr
+                    )
                     return 1
                 try:
                     raw = await asyncio.wait_for(ws.recv(), timeout=remaining)
                 except asyncio.TimeoutError:
-                    print("ERROR: Timed out waiting for Igor's response.", file=sys.stderr)
+                    print(
+                        "ERROR: Timed out waiting for Igor's response.", file=sys.stderr
+                    )
                     return 1
 
                 try:
@@ -72,7 +89,10 @@ async def _talk(message: str, timeout: int, url: str = WS_URL) -> int:
                 # Skip our own echo-back and activity frames
                 if msg.get("type") == "activity":
                     continue
-                if msg.get("type") == "message" and msg.get("author") in ("user", "claude-code"):
+                if msg.get("type") == "message" and msg.get("author") in (
+                    "user",
+                    "claude-code",
+                ):
                     continue
 
                 # Igor's response — collect all messages until quiet for 5s
@@ -88,7 +108,10 @@ async def _talk(message: str, timeout: int, url: str = WS_URL) -> int:
                             msg2 = json.loads(raw2)
                             if msg2.get("type") == "activity":
                                 continue
-                            if msg2.get("type") == "message" and msg2.get("author") in ("user", "claude-code"):
+                            if msg2.get("type") == "message" and msg2.get("author") in (
+                                "user",
+                                "claude-code",
+                            ):
                                 continue
                             if msg2.get("type") == "message":
                                 a2 = msg2.get("author", "Igor")
@@ -99,8 +122,12 @@ async def _talk(message: str, timeout: int, url: str = WS_URL) -> int:
                             break
                     return 0
 
-    except (OSError, ConnectionRefusedError, websockets.exceptions.InvalidURI,
-            websockets.exceptions.WebSocketException) as e:
+    except (
+        OSError,
+        ConnectionRefusedError,
+        websockets.exceptions.InvalidURI,
+        websockets.exceptions.WebSocketException,
+    ) as e:
         print(f"ERROR: Cannot connect to Igor at {WS_URL}: {e}", file=sys.stderr)
         return 1
 
@@ -109,13 +136,21 @@ def main():
     parser = argparse.ArgumentParser(
         description="Send a message to Igor via WebSocket and print his response."
     )
-    parser.add_argument("message", nargs="?", help="Message to send (or pipe via stdin)")
-    parser.add_argument("--csb", action="store_true",
-                        help="Wrap message in [CC_MESSAGE] CSB block")
-    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
-                        help=f"Seconds to wait for response (default {DEFAULT_TIMEOUT})")
-    parser.add_argument("--url", default=WS_URL,
-                        help=f"WebSocket URL (default {WS_URL})")
+    parser.add_argument(
+        "message", nargs="?", help="Message to send (or pipe via stdin)"
+    )
+    parser.add_argument(
+        "--csb", action="store_true", help="Wrap message in [CC_MESSAGE] CSB block"
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=DEFAULT_TIMEOUT,
+        help=f"Seconds to wait for response (default {DEFAULT_TIMEOUT})",
+    )
+    parser.add_argument(
+        "--url", default=WS_URL, help=f"WebSocket URL (default {WS_URL})"
+    )
 
     args = parser.parse_args()
 

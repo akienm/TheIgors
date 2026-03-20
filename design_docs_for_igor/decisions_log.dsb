@@ -358,3 +358,13 @@ D144|traversal-context-design|decided|habit chains run on a traversal context: (
 D145|os-primitives-design|decided|file/dir scanning primitives as reusable habits (PRIM_LIST_DIR/META/READ_HEAD/TYPE_DETECT/ITER_NEXT/ITER_DONE); read/write traversal context; unlocks all for-each-X loops as habit composition; Layer 1.5 prerequisite
 D146|reading-poc-routing|implemented|cc_send is HTTPS not HTTP; channel.py post != cc_send; turn_trace.log has thalamus/BG/habit/tier per turn — is the diagnostic instrument for reading POC
 D147|habit-fires-before-meaning|decided|action habits fire on surface token proximity before semantic understanding; structural fix = cognition pipeline Layer 3, not trigger patching; PROC_CLUSTER_SSH_CHECK trigger fixed to pipe-separated as interim
+D141|reading-poc-design|decided|controlled reading test as measurement instrument: send passage → examine traces → diagnose gap → iterate; MCP is prerequisite for fast loop
+D142|wg-cooccur-removal|implemented|wg_cooccur training removed from book_learner.py; wg_edges (semantic similarity) replaces it as training signal per D139
+D143|proc-reading-deposit-deleted|implemented|PROC_READING_DEPOSIT habit deleted from DB; reading is diagnostic POC driven externally, not an Igor mode
+D144|traversal-context-design|decided|habit chains run on traversal context: (context_in, logic) → context_out; traversal_contexts table; context_id propagates via TWM; state accumulates like test dict
+D145|os-primitives-design|decided|file/dir scanning primitives as reusable habits (PRIM_LIST_DIR/META/READ_HEAD/TYPE_DETECT/ITER_NEXT/ITER_DONE); read/write traversal context; Layer 1.5 prerequisite
+D146|reading-poc-routing|implemented|cc_send is HTTPS not HTTP; channel.py post != cc_send; turn_trace.log = diagnostic instrument for reading POC (thalamus/BG/habit/tier per turn)
+D147|habit-fires-before-meaning|decided|action habits fire on surface token proximity before semantic understanding; structural fix = Layer 3; PROC_CLUSTER_SSH_CHECK converted to pipe-separated as interim
+D148|thalamus-word-boundary|implemented|intent classification uses \b regex not substring — 'hey ' matched 'they', 'compare' matched 'compared'; fixes greeting/analysis_task misclassification
+D149|habit-fallthrough-rule|implemented|habits with no action+no code_ref fall through to LLM regardless of type; response habits without action text also emit debug noise — systematic bug class in early seeds
+D150|habit-audit-function-names|defined|function names in action field (close_task_memory, defer_task_memory etc.) are systematic early-seed bug; fix: remove action, set habit_type=cognitive; T-habit-audit-pipeline does full sweep

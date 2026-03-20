@@ -19,11 +19,20 @@ Usage:
 
 import json
 import os
+import ssl
 import sys
 import urllib.request
 from datetime import datetime, timezone
 
-IGOR_NOTEBOOK_URL = "http://localhost:8080/api/cc_notebook"
+IGOR_NOTEBOOK_URL = "https://localhost:8080/api/cc_notebook"
+
+
+def _ssl_ctx() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
@@ -196,7 +205,7 @@ def _igor_post(payload: dict) -> bool:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=5):
+        with urllib.request.urlopen(req, timeout=5, context=_ssl_ctx()):
             return True
     except Exception as e:
         _log(
