@@ -1,3 +1,16 @@
+## Session 2026-03-20d
+**Theme**: Igor Windows boot — all blocking bugs fixed, MCP wired to Claude Code
+**Closed**: G-WIN1, D171, D172
+**Key changes**:
+- igor_loop.ps1: PYTHONUTF8=1 + PYTHONIOENCODING=utf-8 (Unicode crash on Windows CP1252)
+- cortex.py: _PG_SCHEMA DDL + _init_pg_schema() + _init_db() PG try/except (fresh Postgres schema)
+- core_patterns.py (HIGH): genesis guard total_count→ROOT check (SYSCFG_* writes before genesis)
+- tools/memory_sync.py: _pg_connect cursor_factory fix + _UPSERT_SQL VALUES %s fix
+- .claude/settings.json: MCP server "igor" created (Windows venv python → igor_mcp.py)
+- Windows Postgres: igor_wild_0001 DB created, igor user, schema initialised, 67 genesis memories
+**Next session**: 1. Restart CC and verify MCP connection (memory_search/traces_recent). 2. Test memory_sync end-to-end with akiendelllinux swarm. 3. Reading POC — use MCP for fast diagnostic loop.
+**In-flight**: MCP wired but not yet verified (needs CC restart to activate)
+
 ## Session 2026-03-19d
 **Theme**: Crash-safe session accumulation — start/append/finalize commands
 **Decisions**: D135, D135, D136

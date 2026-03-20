@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "igor": {
+      "command": "C:\\Users\\akien\\.TheIgors\\venv\\Scripts\\python.exe",
+      "args": ["C:\\automation\\local\\TheIgors\\claudecode\\igor_mcp.py"],
+      "env": {
+        "IGOR_HOME_DB_URL": "postgresql://igor:choose_a_password@localhost/igor_wild_0001",
+        "CC_SEND_URL": "http://localhost:8080/api/cc_send"
+      }
+    }
+  }
+}

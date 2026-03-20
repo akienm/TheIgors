@@ -431,3 +431,13 @@ G-MEM2|memories-activation-sort|open
   what=SELECT * FROM memories WHERE memory_type NOT IN ('ROOT','CORE_PATTERN') ORDER BY activation_count DESC — 329x/session at p50=272ms
   why_open=next slow query target; idx_activation index exists but query still fetches all columns including embedding blob
   trigger=apply _MEM_COLS_NO_EMBED + investigate if index is being used; check EXPLAIN QUERY PLAN
+
+// ── CLOSED THIS SESSION (2026-03-20d) ──────────────────────────────────────────
+
+G-WIN1|windows-boot-blocking-bugs|~~closed=2026-03-20d~~
+  was=4 blocking bugs prevented Igor from booting on Windows (igor_wild_windows_0001)
+  fix1=igor_loop.ps1: PYTHONUTF8=1+PYTHONIOENCODING=utf-8 → fixes UnicodeEncodeError on Rich box-drawing chars
+  fix2=cortex.py: _PG_SCHEMA DDL constant (13 tables) + _init_pg_schema() + _init_db() PG try/except → fixes UndefinedTable on fresh Postgres
+  fix3=core_patterns.py: genesis guard total_count()>0 → cortex.get("ROOT") is not None → fixes CP1-CP6 skipped when boot_env_sync writes SYSCFG_* before genesis
+  fix4=tools/memory_sync.py: _pg_connect cursor_factory=RealDictCursor + _UPSERT_SQL VALUES %s placeholder → fixes psycopg2 errors
+  result=Igor boots clean: CP·6 ID·14 67 memories, INTEGRITY_CHECK PASS

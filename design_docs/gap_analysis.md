@@ -1043,4 +1043,12 @@ Current: each memory is a single narrative entry. Design (#250): `occurrence_dat
 **G-WG1 — wg_cooccur INSERT contention (SQLite word graph)** *(S)*
 `INSERT INTO wg_cooccur` hitting 1000-4000ms. Word graph uses its own SQLite DB (DatabaseProxy, not PGDatabaseProxy) — contention when multiple turns write co-occurrence data simultaneously. Fix candidates: (1) WAL mode on word graph DB, (2) batch inserts, (3) migrate wg_cooccur to Postgres. Classification: SQLite write-lock limit (not a bad query). Observed: 2026-03-17.
 
-*Updated: 2026-03-17m by Claude Code.*
+**G-WIN1 — Windows box boot: 4 blocking bugs** ~~*(S)*~~
+**RESOLVED 2026-03-20d** — Windows instance `igor_wild_windows_0001` failed to boot due to four distinct bugs:
+1. `UnicodeEncodeError` (Rich box-drawing chars on CP1252 console) → `igor_loop.ps1`: added `PYTHONUTF8=1` + `PYTHONIOENCODING=utf-8`.
+2. `UndefinedTable: relation "memories" does not exist` (fresh Postgres, no schema) → `cortex.py`: added `_PG_SCHEMA` DDL constant (13 tables) + `_init_pg_schema()` + `_init_db()` PG try/except.
+3. `INTEGRITY_CHECK FAILED — MISSING: CP1-CP6` (genesis skipped) → `core_patterns.py`: genesis guard changed from `total_count() > 0` to `cortex.get("ROOT") is not None`; root cause: `boot_env_sync` writes SYSCFG_* memories before `initialize_genesis`, making count > 0.
+4. `memory_sync psycopg2 errors` → `tools/memory_sync.py`: fixed `_pg_connect` cursor_factory + `_UPSERT_SQL` VALUES `%s` placeholder.
+Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHECK PASS.
+
+*Updated: 2026-03-20d by Claude Code.*

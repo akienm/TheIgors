@@ -388,3 +388,7 @@ D167|traces-get-mcp|implemented|traces_get(trace_id) MCP tool — full ordered a
 D168|db-perf-already-fixed|implemented|#258/#259/#260/#261 — all already fixed in cortex.py; closed as done
 D169|memory-sync-hub-spoke|implemented|T-memory-sync: hub-and-spoke via IGOR_SWARM_DB; updated_at on every store(); PROC_MEMORY_SYNC every 6h; full=true bootstraps new box
 D170|reading-deposition-not-encoding|defined|Experiment 4: READ_* nodes have no embedding/links/spine/arousal — storing is deposition not encoding; 5-step integration pipeline needed
+
+// ── Session 2026-03-20d additions ──────────────────────────────────────────────
+D171|windows-box-boot-postgres|implemented|Igor boots clean on Windows with local Postgres; igor_loop.ps1 sets PYTHONUTF8+PYTHONIOENCODING; cortex.py _PG_SCHEMA+_init_pg_schema() for fresh DB; genesis guard changed total_count→ROOT check; memory_sync psycopg2 cursor_factory+execute_values fixed
+D172|mcp-igor-claudecode|implemented|igor_mcp.py wired into .claude/settings.json (project-level); CC queries Igor DB directly via MCP without paste; IGOR_HOME_DB_URL+CC_SEND_URL passed as MCP env vars
