@@ -369,21 +369,8 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
     return deposited
 
 
-# ── Word graph training ────────────────────────────────────────────────────────
-
-
-def _train_word_graph(chunk_text: str, doc_id: str = "") -> None:
-    """Train the word graph from this chunk. Silently skips if unavailable."""
-    try:
-        wg_db = Path.home() / ".TheIgors" / "word_graph.db"
-        if not wg_db.exists():
-            return
-        from igor.cognition.word_graph import WordGraph
-
-        wg = WordGraph(db_path=wg_db)
-        wg.index(doc_id or chunk_text[:32], chunk_text)
-    except Exception:
-        pass
+# wg_cooccur training removed — wg_edges (semantic similarity via nomic-embed-text)
+# replaces cooccurrence as the training signal. D139.
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
@@ -505,7 +492,6 @@ def run(args) -> None:
             else:
                 n_dep = _deposit_nodes(nodes, cortex, book_title, pos)
                 total_deposited += n_dep
-                _train_word_graph(chunk_text, doc_id=f"{book_key}:{pos}")
 
                 status = f"→ {n_dep} node(s)" if n_dep else "→ no nodes"
                 print(f"{chunk_label} {status}  {summary[:60]}")

@@ -351,3 +351,10 @@ D137|wg-ambiguous-score-fix|implemented|Fix Postgres ambiguous column 'score' in
 D138|wg-lemmatize|implemented|Add WordNet lemmatization to tokenize(); migrate wg_word_lang+wg_word_docs to canonical lemma forms
 D139|wg-edges-live|implemented|wg_cooccur replaced by wg_edges (1.24M semantic similarity edges via nomic-embed-text); predict_next verified; gradient_flatness /50→/1; memory_embeddings backfilled (9457 Postgres + 296 SQLite)
 D140|habit-loop-prevention|implemented|pipe-separated triggers required for action habits; space-separated token matching caused PROC_CHECK_PROCESS feedback loop (any 'running' matched, echoed full message as pgrep name, ring memory re-triggered); fixed + CC_CHECK_PROCESS duplicate removed
+D141|reading-poc-design|decided|controlled reading test as measurement instrument: send passage → examine traces → diagnose gap → iterate; MCP is prerequisite for fast loop
+D142|wg-cooccur-removal|implemented|wg_cooccur training removed from book_learner.py; wg_edges (semantic similarity) replaces it as training signal per D139
+D143|proc-reading-deposit-deleted|implemented|PROC_READING_DEPOSIT habit deleted from DB; reading is no longer a mode Igor enters, it's a diagnostic POC we drive externally
+D144|traversal-context-design|decided|habit chains run on a traversal context: (context_in, logic) → context_out; traversal_contexts table; context_id propagates via TWM; state accumulates like test dict through abstraction layers
+D145|os-primitives-design|decided|file/dir scanning primitives as reusable habits (PRIM_LIST_DIR/META/READ_HEAD/TYPE_DETECT/ITER_NEXT/ITER_DONE); read/write traversal context; unlocks all for-each-X loops as habit composition; Layer 1.5 prerequisite
+D146|reading-poc-routing|implemented|cc_send is HTTPS not HTTP; channel.py post != cc_send; turn_trace.log has thalamus/BG/habit/tier per turn — is the diagnostic instrument for reading POC
+D147|habit-fires-before-meaning|decided|action habits fire on surface token proximity before semantic understanding; structural fix = cognition pipeline Layer 3, not trigger patching; PROC_CLUSTER_SSH_CHECK trigger fixed to pipe-separated as interim

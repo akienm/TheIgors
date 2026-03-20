@@ -43,3 +43,20 @@ Captured as they arise. Each entry: what the user wanted, what it implies for Ig
 **Partially implemented**: reading speed control exists (#183); interest gate (G-BL2) not yet built
 
 ---
+
+## UC-004 — Low activation as mastery signal
+**Observation**: A documented polyglot (reportedly Guinness record holder, former UN interpreter) was placed in a brain scanner. Language areas showed *lower* activation than expected — below what a normal person showed when processing a foreign language. The researcher framing was confusion. The correct framing: he had habituated language processing so deeply that executive function was no longer required. The paths were so well-worn that cognition ran automatically, below the threshold of effortful attention.
+
+**What it implies for Igor**:
+- The target state is NOT "lots of nodes firing" — it's "the right nodes firing with minimal overhead"
+- High activation = untrained = effortful = expensive (LLM every time)
+- Low activation = mastered = automatic = cheap (graph answers without cloud)
+- The reading POC diagnostic should eventually look for this signal: noise decreasing, precision increasing, LLM tier usage dropping
+- "The matrix is the thinker; cloud is the writer" — this use case is the biological proof
+- Self-test substrate (T-self-test-substrate) should measure this: itch = mismatch, scratch = correction, "did that help?" = did activation patterns tighten?
+
+**Reference**: William James, *Principles of Psychology* Ch. IV (1890): "the currents leave their traces in the paths which they take... paths which do not easily disappear." The polyglot's brain had implemented James's mechanism at scale.
+
+**Not yet implemented**: this is the north star metric for the reading POC loop (D141)
+
+---
