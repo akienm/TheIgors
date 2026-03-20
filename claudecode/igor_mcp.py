@@ -182,6 +182,20 @@ async def list_tools() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="hot_attractors",
+            description="List the top N attractor nodes in Igor's memory graph — highest activation × inbound-edge score. Attractors are emergent semantic centres of gravity.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of attractors (default 10)",
+                    },
+                },
+                "required": [],
+            },
+        ),
+        types.Tool(
             name="turn_trace_recent",
             description=(
                 "Read recent turn traces from Igor's reasoning log. "
@@ -287,6 +301,8 @@ def _dispatch(name: str, args: dict) -> str:
         return _traces_recent(args.get("limit", 10), args.get("since_minutes"))
     elif name == "tail_heat":
         return _tail_heat(args["node_id"])
+    elif name == "hot_attractors":
+        return _hot_attractors(args.get("limit", 10))
     elif name == "hot_nodes":
         return _hot_nodes(args.get("limit", 10), args.get("since_hours", 2))
     elif name == "turn_trace_recent":
@@ -434,6 +450,33 @@ def _tail_heat(node_id: str) -> str:
         except Exception:
             continue
     return f"Tail heat for {node_id}: {total:.4f} ({len(rows)} entries)"
+
+
+# ── hot_attractors ────────────────────────────────────────────────────────────
+
+
+def _hot_attractors(limit: int) -> str:
+    rows = _q(
+        "SELECT m.id, m.narrative, m.activation_count, m.memory_type, "
+        "COUNT(ie.id) as inbound_count "
+        "FROM memories m "
+        "LEFT JOIN interpretive_edges ie ON ie.to_id = m.id "
+        "WHERE m.memory_type NOT IN ('PROCEDURAL') "
+        "GROUP BY m.id, m.narrative, m.activation_count, m.memory_type "
+        "ORDER BY m.activation_count * (1 + COUNT(ie.id)) DESC "
+        "LIMIT %s",
+        (limit,),
+    )
+    if not rows:
+        return "No attractors found yet."
+    lines = [f"Top {len(rows)} attractors:\n"]
+    for r in rows:
+        score = (r["activation_count"] or 0) * (1 + (r["inbound_count"] or 0))
+        lines.append(
+            f"  score={score} act={r['activation_count']} in={r['inbound_count']} "
+            f"[{r['memory_type']}] {r['id'][:8]}… {str(r['narrative'] or '')[:60]}"
+        )
+    return "\n".join(lines)
 
 
 # ── hot_nodes ─────────────────────────────────────────────────────────────────
