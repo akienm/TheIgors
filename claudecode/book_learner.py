@@ -311,11 +311,113 @@ def _extract_nodes(
         return {"nodes": [], "summary": f"API error: {e}"}
 
 
+# ── Arousal scoring from CP affinity ──────────────────────────────────────────
+
+_CP_KEYWORDS_AROUSAL: dict = {
+    "CP1": ["learn", "growth", "capab", "know", "skill", "understand", "master"],
+    "CP2": ["help", "social", "connect", "people", "friend", "communit", "relat"],
+    "CP3": ["curious", "explor", "creat", "discov", "wonder", "novel", "idea"],
+    "CP4": ["integr", "commit", "honest", "trust", "agree", "honor", "principl"],
+    "CP5": ["kind", "empath", "care", "compassion", "feel", "emotion", "person"],
+    "CP6": ["safe", "surviv", "protect", "danger", "homeostas", "risk", "guard"],
+}
+
+
+def _arousal_from_cp(narrative: str, parent_cp: str) -> float:
+    """Score arousal [0.10, 0.60] from CP keyword affinity. Never returns 0.0."""
+    text = narrative.lower()
+    base = 0.10
+    if parent_cp and parent_cp.startswith("CP"):
+        keywords = _CP_KEYWORDS_AROUSAL.get(parent_cp, [])
+        hits = sum(1 for kw in keywords if kw in text)
+        base = min(0.60, 0.15 + hits * 0.08)
+    return round(base, 2)
+
+
+# ── Book/chapter spine builders ────────────────────────────────────────────────
+
+
+def _ensure_book_node(cortex: Cortex, book_title: str, author: str) -> str:
+    """Create or find the BOOK_ spine root node. Returns node id."""
+    import hashlib
+
+    book_hash = hashlib.md5(book_title.encode()).hexdigest()[:8].upper()
+    node_id = f"BOOK_{book_hash}"
+    if cortex.get(node_id) is None:
+        mem = Memory(
+            id=node_id,
+            narrative=f"Book: {book_title} by {author}",
+            memory_type=MemoryType.FACTUAL,
+            source="book_learner",
+            confidence=1.0,
+            context_of_encoding="book_spine",
+            metadata={
+                "book_title": book_title,
+                "book_author": author,
+                "spine": True,
+            },
+        )
+        cortex.store(mem)
+    return node_id
+
+
+def _ensure_chapter_node(
+    cortex: Cortex,
+    book_node_id: str,
+    book_title: str,
+    chapter_num: int,
+    chapter_title: str,
+) -> str:
+    """Create or find a CHAPTER_ spine node. Returns node id."""
+    chapter_id = f"{book_node_id}_CH{chapter_num:03d}"
+    if cortex.get(chapter_id) is None:
+        narrative = f"Chapter {chapter_num}"
+        if chapter_title:
+            narrative += f": {chapter_title}"
+        narrative += f" — {book_title[:40]}"
+        mem = Memory(
+            id=chapter_id,
+            narrative=narrative,
+            memory_type=MemoryType.FACTUAL,
+            parent_id=book_node_id,
+            source="book_learner",
+            confidence=1.0,
+            context_of_encoding="book_spine",
+            metadata={
+                "book_title": book_title,
+                "chapter": chapter_num,
+                "chapter_title": chapter_title,
+                "spine": True,
+            },
+        )
+        cortex.store(mem)
+        try:
+            cortex.add_child(book_node_id, chapter_id)
+        except Exception:
+            pass
+    return chapter_id
+
+
 # ── Node deposit ──────────────────────────────────────────────────────────────
 
 
-def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int) -> int:
-    """Deposit extracted nodes. Returns count successfully deposited."""
+def _deposit_nodes(
+    nodes: list,
+    cortex: Cortex,
+    book_title: str,
+    chunk_pos: int,
+    chapter_node_id: str = "",
+) -> int:
+    """Deposit extracted nodes. Returns count successfully deposited.
+
+    Steps per node (T-reading-integration #295):
+      1. Compute arousal from CP affinity (never 0.0)
+      2. Set parent_id to chapter spine node
+      3. Store memory
+      4. Embed immediately (non-fatal; makes node reachable by semantic search)
+      5. Wire CP: add_child + interpretive_edge for semantic traversal
+      6. Wire chapter: add_child so chapter→node path exists
+    """
     deposited = 0
     for node in nodes:
         try:
@@ -339,6 +441,7 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
             meta = {
                 "source": "book_learner",
                 "book": book_title[:60],
+                "book_title": book_title[:60],
                 "chunk_position": chunk_pos,
             }
             if ntype == "mechanism":
@@ -346,20 +449,51 @@ def _deposit_nodes(nodes: list, cortex: Cortex, book_title: str, chunk_pos: int)
             if trigger:
                 meta["trigger"] = trigger
 
+            # Step 1: arousal from CP affinity (never 0.0)
+            arousal = _arousal_from_cp(narrative, parent_cp)
+
             mem = Memory(
                 id=uid,
                 narrative=narrative,
                 memory_type=mt,
+                parent_id=chapter_node_id or None,  # Step 2: spine parent
+                arousal=arousal,
                 source="book_learner",
                 confidence=confidence,
                 context_of_encoding=f"book_learner|{ntype}|{book_title[:40]}",
                 metadata=meta,
             )
+            # Step 3: store
             cortex.store(mem)
 
+            # Step 4: embed immediately — makes node findable by semantic search
+            try:
+                cortex._get_or_compute_embedding(mem)
+            except Exception:
+                pass
+
+            # Step 5: CP wiring — parent_child + interpretive edge
             if parent_cp and parent_cp.startswith("CP"):
                 try:
                     cortex.add_child(parent_cp, uid)
+                except Exception:
+                    pass
+                try:
+                    cortex.add_interpretive_edge(
+                        parent_cp,
+                        uid,
+                        direction="activation",
+                        condition_csb=trigger or parent_cp.lower(),
+                        meaning_payload=narrative[:80],
+                        weight=confidence,
+                    )
+                except Exception:
+                    pass
+
+            # Step 6: chapter spine wiring
+            if chapter_node_id:
+                try:
+                    cortex.add_child(chapter_node_id, uid)
                 except Exception:
                     pass
 
@@ -438,11 +572,22 @@ def run(args) -> None:
     if args.start:
         live_handle.position = args.start
         print(f"Starting at sentence {args.start}")
+
+    # ── Build book spine node (T-reading-integration #295) ────────────────
+    book_node_id = ""
+    if args.run:
+        try:
+            book_node_id = _ensure_book_node(cortex, book_title, handle["author"])
+            print(f"Spine: book node {book_node_id}")
+        except Exception as e:
+            print(f"[spine] book node failed (continuing): {e}")
     print("─" * 60)
 
     chunks_done = 0
     chunks_skipped = 0
     errors = 0
+    _current_chapter = -1
+    _chapter_node_id = ""
 
     while True:
         pos = live_handle.position
@@ -478,6 +623,17 @@ def run(args) -> None:
             continue
 
         if args.run:
+            # Build chapter spine node when chapter changes
+            if book_node_id and chapter != _current_chapter:
+                try:
+                    _chapter_node_id = _ensure_chapter_node(
+                        cortex, book_node_id, book_title, chapter, chapter_title
+                    )
+                    _current_chapter = chapter
+                except Exception as e:
+                    print(f"[spine] chapter node failed (continuing): {e}")
+                    _chapter_node_id = ""
+
             # Extract nodes — check cloud_ok override per chunk (D071: mode can change mid-book)
             use_local = _should_use_local(args.local)
             extraction = _extract_nodes(
@@ -490,7 +646,9 @@ def run(args) -> None:
                 print(f"{chunk_label} ERROR: {summary}")
                 errors += 1
             else:
-                n_dep = _deposit_nodes(nodes, cortex, book_title, pos)
+                n_dep = _deposit_nodes(
+                    nodes, cortex, book_title, pos, chapter_node_id=_chapter_node_id
+                )
                 total_deposited += n_dep
 
                 status = f"→ {n_dep} node(s)" if n_dep else "→ no nodes"
