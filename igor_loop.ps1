@@ -47,6 +47,8 @@ do {
 
     Write-Host "[igor_loop] Starting Igor ($instanceId)..." -ForegroundColor Cyan
     Set-Location "$repoRoot\wild_igor"
+    $env:PYTHONUTF8 = '1'
+    $env:PYTHONIOENCODING = 'utf-8'
     & $venvPython -m igor.main
     $exitCode = $LASTEXITCODE
 
