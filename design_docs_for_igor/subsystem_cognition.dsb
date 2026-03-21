@@ -1,18 +1,20 @@
-DOC|subsystem_cognition|v1|updated=2026-03-21b
+DOC|subsystem_cognition|v1|updated=2026-03-21c
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,tools/traversal_context.py,tools/os_primitives.py
 
 THALAMUS|
   purpose=classify intent + produce complexity signal
   intents=13 categories incl creative_request,question,command,greeting,status_check,etc
-  outputs=ParsedInput(is_command,command,user_text,intent,complexity,preparse_result,core_input)
+  outputs=ParsedInput(is_command,command,user_text,intent,complexity,preparse_result,core_input,tags)
+  tags=D201: 6-element list from _classify_tags(core_text); has_ticket|has_code|has_url|multi_turn|self_referential|has_error; all regex, zero inference cost
   complexity=low|medium|high → drives skip_to
   fast_path=greeting/command/habit-match detected in pure Python (<1ms); skips LLM preparse
   gap=G42: complexity scorer must run on parsed.core_input not full assembled input (thread preamble inflates score)
 
 BASAL_GANGLIA|
   purpose=parallel habit scoring; winner-take-all above threshold
-  score=trigger_score(1.0 if trigger in input) + keyword_bonus(≤0.15) + activation_bonus(≤0.15) + inertia_bonus(≤0.10) + valence_bonus(≤0.10)
+  score=trigger_score(1.0 if trigger in input) + keyword_bonus(≤0.15) + activation_bonus(≤0.15) + inertia_bonus(≤0.10) + valence_bonus(≤0.10) + conditions_bonus(+0.08/matched field, D201)
+  conditions=D201: metadata.conditions dict {intent,tone,min/max_complexity,tags,keywords,not_intent}; match_mode=conditions_first(default)|trigger_only|both; conditions_first gates on conditions when present, trigger optional; PROC_GREETING migrated to conditions-only (no trigger) as PoC, tested live
   threshold=BASE 0.50; modulated by milieu: high_arousal→lower(more reactive); low_dominance→higher(more cautious); clamped [0.30,0.70]
   lateral_inhibition=max scorer wins; tiebreak by activation_count
   compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection

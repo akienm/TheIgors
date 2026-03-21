@@ -1,4 +1,4 @@
-DOC|subsystem_inference|v1|updated=2026-03-21b
+DOC|subsystem_inference|v1|updated=2026-03-21c
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/inference_gateway.py,cognition/cloud_mode.py,cognition/reasoners/
 
@@ -11,6 +11,7 @@ DESIGN_POINTS|
   DP6|on_tier callback: fires at each tier attempt; main.py uses for activity broadcast
   DP7|skip_to computed by caller (milieu dominance + complexity); passed to gateway; phase 2 will move inside gateway
   DP8|local_only parameter: gateway returns graceful message without hitting any API
+  DP9|D203: _log_err=None defined at top of reason() — was undefined, causing NameError to crash error handler when any tier failed; OR 400 assistant-prefill guard in _call_api(): if messages[-1].role==assistant, synthetic user nudge appended before POST
 
 TIER_ROUTING|
   level=background_batch → pool.reason_batch() (local quality priority); return empty on fail

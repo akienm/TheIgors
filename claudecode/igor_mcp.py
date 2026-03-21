@@ -292,6 +292,32 @@ async def list_tools() -> list[types.Tool]:
                 "required": [],
             },
         ),
+        types.Tool(
+            name="channel_read",
+            description=(
+                "Read recent messages from the shared CC↔Igor channel. "
+                "Use after cc_send to read Igor's response. "
+                "Pass since_id to get only messages newer than a known message ID."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Max messages to return (default 20)",
+                    },
+                    "since_id": {
+                        "type": "integer",
+                        "description": "Return only messages with id > since_id (optional)",
+                    },
+                    "author": {
+                        "type": "string",
+                        "description": "Filter by author, e.g. 'igor' (optional)",
+                    },
+                },
+                "required": [],
+            },
+        ),
     ]
 
 
@@ -336,6 +362,10 @@ def _dispatch(name: str, args: dict) -> str:
         )
     elif name == "habit_list":
         return _habit_list(args.get("query"), args.get("limit", 30))
+    elif name == "channel_read":
+        return _channel_read(
+            args.get("limit", 20), args.get("since_id"), args.get("author")
+        )
     else:
         return f"Unknown tool: {name}"
 
@@ -731,6 +761,36 @@ def _habit_list(query: str | None, limit: int) -> str:
             f"  {r['id']}\n"
             f"    type={r['habit_type']}  trigger={repr((r['trigger'] or '')[:80])}"
         )
+    return "\n".join(lines)
+
+
+# ── channel_read ───────────────────────────────────────────────────────────────
+
+
+def _channel_read(limit: int, since_id: int | None, author: str | None) -> str:
+    params: list = []
+    where_parts = []
+    if since_id is not None:
+        where_parts.append("id > %s")
+        params.append(since_id)
+    if author:
+        where_parts.append("author = %s")
+        params.append(author)
+    where = ("WHERE " + " AND ".join(where_parts)) if where_parts else ""
+    params.append(limit)
+    rows = _q(
+        f"SELECT id, ts, author, content FROM channel_messages "
+        f"{where} ORDER BY id DESC LIMIT %s",
+        params,
+    )
+    if not rows:
+        return "No messages found."
+    rows = list(reversed(rows))  # chronological order
+    lines = [f"{len(rows)} messages (newest last):"]
+    for r in rows:
+        ts = (r["ts"] or "")[-8:]  # HH:MM:SS from end
+        content = (r["content"] or "").strip()
+        lines.append(f"[id={r['id']} {ts}] {r['author']}: {content}")
     return "\n".join(lines)
 
 

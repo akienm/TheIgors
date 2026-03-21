@@ -1,3 +1,11 @@
+## Session 2026-03-21c
+**Theme**: D201 preparse habit dispatch schema + unblock T-pipeline-arch
+**Key changes**:
+- sprint: started T-mcp-channel-read
+- sprint: closed T-mcp-channel-read — already implemented, smoke tested OK
+**Next session**: Next: queue empty — pick any Slate 0 ticket (T-db-lemmatize, T-db-populate-embeddings, T-db-type-routing etc) or start new work. D201 conditions schema live, ready for Phase 2 habit migrations.
+**In-flight**: NONE
+
 ## Session 2026-03-21b
 **Theme**: T-if-fork: conditional fork primitive
 **Key changes**:
