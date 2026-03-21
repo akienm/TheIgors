@@ -1,6 +1,6 @@
 # Subsystem: Cognition
 
-*Updated: 2026-03-14 | Machine-readable: `design_docs_for_igor/subsystem_cognition.dsb`*
+*Updated: 2026-03-20 | Machine-readable: `design_docs_for_igor/subsystem_cognition.dsb`*
 
 Cognition is the processing layer between raw input and inference. It classifies intent, scores habits, modulates affect, and runs background consolidation — most of it without touching an LLM.
 
@@ -38,6 +38,10 @@ trigger_score(1.0 if trigger matches)
 **Trigger formats**: three supported: `pipe-separated|triggers`, `legacy space separated multi word trigger`, `single_token`.
 
 **Habit response**: `metadata.action` (string) or `metadata.actions` (list → random choice) or fallback to narrative.
+
+**Fork primitive** (`habit_type="fork"`): dispatches a list of `branch_habits` with a shared `traversal_context`. Context ID propagated via `args` dict — branches read/write a shared slot in the `lists` table. Used to parallelise habit chains over a shared workspace.
+
+**Habit audit (D178)**: March 2026 audit archived 995 habits (991 zero-activation BL_*, 3 pipeline suppressors, 2 dead-trigger). 124 active habits remain. `PROC_DIRECTION_AWARE` wired as `context_inject/heartbeat_check`; `PROC_RESP_COMPLEX` changed to `context_inject`.
 
 ---
 
@@ -105,6 +109,47 @@ Passive vocab frequency tracker. `decay_factor()` returns [0,1] — high frequen
 
 ---
 
+## Inference Gateway (`cognition/inference_gateway.py`)
+
+Single call site for all LLM inference. DAG-based: `Node`/`Edge`/`PurposeConstraints` dataclasses define routing. `gateway.call(purpose, prompt)` picks the handler via edge weights and guards. `gateway.describe()` emits a human-readable DAG (exposed via `/routing --dag`). `gateway.from_env()` builds the DAG from environment — Ollama, OpenRouter, and Anthropic nodes wired by tier.
+
+Guards: `_always` (unconditional) and `_local_preferred` (cluster has local capacity AND cloud_mode not active).
+
+---
+
+## Cluster Router (`cognition/cluster_router.py`)
+
+Probes all cluster machines (config: `~/.TheIgors/local/machines.json`). Tracks health, load score, response latency, and active inferences per machine. `route(call_type)` returns the best available `(host, model)`. `has_local_capacity(call_type)` drives the `_local_preferred` guard. Override/clear methods for manual routing control. Status surfaced in `/metrics`.
+
+---
+
+## Traversal Context (`tools/traversal_context.py`)
+
+Shared mutable scratch space for habit branches. `start_traversal(job_id)` mints a UUID context_id stored in the `lists` table. `ctx_get/ctx_set` read and write `(context_id, key)` slots. Fork habits mint the context_id and pass it to branches via `args` — branches coordinate without needing TWM.
+
+---
+
+## OS Primitives (`tools/os_primitives.py`)
+
+Filesystem traversal ops wired to traversal_context. Designed for Igor to walk directories and process files via habit chains:
+
+| Tool | What it does |
+|------|-------------|
+| `prim_list_dir()` | List `ctx[dir]` → write JSON list to `ctx[files]` |
+| `prim_iter_next()` | Pop first item from `ctx[files]` → `ctx[current_file]` |
+| `prim_iter_done()` | Check `ctx[files]` empty → `ctx[done]` |
+| `prim_read_head()` | Read first N lines of `ctx[current_file]` → `ctx[content]` |
+| `prim_type_detect()` | Detect file type → `ctx[file_type]` |
+| `prim_file_meta()` | mtime + size → `ctx[file_mtime]`, `ctx[file_size]` |
+
+---
+
+## Temporal Gradient (`cognition/temporal_gradient.py`)
+
+Single configurable decay primitive intended to replace 6 special-cased decay implementations (TWM decay, ring FIFO, milieu decay, thread age, habit inertia decay, NE cursor). File exists; full integration deferred post-experiment-7 (L-size).
+
+---
+
 ## Decisions
 
-D029, D030, D036, D037, D038, D044
+D029, D030, D036, D037, D038, D044, D074, D075, D077, D177, D178

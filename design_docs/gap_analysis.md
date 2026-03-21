@@ -1052,3 +1052,35 @@ Current: each memory is a single narrative entry. Design (#250): `occurrence_dat
 Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHECK PASS.
 
 *Updated: 2026-03-20d by Claude Code.*
+
+---
+
+### Sessions 2026-03-16 through 2026-03-20g (consolidated update)
+
+**Decisions closed / implemented:**
+
+- **D163 — memory-sync-full-db-per-box ~~CLOSED D169~~**: T-memory-sync #293. Hub-and-spoke swarm sync — full Postgres replica per box; bidirectional via GREATEST(activation_count). `tools/memory_sync.py`: `sync_memories()` tool, PROC_MEMORY_SYNC habit every 6h, `full=true` bootstraps new box. Gate: `IGOR_SWARM_DB`.
+- **D167 — traces-get-mcp ~~CLOSED~~**: `traces_get(trace_id)` MCP tool in igor_mcp.py — full ordered activation sequence for a trace.
+- **D172 — mcp-igor-claudecode ~~CLOSED~~**: igor_mcp.py wired into `.claude/settings.json`; CC queries Igor DB directly via MCP without paste.
+- **D173 — reading-integration-pipeline ~~CLOSED~~**: T-reading-integration #295. 5-step encoding pipeline (embed+link+spine+interp+arousal) in `tools/reading_integration.py` + `claudecode/reading_integrator.py` backfill. `_deposit_nodes()` is canonical deposit primitive. book_learner now runs pipeline inline.
+- **D174 — cortex-tails-migration ~~CLOSED~~**: `ALTER TABLE tails ADD COLUMN trail_id/sequence_pos` must precede index creation — migration-before-index pattern established.
+- **D177 — fork-context-propagation ~~CLOSED~~**: T-fork-primitive #297. Fork habit dispatches branch_habits[] with shared traversal_context via args dict. TWM approach rejected (no set_twm_key API).
+- **D178 — habit-audit-pipeline ~~CLOSED~~**: Archived 995 habits (991 zero-activation BL_*, 3 pipeline suppressors, 2 dead-trigger). 124 active habits remain. PROC_DIRECTION_AWARE wired as context_inject/heartbeat_check; PROC_RESP_COMPLEX changed to context_inject.
+- **D179 — reading-experiment-roadmap ~~defined~~**: 8-experiment roadmap: experiments 1-5 done; experiment 6 (bulk reading, 146 items) running; 7=swarm, 8=capacity.
+- **D180 — pipeline-arch-resolved ~~CLOSED~~**: T-pipeline-arch resolved without code changes: preparse always skipped (IGOR_SKIP_PREPARSE_ON_CONFIDENT), OR contention phantom, drain runner path bug was the real blocker.
+- **D181 — paths-default-fix ~~CLOSED~~**: `paths.py` default instance_id corrected Igor-wild-0001 → igor_wild_0001. Root path case bug affecting drain runner and internal path resolution.
+- **D182 — scribe-pattern-retired ~~CLOSED~~**: Scribe worker pattern retired. Day-close is now manual-only. 15 pending scribe tasks cancelled. Savestate skill no longer auto-generates scribe queue items.
+
+**New gaps / tickets:**
+
+- **T-pipeline-arch** (pending): Inference pipeline review — preparse, cloud routing, NE redesign. Remaining: gap logging (M-size) + NE redesign (L-size, deferred post-experiment-7).
+- **#297 T-fork-primitive** (OPEN on GitHub — verify if closed): unconditional multi-branch habit node.
+- **#298 T-if-fork-primitive** (OPEN): conditional fork — branch fires when guard evaluates true.
+- **#299 T-watchlist-habits** (OPEN): seed watch nodes for Akien's topics + executive function questions.
+- **#300** (OPEN): Make foreground reading speed configurable — IGOR_READING_SPEED_SPS.
+- **#289 T-trail-training** (OPEN): Hebbian edge strengthening from co-activation traces.
+- **#288 T-graph-calving** (OPEN): Depth + attractor-divergence triggered tree splitting.
+
+**Trails infrastructure ~~CLOSED~~**: T-trails-infra. `tails` table (node_id, weight, recorded_at, trail_id, sequence_pos). `cortex.trails_through_node()`, `cortex.trail_gradient()`, `cortex.hot_paths()`. `inspect_trail` + `trail_hot_paths` tools in `tools/trail_inspector.py`. MCP: tail_heat, traces_recent, traces_get, hot_nodes.
+
+*Updated: 2026-03-20g by Claude Code.*

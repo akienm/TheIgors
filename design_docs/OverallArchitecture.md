@@ -1,6 +1,6 @@
 # Igor — Overall Architecture
 
-*Updated: 2026-03-14 | Authoritative machine-readable version: `design_docs_for_igor/architecture_root.dsb`*
+*Updated: 2026-03-20 | Authoritative machine-readable version: `design_docs_for_igor/architecture_root.dsb`*
 
 ---
 
@@ -56,7 +56,7 @@
 Genesis initialization. Core pattern verification at boot. Arithmetic Moral Model diagnostics. The irreducible foundation.
 
 ### Cortex (`memory/cortex.py`)
-All SQLite read/write. Owns DatabaseProxy (timing, metrics, reconnect). Hybrid search: text keyword Phase 1 → cosine rerank Phase 2 via nomic-embed-text. Also owns TWM, ring memory, interpretive edges.
+All database read/write — SQLite (default) or Postgres (`IGOR_HOME_DB_URL`). Owns DatabaseProxy (timing, metrics, reconnect). Hybrid search: text keyword Phase 1 → cosine rerank Phase 2 via nomic-embed-text. Also owns TWM, ring memory, interpretive edges, and the `tails` activation trail table.
 
 ### Thalamus (`cognition/thalamus.py`)
 Intent classification (13 categories). Complexity assessment (low/medium/high → drives skip_to). Fast-path: greetings and commands detected in pure Python, no LLM call.
@@ -77,7 +77,10 @@ SQLite-backed two-tier: words + bigrams. Same weights for parsing (habit scoring
 Three levels: nod / nod_think / full. Fires after thalamus+milieu, before BG/LLM. Routes to web session by thread_id. Gated by `IGOR_BACKCHANNEL`.
 
 ### Inference Gateway (`cognition/inference_gateway.py`)
-Single entry point for all inference. DAG-based routing: pipeline purposes (preparse/winnow/NE/think) via `gateway.call(purpose_id)`. Tier cascade for interactive/background via `gateway.reason(level, skip_to)`.
+Single entry point for all inference. DAG-based routing: `Node`/`Edge`/`PurposeConstraints` dataclasses define the routing graph. `gateway.call(purpose, prompt)` picks handler via edge weights and guards. `gateway.describe()` emits human-readable DAG. Built from env via `gateway.from_env()`.
+
+### Cluster Router (`cognition/cluster_router.py`)
+Probes all cluster machines. Tracks health, load, latency, active inferences. `route(call_type)` returns best available `(host, model)`. Drives the `_local_preferred` inference guard. Config: `~/.TheIgors/local/machines.json`.
 
 ### Tools (`tools/`)
 Self-registering at module import. AI-agnostic: tools know nothing about which tier calls them. Hot-reloadable (LOW inertia). Reactive habit pattern: `code_ref + twm_ttl_seconds` in PROC metadata → tool auto-dispatch + short-TTL TWM result.
@@ -110,7 +113,9 @@ ROOT
 | Var | Purpose |
 |-----|---------|
 | `IGOR_DB_PATH` | Path to live SQLite DB |
+| `IGOR_HOME_DB_URL` | Postgres URL — enables PG mode (e.g. `postgresql://igor:pass@host/db`) |
 | `OPENROUTER_API_KEY` | Primary cloud inference |
+| `IGOR_SWARM_DB` | Postgres URL of swarm home — enables memory sync across boxes |
 | `IGOR_SELF_EDIT_ENABLED` | Gates source file writes |
 | `IGOR_TIER5_ENABLED` | Gates Anthropic direct spend (default false) |
 | `IGOR_ARBITER_ENABLED` | Human-approval queue (default false) |
@@ -118,3 +123,4 @@ ROOT
 | `IGOR_CONTEXT_WINNOW` | Enable context winnow pass |
 | `IGOR_HOT_RELOAD` | Enable auto hot-reload after self-edit |
 | `IGOR_MAX_TURNS` | Max agentic tool turns per call (default 8, .env=50) |
+| `IGOR_SKIP_PREPARSE_ON_CONFIDENT` | Skip Ollama preparse on low/high complexity turns |

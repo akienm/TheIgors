@@ -1,6 +1,6 @@
 # Subsystem: Reading
 
-*Updated: 2026-03-14 | Machine-readable: `design_docs_for_igor/subsystem_reading.dsb`*
+*Updated: 2026-03-20 | Machine-readable: `design_docs_for_igor/subsystem_reading.dsb`*
 
 ---
 
@@ -15,6 +15,28 @@ open_book() → read_chunk() → stew (TWM push)
 ```
 
 **Stew salience = 0.65** — above NE's force-run threshold of 0.60. This guarantees the Narrative Engine processes book content during its next cycle without manual trigger.
+
+---
+
+## Reading Integration Pipeline (`tools/reading_integration.py`)
+
+Raw extraction via `book_learner.py` deposits `READ_*` nodes — but these are **deposition, not encoding** (D170). To be useful for reasoning, nodes need a second pass:
+
+```
+1. embed   — nomic-embed-text embedding
+2. link    — cosine + BFS edges to existing graph nodes
+3. spine   — narrative thread (sequential links across chunks)
+4. interp  — interpretive edges from salient node pairs
+5. arousal — valence/arousal/dominance encoding
+```
+
+Tool: `integrate_reading(book, batch=200)`. The 5-step pipeline also runs inline in `book_learner.py` for new books — deposit + encode in one pass. Backfill for already-deposited nodes: `claudecode/reading_integrator.py`.
+
+`_deposit_nodes()` in `cortex.py` is the canonical write primitive for all book nodes.
+
+**Experiment roadmap** (D179): 8 experiments defined. Experiments 1–5 done (pipeline built and validated). Experiment 6 (bulk reading, 146 items) running. Experiments 7–8 (swarm, capacity) follow.
+
+**Drain runner path fix** (D181): cron was using `IGOR_INSTANCE_ID=Igor-wild-0001` (wrong case) — was reading empty queue for weeks. Fixed to `igor_wild_0001`. 146 items now draining.
 
 ---
 
@@ -102,4 +124,8 @@ Table in main DB: `reading_list`. Fields: title, author, source, book_type, read
 
 ## Decisions
 
-D038, D046, D047, D048, D050, D052, D056
+D038, D046, D047, D048, D050, D052, D056, D071, D170, D173, D179, D181
+
+## Open
+
+- **#300**: Reading speed configurable (`IGOR_READING_SPEED_SPS`) — currently hardcoded 1 sentence/sec.

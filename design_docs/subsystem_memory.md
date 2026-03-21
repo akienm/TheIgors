@@ -1,6 +1,6 @@
 # Subsystem: Memory
 
-*Updated: 2026-03-14 | Machine-readable: `design_docs_for_igor/subsystem_memory.dsb`*
+*Updated: 2026-03-20 | Machine-readable: `design_docs_for_igor/subsystem_memory.dsb`*
 
 ---
 
@@ -43,7 +43,7 @@ Graph depth drives inertia. The deeper and more connected a node, the harder it 
 
 ---
 
-## Key Tables (SQLite)
+## Key Tables
 
 | Table | Purpose |
 |-------|---------|
@@ -51,7 +51,10 @@ Graph depth drives inertia. The deeper and more connected a node, the harder it 
 | `ring_memory` | FIFO-50 session context; injected into every API call |
 | `twm_observations` | Transient Working Memory; push-only; TTL-gated |
 | `interpretive_edges` | 4-part directed edges: direction, condition, meaning_payload, action_pointer |
+| `tails` | Activation heat trail: node_id, weight, recorded_at, trail_id, sequence_pos |
 | `word_graph` | Separate DB (`~/.TheIgors/word_graph.db`); nodes + edges + bigrams |
+
+Works with both SQLite (default) and Postgres (`IGOR_HOME_DB_URL=postgresql://...`). Postgres schema auto-initialized via `_init_pg_schema()` on first boot.
 
 ---
 
@@ -85,12 +88,34 @@ Push-only sandbox. Multiple sources deposit observations (reading stew, NE actio
 
 ---
 
+## Trails (`tails` table)
+
+Every `cortex.search()` call records a trail — a timestamped activation sequence grouped by a UUID (`trail_id`). `sequence_pos` tracks traversal order within a trail.
+
+This gives Igor a biological analog to neural activation patterns: the `tails` table IS the gradient signal. Co-activation heat → Hebbian edge strengthening → graph becomes smarter from use.
+
+Tools:
+- `inspect_trail(node_id)` — what trails activated this node, and when
+- `trail_hot_paths(since_hours)` — most frequently co-activated node pairs
+
+MCP tools available for CC sessions: `tail_heat`, `traces_recent`, `traces_get`, `hot_nodes`.
+
+---
+
+## Memory Sync (`tools/memory_sync.py`)
+
+Hub-and-spoke swarm sync. Each box holds a full Postgres replica. Bidirectional via `GREATEST(activation_count)` — most-activated version wins.
+
+Gate: `IGOR_SWARM_DB` (absent = sync disabled). Tool: `sync_memories(full="false")`. Habit: `PROC_MEMORY_SYNC` runs every 6h. `full=true` bootstraps a new box.
+
+---
+
 ## Genesis
 
-44 seed memories verified at boot: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC (genesis) + 9 new PROC. Mismatch → alert. CP1-CP6 narratives verified against `GENESIS_CP_NARRATIVES` dict.
+44 seed memories verified at boot: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC (genesis) + 9 new PROC. Guard checks for ROOT node existence (changed from `total_count==44` for Postgres compatibility). CP1-CP6 narratives verified against `GENESIS_CP_NARRATIVES` dict.
 
 ---
 
 ## Decisions
 
-D001, D004, D005, D010, D013, D017, D027, D028, D039, D043, D045
+D001, D004, D005, D010, D013, D017, D027, D028, D039, D043, D045, D163, D169, D171, D174
