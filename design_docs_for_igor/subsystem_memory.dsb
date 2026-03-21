@@ -1,6 +1,6 @@
-DOC|subsystem_memory|v1|updated=2026-03-20d
+DOC|subsystem_memory|v1|updated=2026-03-20g
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
-META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py
+META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py,tools/memory_sync.py,tools/trail_inspector.py
 
 DESIGN_POINTS|
   DP1|everything-is-memory: unified model; no special cases; habits=PROC; values=high-inertia; all connected
@@ -25,6 +25,7 @@ TABLES|
   twm_observations|push-only sandbox|source,content_csb,salience,urgency,ttl_seconds,expires_at,attractor_weight,instance_id,parent_obs_id (D099: slot branching; TWM_MAX_SLOTS=7)
   lists|D095: cross-type enumeration|list_name,item_key,item_value,ref_type,ref_id,instance_id,updated_at
   interpretive_edges|4-part directed|source_id,target_id,direction,condition,meaning_payload,action_pointer
+  tails|activation heat trail|node_id,weight,recorded_at,trail_id(UUID groups one search call),sequence_pos(traversal order within trail); idx_tails_node+idx_tails_time+idx_tails_trail; D174: trail_id+sequence_pos added post-initial — migration-before-index pattern
   word_graph|(separate DB ~/.TheIgors/word_graph.db)|nodes+edges+bigrams
 
 KEY_METHODS|
@@ -50,8 +51,33 @@ KEY_METHODS|
   db_proxy SQL tracing|set_trace_callback() captures last SQL per block; slow queries logged to db_queries.log with turn_id; D064
   db_queries.log|~/.TheIgors/logs/db_queries.log|format: timestamp turn=X elapsed=Xms sql=...
 
+TRAILS|T-trails-infra
+  purpose=first-class activation trail: every search call records a trail; heat = gradient signal
+  cortex._record_tails(memories, trail_id)|writes tails rows; trail_id groups the search call; sequence_pos=traversal order
+  cortex.trails_through_node(node_id)|return trails that activated this node
+  cortex.trail_gradient(trail_id)|weight vector across nodes in one trail
+  cortex.hot_paths(since_hours)|frequently co-activated node pairs = strongest association trails
+  tools=inspect_trail(node_id, limit) + trail_hot_paths(limit, since_hours) in tools/trail_inspector.py
+  MCP=mcp__igor__tail_heat, mcp__igor__traces_recent, mcp__igor__traces_get, mcp__igor__hot_nodes in igor_mcp.py
+  hebbian=T-trail-training: co-activation heat → edge weight strengthening (implemented in cortex via tails)
+  graph_calving=T-graph-calving: attractor detection + node adoption — emergent tree splitting from trail divergence
+
+MEMORY_SYNC|T-memory-sync #293 (D169)
+  purpose=hub-and-spoke swarm sync; full Postgres replica per box; offline-resilient
+  tool=sync_memories(full="false") in tools/memory_sync.py
+  gate=IGOR_SWARM_DB (Postgres URL of swarm home)
+  flow=fetch portable memories from swarm home → upsert local (GREATEST(activation_count)); register SWARM node; record last_sync_at
+  habit=PROC_MEMORY_SYNC every 6h; full=true bootstraps new box
+  portable_flag=portable=True only; EPISODIC+CREDENTIAL_REF+portable=False excluded
+
+POSTGRES_SUPPORT|D171
+  purpose=Igor boots clean on fresh Linux/Windows box with local Postgres
+  _PG_SCHEMA=SQL string in cortex.py; _init_pg_schema() creates tables+indexes if not exist
+  genesis_guard=changed total_count→ROOT node check (Postgres doesn't keep SQLite rowid semantics)
+  env=IGOR_HOME_DB_URL=postgresql://igor:password@host/dbname enables PG mode; SQLite is default
+
 GENESIS|44 seeds: 1 ROOT + 6 CP + 14 ID + 4 RM + 10 PROC + 9 PROC seeds
-  guard=total_count()==44 checked at boot
+  guard=ROOT node existence check at boot (was total_count==44; changed D171 for Postgres compat)
   verify=GENESIS_CP_NARRATIVES dict verified at boot; mismatch→refuse operation
 
 INDEXES|
@@ -68,4 +94,4 @@ INDEXES|
   cortex.twm_set_attractor()|D099 updated: keeps top MAX_SLOTS-1 existing slots; evicts weakest on overflow; emergency path (urgency≥0.8 in twm_push) still zeros all
   NE comparison pass|D099: after _filter_obs(), get slots, action_pointer set intersection, decay solo slots at 0.7; wrapped try/except; first sketch of D100 live salience
 
-DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084,D091,D099,D100,D101
+DECISIONS|D001,D004,D005,D010,D013,D017,D027,D028,D039,D043,D045,D083,D084,D091,D099,D100,D101,D163,D169,D171,D174

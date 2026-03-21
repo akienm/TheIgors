@@ -1,6 +1,6 @@
-DOC|subsystem_reading|v1|updated=2026-03-15b
+DOC|subsystem_reading|v1|updated=2026-03-20g
 META|inertia=LOW|parent=architecture_root.dsb
-META|files=tools/ebook_reader.py,tools/training.py,cognition/word_graph.py
+META|files=tools/ebook_reader.py,tools/training.py,tools/reading_integration.py,tools/learner.py,cognition/word_graph.py,claudecode/book_learner.py
 META|purpose=book reading → graph training → realtime discussion
 
 DESIGN_POINTS|
@@ -11,6 +11,18 @@ DESIGN_POINTS|
   DP5|word graph trained from book text: enriches predict_next() + habit pattern matching
   DP6|CIFS stale handle: _local_copy() copies to /tmp before read; transparent to caller
   DP7|cloud_ok per-chunk (D071): book_learner._should_use_local() reads ~/.TheIgors/cloud_ok_override.json each chunk; mode can change mid-book without restart; --local flag still forces local
+  DP8|deposition vs encoding (D170): READ_* nodes from raw extraction are deposition only; encoding requires the 5-step integration pipeline (embed+link+spine+interp+arousal)
+  DP9|drain runner path fix (D181): cron was using IGOR_INSTANCE_ID=Igor-wild-0001 (wrong case) → empty queue for weeks; fixed to igor_wild_0001; 146 items now draining
+
+READING_INTEGRATION_PIPELINE|
+  purpose=second-pass integration after book_learner deposits READ_* nodes
+  steps=1.embed (nomic-embed-text) → 2.link (cosine+BFS to existing nodes) → 3.spine (narrative thread) → 4.interp (interpretive edges from salient pairs) → 5.arousal (valence/arousal/dominance)
+  tool=integrate_reading(book, batch=200) in tools/reading_integration.py
+  backfill=claudecode/reading_integrator.py — one-time backfill of already-deposited nodes
+  deposit_primitive=_deposit_nodes() in cortex.py — canonical write path for all book nodes
+  book_learner=now runs 5-step pipeline inline; new books encoded on deposit
+  experiment_roadmap=D179: 8 experiments; 1-5 done (pipeline built+validated); 6=bulk reading running (146 items); 7=swarm; 8=capacity
+  reading_speed=#300: IGOR_READING_SPEED_SPS configurable (default 1 sentence/sec; not yet implemented)
 
 EBOOK_READER|
   calibre=~/.TheIgors/akien/onedrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library
@@ -39,5 +51,6 @@ BOOK_LEARNER_OBSERVABILITY|
 
 READING_LIST_STATUS|G-RL3: drain_learn_queue.py sets status=in_progress+started_at on calibre launch; book_learner.py sets status=completed+completed_at on full run (position>=total_sentences, no --limit)
 
-DECISIONS|D038,D052
+DECISIONS|D038,D052,D071,D170,D173,D179,D181
 KNOWN_FAILURES|F001(OOM from word_graph JSON — fixed by SQLite migration),F012(stale-CIFS)
+OPEN_TICKETS|#300(reading speed configurable — IGOR_READING_SPEED_SPS)

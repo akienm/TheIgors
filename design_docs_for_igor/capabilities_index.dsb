@@ -1,10 +1,10 @@
-DOC|capabilities_index|v1|updated=2026-03-16
+DOC|capabilities_index|v1|updated=2026-03-20g
 
 META|purpose=quick lookup index of all registered tools and integrations|inertia=LOW
 // This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
 // Update whenever a tool is added or removed. Total count tracked in TOTALS section.
 
-TOTALS|tools=126|integrations=13|env_gates=8|updated=2026-03-16
+TOTALS|tools=140|integrations=13|env_gates=9|updated=2026-03-20g
 
 SECTION_SYSTEM|
   run_bash|runner.py|run shell commands in workspace (30s timeout)
@@ -122,6 +122,30 @@ SECTION_TRAINING|
 SECTION_METRICS|
   get_metrics_report|metrics.py|tier distribution, escalation rate, tool stats
   get_error_log|metrics.py|recent errors from errors.log
+  get_slow_query_report|slow_query.py|surface slow DB queries from db_queries.log
+
+SECTION_TRAILS|
+  inspect_trail|trail_inspector.py|trails through a node: heat, sequence, co-activations
+  trail_hot_paths|trail_inspector.py|frequently co-activated node pairs (last N hours)
+
+SECTION_READING_INTEGRATION|
+  integrate_reading|reading_integration.py|5-step pipeline: embed+link+spine+interp+arousal for READ_* nodes
+
+SECTION_MEMORY_SYNC|
+  sync_memories|memory_sync.py|hub-and-spoke swarm sync; gate=IGOR_SWARM_DB
+
+SECTION_TRAVERSAL_CONTEXT|
+  start_traversal|traversal_context.py|mint context_id for shared habit state
+  ctx_get|traversal_context.py|read (context_id,key) slot
+  ctx_set|traversal_context.py|write (context_id,key)→value
+
+SECTION_OS_PRIMITIVES|
+  prim_list_dir|os_primitives.py|list ctx[dir] → ctx[files]
+  prim_file_meta|os_primitives.py|mtime+size for ctx[current_file]
+  prim_read_head|os_primitives.py|read first N lines of ctx[current_file] → ctx[content]
+  prim_type_detect|os_primitives.py|detect file type for ctx[current_file]
+  prim_iter_next|os_primitives.py|pop ctx[files][0] → ctx[current_file]
+  prim_iter_done|os_primitives.py|check ctx[files] empty → ctx[done]
 
 SECTION_CLUSTER|
   ssh_exec|cluster_ssh.py|shell command on remote cluster machine via SSH
@@ -186,6 +210,7 @@ SECTION_ENV_GATES|
   IGOR_TIER5_ENABLED|gates Anthropic direct spend (default false)
   IGOR_RESEARCH_MODE|allows bulk external reads (default false)
   IGOR_CONTEXT_WINNOW|gates pre-call context winnowing via gpt-4o-mini
+  IGOR_SWARM_DB|Postgres URL of swarm home for memory_sync (absent=sync disabled)
 
 SECTION_INTEGRATIONS|
   gmail|SMTP/IMAP via app password

@@ -1,6 +1,6 @@
-DOC|subsystem_cognition|v1|updated=2026-03-15f
+DOC|subsystem_cognition|v1|updated=2026-03-20g
 META|inertia=MEDIUM|parent=architecture_root.dsb
-META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py
+META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,tools/traversal_context.py,tools/os_primitives.py
 
 THALAMUS|
   purpose=classify intent + produce complexity signal
@@ -19,10 +19,12 @@ BASAL_GANGLIA|
   trigger_formats=3 formats: pipe-separated(hello|hi|hey), legacy-space(min5-token), single-token(routing_decision)
   intent_gate=D074: skip habit_type="threshold" always; skip (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in {factual_question,meta_question,explanation_request,general,conversation}; D074 expansion (#254, G-OVN-1d): knowledge_request added to _QUESTION_INTENTS; ALL response habits skip on factual_question or knowledge_request → fall through to LLM+winnow
   response_habit_fixes=2026-03-15f: cognitive/passive_capture habits with no action template fall through to LLM (HABIT_FALLTHROUGH ring entry — was leaking 'Habit executed' debug text); G-OVN-1c: response habits with suppress_on_factual_intent=true skip on factual_question; PROC_RESP_DONT_KNOW trigger trimmed (removed 'what do you know about'/'have you heard of' — was misfiring on knowledge queries)
-  habit_types=threshold(resource monitor only)|action(tool dispatch)|workflow(calendar/orchestration)|delegation|reactive|response(canned text)|question(emits question_template)|context_inject(push LTM to TWM, fall through to LLM)|cognitive|tool|passive_capture
+  habit_types=threshold(resource monitor only)|action(tool dispatch)|workflow(calendar/orchestration)|delegation|reactive|response(canned text)|question(emits question_template)|context_inject(push LTM to TWM, fall through to LLM)|cognitive|tool|passive_capture|fork(dispatch N branch habits with shared traversal_context)
   habit_response=question→question_template; code_ref→tool dispatch; context_inject→push SELF_CONTEXT TWM + habit=None; response/action→metadata.action (str) OR metadata.actions (list→random); fallback to narrative
+  fork_primitive=T-fork-primitive #297: fork habit dispatches branch_habits[] in execute_habit(); context_id propagated via args dict; shared traversal_context across branches; D177
+  habit_audit=D178: archived 995 habits (3 pipeline suppressors + 2 dead-trigger + 991 zero-activation BL_*); PROC_DIRECTION_AWARE wired as context_inject/heartbeat_check; PROC_RESP_COMPLEX changed to context_inject; 124 active habits remain
   audit=score= field in HABIT_EXEC ring entries; low scores = trigger too broad
-  decisions=D029,D030,D037,D044,D074,D075
+  decisions=D029,D030,D037,D044,D074,D075,D177,D178
 
 MILIEU|
   purpose=persistent 3D affect (valence/arousal/dominance); drifts slowly; shapes thresholds
@@ -69,3 +71,45 @@ RESPONSE_HABITUATION|
   method=decay_factor() [0,1]; high frequency = high decay = Igor notices and varies
   persist=response_habituation.json
   exposed=/metrics
+
+INFERENCE_GATEWAY|cognition/inference_gateway.py (D015 — DAG routing in one file)
+  purpose=DAG-based inference routing; single call site for all LLM calls
+  Node/Edge/PurposeConstraints=typed dataclass graph; add_node()+add_edge()+register_purpose()
+  gateway.call(purpose,prompt,**kw)|routes by purpose; picks handler via edge weights + guards
+  gateway.describe()|human-readable DAG; exposed via /routing --dag
+  gateway.from_env()|factory: builds DAG from env vars (Ollama/OR/Anthropic nodes + tier edges)
+  gateway.reason(prompt,**kw)|high-level entry point with purpose inference
+  handlers=_h_ollama(prompt,c) + _h_or(prompt,c) — raw HTTP; raise on blank/error
+  guards=_always(ctx)|_local_preferred(ctx) — cluster has local capacity + cloud_mode not active
+  decisions=D015,D023
+
+CLUSTER_ROUTER|cognition/cluster_router.py
+  purpose=probe cluster machines; route calls to best available; realtime load scoring
+  MachineInfo=dataclass: name,host,models,healthy,load_score,response_ms,active_inferences
+  ClusterRouter.route(call_type)|returns (host,model) for lowest-scored healthy machine
+  ClusterRouter.has_local_capacity(call_type)|True if healthy local machine with model for call_type
+  ClusterRouter._probe_machine(m)|update health+load+latency in-place; used in _refresh()
+  ClusterRouter._refresh(force)|probe all machines if cache stale; thread-safe
+  ClusterRouter.set_override(machine)/clear_override()|pin routing; used in /routing commands
+  ClusterRouter.status_lines()|human-readable status for /metrics
+  config=~/.TheIgors/local/machines.json
+
+TRAVERSAL_CONTEXT|tools/traversal_context.py
+  purpose=shared mutable scratch space across habit branches in one traversal
+  start_traversal(job_id)|mint UUID context_id; store in cortex lists table; return context_id
+  ctx_get(context_id,key)|read value from (context_id,key) slot
+  ctx_set(context_id,key,value,step)|write (context_id,key)→value with optional step counter
+  usage=fork habit mints context_id → passes via args → branches read/write shared slot
+
+OS_PRIMITIVES|tools/os_primitives.py
+  purpose=filesystem traversal ops wired to traversal_context; Igor can walk dirs/files via habits
+  prim_list_dir()|list files in ctx[dir] → write JSON list to ctx[files]
+  prim_file_meta()|mtime+size for ctx[current_file] → ctx[file_mtime]+ctx[file_size]
+  prim_read_head()|read first N lines of ctx[current_file] → ctx[content]
+  prim_type_detect()|detect file type for ctx[current_file] → ctx[file_type]
+  prim_iter_next()|pop first item from ctx[files] → ctx[current_file]
+  prim_iter_done()|check ctx[files] empty → ctx[done]='true'|'false'
+
+TEMPORAL_GRADIENT|cognition/temporal_gradient.py
+  purpose=single configurable decay primitive; replaces 6 special-cased decay impls
+  status=file exists; integration into TWM/milieu/habit decay not yet complete (L-size deferred post-experiment-7)
