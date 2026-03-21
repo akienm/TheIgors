@@ -1100,3 +1100,26 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **#303 T-igorbase-universal**: IgorBase as universal base class for all objects — emergency stderr fallback, module-level helper for tool files. Currently ~15 classes inherit it; goal is system-wide adoption.
 
 *Updated: 2026-03-20g continuation by Claude Code.*
+
+---
+
+### Session 2026-03-21 — QA sweep (Claude Code)
+
+**Tickets closed:**
+
+- **#302 — wg_cooccur query timeouts ~~CLOSED~~**: G-WG4 implemented. `_pg_get_neighbors` word list capped at 20 (was unbounded, caused 160-545ms Postgres queries). `reinforce_text` token cap at 40 (prevents O(n²) pair explosion). VACUUM ANALYZE on 29M-row wg_cooccur table: baseline query 133ms → 82ms. G-WG1 (SQLite contention) is no longer active — table is now in Postgres.
+- **#303 T-igorbase-universal ~~CLOSED (phase 1)~~**: `_EmergencySafeLogger` added to igor_base.py — falls back to sys.stderr on logging infra failure. `get_logger(name)` module factory for tool files. `IgorBase.log` property now returns _EmergencySafeLogger. Phase 2 (migrate 200+ bare-pass blocks) is separate effort.
+- **#284 resource_manager.py ~~CLOSED (S scope)~~**: `tools/resource_manager.py` shim re-exports from budget.py. No callers changed. Long-term direction signal for new code.
+- **#272 cortex SELECT * ~~CLOSED (partial)~~**: Eliminated 5 `SELECT * FROM memories` queries — all use `_MEM_COLS_NO_EMBED`. Prevents embedding blob inflation on Postgres wire transfers.
+- **#271 font size UI ~~CLOSED~~**: A-/A+ buttons added to name-row. localStorage persistence.
+- **#297 T-fork-primitive ~~CLOSED~~**: Was implemented in commit 0c24d9f (2026-03-20) but issue wasn't closed. Confirmed live-tested and working.
+
+**G-WG1 update:** G-WG1 (wg_cooccur SQLite contention) is superseded by Postgres migration (D126). The active gap is now Postgres query latency — addressed by G-WG4 (#302 fix above).
+
+**Skipped (architecture/design needed):**
+- #295, #289, #308-310: L-size, need Akien design session
+- #285-288: L-size infrastructure patterns, need design
+- #299, #317-319: depend on #298 (if-fork) or L-size design
+- #256: human steps required (Tailscale device setup)
+
+*Updated: 2026-03-21 by Claude Code.*
