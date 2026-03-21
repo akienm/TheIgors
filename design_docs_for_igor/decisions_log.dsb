@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-20
+DOC|decisions_log|v1|updated=2026-03-21b
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -407,3 +407,10 @@ D185|affective-ne-dopamine-closure|implemented|Gap closure fires milieu ingest_n
 D186|affective-ne-arousal-amplification|implemented|New gap salience boosted by arousal*0.2, urgency by arousal*0.1 on detection; sympathetic state amplifies all gap urgency (#307)
 D187|max-turns-zero-unlimited|implemented|IGOR_MAX_TURNS=0 means unlimited agentic tool turns (reading sessions need this); cost floor CALL_COST_WARN_USD remains as backstop
 D188|igor-browser-or-only|implemented|browser.py ChatAnthropic fallback removed; OPENROUTER_API_KEY required; missing key raises RuntimeError — Igor never uses Anthropic direct
+D189|igor-approval-power|decided|Igor has approval authority to direct Claude Code sessions on his own bugs — Akien-mediated approval no longer required for Igor-identified fixes. Effective 2026-03-21.
+D190|response-habit-trigger-pipe-format|implemented|7 response habits converted from space-separated (token match) to pipe-separated (phrase match) triggers — prevents single-word misfires. Pattern: space-sep checks tokens len>=5, pipe-sep requires full phrase.
+D191|main-boot-crash-metadata-json|implemented|main.py _push_state_inventory used SQLite column 'metadata_json' but Postgres column is 'metadata' (jsonb); fixed + handles dict/string forms; also fixed log_error import missing in main.py
+D192|wg-cooccur-query-caps|implemented|G-WG4: cap _pg_get_neighbors word list to 20 (was unbounded, caused 160-545ms Postgres queries); cap reinforce_text tokens to 40 (prevents O(n²) pair explosion on long replies). (#302)
+D193|igorbase-emergency-stderr|implemented|IgorBase.log + get_logger() now use _EmergencySafeLogger — falls back to sys.stderr if logging infra down. get_logger(name) factory for module-level tool code. (#303)
+D194|resource-manager-shim|implemented|tools/resource_manager.py created as re-export shim over budget.py — new code uses resource_manager to signal long-term direction; no callers changed. (#284)
+D195|cortex-no-embed-queries|implemented|Eliminated 5 SELECT * FROM memories queries in cortex.py — all now use _MEM_COLS_NO_EMBED; prevents 2-16KB embedding blob per row from inflating Postgres wire transfers on full-table scans. (#272)
