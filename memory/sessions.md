@@ -1,3 +1,8 @@
+## Session 2026-03-20h
+**Theme**: Theme: affective narrative engine — gap registry, tension field, dopamine closure loop
+**Next session**: Next: day-close + run Igor to observe gap registry in live cycles; then experiment 6 bulk reading validation or T-igorbase-universal (#303)
+**In-flight**: NONE
+
 ## Session 2026-03-20g
 **Theme**: Cleanup: killed scribe queue pattern, oriented on open tickets
 **Next session**: 1. T-pipeline-arch (experiment 6 data needed first); 2. T-igorbase-universal (#303) — IgorBase emergency stderr + module-level helper; 3. Run /day-close to sync docs

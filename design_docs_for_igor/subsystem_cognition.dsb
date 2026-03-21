@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-20g
+DOC|subsystem_cognition|v1|updated=2026-03-20h
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,tools/traversal_context.py,tools/os_primitives.py
 
@@ -39,14 +39,15 @@ NARRATIVE_ENGINE|
   purpose=background LTM consolidation + prospective prediction
   runs=daemon thread; ~60s cycle; yields to interactive (polls self._is_processing up to 10s)
   reads=TWM sorted by urgency*salience descending
-  outputs=narrative synthesis; LTM promotion (importance≥0.7); action_impulses to TWM
+  outputs=narrative synthesis; LTM promotion (importance≥0.7); action_impulses to TWM; narrative_gaps list
   prospective=predict_next() on recent TWM context; predicted topics merged into memory search
   link_reinforcement=correct prediction→+0.05 to predicted habit seeds; wrong→-0.10+0.05 to actual
   gate=IGOR_NE_ENABLED; model=OR gpt-4o-mini (cloud_mode) or local NE model
   NE_MIN_INTERVAL_SEC=5 (was 30; cursor makes fast cycles safe)
   traversal_cursor=TraversalCursor dataclass; thread_id/topic_history/depth/status/promotions_this_thread; oscillation detection (same topic × NE_OSCILLATION_DEPTH + 0 promotions → reset); convergence (≥2 promotions); _cursor_context() injected into every prompt; LLM outputs thread_topic field; NE_CURSOR| snapshots to ring_memory; D077
   episodic_to_semantic_merge=occurrence_dates list in metadata; multiple occurrences→one semantic node; frequency=semantic weight; #250; not yet implemented
-  decisions=D007,D009,D018,D077
+  affective_narrative_engine=D183-D186; gap registry: NARRATIVE_GAP| TWM entries accumulate tension 5%*arousal/cycle; frame selection: effective_importance=importance*(1-w)+milieu_alignment*w (w=0.4*arousal); closure dopamine: resolved gap fires milieu ingest_ne_state(valence=0.3+tension*0.4,arousal=0.4+tension*0.3); arousal amplifies initial gap salience by arousal*0.2
+  decisions=D007,D009,D018,D077,D183,D184,D185,D186
 
 BACKCHANNEL|
   purpose=fast low-cost acknowledgment before full response

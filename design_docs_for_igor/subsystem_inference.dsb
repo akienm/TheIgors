@@ -1,4 +1,4 @@
-DOC|subsystem_inference|v1|updated=2026-03-14j
+DOC|subsystem_inference|v1|updated=2026-03-20h
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/inference_gateway.py,cognition/cloud_mode.py,cognition/reasoners/
 
@@ -49,5 +49,6 @@ CLOUD_OK_OVERRIDE|D071
   gates=_cloud_ok() + _cloud_preferred() block background calls when cloud_ok_override=False
   interactive_turns=unaffected (cloud always OK for human conversation)
 
+AGENTIC_TURNS|IGOR_MAX_TURNS env; 0=unlimited (for reading sessions); default 8; cost floor IGOR_CALL_COST_WARN_USD remains; D187
 KNOWN_FAILURES|F003(IMPULSE_SKIP),F004(cloud-mode-disabled),F005(tier-model-inversion),F006(gateway-attr-error)
-DECISIONS|D015,D023,D025,D026,D031,D032,D033,D034,D035,D039,D040,D041,D053,D071
+DECISIONS|D015,D023,D025,D026,D031,D032,D033,D034,D035,D039,D040,D041,D053,D071,D187,D188
