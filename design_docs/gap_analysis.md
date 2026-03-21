@@ -1123,3 +1123,15 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - #256: human steps required (Tailscale device setup)
 
 *Updated: 2026-03-21 by Claude Code.*
+
+---
+
+### Session 2026-03-21b — Foreman loop + bug sweep
+
+**Gaps closed:**
+
+- **G-LOG1 ~~CLOSED~~**: `log_error` not imported at module level in `inference_gateway.py`, `ollama_reasoner.py`, `push_sources.py` (openrouter_reasoner.py fixed prior session). Every except handler that called `log_error` would itself raise `NameError`, masking the original error. Fixed: module-level `from .forensic_logger import log_error` added to all three files; redundant local imports removed.
+
+**New gaps (open):**
+
+- **G-HAB-TRIGGER1** (open): Habit trigger matching is pure substring scan — any input containing a trigger word fires the habit regardless of intent. Causes misfires (wrong habit fires) and loop halts (bad habit terminates turn). D201 proposed: structured preparse conditions `{intent, entities, complexity}` matched against thalamus output instead of raw text. Timeout watchdog (habit execution hard timeout → loop continues) proposed as independent floor. Igor designed both; tickets pending from session 2026-03-21b.

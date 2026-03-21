@@ -290,15 +290,84 @@ def _save_worker_pids(pids):
         json.dump(pids, f, indent=2)
 
 
+def cmd_notify_igor(args):
+    """Send a message to Igor via the cc_send bridge (POST /api/cc_send)."""
+    if not args:
+        print("Usage: notify-igor <message>")
+        sys.exit(1)
+    msg = " ".join(args)
+    data = json.dumps({"content": msg}).encode()
+    req = urllib.request.Request(
+        "https://localhost:8080/api/cc_send",
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5, context=_ssl_ctx()):
+            print(f"sent to Igor: {msg}")
+    except Exception as e:
+        _log({"action": "notify_igor_failed", "error": str(e), "msg": msg})
+        print(f"  [notify-igor failed — Igor not running? {e}]")
+
+
 def cmd_worker_launch(args):
-    """Launch a worker konsole for a ticket and record its PID."""
+    """Launch a worker konsole for a ticket, reusing an existing window if one is live."""
+    import os
     import subprocess
 
     if not args:
         print("Usage: worker-launch <ticket-id>")
         sys.exit(1)
     ticket_id = args[0]
-    # Launch konsole with worker context
+
+    # Try to reuse an existing live konsole window whose previous ticket is done.
+    # Claude stays open after a sprint completes — inject /sprint directly into it.
+    pids = _load_worker_pids()
+    queue_tasks = _load()
+    queue_status = {t["id"]: t["status"] for t in queue_tasks}
+    for prev_ticket, entry in list(pids.items()):
+        konsole_pid = entry.get("konsole_pid")
+        if not konsole_pid:
+            continue
+        # Only reuse if the previous ticket finished
+        if queue_status.get(prev_ticket) == "in_progress":
+            continue
+        try:
+            os.kill(konsole_pid, 0)  # raises if dead
+        except (ProcessLookupError, PermissionError):
+            continue
+        # Process alive and previous ticket done — inject /sprint into the running Claude
+        result = subprocess.run(
+            ["xdotool", "search", "--pid", str(konsole_pid)],
+            capture_output=True,
+            text=True,
+        )
+        wids = result.stdout.strip().splitlines()
+        if not wids:
+            continue
+        wid = wids[-1]
+        subprocess.run(
+            [
+                "xdotool",
+                "type",
+                "--window",
+                wid,
+                "--clearmodifiers",
+                f"/sprint {ticket_id}",
+            ]
+        )
+        subprocess.run(["xdotool", "key", "--window", wid, "Return"])
+        pids[ticket_id] = {
+            "konsole_pid": konsole_pid,
+            "launched_at": datetime.now(timezone.utc).isoformat(),
+            "reused_from": prev_ticket,
+        }
+        _save_worker_pids(pids)
+        print(f"Reused konsole PID {konsole_pid} (was {prev_ticket}) for {ticket_id}")
+        return
+
+    # No live window found — spawn a new konsole
     proc = subprocess.Popen(
         [
             "konsole",
@@ -315,7 +384,6 @@ def cmd_worker_launch(args):
         ],
         start_new_session=True,
     )
-    pids = _load_worker_pids()
     pids[ticket_id] = {
         "konsole_pid": proc.pid,
         "launched_at": datetime.now(timezone.utc).isoformat(),
@@ -351,9 +419,8 @@ def cmd_inject(args):
         )
         sys.exit(1)
     wid = wids[-1]  # use last window (most recently created)
-    subprocess.run(
-        ["xdotool", "type", "--window", wid, "--clearmodifiers", text + "\n"]
-    )
+    subprocess.run(["xdotool", "type", "--window", wid, "--clearmodifiers", text])
+    subprocess.run(["xdotool", "key", "--window", wid, "Return"])
     print(f"Injected into {ticket_id} (window {wid}): {text!r}")
 
 
@@ -369,6 +436,7 @@ COMMANDS = {
     "flush_session": cmd_flush_session,
     "worker-launch": cmd_worker_launch,
     "inject": cmd_inject,
+    "notify-igor": cmd_notify_igor,
 }
 
 if __name__ == "__main__":

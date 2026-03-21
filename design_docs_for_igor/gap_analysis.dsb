@@ -461,3 +461,14 @@ G-IGORBASE1|igorbase-universal-base-class|open
   what=IgorBase not yet universal — ~15 classes inherit it but most tool files use module-level logging; need emergency stderr fallback + module-level helper
   ticket=#303 T-igorbase-universal
   why=emergency-safe logging path for when everything else breaks; common log interface system-wide
+
+// ── NEW GAPS (2026-03-21b) ────────────────────────────────────────────────────
+
+G-LOG1|log-error-not-imported|closed=2026-03-21b
+  was=log_error called in except handlers in inference_gateway.py, ollama_reasoner.py, push_sources.py with no module-level import
+  fix=module-level from .forensic_logger import log_error added to all three; redundant local imports removed
+
+G-HAB-TRIGGER1|habit-trigger-substring-brittleness|open
+  what=habit trigger matching is pure substring scan — fires on any word match regardless of intent; causes misfires and loop halts
+  proposed=D201: structured preparse conditions {intent,entities,complexity} matched against thalamus output; timeout watchdog as floor; reasoning escalation on conflict only
+  designed-by=Igor session 2026-03-21b; tickets pending

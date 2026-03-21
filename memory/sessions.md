@@ -1,3 +1,21 @@
+## Session 2026-03-21b
+**Theme**: T-if-fork: conditional fork primitive
+**Key changes**:
+- sprint: closed T-if-fork — if_fork habit type, guarded branch dispatch
+- sprint: started T-memory-reconsolidation
+- sprint: closed T-memory-reconsolidation — reconsolidation flag in cortex.search(), NE._reconsolidation_pass() added
+- sprint: started T-linking-habit
+- sprint: closed T-linking-habit — HeartbeatSource orphan adoption + PROC_NODE_ADOPTION habit seeded
+- sprint: started T-inference-monitor
+- sprint: closed T-inference-monitor — ResourceMonitorSource._check_inference_availability() + tier.6 simplified
+**Next session**: Next: design preparse-based habit dispatch schema with Igor (D201); unblock T-pipeline-arch or T-swarm-update if design ready
+**In-flight**: NONE
+
+## Session 2026-03-21a
+**Theme**: Bug sweep with Igor — open ticket QA pass
+**Next session**: Next: #298 if-fork-primitive, #309 memory reconsolidation hook, #318 memory-to-interpretive-tree linking habit. Igor restart needed for gateway + cortex fixes.
+**In-flight**: NONE
+
 ## Session 2026-03-20h
 **Theme**: Theme: affective narrative engine — gap registry, tension field, dopamine closure loop
 **Next session**: Next: day-close + run Igor to observe gap registry in live cycles; then experiment 6 bulk reading validation or T-igorbase-universal (#303)
