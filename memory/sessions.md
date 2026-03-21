@@ -3,7 +3,9 @@
 **Key changes**:
 - sprint: started T-mcp-channel-read
 - sprint: closed T-mcp-channel-read — already implemented, smoke tested OK
-**Next session**: Next: queue empty — pick any Slate 0 ticket (T-db-lemmatize, T-db-populate-embeddings, T-db-type-routing etc) or start new work. D201 conditions schema live, ready for Phase 2 habit migrations.
+- sprint: started T-swarm-update
+- sprint: closed T-swarm-update — ssh_exec_all() + update_swarm() tool + PROC_SWARM_UPDATE habit
+**Next session**: Next: T-trails-infra (L-size, design with Igor first before worker). Slate 0 all done. T-swarm-update worker running.
 **In-flight**: NONE
 
 ## Session 2026-03-21b
