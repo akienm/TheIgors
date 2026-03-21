@@ -49,6 +49,7 @@ NARRATIVE_ENGINE|
   traversal_cursor=TraversalCursor dataclass; thread_id/topic_history/depth/status/promotions_this_thread; oscillation detection (same topic × NE_OSCILLATION_DEPTH + 0 promotions → reset); convergence (≥2 promotions); _cursor_context() injected into every prompt; LLM outputs thread_topic field; NE_CURSOR| snapshots to ring_memory; D077
   episodic_to_semantic_merge=occurrence_dates list in metadata; multiple occurrences→one semantic node; frequency=semantic weight; #250; not yet implemented
   affective_narrative_engine=D183-D186; gap registry: NARRATIVE_GAP| TWM entries accumulate tension 5%*arousal/cycle; frame selection: effective_importance=importance*(1-w)+milieu_alignment*w (w=0.4*arousal); closure dopamine: resolved gap fires milieu ingest_ne_state(valence=0.3+tension*0.4,arousal=0.4+tension*0.3); arousal amplifies initial gap salience by arousal*0.2
+  night_consolidation=#310: notify_interactive() resets idle timer; is_consolidation_eligible() gate (IGOR_CONSOLIDATION_IDLE_MIN default 20min); _deep_consolidation_pass() 5 steps: TWM promo@0.5, episodic merge@0.80 cosine, weak link prune (weight<0.05 after 10d), orphan adoption batch=100, reading integration batch=50; main.py wires both
   decisions=D007,D009,D018,D077,D183,D184,D185,D186
 
 BACKCHANNEL|

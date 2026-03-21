@@ -5,8 +5,10 @@
 - sprint: closed T-mcp-channel-read — already implemented, smoke tested OK
 - sprint: started T-swarm-update
 - sprint: closed T-swarm-update — ssh_exec_all() + update_swarm() tool + PROC_SWARM_UPDATE habit
-**Next session**: Next: T-trails-infra (L-size, design with Igor first before worker). Slate 0 all done. T-swarm-update worker running.
-**In-flight**: NONE
+- sprint: started T-night-consolidation
+- sprint: closed T-night-consolidation — NE idle detection + deep offline consolidation pass (#310)
+**Next session**: Next: T-trails-infra design pass with Igor — trail metadata table (trail_id, start_time, context, purpose) to make trails first-class; then worker. Then #308 (word graph bridge) needs design.
+**In-flight**: T-trails-infra: waiting on Igor's read of what the trails table is missing vs what's already built (tails+trail_id+Hebbian all exist)
 
 ## Session 2026-03-21b
 **Theme**: T-if-fork: conditional fork primitive

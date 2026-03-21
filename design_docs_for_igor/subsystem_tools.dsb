@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-16f
+DOC|subsystem_tools|v1|updated=2026-03-21c
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -68,4 +68,5 @@ KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 // browser discovery fixed 2026-03-14e: task= → task_description=; json.loads(result); _ensure_virtual_display() in browser.py; pyvirtualdisplay in venv
 // browser fully working 2026-03-14g: upgraded to 0.12.2; gpt-4o-mini LLM; Gemini navigation confirmed
 // G-BRW1 open: CC bridge fires PROC_GREETING for action requests at tier.2; workaround=call learn_about() directly from venv
-DECISIONS|D030
+CLUSTER_SSH|tools/cluster_ssh.py; ssh_exec(machine,command)+cluster_status()+ssh_exec_all(windows_cmd,linux_cmd)+update_swarm(); D204
+DECISIONS|D030,D204
