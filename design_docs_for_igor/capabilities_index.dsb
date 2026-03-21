@@ -1,10 +1,10 @@
-DOC|capabilities_index|v1|updated=2026-03-20g
+DOC|capabilities_index|v1|updated=2026-03-20h
 
 META|purpose=quick lookup index of all registered tools and integrations|inertia=LOW
 // This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
 // Update whenever a tool is added or removed. Total count tracked in TOTALS section.
 
-TOTALS|tools=140|integrations=13|env_gates=9|updated=2026-03-20g
+TOTALS|tools=148|integrations=13|env_gates=10|updated=2026-03-20h
 
 SECTION_SYSTEM|
   run_bash|runner.py|run shell commands in workspace (30s timeout)
@@ -201,6 +201,23 @@ SECTION_REASONING|
   // inner_cc modes: architecture|code_review|pattern|debug|curriculum
   convert_text|converter.py|convert text between EN/CSB/DSB formats; templates live in CONV:* memories
 
+SECTION_GRAPH_OPS|
+  get_hot_attractors|graph_ops.py|top N TWM attractor nodes by weight
+  run_node_adoption|graph_ops.py|adopt orphaned READ_* nodes into graph (batch=50)
+  run_calving_check|graph_ops.py|detect deep chains for calving (depth_threshold=5)
+
+SECTION_OPS|
+  store_decision|ops.py|record decision to DB (decision_id, summary, status)
+  store_session_note|ops.py|record session note (session_id, summary)
+  queue_task|ops.py|queue a JSON task to cc_channel/queue.json
+  flush_habit_cache|ops.py|flush basal ganglia habit cache (triggers reload)
+
+SECTION_WATCHLIST|
+  list_watchlist|watchlist.py|list Watcher nodes (personal salience categories)
+
+SECTION_SUDO_RELAY|
+  sudo_relay_run|sudo_relay.py|run script via sudo relay daemon (timeout_secs=60)
+
 SECTION_ENV_GATES|
   IGOR_SELF_EDIT_ENABLED|gates all source file writes (default false)
   IGOR_HOT_RELOAD|gates hot-reload capability
@@ -211,6 +228,7 @@ SECTION_ENV_GATES|
   IGOR_RESEARCH_MODE|allows bulk external reads (default false)
   IGOR_CONTEXT_WINNOW|gates pre-call context winnowing via gpt-4o-mini
   IGOR_SWARM_DB|Postgres URL of swarm home for memory_sync (absent=sync disabled)
+  BROWSER_USE_ANTHROPIC_MODEL|Anthropic model for browser_use fallback (default claude-haiku-4-5-20251001)
 
 SECTION_INTEGRATIONS|
   gmail|SMTP/IMAP via app password
