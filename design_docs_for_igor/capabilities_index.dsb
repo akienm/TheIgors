@@ -228,7 +228,7 @@ SECTION_ENV_GATES|
   IGOR_RESEARCH_MODE|allows bulk external reads (default false)
   IGOR_CONTEXT_WINNOW|gates pre-call context winnowing via gpt-4o-mini
   IGOR_SWARM_DB|Postgres URL of swarm home for memory_sync (absent=sync disabled)
-  BROWSER_USE_ANTHROPIC_MODEL|Anthropic model for browser_use fallback (default claude-haiku-4-5-20251001)
+  BROWSER_USE_MODEL|OpenRouter model for browser_use (default openai/gpt-4o-mini; e.g. anthropic/claude-haiku-4-5)
 
 SECTION_INTEGRATIONS|
   gmail|SMTP/IMAP via app password
