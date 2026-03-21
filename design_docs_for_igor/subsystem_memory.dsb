@@ -15,6 +15,7 @@ DESIGN_POINTS|
   DP9|blob support: has_blob=True; expand_blob_memories() appends full content on relevance≥0.5
   DP11|flush pattern (D083/D084): cc_queue.py flush_decision/flush_session POST to Igor /api/cc_notebook; each issue filing = mini savestate; decision not made until in Igor memory; DSB commit is durable backup
   DP12|episodic-to-semantic merge design (#250): occurrence_dates list in metadata; multiple occurrences of same pattern → one semantic node; frequency=semantic weight; not yet implemented; D057 dependency
+  DP13|surface-habit-as-inhibition-substrate (D196): memories default to 'surface' habit because surfacing deposits a TWM candidate without acting — BG scoring, milieu gates, and arousal weighting then decide whether it fires. Cognition's job is inhibition, not generation. Direct-action habits bypass this and are wrong for general retrieval. This IS the memory definition.
 
 MEMORY_TYPES|ROOT,CP,ID,RM,EPISODIC,PROCEDURAL,INTERPRETIVE,EXPERIENTIAL,FACTUAL
   // see glossary.dsb for full definitions

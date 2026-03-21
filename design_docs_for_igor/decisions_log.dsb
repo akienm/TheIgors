@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-21b
+DOC|decisions_log|v1|updated=2026-03-21
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -414,3 +414,5 @@ D192|wg-cooccur-query-caps|implemented|G-WG4: cap _pg_get_neighbors word list to
 D193|igorbase-emergency-stderr|implemented|IgorBase.log + get_logger() now use _EmergencySafeLogger — falls back to sys.stderr if logging infra down. get_logger(name) factory for module-level tool code. (#303)
 D194|resource-manager-shim|implemented|tools/resource_manager.py created as re-export shim over budget.py — new code uses resource_manager to signal long-term direction; no callers changed. (#284)
 D195|cortex-no-embed-queries|implemented|Eliminated 5 SELECT * FROM memories queries in cortex.py — all now use _MEM_COLS_NO_EMBED; prevents 2-16KB embedding blob per row from inflating Postgres wire transfers on full-table scans. (#272)
+D196|surface-habit-inhibition-substrate|decided|Most memories carry only a 'surface' habit because surfacing deposits a candidate into TWM without acting — inhibitory forces (BG threshold scoring, milieu gates, arousal weighting) then decide whether the content fires. This is correct: cognition's job is to inhibit, not to generate. Direct-action habits bypass inhibition and are wrong for general memory retrieval. Part of memory definition.
+D196|surface-habit-inhibition-substrate|decided|Memories default to surface habit — deposits TWM candidate without acting; inhibitory forces (BG/milieu/arousal) decide if it fires. Cognition's job is inhibition not generation. Part of memory definition.
