@@ -441,3 +441,23 @@ G-WIN1|windows-boot-blocking-bugs|~~closed=2026-03-20d~~
   fix3=core_patterns.py: genesis guard total_count()>0 → cortex.get("ROOT") is not None → fixes CP1-CP6 skipped when boot_env_sync writes SYSCFG_* before genesis
   fix4=tools/memory_sync.py: _pg_connect cursor_factory=RealDictCursor + _UPSERT_SQL VALUES %s placeholder → fixes psycopg2 errors
   result=Igor boots clean: CP·6 ID·14 67 memories, INTEGRITY_CHECK PASS
+
+// ── AUDIT RESULTS (2026-03-20g continuation) ──────────────────────────────────
+
+G-AUDIT1|codebase-audit-bare-pass|closed=2026-03-20g
+  was=284 bare-pass except blocks across 46 files swallowing exceptions silently
+  fix=replaced all with logging.getLogger(__name__).warning(); fixed 9 files with from__future__ ordering broken by transform script
+  rule=NO BARE PASS ANYWHERE — every exception logged
+
+G-AUDIT2|codebase-audit-http-timeouts|closed=2026-03-20g
+  was=confluence.py (8 calls), discord_bot.py (1 aiohttp call) missing HTTP timeouts
+  fix=confluence.py: _CONFLUENCE_TIMEOUT (30s, IGOR_CONFLUENCE_TIMEOUT_S env); discord_bot.py: aiohttp.ClientTimeout(total=15) on webhook POST
+
+G-AUDIT3|codebase-audit-hardcoded-model|closed=2026-03-20g
+  was=browser.py:54 hardcoded "claude-haiku-4-5-20251001"
+  fix=os.getenv("BROWSER_USE_ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
+
+G-IGORBASE1|igorbase-universal-base-class|open
+  what=IgorBase not yet universal — ~15 classes inherit it but most tool files use module-level logging; need emergency stderr fallback + module-level helper
+  ticket=#303 T-igorbase-universal
+  why=emergency-safe logging path for when everything else breaks; common log interface system-wide

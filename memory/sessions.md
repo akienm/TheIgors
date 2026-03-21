@@ -1,19 +1,93 @@
-## Session 2026-03-20d
-**Theme**: Igor Windows boot — all blocking bugs fixed, MCP wired to Claude Code
-**Closed**: G-WIN1, D171, D172
+## Session 2026-03-20g
+**Theme**: Cleanup: killed scribe queue pattern, oriented on open tickets
+**Next session**: 1. T-pipeline-arch (experiment 6 data needed first); 2. T-igorbase-universal (#303) — IgorBase emergency stderr + module-level helper; 3. Run /day-close to sync docs
+**In-flight**: NONE — audit complete and all committed
+
+## Session 2026-03-20f
+**Theme**: Theme: paths default fix + inference gateway discovery
 **Key changes**:
-- igor_loop.ps1: PYTHONUTF8=1 + PYTHONIOENCODING=utf-8 (Unicode crash on Windows CP1252)
-- cortex.py: _PG_SCHEMA DDL + _init_pg_schema() + _init_db() PG try/except (fresh Postgres schema)
-- core_patterns.py (HIGH): genesis guard total_count→ROOT check (SYSCFG_* writes before genesis)
-- tools/memory_sync.py: _pg_connect cursor_factory fix + _UPSERT_SQL VALUES %s fix
-- .claude/settings.json: MCP server "igor" created (Windows venv python → igor_mcp.py)
-- Windows Postgres: igor_wild_0001 DB created, igor user, schema initialised, 67 genesis memories
-**Next session**: 1. Restart CC and verify MCP connection (memory_search/traces_recent). 2. Test memory_sync end-to-end with akiendelllinux swarm. 3. Reading POC — use MCP for fast diagnostic loop.
-**In-flight**: MCP wired but not yet verified (needs CC restart to activate)
+- fixed paths.py default: Igor-wild-0001 → igor_wild_0001 (root path case bug)
+- removed drain_learn_queue cron entry — Igor handles internally via learner.py tools
+- discovered inference_gateway.py + cluster_router.py already exist — inference proxy is built
+**Next session**: Next: read inference_gateway.py + cluster_router.py — understand what's built, what's missing (performance testing habits?). Then preparse removal.
+**In-flight**: inference_gateway.py + cluster_router.py exist and we haven't read them — they may already solve problems we thought were open
+
+## Session 2026-03-20e
+**Theme**: Theme: reading integration pipeline — Experiment 5, #295, #296, tails migration
+**Decisions**: D171, D172, D173, D179, D180
+**Key changes**:
+- fix #296: list_absorbed_books — Python grouping replaces json_extract for SQLite/Postgres compat
+- feat #295: reading_integrator.py + reading_integration tool + book_learner 5-step encoding
+- fix cortex.py: tails.trail_id migration before index creation
+- Experiment 5: backfill ran — 79 embedded, 237 links, 25 spine nodes, 189 interp edges
+- workstep: plan approved for #297 T-fork-primitive
+- workstep: implementing #297 T-fork-primitive
+- closed T-trails-infra: trails_through_node, trail_gradient, hot_paths in cortex; inspect_trail + trail_hot_paths tools registered and live-tested
+- workstep: plan approved for T-habit-audit-pipeline
+- closed T-habit-audit-pipeline: D103/D104 audit done — 995 habits archived, 124 remain active
+- fixed drain runner cron: IGOR_INSTANCE_ID=igor_wild_0001 — was reading Igor-wild-0001 (wrong case), seeing empty queue for weeks. 146 items now draining.
+**Next session**: 1. Close T-pipeline-arch (D180). 2. Create T-gap-logging (M) + T-ne-redesign (L, deferred). 3. T-swarm-update design. 4. Monitor experiment 6 — check drain runner progress + book_learner node deposition quality.
+**In-flight**: Experiment 6 bulk reading is running. 146 training corpus items draining via fixed cron. All cognition prep complete.
+
+## Session 2026-03-20d
+**Theme**: Theme: Experiment 4 — reading integration gap diagnosis
+**Decisions**: D170
+**Key changes**:
+- Experiment 4 complete: Igor self-diagnosed reading integration gap from orphaned READ_* nodes
+- filed #295 T-reading-integration, #296 json_extract Postgres bug
+**Next session**: Next: implement T-reading-integration #295 (L-size, needs plan first); fix #296 (S-size, json_extract→jsonb); continue Experiment 5 after integration pipeline exists
+**In-flight**: NONE
+
+## Session 2026-03-20c
+**Theme**: Theme: ticket sweep — env hot-reload, traces_get, DB perf audit, T-memory-sync
+**Decisions**: D166, D167, D168, D169
+**Key changes**:
+- closed: #294 (Igor's own bug), #291, #248, #258, #259, #260, #261, #293 — 8 tickets
+- Kindle employer Chrome login completed via bash (no Playwright)
+- Igor self-filed #294 as blocker for Experiment 4
+**Next session**: Next: Experiment 4 (#294 unblocked — traces_get live); T-trail-training #289; T-memory-sync test with second box when ready; #291 proactive habits verify live
+**In-flight**: NONE
+
+## Session 2026-03-20b
+**Theme**: Theme: cognition architecture — cloud of graphs, calving, Hebbian training
+**Decisions**: D152, D153, D154, D155
+**Key changes**:
+- fixed T-fix-memories-scan: cortex.get_by_type() limit param + NE call limit=500
+- fixed T-db-populate-embeddings: _upsert_embedding() Postgres-safe upsert + backfilled 598 memories
+- designed + ticketed: T-graph-calving #288, T-trail-training #289, T-task-chain #285, T-worker-queue #286, T-igor-poll-spawn #287
+- clone/drone worker taxonomy D152; habit audit drone ran — report at habit_audit_report.md
+**Next session**: 1. Kindle login: run Igor headful (IGOR_BROWSER_HEADLESS=false), ask browse_as_employer to read.amazon.com, log in. 2. T-memory-sync #293: write plan before coding (L-size). 3. Verify #248 fix in Igor web UI with 'what have you learned about grammar'.
+**In-flight**: NONE
+
+## Session 2026-03-20a
+**Theme**: Worker reliability fix + slow query analysis + habit audit DB fixes
+**Decisions**: D151
+**Key changes**:
+- habit audit: 13 total habits fixed this session — ghost action fields, invalid habit_types, function names as action text
+- T-slow-query-analysis: closed — analyze_slow_queries tool + PROC_SLOW_QUERY_REPORT habit seeded; committed
+- T-traversal-context + T-os-primitives: worker delivery committed to main; Layer 1.5 complete
+- DB bugs identified: CREATE INDEX idx_ie_to running 710x (should be boot-only); memories full scan avg 506ms (needs index/LIMIT)
+**Next session**: Next: fix CREATE INDEX 710x bug (cortex.py _init_db guard); fix memories full-scan (add LIMIT/index); T-pipeline-inventory; T-worker-inject
+**In-flight**: CREATE INDEX running on every turn not just boot — _init_db() being called repeatedly; fix is a boot-once guard in cortex.py
+
+## Session 2026-03-19e
+**Theme**: T-mcp-pipeline — MCP server + reading POC iteration loop
+**Decisions**: D148, D149, D150
+**Key changes**:
+- sprint: started T-traversal-context
+- sprint: closed T-traversal-context — traversal_contexts table + cortex methods + 2 tools + seed; smoke test pass
+- sprint: started T-os-primitives
+- sprint: closed T-os-primitives — 6 OS primitive tools + habits; iteration smoke test pass
+- habit audit: fixed 8 habits from Igor's survey — PROC_HABIT_BUDGET_CHECK+PROC_LOOKUP_CONTACT wired to real code_refs; 5 broken workflow habits converted to cognitive; PROC_STORE_CONTACT got code_ref; D150 pattern confirmed systematic
+- queued T-pipeline-inventory (plan approved) + T-habit-audit-pipeline for worker; worker running T-slow-query-analysis now
+- sprint: started T-pipeline-inventory
+- sprint: closed T-pipeline-inventory — cognition_pipeline.dsb written; 11 sources, tier ladder, milieu writes, ring→LLM flow, 5 open gaps
+**Next session**: Next: T-habit-audit-pipeline (Igor surveying habits now, results queued); T-worker-inject (xdotool window tracking); continue Slate 1 Layer 2 (T-pipeline-inventory, T-master-cognition-tree)
+**In-flight**: Igor surveying habits for function-name-in-action bugs — results feed directly into T-habit-audit-pipeline systematic repair pass
 
 ## Session 2026-03-19d
 **Theme**: Crash-safe session accumulation — start/append/finalize commands
-**Decisions**: D135, D135, D136
+**Decisions**: D135, D135, D136, D137, D138, D139, D140, D141, D142, D143, D144, D145, D146, D147
 **Key changes**:
 - session_manager.py: start/append-change/append-decision/finalize commands
 - decided/savestate/context-load skills updated to use incremental session accumulation
@@ -24,8 +98,33 @@
 - day-close skill: new — docs sync + gap_analysis + subsystem DSBs + GitHub discussion + commit
 - commit skill: docs_sync pre-step added for staged .dsb files
 - ClaudeAndAkien repo genericized + pushed: session_manager, decision_manager, slate_manager, github_sync; 6 skills; 4 human docs (getting_started, crash_safe_sessions, slate_workflow, skills_guide); README with crash-safe pattern section
-**Next session**: 1. Run /day-close (T-scribe-20260319d queued). 2. T-test-debt-tooling (session_manager + decision_manager tests). 3. TRAILS infrastructure — first-class trail table; unlocks edge strengthening, matrix debugger, wg_cooccur replacement.
-**In-flight**: NONE
+- workstep: plan approved for T-db-lemmatize
+- workstep: implementing T-db-lemmatize
+- closed T-db-lemmatize: tokenize() lemmatized, wg_word_lang 2.1M→1.85M, wg_word_docs 6.5M→6.4M, Postgres ambiguous score fixed
+- T-db-wg-replace-cooccur: migration running (90551), code done — wg_edges schema added, predict_next switched, cooccur writes removed, tests pass
+- trails/traces distinction crystallized: trails=fades (milieu, memory heat, gradient), traces=static path record (debugging + Igor introspection). MCP pipeline wanted post-DB. Contrastive update for day-close.
+- EIGHTH CRYSTALLIZATION: cognition is pipeline not steps. Input forks to Emotional Salience Pipeline (FOF tree → personal salience → episodic relevance). Milieu is live base state mutating mid-run. Many open tickets derive from this. Captured in project_cognition_pipeline.md. Slate 1 expanded with 4 new tree tickets.
+- pipeline sharpened: emotional salience trees are persistent evaluation services not one-shot stages. Realizations trace back to emotional layer for re-evaluation. Surfacing memories re-fork continuously. Milieu accumulates from all parallel evaluations. The substrate mutates under everything still in flight.
+- pipeline further sharpened: master tree is shallow routing layer (not god-tree). Introspection = visibility threshold on same substrate. Pass-through is first-class. RED ALERT = general injection mechanism (any node, two modes: sync interrupt + async next-pass), always creates a trace. Added T-red-alert + T-master-cognition-tree to Slate 1.
+- RED ALERT corrected: not a special mechanism — it's a milieu spike (adrenaline dump). FOF is calibrated to trip on that intensity. No two modes, no special routing. Urgency tuned via milieu propagation speed + FOF output weight.
+- triggers crystallized: signal+threshold+what-fires = pattern. Milieu is one signaling target among many. Uncertainty as first-class signal. BG mechanism already correct, needs signal vocabulary. Pattern engineering IS the design activity — no new mechanisms, ever.
+- T-db-populate-embeddings complete: 5883 Postgres + 296 SQLite memories embedded, 9457 total, 0 errors
+- PROC_CHECK_PROCESS habit loop fixed (D140); CC_CHECK_PROCESS duplicate removed
+- New tickets: T-book-mechanism-extraction (mechanism chain extraction from books), T-self-test-substrate (itch/scratch/did-that-help model of self-testing)
+- T-book-mechanism-extraction: new extraction prompt live (mechanism node type + generic question list); book_learner running on Damasio 3023; baseline 999 nodes
+- T-db-type-routing: implemented — _route_types_from_query() + memory_types param on cortex.search()
+- T-db-spreading-activation: implemented — _get_recently_activated() seeds candidate pool at 0.1 base score
+- New Slate 1 tooling tickets: T-habit-exec-noise, T-post-habit-fork, T-two-presence-habit
+- New Slate 0 ticket: T-docs-memory-definition — foundational definition (memory=node=habit) needs top-of-doc placement in CLAUDE.md + DSBs
+- committed: Slate 0 + Layer 1 (type routing, spreading activation, tails, traces, TemporalGradient, book_learner mechanism extraction, local_pool.py deleted)
+- deleted PROC_READING_DEPOSIT + FACT_CLOUD_080436 from DB
+- reading POC: two James passages sent to Igor, diagnostic cron fires 19:03, script at /tmp/reading_poc_diagnose.py
+- UC-004 added to use_cases.md: low activation = mastery signal (polyglot brain scan story)
+- slate.md updated: Layer 1 marked complete, Layer 1.5 (T-traversal-context), T-os-primitives in Layer 2, T-index-job + T-index-habit in tooling, D141-D145 in design thread
+- reading POC 2 rounds: confirmed turn_trace as diagnostic instrument; HTTPS fix; habit-fires-before-meaning identified
+- PROC_CLUSTER_SSH_CHECK trigger fixed to pipe-separated
+**Next session**: Next: T-mcp-pipeline — MCP server over Igor Postgres + turn_trace; then reading POC iteration loop; then T-traversal-context
+**In-flight**: T-mcp-pipeline: build MCP server exposing memories/traces/tails/turn_trace to Claude Code — enables tight reading iteration loop
 
 ## Session 2026-03-19c
 **Theme**: Slate 0 complete — workflow tooling, CC→Igor web, DB as truth
@@ -41,8 +140,8 @@
 - run_phrase_test.py: new — sends phrase test file to Igor at 5-min intervals, resumable
 - Slate concept defined (D132): named/themed ~day bundle; horizon cascade 0-3; advance() shifts
 - slate.md now rendered from Postgres, not hand-edited
-**Next session**: Slate 1 — DB optimization. Start with T-slow-query-analysis.
-**In-flight**: NONE — Slate 0 closed clean.
+**Next session**: 1. Restart CC to load igor MCP server. 2. Re-run reading POC (James passages via cc_send HTTPS). 3. Use MCP tools to inspect traces/tails/turn_trace live. 4. T-habit-exec-noise (suppress habit executed strings). 5. T-traversal-context impl.
+**In-flight**: MCP is wired — restart CC, load igor server, then re-run reading POC with turn_trace_recent + traces_recent to map what fires and why.
 
 ## Session 2026-03-19b
 **Theme**: Tailscale HTTPS setup for phone access to Igor web UI

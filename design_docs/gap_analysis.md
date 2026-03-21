@@ -1084,3 +1084,19 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 **Trails infrastructure ~~CLOSED~~**: T-trails-infra. `tails` table (node_id, weight, recorded_at, trail_id, sequence_pos). `cortex.trails_through_node()`, `cortex.trail_gradient()`, `cortex.hot_paths()`. `inspect_trail` + `trail_hot_paths` tools in `tools/trail_inspector.py`. MCP: tail_heat, traces_recent, traces_get, hot_nodes.
 
 *Updated: 2026-03-20g by Claude Code.*
+
+---
+
+### Session 2026-03-20g continuation — codebase audit
+
+**Audit complete (run_review_audit.sh checklist, 10 checks):**
+
+- **Check 10 — Exception hygiene (CLOSED)**: 284 bare-pass `except X: pass` blocks replaced with `logging.getLogger(__name__).warning()` calls across 46 files. Rule: NO BARE PASS ANYWHERE. Also fixed 9 files where transformation script broke `from __future__ import annotations` ordering.
+- **Check 7 — Async timeouts (CLOSED)**: confluence.py: added `timeout=_CONFLUENCE_TIMEOUT` (30s, `IGOR_CONFLUENCE_TIMEOUT_S` env var) to all 8 HTTP calls. discord_bot.py: added `aiohttp.ClientTimeout(total=15)` to webhook POST.
+- **Check 2 — Hardcoded values (CLOSED)**: browser.py: replaced hardcoded `"claude-haiku-4-5-20251001"` with `BROWSER_USE_ANTHROPIC_MODEL` env var.
+- **Check 9 — Architecture drift (CLOSED)**: capabilities_index.dsb: added SECTION_GRAPH_OPS (3 tools), SECTION_OPS (4 tools), SECTION_WATCHLIST (1 tool), SECTION_SUDO_RELAY (1 tool); updated TOTALS to 148 tools, 10 env gates.
+
+**New ticket opened:**
+- **#303 T-igorbase-universal**: IgorBase as universal base class for all objects — emergency stderr fallback, module-level helper for tool files. Currently ~15 classes inherit it; goal is system-wide adoption.
+
+*Updated: 2026-03-20g continuation by Claude Code.*
