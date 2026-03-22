@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-21d
+DOC|subsystem_memory|v1|updated=2026-03-22
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py,tools/memory_sync.py,tools/trail_inspector.py
 
@@ -60,7 +60,7 @@ TRAILS|T-trails-infra
   cortex.hot_paths(since_hours)|frequently co-activated node pairs = strongest association trails
   tools=inspect_trail(node_id, limit) + trail_hot_paths(limit, since_hours) in tools/trail_inspector.py
   MCP=mcp__igor__tail_heat, mcp__igor__traces_recent, mcp__igor__traces_get, mcp__igor__hot_nodes in igor_mcp.py
-  hebbian=T-trail-training: co-activation heat → edge weight strengthening (implemented in cortex via tails)
+  hebbian=T-trail-training: co-activation heat → edge weight strengthening; LIVE as of #289 (2026-03-22) — _apply_trail_training() in cortex; hot_paths() PGRowProxy alias fixed; 4585+ co_activation edges; gate=IGOR_TRAIL_TRAINING_ENABLED
   graph_calving=T-graph-calving: attractor detection + node adoption — emergent tree splitting from trail divergence
 
 MEMORY_SYNC|T-memory-sync #293 (D169)

@@ -1,5 +1,33 @@
+## Session 2026-03-21f
+**Theme**: Sprint: T-trail-training Hebbian edge strengthening
+**Key changes**:
+- sprint: started 289 — T-trail-training Hebbian edge strengthening
+- sprint: closed 289 — hot_paths PGRowProxy alias bug; Hebbian training verified live
+- sprint: verified + closed 289 — hot_paths alias fix + _apply_trail_training; code was complete, queue status was stale pending
+**In-flight**: NONE
+
+## Session 2026-03-21e
+**Theme**: Theme: design conversations (IgorBase logging #334, unified memory schema #335), bug fixes (CC_GIT_LOG habit, consolidation loop, stale worker), worker queue loaded
+**Key changes**:
+- sprint: closed 328 — INSTR→strpos in db_proxy + partial indexes on wg_cooccur
+- sprint: started 322 — cortex/db_proxy SQL refactor
+- sprint: closed 322 — D200 MVP: MEM_COLS+fetch_by_ids+get_activation_rows in proxy; cortex speaks capabilities
+**Next session**: 1. Verify worker queue drained overnight (#333/#327/#328/#322/#289); 2. T-trails-infra design with Igor; 3. #308 word-graph↔memory bridge design; 4. Cloud cost measurement baseline once queue clear
+**In-flight**: Worker queue #333→#327→#328→#322→#289 in flight — foreman should chain automatically after Igor restart
+
 ## Session 2026-03-21d
 **Theme**: Bug sweep: ebook_reader log_error + boot crash + NE supplement scan removal
+**Key changes**:
+- sprint: closed 330 — schema runner + PROC_SCAN_DIR seeded, iteration loop verified
+- sprint: started 331 — T-primitive-registry
+- sprint: closed 331 — primitives.json catalog (9 impl + 4 missing) + validate_step/validate_schema_habit
+- sprint: started 332 — T-habit-compose: run_habit() public API
+- sprint: closed 332 — run_habit() 74-line public API, recursion guard, schema+code_ref dispatch
+- sprint: started 333 — forensic logging in schema_runner
+- sprint: closed 333 — forensic logging in schema_runner (4 sites)
+- sprint: started 327 — wg_cooccur composite index
+- sprint: closed 327 — wg_cooccur indexes already exist in PG, no code change needed
+- sprint: started 328 — wg_cooccur INSTR filter slow queries
 **Next session**: 1. Verify NE slow queries gone (monitor Igor logs after restart with 0fe15f1); 2. T-trails-infra design pass with Igor — trail metadata table, first-class trail objects
 **In-flight**: Verify supplement scan fix eliminated 500ms NE cycle queries — fix shipped but not yet confirmed in live Igor
 

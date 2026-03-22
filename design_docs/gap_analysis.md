@@ -1149,3 +1149,19 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **G-QP6 ~~CLOSED~~**: `cortex.search()` supplement scan fetched up to 300 wide rows (`ORDER BY activation_count DESC LIMIT 300`) on every call to cover orphan nodes not reached by traversal. With 11k memories and depth=3 BFS from 21 roots (CP1-CP6 + ID1-ID14), traversal already reaches 80+ nodes — supplement was redundant for all normal queries and caused 500ms slow queries on every NE cycle (~60s). Fix: skip supplement when `len(_traversal_pool) >= _SUPPLEMENT_THRESHOLD` (80). Supplement still fires for sparse graphs (new instances, shallow traversals).
 
 *Updated: 2026-03-21d by Claude Code.*
+
+---
+
+### Session 2026-03-21e+f — Worker orchestration + Hebbian training
+
+**Gaps closed:**
+
+- **G-NE-LOOP1 ~~CLOSED~~**: NE consolidation loop ran indefinitely after completing a pass. Root cause: `_deep_consolidation_pass()` set `_consolidation_running = False` but never updated `_last_consolidation_ts`, so `is_consolidation_eligible()` immediately re-qualified and launched another pass. Fix: set `self._last_consolidation_ts = time.monotonic()` at end of pass; add check in `is_consolidation_eligible()` that blocks re-run until another full idle period. Pushed 0694d6d; activated on Igor restart 2026-03-22.
+
+- **G-WORKER-INJECT1 ~~CLOSED~~**: xdotool-based worker orchestration was fragile — required X display, precise timing (sleep 0.3s between type and Return), and the injection chain depended on Igor's PROC_WORKER_FOREMAN habit (which was never seeded in the live DB). Workers frequently got stuck mid-queue. Fix: replaced with `worker_daemon.sh` — bash loop that polls queue every 20s, runs `claude --dangerously-skip-permissions "/sprint <id>"` for each pending ticket as a fresh process, self-chains without Igor or xdotool. cc_queue.py `worker-launch` now just ensures the daemon is running. Sprint skill Step 4 simplified accordingly.
+
+**New gaps (open):**
+
+- **G-WIN1** (open): `reading_integrator.py` crashes on Windows (exit 1, traceback at line 423). Likely path separator or dependency issue on Windows Python. Ticket: T-reading-integrator-windows (S-size, in queue).
+
+*Updated: 2026-03-22 by Claude Code.*

@@ -489,3 +489,17 @@ G-QP6|ne-supplement-scan-redundant|closed=2026-03-21d
   was=cortex.search() fetched 300 wide rows ORDER BY activation_count on every call; 500ms slow query every NE cycle (~60s)
   fix=_SUPPLEMENT_THRESHOLD=80; skip supplement when len(_traversal_pool)>=80; 11k-node graph + depth=3 from 21 roots reaches 80+ already
   why-redundant=traversal from CP1-CP6+ID1-ID14 at depth=3 covers the graph; supplement was designed for sparse new instances
+
+G-NE-LOOP1|ne-consolidation-loop-indefinite|closed=2026-03-22
+  was=_deep_consolidation_pass() completed but _last_consolidation_ts never set; is_consolidation_eligible() immediately re-qualified → infinite consolidation loop
+  fix=set self._last_consolidation_ts=time.monotonic() at end of pass; check in is_consolidation_eligible() blocks re-run until another full idle period
+  activated=Igor restart 2026-03-22
+
+G-WORKER-INJECT1|xdotool-worker-injection-fragile|closed=2026-03-22
+  was=worker orchestration via xdotool type+Return injection; required X display, timing sleep, and PROC_WORKER_FOREMAN habit (never seeded); chain broke silently
+  fix=worker_daemon.sh bash loop polls queue every 20s; runs claude /sprint <id> as fresh process per ticket; no xdotool; cc_queue.py worker-launch ensures daemon running
+  result=workers self-chain reliably; no Igor dependency in critical path
+
+G-WIN1|reading-integrator-windows-crash|open
+  was=reading_integrator.py exit 1 at line 423 on Windows; likely path separator or dependency issue
+  ticket=T-reading-integrator-windows (S, in queue)
