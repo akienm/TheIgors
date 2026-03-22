@@ -23,6 +23,7 @@ import json
 import os
 import ssl
 import sys
+import time
 import urllib.request
 from datetime import datetime, timezone
 
@@ -357,6 +358,7 @@ def cmd_worker_launch(args):
                 f"/sprint {ticket_id}",
             ]
         )
+        time.sleep(0.3)  # let terminal process typed text before sending Return
         subprocess.run(["xdotool", "key", "--window", wid, "Return"])
         pids[ticket_id] = {
             "konsole_pid": konsole_pid,
@@ -420,6 +422,7 @@ def cmd_inject(args):
         sys.exit(1)
     wid = wids[-1]  # use last window (most recently created)
     subprocess.run(["xdotool", "type", "--window", wid, "--clearmodifiers", text])
+    time.sleep(0.3)  # let terminal process typed text before sending Return
     subprocess.run(["xdotool", "key", "--window", wid, "Return"])
     print(f"Injected into {ticket_id} (window {wid}): {text!r}")
 
