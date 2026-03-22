@@ -15,8 +15,8 @@ Usage:
     cc_queue.py log <msg>                     — append a free-form log entry
     cc_queue.py flush_decision <id> <summary> — flush decision to Igor memory
     cc_queue.py flush_session <session> <summary> — flush session blob to Igor memory
-    cc_queue.py worker-launch <ticket-id>         — launch a worker konsole and record its PID
-    cc_queue.py inject <ticket-id> <text>         — send keystrokes to worker terminal via xdotool
+    cc_queue.py worker-launch                     — ensure worker daemon is running (spawns konsole if not)
+    cc_queue.py inject <ticket-id> <text>         — deprecated; use worker-launch instead
 """
 
 import json
@@ -276,6 +276,8 @@ def cmd_flush_session(args):
 
 
 WORKER_PIDS_PATH = os.path.expanduser("~/.TheIgors/cc_channel/worker_pids.json")
+DAEMON_PID_FILE = os.path.expanduser("~/.TheIgors/cc_channel/worker_daemon.pid")
+DAEMON_SCRIPT = os.path.expanduser("~/TheIgors/claudecode/worker_daemon.sh")
 
 
 def _load_worker_pids():
@@ -289,6 +291,18 @@ def _save_worker_pids(pids):
     os.makedirs(os.path.dirname(WORKER_PIDS_PATH), exist_ok=True)
     with open(WORKER_PIDS_PATH, "w") as f:
         json.dump(pids, f, indent=2)
+
+
+def _daemon_alive():
+    """Return daemon PID if running, else None."""
+    if not os.path.exists(DAEMON_PID_FILE):
+        return None
+    try:
+        pid = int(open(DAEMON_PID_FILE).read().strip())
+        os.kill(pid, 0)
+        return pid
+    except (ValueError, ProcessLookupError, PermissionError):
+        return None
 
 
 def cmd_notify_igor(args):
@@ -313,63 +327,21 @@ def cmd_notify_igor(args):
 
 
 def cmd_worker_launch(args):
-    """Launch a worker konsole for a ticket, reusing an existing window if one is live."""
-    import os
+    """Ensure the worker daemon is running. Spawns a konsole if not already alive.
+
+    The daemon (worker_daemon.sh) polls the queue and runs /sprint for each
+    pending ticket automatically — no xdotool injection needed.
+    Ticket-id argument is accepted but ignored (daemon finds next pending itself).
+    """
     import subprocess
 
-    if not args:
-        print("Usage: worker-launch <ticket-id>")
-        sys.exit(1)
-    ticket_id = args[0]
-
-    # Try to reuse an existing live konsole window whose previous ticket is done.
-    # Claude stays open after a sprint completes — inject /sprint directly into it.
-    pids = _load_worker_pids()
-    queue_tasks = _load()
-    queue_status = {t["id"]: t["status"] for t in queue_tasks}
-    for prev_ticket, entry in list(pids.items()):
-        konsole_pid = entry.get("konsole_pid")
-        if not konsole_pid:
-            continue
-        # Only reuse if the previous ticket finished
-        if queue_status.get(prev_ticket) == "in_progress":
-            continue
-        try:
-            os.kill(konsole_pid, 0)  # raises if dead
-        except (ProcessLookupError, PermissionError):
-            continue
-        # Process alive and previous ticket done — inject /sprint into the running Claude
-        result = subprocess.run(
-            ["xdotool", "search", "--pid", str(konsole_pid)],
-            capture_output=True,
-            text=True,
+    pid = _daemon_alive()
+    if pid:
+        print(
+            f"Worker daemon already running (PID {pid}) — will pick up next pending ticket automatically."
         )
-        wids = result.stdout.strip().splitlines()
-        if not wids:
-            continue
-        wid = wids[-1]
-        subprocess.run(
-            [
-                "xdotool",
-                "type",
-                "--window",
-                wid,
-                "--clearmodifiers",
-                f"/sprint {ticket_id}",
-            ]
-        )
-        time.sleep(0.3)  # let terminal process typed text before sending Return
-        subprocess.run(["xdotool", "key", "--window", wid, "Return"])
-        pids[ticket_id] = {
-            "konsole_pid": konsole_pid,
-            "launched_at": datetime.now(timezone.utc).isoformat(),
-            "reused_from": prev_ticket,
-        }
-        _save_worker_pids(pids)
-        print(f"Reused konsole PID {konsole_pid} (was {prev_ticket}) for {ticket_id}")
         return
 
-    # No live window found — spawn a new konsole
     proc = subprocess.Popen(
         [
             "konsole",
@@ -377,54 +349,25 @@ def cmd_worker_launch(args):
             "-e",
             "bash",
             "-c",
-            (
-                f"source ~/TheIgors/venv/bin/activate && "
-                f"export WORKER_TICKET={ticket_id} && "
-                f"claude --dangerously-skip-permissions "
-                f'"/sprint {ticket_id}"; exec bash'
-            ),
+            f"bash {DAEMON_SCRIPT}; exec bash",
         ],
         start_new_session=True,
     )
-    pids[ticket_id] = {
+    pids = _load_worker_pids()
+    pids["daemon"] = {
         "konsole_pid": proc.pid,
         "launched_at": datetime.now(timezone.utc).isoformat(),
     }
     _save_worker_pids(pids)
-    print(f"Launched worker for {ticket_id} — konsole PID {proc.pid}")
-    print(f"Recorded in {WORKER_PIDS_PATH}")
+    print(f"Launched worker daemon — konsole PID {proc.pid}")
 
 
 def cmd_inject(args):
-    """Send keystrokes to a worker terminal via xdotool."""
-    import subprocess
-
-    if len(args) < 2:
-        print("Usage: inject <ticket-id> <text>")
-        sys.exit(1)
-    ticket_id = args[0]
-    text = " ".join(args[1:])
-    pids = _load_worker_pids()
-    entry = pids.get(ticket_id)
-    if not entry:
-        print(f"No worker PID recorded for {ticket_id}. Run worker-launch first.")
-        sys.exit(1)
-    konsole_pid = entry["konsole_pid"]
-    # Find the window ID for this konsole process
-    result = subprocess.run(
-        ["xdotool", "search", "--pid", str(konsole_pid)], capture_output=True, text=True
+    """Deprecated: xdotool injection replaced by worker daemon. Kept for emergencies."""
+    print(
+        "cmd_inject is deprecated — worker daemon handles orchestration without xdotool."
     )
-    wids = result.stdout.strip().splitlines()
-    if not wids:
-        print(
-            f"No xdotool window found for konsole PID {konsole_pid}. Is it still running?"
-        )
-        sys.exit(1)
-    wid = wids[-1]  # use last window (most recently created)
-    subprocess.run(["xdotool", "type", "--window", wid, "--clearmodifiers", text])
-    time.sleep(0.3)  # let terminal process typed text before sending Return
-    subprocess.run(["xdotool", "key", "--window", wid, "Return"])
-    print(f"Injected into {ticket_id} (window {wid}): {text!r}")
+    print("Use 'worker-launch' to ensure the daemon is running.")
 
 
 COMMANDS = {
