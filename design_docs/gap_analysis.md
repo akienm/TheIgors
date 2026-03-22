@@ -1135,3 +1135,17 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 **New gaps (open):**
 
 - **G-HAB-TRIGGER1** (open): Habit trigger matching is pure substring scan — any input containing a trigger word fires the habit regardless of intent. Causes misfires (wrong habit fires) and loop halts (bad habit terminates turn). D201 proposed: structured preparse conditions `{intent, entities, complexity}` matched against thalamus output instead of raw text. Timeout watchdog (habit execution hard timeout → loop continues) proposed as independent floor. Igor designed both; tickets pending from session 2026-03-21b.
+
+---
+
+### Session 2026-03-21d — Bug sweep
+
+**Gaps closed:**
+
+- **G-LOG2 ~~CLOSED~~**: `log_error` not imported at module level in `ebook_reader.py` — same class of bug as G-LOG1 but missed in that sweep. Used throughout for exception handling but never imported; every error path would itself raise `NameError`, masking the original error. Fixed: `from ..cognition.forensic_logger import log_error` added to imports. Igor filed #329 while fix was being shipped; closed immediately.
+
+- **G-DB-PROXY1 ~~CLOSED~~**: db_proxy does blanket `sql.replace("?", "%s")` for psycopg2 parameter translation. PostgreSQL's jsonb key-exists operator is also `?` (e.g., `metadata ? 'trigger'`), so it was incorrectly translated to a parameter placeholder with no corresponding parameter → `IndexError: tuple index out of range` on every boot. Root cause: GIN index optimization in `get_habits()` switched from `jsonb_exists(metadata, 'trigger')` to `metadata ? 'trigger'` without accounting for the blanket translation. Fixed by reverting to `jsonb_exists()` form which is unambiguous.
+
+- **G-QP6 ~~CLOSED~~**: `cortex.search()` supplement scan fetched up to 300 wide rows (`ORDER BY activation_count DESC LIMIT 300`) on every call to cover orphan nodes not reached by traversal. With 11k memories and depth=3 BFS from 21 roots (CP1-CP6 + ID1-ID14), traversal already reaches 80+ nodes — supplement was redundant for all normal queries and caused 500ms slow queries on every NE cycle (~60s). Fix: skip supplement when `len(_traversal_pool) >= _SUPPLEMENT_THRESHOLD` (80). Supplement still fires for sparse graphs (new instances, shallow traversals).
+
+*Updated: 2026-03-21d by Claude Code.*

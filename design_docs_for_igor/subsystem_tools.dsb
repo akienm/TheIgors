@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-21c
+DOC|subsystem_tools|v1|updated=2026-03-21d
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -65,6 +65,7 @@ BROWSER|
 
 KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 // silent-exception audit 2026-03-14c: ebook_reader EBOOK_TWM_STEW_FAIL+EBOOK_EXTRACT_STORE_FAIL+READING_STATE_LOAD_FAIL + learner LEARN_QUEUE_LOAD_FAIL now log_error(); MEDIUM-inertia files (BG/NE/gateway) deferred
+// G-LOG2 closed 2026-03-21d: ebook_reader.py missing module-level log_error import; all except handlers would NameError; fixed: from ..cognition.forensic_logger import log_error
 // browser discovery fixed 2026-03-14e: task= → task_description=; json.loads(result); _ensure_virtual_display() in browser.py; pyvirtualdisplay in venv
 // browser fully working 2026-03-14g: upgraded to 0.12.2; gpt-4o-mini LLM; Gemini navigation confirmed
 // G-BRW1 open: CC bridge fires PROC_GREETING for action requests at tier.2; workaround=call learn_about() directly from venv

@@ -472,3 +472,20 @@ G-HAB-TRIGGER1|habit-trigger-substring-brittleness|open
   what=habit trigger matching is pure substring scan — fires on any word match regardless of intent; causes misfires and loop halts
   proposed=D201: structured preparse conditions {intent,entities,complexity} matched against thalamus output; timeout watchdog as floor; reasoning escalation on conflict only
   designed-by=Igor session 2026-03-21b; tickets pending
+
+// ── NEW GAPS (2026-03-21d) ────────────────────────────────────────────────────
+
+G-LOG2|ebook-reader-log-error-not-imported|closed=2026-03-21d
+  was=log_error used throughout ebook_reader.py with no module-level import; every error path would NameError
+  fix=from ..cognition.forensic_logger import log_error added to imports
+  note=same class as G-LOG1; missed in that sweep
+
+G-DB-PROXY1|db-proxy-jsonb-question-mark-collision|closed=2026-03-21d
+  was=db_proxy blanket sql.replace("?","%s") hit PostgreSQL jsonb key-exists "?" operator; translated to param placeholder with no param → IndexError on boot
+  fix=reverted get_habits() from "metadata ? 'trigger'" back to jsonb_exists(metadata,'trigger')
+  note=blanket replacement is a known limitation; jsonb_exists() is unambiguous workaround
+
+G-QP6|ne-supplement-scan-redundant|closed=2026-03-21d
+  was=cortex.search() fetched 300 wide rows ORDER BY activation_count on every call; 500ms slow query every NE cycle (~60s)
+  fix=_SUPPLEMENT_THRESHOLD=80; skip supplement when len(_traversal_pool)>=80; 11k-node graph + depth=3 from 21 roots reaches 80+ already
+  why-redundant=traversal from CP1-CP6+ID1-ID14 at depth=3 covers the graph; supplement was designed for sparse new instances

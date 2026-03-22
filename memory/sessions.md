@@ -1,3 +1,8 @@
+## Session 2026-03-21d
+**Theme**: Bug sweep: ebook_reader log_error + boot crash + NE supplement scan removal
+**Next session**: 1. Verify NE slow queries gone (monitor Igor logs after restart with 0fe15f1); 2. T-trails-infra design pass with Igor — trail metadata table, first-class trail objects
+**In-flight**: Verify supplement scan fix eliminated 500ms NE cycle queries — fix shipped but not yet confirmed in live Igor
+
 ## Session 2026-03-21c
 **Theme**: D201 preparse habit dispatch schema + unblock T-pipeline-arch
 **Key changes**:
@@ -7,6 +12,7 @@
 - sprint: closed T-swarm-update — ssh_exec_all() + update_swarm() tool + PROC_SWARM_UPDATE habit
 - sprint: started T-night-consolidation
 - sprint: closed T-night-consolidation — NE idle detection + deep offline consolidation pass (#310)
+- sprint: started 330 — T-habit-schema: habits as data
 **Next session**: Next: T-trails-infra design pass with Igor — trail metadata table (trail_id, start_time, context, purpose) to make trails first-class; then worker. Then #308 (word graph bridge) needs design.
 **In-flight**: T-trails-infra: waiting on Igor's read of what the trails table is missing vs what's already built (tails+trail_id+Hebbian all exist)
 
