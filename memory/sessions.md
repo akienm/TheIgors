@@ -1,3 +1,16 @@
+## Session 2026-03-21g
+**Theme**: Design sprint: T-trails-infra DDL, T-interoception, T-inference-colocation, #308, #334, #335 design docs
+**Key changes**:
+- design: T-trails-infra.csb.txt — DDL for trail_metadata + trail_activations + twm_obs_id join; phantom tails migration fix; three temporal systems design
+- design: T-interoception.csb.txt — ResourceMonitorSource continuous VAD gradient; alpha_override=0.05; 3-min rolling window; interoception as first-class milieu signal
+- design: T-inference-colocation-signal.csb.txt — colocated Ollama+DB detection; soft routing penalty when CPU>70%; IGOR_COLOCATION_AWARE gate
+- design: issue-308.csb.txt — WG↔memory bridge; WG predictions seed Phase1 candidates; NE promotions train WG; IGOR_WG_SEARCH_SEEDING gate
+- design: issue-334.csb.txt — IgorBase universal logging; manual log_step at decision points; ring_memory primary sink; decorator overhead benchmark required
+- design: issue-335.csb.txt — start_at field on memories; temporal anchoring distinct from storage timestamp; HIGH-inertia touch on models.py
+- queue: T-test-debt-tooling added (S) — tests for session_manager.py + decision_manager.py
+**Next session**: 1. Akien review T-trails-infra + T-interoception + T-colocation designs; 2. launch workers for approved tickets; 3. T-test-debt-tooling (S, no design needed)
+**In-flight**: NONE — design sprint complete; all docs written; no code in-flight
+
 ## Session 2026-03-21f
 **Theme**: Sprint: T-trail-training Hebbian edge strengthening
 **Key changes**:

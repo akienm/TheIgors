@@ -503,3 +503,8 @@ G-WORKER-INJECT1|xdotool-worker-injection-fragile|closed=2026-03-22
 G-WIN1|reading-integrator-windows-crash|open
   was=reading_integrator.py exit 1 at line 423 on Windows; likely path separator or dependency issue
   ticket=T-reading-integrator-windows (S, in queue)
+
+// Session 2026-03-21g — design sprint: no gaps closed, 6 design docs produced
+// T-trails-infra.csb.txt, T-interoception.csb.txt, T-inference-colocation-signal.csb.txt
+// issue-308.csb.txt, issue-334.csb.txt, issue-335.csb.txt
+// T-test-debt-tooling queued (S, worker-ready)

@@ -1,0 +1,49 @@
+DOC|issue-334|v1|date=2026-03-22
+STATUS|design-first|size=L|priority=5|ticket=#334
+TITLE|IgorBase universal logging / forensic tracing
+RELATES|subsystem_memory.dsb, subsystem_cognition.dsb
+
+PROBLEM|
+  Forensic logging is inconsistent across modules. Some tools log to db_queries.log,
+  some to ring_memory, some nowhere. Hard to trace what Igor did on any given turn
+  without grepping multiple files. Decision-point visibility is poor.
+
+DESIGN|
+  IgorBase: a base class (or mixin) for all Igor subsystem classes.
+  Provides:
+    - log_step(tag, payload) — structured per-turn log entry, ring_memory + optional file
+    - log_decision(tag, payload) — logs a branch point (habit fired, tier chosen, etc.)
+    - log_error(tag, exc, payload) — logs exception with turn context
+  All methods auto-inject: turn_id, instance_id, thread_id, timestamp.
+
+DECORATOR_DEPTH_TEST|
+  Considered: @log_call decorator on every method to auto-log entries.
+  Problem: decorator depth adds latency on hot paths (BG scoring, milieu update, thalamus).
+  Decision: manual log_step() calls at semantic decision points only, not auto-wrapping.
+  Test required: benchmark decorator overhead on BG.score_habits() (≥50 habits scored/turn).
+  If overhead < 1ms total: decorator approach is fine.
+  If overhead > 1ms: stick with manual calls.
+
+RING_AS_PRIMARY|
+  ring_memory is the primary forensic log per session (FIFO-50, already wired).
+  IgorBase.log_step writes to ring with category="FORENSIC|<tag>".
+  Structured payload in content field (JSON blob).
+  No new table needed for basic logging.
+
+FILE_SINK|
+  For slow-query equivalent (decisions, tier changes, habit fires):
+    ~/.TheIgors/logs/decisions.log — tab-separated: ts turn=X tag=X payload=...
+  Same format as db_queries.log. Append-only. No rotation in v1.
+
+INERTIA|LOW — new base class, no changes to HIGH-inertia files
+IMPLEMENTATION_NOTE|
+  Rollout: wire IgorBase to tools/ first (low inertia), then cognition/ modules.
+  Do NOT touch memory/models.py or brainstem/ as part of this ticket.
+
+OPEN_QUESTIONS|
+  Q1: Should IgorBase replace DatabaseProxy's timing hooks or complement them?
+      Answer: complement — db_proxy handles DB timing; IgorBase handles semantic decisions.
+  Q2: Does this belong in a new file (igorbase.py) or extend an existing base?
+      Answer: new file in wild_igor/igor/igorbase.py — keep it separate from brainstem.
+
+WORKER_READY|after design review + decorator benchmark decision

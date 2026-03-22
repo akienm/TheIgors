@@ -1165,3 +1165,22 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **G-WIN1** (open): `reading_integrator.py` crashes on Windows (exit 1, traceback at line 423). Likely path separator or dependency issue on Windows Python. Ticket: T-reading-integrator-windows (S-size, in queue).
 
 *Updated: 2026-03-22 by Claude Code.*
+
+---
+
+### Session 2026-03-21g — Design sprint (post-Akien signoff)
+
+**Gaps closed:** none (design-only session)
+
+**Design docs produced:**
+
+- `T-trails-infra.csb.txt`: DDL for trail_metadata + trail_activations tables; phantom tails migration fix (ALTER TABLE for missing trail_id/sequence_pos); TWM→trail join via twm_obs_id; three temporal systems (milieu/TWM/tails) unified view. Pending Akien approval before worker.
+- `T-interoception.csb.txt` (companion to D336): ResourceMonitorSource continuous VAD gradient; alpha_override=0.05; 3-min rolling window. Pending Akien approval.
+- `T-inference-colocation-signal.csb.txt`: Ollama+DB colocation detection; soft routing penalty when colocated+CPU>70%; IGOR_COLOCATION_AWARE gate. S-size.
+- `issue-308.csb.txt`: WG memory bridge — WG predictions seed Phase1 candidates; NE promotions train WG; IGOR_WG_SEARCH_SEEDING gate. L-size, design-first.
+- `issue-334.csb.txt`: IgorBase universal logging — manual log_step at semantic decision points; ring_memory primary sink; decorator overhead benchmark required. L-size.
+- `issue-335.csb.txt`: start_at field on memories — temporal anchoring distinct from storage timestamp; HIGH-inertia touch on models.py requires Akien review. L/XL-size.
+
+**Queue additions:** T-test-debt-tooling (S) — tests for session_manager.py + decision_manager.py.
+
+*Updated: 2026-03-22 by Claude Code.*

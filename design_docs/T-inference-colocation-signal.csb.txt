@@ -1,0 +1,48 @@
+DOC|T-inference-colocation-signal|v1|date=2026-03-22
+STATUS|design-complete|size=S|priority=8|ticket=T-inference-colocation-signal
+DEPENDS|T-interoception (companion signal)
+RELATES|#336 T-interoception, subsystem_inference.dsb
+
+PROBLEM|
+  When local Ollama and the DB run on the same box, inference GPU/CPU competes directly
+  with DB I/O. ResourceMonitorSource already detects this as "colocated_load" (T-interoception).
+  But inference_gateway.py doesn't know — it still happily routes to local Ollama, making things worse.
+
+DESIGN|
+  Two-part fix:
+  1. Detection function in inference_gateway.py (or cloud_mode.py)
+  2. Routing penalty applied when colocated and loaded
+
+DETECTION|
+  def _resolve(host):
+      try: return socket.gethostbyname(host)
+      except OSError: return host
+
+  def is_ollama_colocated_with_db():
+      ollama_host = os.getenv("OLLAMA_HOST", "localhost").split(":")[0]
+      db_url = os.getenv("IGOR_HOME_DB_URL", "")
+      db_host = _parse_pg_host(db_url) if db_url else "localhost"
+      return _resolve(ollama_host) == _resolve(db_host)
+
+  _parse_pg_host: extract host from postgresql://user:pass@HOST/dbname
+  SQLite path = always local, so is_colocated = True when IGOR_HOME_DB_URL unset
+
+ROUTING_CHANGE|
+  In InferenceGateway or machine ranking in cluster_router.py:
+  if is_ollama_colocated_with_db() and _current_cpu_load() > 0.70:
+      # deprioritize local; prefer OR or cluster remote
+      skip_local = True
+
+  Do NOT block local entirely — fallback if OR unavailable.
+  Soft preference, not hard gate.
+
+GATE|IGOR_COLOCATION_AWARE (default=true) — env var to disable if needed
+
+OPEN_QUESTIONS|
+  Q1: Does this live in cloud_mode.py (affects _cloud_ok) or inference_gateway.py (affects tier routing)?
+      Answer: inference_gateway.py — it's a tier routing concern not a cloud gate concern.
+  Q2: CPU load threshold — use ResourceMonitorSource's rolling average or psutil.cpu_percent()?
+      Answer: psutil.cpu_percent(interval=0.1) for freshness; rolling average is for milieu, not routing.
+
+DECISION|no D-number yet — S-size, decision embedded in ticket
+WORKER_READY|yes — after Akien approval

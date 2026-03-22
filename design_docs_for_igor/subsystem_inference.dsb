@@ -53,3 +53,11 @@ CLOUD_OK_OVERRIDE|D071
 AGENTIC_TURNS|IGOR_MAX_TURNS env; 0=unlimited (for reading sessions); default 8; D187
 KNOWN_FAILURES|F003(IMPULSE_SKIP),F004(cloud-mode-disabled),F005(tier-model-inversion),F006(gateway-attr-error)
 DECISIONS|D015,D023,D025,D026,D031,D032,D033,D034,D035,D039,D040,D041,D053,D071,D187,D188,D206
+
+COLOCATION_SIGNAL|T-inference-colocation-signal|design-complete=2026-03-22
+  purpose=deprioritize local Ollama when it shares a box with the DB under load
+  detection=compare OLLAMA_HOST vs IGOR_HOME_DB_URL host after DNS resolution
+  routing=if colocated and psutil.cpu_percent(interval=0.1)>0.70: skip_local=True (soft preference)
+  gate=IGOR_COLOCATION_AWARE=true (default)
+  lives-in=inference_gateway.py (tier routing concern, not cloud gate)
+  doc=design_docs/T-inference-colocation-signal.csb.txt

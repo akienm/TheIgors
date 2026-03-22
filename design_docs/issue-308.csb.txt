@@ -1,0 +1,67 @@
+DOC|issue-308|v1|date=2026-03-22
+STATUS|design-first|size=L|priority=6|ticket=#308
+TITLE|Word-graph <-> memory bridge: embedding-proximity join
+RELATES|subsystem_memory.dsb (cortex.search), subsystem_cognition.dsb (word_graph)
+RELATES|MEMORY.md (Matrix IS the embedding space section), project_trails_and_gradients.md
+
+PROBLEM|
+  word_graph.py and cortex.py are parallel systems with no bridge.
+  WG knows about token co-occurrence and generation probability.
+  Cortex knows about semantic memory nodes with 768-D embeddings.
+  Search uses both separately: WG for habit scoring, cosine rerank for memory.
+  They should inform each other — a WG path through token space = a traversal
+  through meaning dimensions = a compressed trail through the embedding space.
+
+KEY_INSIGHT|
+  A memory's embedding vector IS a terminus of a path through the word-graph space.
+  Cosine similarity between two memories = overlap of their paths through that space.
+  The word graph is a discretized/lossy approximation of what embeddings capture exactly.
+  Bridge direction: use WG to seed cortex.search() candidates; use embedding cosine to rerank.
+  This is already half-done (cortex.search Phase1=text → Phase2=cosine) — the gap is
+  feeding WG predictions into Phase1 candidate generation.
+
+DESIGN|
+  Two integration points:
+
+  1. WG → memory search seeding:
+     Before Phase1 text keyword match, call word_graph.predict_next(query_tokens).
+     Take top-N predicted tokens as supplementary search terms.
+     Merge with Phase1 candidates (deduplicate by memory ID).
+     Effect: memory search becomes graph-aware, not just keyword-aware.
+
+  2. Memory embedding → WG training signal:
+     After LTM promotion (importance ≥ 0.7 in NE), extract noun phrases from narrative.
+     Index those phrases into word_graph via index_text_into_word_graph().
+     Effect: memory graph and word graph co-evolve as Igor learns.
+     Already partially done (training_corpus.py), but not wired to NE promotions.
+
+TRAIL_CONNECTION|
+  Trails (T-trails-infra) make this concrete:
+  A trail through memories = a path through embedding space.
+  Hot trails = frequently-traversed paths = strong word-graph bigrams.
+  Future: use trail heat to strengthen WG bigrams (same gradient signal).
+  This ticket is a prerequisite to that future step.
+
+EMBEDDING_PROXIMITY_JOIN|
+  Candidate API: cortex.search_by_wg_proximity(query, wg_candidates, top_k)
+  1. get_embedding(query) via nomic-embed-text
+  2. predict_next(tokenize(query)) → top-10 WG tokens → expand to candidate memories
+  3. cosine rerank against both keyword-matched and WG-seeded candidates
+  4. return merged top-K
+
+INERTIA|MEDIUM — touches cortex.search() (MEDIUM) and word_graph.py (LOW)
+  Must not break existing Phase1→Phase2 search path.
+  Feature-flagged: IGOR_WG_SEARCH_SEEDING=false default.
+
+SIZE_NOTE|L — involves embedding calls + WG prediction + candidate merge logic
+  Phase 1 (WG seeding) is separable from Phase 2 (NE promotion wiring).
+  Recommend: implement Phase 1 first, validate quality improvement, then Phase 2.
+
+OPEN_QUESTIONS|
+  Q1: How many WG tokens to feed into supplementary search?
+      Answer: top-5 predictions, skip if flatness > 0.85 (graph uncertain).
+  Q2: Does WG seeding add latency to interactive queries?
+      Answer: predict_next is in-memory, <1ms. Only risk is candidate explosion in Phase1.
+      Mitigate: cap WG-seeded candidates at 50 (vs 300 base limit).
+
+WORKER_READY|after Akien approval of design approach

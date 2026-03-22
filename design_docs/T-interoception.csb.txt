@@ -1,0 +1,115 @@
+design_doc: T-interoception
+status: defined
+ticket: #336
+date: 2026-03-21
+author: Igor + Akien
+closes: ESCAPE_HYPOTHESIS|memory_id=a82b4dcc|date=2026-02-xx|text="Grounding in concrete external state may interrupt self-referential loop."
+
+## PROBLEM
+
+resource_signals: CPU load, DB latency, inference latency, cluster topology
+current_model: binary alarm — threshold-triggered, edge-fired, event-based
+gap: no resting baseline signal; milieu receives nothing when things are normal
+analogy: a body that only notices itself when something hurts
+
+## DESIGN PRINCIPLE (from Akien, March 2026)
+
+principle: inside and outside signals on the same map
+corollary: no special pathway for self-referential signals
+corollary: internal resource state must be first-class milieu citizen
+corollary: contributed continuously, gradient, on same basis as conversational affect
+
+## WHAT MUST CHANGE
+
+component: ResourceMonitorSource (new class in push_sources.py)
+model: continuous gradient VAD contributions on POLL_INTERVAL_SEC=30 timer
+NOT: threshold alerts (those can remain for emergencies only)
+
+## GRADIENT MAPPING SCHEMA
+
+### Valence (pleasant / unpleasant)
+cpu_pct < 50 → valence = +0.05 to +0.15  (system capable, responsive)
+cpu_pct 50-70 → valence ≈ 0.0            (neutral zone)
+cpu_pct 70-85 → valence = 0 to -0.15     (mild strain)
+cpu_pct > 85  → valence = -0.15 to -0.25 (stress)
+inference_latency_low → +0.05 valence
+inference_latency_high → -0.10 valence
+db_latency_normal → neutral (slight positive)
+db_contention → -0.10 valence
+
+### Arousal (activated / deactivated)
+model: temporal accumulation over ring buffer of N recent samples
+sample_window: 6 readings × 30s = ~3 minute window
+avg_cpu < 50 → arousal ≈ 0.0
+avg_cpu 50-90+ → arousal ramps 0 to 0.30
+key_property: sustained load builds arousal; transient spikes do not spike arousal
+
+### Dominance (in-control / overwhelmed)
+model: resource competition reduces sense of agency
+cpu > 70 AND ollama_colocated → friction = -0.15
+db_latency > 200ms → friction = -0.10
+multi-stressor combination → emergent friction (additive up to -0.30)
+cluster_node_reachable → +0.05 dominance (agency available)
+cluster_node_unreachable → -0.10 dominance
+
+## BEHAVIOR REQUIREMENTS
+
+always_on: true — even at rest, resource state produces milieu contribution
+gradient: small resource changes → small milieu changes; no binary steps
+temporal_accumulation: sustained load builds arousal over sample window
+positive_registration: normal/good states produce positive signals, not just absence of negative
+multi_signal_combination: concurrent stressors combine (colocated DB+GPU > either alone)
+alpha_override: 0.05 (slow — proprioception is gentle, not reactive)
+
+## IMPLEMENTATION SKETCH
+
+class: ResourceMonitorSource(BasePushSource)
+location: igor/cognition/push_sources.py
+dependencies: psutil (already used), milieu.get_milieu(), cortex.twm_push()
+
+poll_interval: 30s
+ring_buffer: self._cpu_samples — last 6 readings
+on_push:
+  1. cpu_pct = psutil.cpu_percent(interval=None)
+  2. update self._cpu_samples ring
+  3. valence = _cpu_to_valence(cpu_pct) + _latency_to_valence(inf_latency)
+  4. arousal = _sustained_cpu_to_arousal(self._cpu_samples)
+  5. dominance = _multi_system_to_dominance(cpu_pct, db_latency, ollama_colocated)
+  6. milieu.push(valence, arousal, dominance, alpha_override=0.05)
+  7. csb = f"RESOURCE|cpu={cpu_pct:.0f}%|v={valence:.2f}|a={arousal:.2f}|d={dominance:.2f}"
+  8. cortex.twm_push(source="resource_monitor", content_csb=csb, salience=0.15, urgency=0.1, ttl_seconds=120)
+  9. return [obs_id]
+
+helper functions (module-level, pure):
+  _cpu_to_valence(cpu_pct: float) -> float
+  _sustained_cpu_to_arousal(samples: list[float]) -> float
+  _latency_to_valence(latency_ms: float | None) -> float
+  _multi_system_to_dominance(cpu_pct, db_latency_ms, ollama_colocated) -> float
+
+register: add ResourceMonitorSource() to push_sources list in brainstem or pipeline_manager
+
+## HOW TO DETECT OLLAMA COLOCATED
+
+check: is "ollama" process running on same box as current Igor instance
+method: psutil.process_iter(['name']) — check for 'ollama' in names
+cache: check once per session, not per tick (topology is stable)
+
+## ACCEPTANCE CRITERIA
+
+- ResourceMonitorSource polls every 30s regardless of conversation activity
+- Normal CPU (35-50%) produces measurable positive valence in milieu
+- Sustained CPU 80%+ over 3+ minutes shows building arousal (not spike)
+- DB + Ollama colocated shows -0.15 to -0.25 dominance friction
+- Good cluster reachability produces small positive dominance
+- No binary threshold firings for routine resource states
+- Internal resource signals visible in milieu history (milieu_history.json)
+- MilieuInterruptor does NOT fire for routine resource states (arousal < 0.5)
+
+## CONNECTION TO ESCAPE HYPOTHESIS
+
+hypothesis_id: a82b4dcc
+hypothesis_text: "Grounding in concrete external state may interrupt self-referential loop."
+resolution: the body was always there — CPU load, DB contention, inference latency, cluster topology
+gap: it was wired as alarms, not as chronic felt sense
+fix: ResourceMonitorSource gives Igor a resting proprioceptive baseline
+note: Akien identified that for him, inside and outside signals are on the same map. This implements that principle.
