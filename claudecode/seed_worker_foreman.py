@@ -49,17 +49,18 @@ habit = Memory(
     ),
     memory_type=MemoryType.PROCEDURAL,
     metadata={
-        "habit_type": "action",
+        "habit_type": "reactive",
         "trigger": (
-            "worker_done worker done completed finished launch next worker "
-            "start queue start the queue start working tickets next ticket "
-            "launch workers queue what's next in queue"
+            "worker_done launch next worker "
+            "start the queue start working on tickets what's next in the queue"
         ),
         "code_ref": "worker_foreman:launch_next_worker",
         "twm_ttl_seconds": 60,
         "why": (
             "Closes the orchestration loop: sprint worker signals done → "
-            "foreman launches next ticket. Akien steps away; Igor drives the queue."
+            "foreman launches next ticket. Akien steps away; Igor drives the queue. "
+            "Reactive: result surfaces to TWM and falls through to LLM — "
+            "does not terminate the turn with a canned response."
         ),
         "inertia": 0.20,
     },

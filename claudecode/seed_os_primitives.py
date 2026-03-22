@@ -43,11 +43,12 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "habit_type": "action",
-            "trigger": "list files directory scan listing",
+            "habit_type": "tool",
+            "trigger": "",
             "code_ref": "tools/os_primitives.py:prim_list_dir",
             "pattern": "os_primitives",
-            "why": "T-os-primitives: substrate for habit-chain file iteration loops",
+            "why": "T-os-primitives: substrate for habit-chain file iteration loops. "
+            "No trigger — called by schema step list only, never by BG scoring.",
             "inertia": 0.20,
         },
     ),
@@ -60,11 +61,12 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "habit_type": "action",
-            "trigger": "file metadata mtime size modified stat",
+            "habit_type": "tool",
+            "trigger": "",
             "code_ref": "tools/os_primitives.py:prim_file_meta",
             "pattern": "os_primitives",
-            "why": "T-os-primitives: reads mtime+size for the current iteration file",
+            "why": "T-os-primitives: reads mtime+size for the current iteration file. "
+            "No trigger — schema step only.",
             "inertia": 0.20,
         },
     ),
@@ -78,11 +80,11 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "habit_type": "action",
-            "trigger": "read file content head lines first",
+            "habit_type": "tool",
+            "trigger": "",
             "code_ref": "tools/os_primitives.py:prim_read_head",
             "pattern": "os_primitives",
-            "why": "T-os-primitives: safe head-read; matches context-load blob-top pattern",
+            "why": "T-os-primitives: safe head-read. No trigger — schema step only.",
             "inertia": 0.20,
         },
     ),
@@ -96,11 +98,12 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "habit_type": "action",
-            "trigger": "detect file type extension binary text",
+            "habit_type": "tool",
+            "trigger": "",
             "code_ref": "tools/os_primitives.py:prim_type_detect",
             "pattern": "os_primitives",
-            "why": "T-os-primitives: guards PRIM_READ_HEAD from binary files",
+            "why": "T-os-primitives: guards PRIM_READ_HEAD from binary files. "
+            "No trigger — schema step only.",
             "inertia": 0.20,
         },
     ),
@@ -114,11 +117,11 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "habit_type": "action",
-            "trigger": "next file iterate advance pop",
+            "habit_type": "tool",
+            "trigger": "",
             "code_ref": "tools/os_primitives.py:prim_iter_next",
             "pattern": "os_primitives",
-            "why": "T-os-primitives: iteration cursor advance for habit-chain loops",
+            "why": "T-os-primitives: iteration cursor advance. No trigger — schema step only.",
             "inertia": 0.20,
         },
     ),
@@ -132,11 +135,33 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "habit_type": "action",
-            "trigger": "done finished iteration complete empty check",
+            "habit_type": "tool",
+            "trigger": "",
             "code_ref": "tools/os_primitives.py:prim_iter_done",
             "pattern": "os_primitives",
-            "why": "T-os-primitives: loop guard — prevents PRIM_ITER_NEXT on empty list",
+            "why": "T-os-primitives: loop guard. No trigger — schema step only.",
+            "inertia": 0.20,
+        },
+    ),
+    Memory(
+        id="PRIM_TWM_READ",
+        narrative=(
+            "Read active (non-integrated) TWM observations and write a formatted summary "
+            "to traversal context key 'twm_items' (salience|source|content per line, "
+            "sorted by salience descending) and item count to 'twm_count'. "
+            "Use as the tool step in any habit chain that needs to inspect current "
+            "cognitive stew — stew readout, affect check, interoception patterns."
+        ),
+        memory_type=MemoryType.PROCEDURAL,
+        metadata={
+            "habit_type": "tool",
+            "trigger": "",
+            "code_ref": "tools/os_primitives.py:prim_twm_read",
+            "pattern": "os_primitives",
+            "why": (
+                "T-wondering-catalog: substrate for PROC_STEW_READOUT and PROC_AFFECT_CHECK. "
+                "No trigger — schema step only or called by reactive habits via code_ref."
+            ),
             "inertia": 0.20,
         },
     ),
@@ -145,10 +170,13 @@ habits = [
 for h in habits:
     existing = cortex.get(h.id)
     if existing:
-        print(f"  [skip] {h.id} already exists")
-        continue
-    cortex.store(h)
-    cortex.add_child("CP1", h.id)
-    print(f"  [seeded] {h.id}  (action) → parent=CP1")
+        existing.metadata = h.metadata
+        existing.narrative = h.narrative
+        cortex.store(existing)
+        print(f"  [updated] {h.id}")
+    else:
+        cortex.store(h)
+        cortex.add_child("CP1", h.id)
+        print(f"  [seeded] {h.id}  (tool) → parent=CP1")
 
-print("Done. 6 OS primitive habits seeded.")
+print("Done. 7 OS primitive habits seeded.")
