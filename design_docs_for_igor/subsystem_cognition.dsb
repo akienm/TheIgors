@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-22
+DOC|subsystem_cognition|v1|updated=2026-03-22a
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,tools/traversal_context.py,tools/os_primitives.py
 
@@ -105,14 +105,26 @@ TRAVERSAL_CONTEXT|tools/traversal_context.py
   ctx_set(context_id,key,value,step)|write (context_id,key)→value with optional step counter
   usage=fork habit mints context_id → passes via args → branches read/write shared slot
 
-OS_PRIMITIVES|tools/os_primitives.py
-  purpose=filesystem traversal ops wired to traversal_context; Igor can walk dirs/files via habits
-  prim_list_dir()|list files in ctx[dir] → write JSON list to ctx[files]
-  prim_file_meta()|mtime+size for ctx[current_file] → ctx[file_mtime]+ctx[file_size]
-  prim_read_head()|read first N lines of ctx[current_file] → ctx[content]
-  prim_type_detect()|detect file type for ctx[current_file] → ctx[file_type]
-  prim_iter_next()|pop first item from ctx[files] → ctx[current_file]
-  prim_iter_done()|check ctx[files] empty → ctx[done]='true'|'false'
+OS_PRIMITIVES|tools/os_primitives.py|updated=2026-03-22a
+  purpose=filesystem traversal + node + string + TWM ops wired to traversal_context
+  file_iter=prim_list_dir,prim_file_meta,prim_read_head,prim_type_detect,prim_iter_next,prim_iter_done
+  node=prim_node_create,prim_node_link,prim_node_search,prim_twm_push
+  string=prim_str_split,prim_str_regex,prim_str_format,prim_str_slice
+  twm=prim_twm_read(active TWM → ctx[twm_items] salience-sorted)
+  list_d095=prim_list_push,prim_list_pop(FIFO),prim_list_count
+  all=habit_type=tool,trigger="" — schema-runner-only, no conversational intercept
+
+INTEROCEPTION_SOURCE|cognition/push_sources.py|added=2026-03-22a|D202
+  purpose=continuous VAD gradient from machine resource state → milieu nudge + TWM (body→affect)
+  poll=30s; cpu/mem/disk via psutil
+  mapping=cpu>85→arousal↑↑+valence↓; mem>90→valence↓↓; all<30→valence↑+arousal↓(calm)
+  twm=INTEROCEPTION|cpu|mem|disk|dV|dA|dD|stress; salience=0.25+stress*0.7; ttl=60s
+  distinct_from=ResourceMonitorSource (discrete threshold alerts)
+
+SCHEDULER_SOURCE|cognition/push_sources.py|added=2026-03-22a|D203
+  purpose=fire tool-based habits (code_ref) on schedule_interval_sec; distinct from ProactiveHabitSource
+  dispatch=calls registry.get(fn_name).fn() directly → SCHEDULER_TICK to TWM salience=0.3
+  example=PROC_WORKER_FOREMAN schedule_interval_sec=60 → foreman auto-fires every 60s
 
 TEMPORAL_GRADIENT|cognition/temporal_gradient.py
   purpose=single configurable decay primitive; replaces 6 special-cased decay impls

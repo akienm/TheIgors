@@ -1,0 +1,26 @@
+DOC|issue-338|v1|updated=2026-03-22
+META|topic=Sparse/unpredictable reward signals for training feedback
+META|status=implemented
+
+PROBLEM|uniform training signals: reinforce() +0.1 flat, reinforce_text() +0.05 flat, resolution reward milieu-only
+PROBLEM|no discrimination between routine and novel habit firings — weight creep with no gradient
+
+INSIGHT|gradient_flatness() already computes prediction uncertainty [0,1]
+INSIGHT|flatness=0 → expected/routine; flatness=1 → novel/surprising — this IS the dopamine signal
+
+DECISION|D-338-A|linear surprise scale: surprise_scale(f) = 1.0 + (f * MULTIPLIER)
+DECISION|D-338-A|expected input (flatness=0) → scale=1.0, no change; novel (flatness=1.0) → scale=3.0
+DECISION|D-338-A|backward compat: gate IGOR_SURPRISE_REWARD_ENABLED=false (default) passes scale=1.0
+
+IMPL|word_graph.py|added surprise_scale(flatness) method — pure function, O(1), no DB touch
+IMPL|basal_ganglia.py|winner reinforce() now calls gradient_flatness + surprise_scale; boost=0.1*scale
+IMPL|forensic log|DEBUG when surprise > 1.5 — habit_id + flatness + scale + boost
+
+ENV_GATES|IGOR_SURPRISE_REWARD_ENABLED=false (default off; enable to activate)
+ENV_GATES|IGOR_SURPRISE_MULTIPLIER=2.0 (range for scale: [1.0, 3.0])
+
+DEFERRED|variable-ratio schedule (coinflip on reward fire): adds state, covered by magnitude scaling
+DEFERRED|LTD / negative reward on missed predictions: out of scope
+DEFERRED|resolution reward → word_graph wiring: phase 2 (needs _last_habit_winner tracking)
+
+INERTIA|word_graph.py=LOW, basal_ganglia.py=MEDIUM

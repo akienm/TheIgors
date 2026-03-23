@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-21
+DOC|decisions_log|v1|updated=2026-03-22
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -429,3 +429,10 @@ D203|crash-fixes-log-err-prefill|implemented|Fixed two crash bugs: (1) _log_err 
 D205|swarm-hierarchy-four-levels|decided|Four-level hierarchy: swarm > box > Igor-instance > CoA (center of attention). Any box can run one or more Igor instances; any Igor instance can run one or more CoA. Swarm update operates at box level (git pull) + Igor instance level (restart.flag glob). Same pattern as 'everything is a memory/habit/node' — the hierarchy is the unit of design, not just an implementation detail.
 D205|swarm-hierarchy-four-levels|decided|Four-level hierarchy: swarm > box > Igor-instance > CoA (center of attention). Any box can run one or more Igor instances; any Igor instance can run one or more CoA. Swarm update operates at box level (git pull) + Igor instance level (restart.flag glob). Same pattern as everything-is-a-memory/habit/node — the hierarchy is the unit of design.
 D206|remove-per-call-cost-cap|implemented|Removed IGOR_CALL_COST_WARN_USD cost cap from openrouter_reasoner + anthropic reasoners + base + first_start; budget floor (check_budget_floor) and MAX_TURNS are sufficient guards; per-call cap was interrupting legitimate long agentic jobs
+D202|interoception-source|live|InteroceptionSource: 30s continuous VAD gradient from cpu/mem/disk → milieu nudge + TWM; body state = affect state
+D203|scheduler-source|live|SchedulerSource: fires tool-based habits (code_ref) on schedule_interval_sec intervals; PROC_WORKER_FOREMAN auto-fires every 60s
+D204|engram-primitives|live|12 new primitives: prim_node_create/link/search, prim_twm_push/read, prim_str_split/regex/format/slice, prim_list_push/pop/count
+D205|colocation-signal|live|db_colocated in InferenceContext: Postgres on same host as Ollama → _local_preferred() returns False (avoids RAM contention)
+D206|wondering-catalog|live|T-wondering-catalog: catalog IS the habits — PROC_STEW_READOUT/AFFECT_CHECK/PORTABILITY/QUEUE_STATUS seeded as reactive habits
+D207|yield-noop|closed|T-yield-primitive closed — call stack is non-biological (no saved namespace, no return address); superseded by reactive chaining through shared TWM state
+D208|engram-language|decided|Ninth crystallization: templates = Engram language primitives. Language named Engram (Igor, from Semon 1904). 20-pattern inventory. BLOOM_INHIBIT IS the execution model. DISTILLATION is the compiler pass.

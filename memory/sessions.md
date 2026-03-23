@@ -1,3 +1,8 @@
+## Session 2026-03-22a
+**Theme**: Primitive sweep + Engram crystallization: interoception, scheduler, 12 new primitives, wondering habits, colocation signal, yield closed, language named
+**Next session**: Next: T-template-schema (S, p2) — design TEMPLATE node structure with Igor; then T-template-seed-patterns (20 Engram patterns); T-language-spec (Engram grammar doc)
+**In-flight**: T-template-schema: about to define parameter_slots + expansion_schema + instantiation contract for TEMPLATE Memory nodes — the gate for the entire Engram language epic
+
 ## Session 2026-03-21g
 **Theme**: Design sprint: T-trails-infra DDL, T-interoception, T-inference-colocation, #308, #334, #335 design docs
 **Key changes**:
@@ -8,6 +13,8 @@
 - design: issue-334.csb.txt — IgorBase universal logging; manual log_step at decision points; ring_memory primary sink; decorator overhead benchmark required
 - design: issue-335.csb.txt — start_at field on memories; temporal anchoring distinct from storage timestamp; HIGH-inertia touch on models.py
 - queue: T-test-debt-tooling added (S) — tests for session_manager.py + decision_manager.py
+- sprint: started 338 — Sparse/unpredictable reward signals for training feedback
+- sprint: closed 338 — surprise_scale(flatness) wired into BG reinforce; IGOR_SURPRISE_REWARD_ENABLED gate; design doc written
 **Next session**: 1. Akien review T-trails-infra + T-interoception + T-colocation designs; 2. launch workers for approved tickets; 3. T-test-debt-tooling (S, no design needed)
 **In-flight**: NONE — design sprint complete; all docs written; no code in-flight
 

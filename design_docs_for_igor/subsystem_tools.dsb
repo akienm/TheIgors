@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-21d
+DOC|subsystem_tools|v1|updated=2026-03-22a
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -24,6 +24,26 @@ KEY_TOOLS|
   web_search|web_search(query)
   budget|get_budget_status,set_spending_cap,check_openrouter_balance,is_cloud_blocked
   learner|learn_about(user_input),process_learn_queue(max_items),drain_learn_queue,list_absorbed_books,get_reading_list,add_to_reading_list,update_reading_status|non-fiction filter,browser discovery,night queue,background runner,local Ollama
+
+OS_PRIMITIVES|added=2026-03-22a|D204
+  file_iter=PRIM_LIST_DIR,PRIM_ITER_NEXT,PRIM_ITER_DONE,PRIM_FILE_META,PRIM_READ_HEAD,PRIM_TYPE_DETECT
+  list_d095=PRIM_LIST_PUSH,PRIM_LIST_POP,PRIM_LIST_COUNT (D095 lists table, FIFO pop)
+  node=PRIM_NODE_CREATE,PRIM_NODE_LINK,PRIM_NODE_SEARCH,PRIM_TWM_PUSH (graph ops from schema runner)
+  string=PRIM_STR_SPLIT,PRIM_STR_REGEX,PRIM_STR_FORMAT,PRIM_STR_SLICE
+  twm=PRIM_TWM_READ (reads active TWM sorted by salience → ctx[twm_items])
+  all=habit_type=tool, trigger="", schema-runner-only (no conversational intercept)
+
+WORKER_FOREMAN|added=2026-03-21|updated=2026-03-22a
+  tools=launch_next_worker,check_worker_queue
+  queue=~/.TheIgors/cc_channel/queue.json
+  liveness=PID check via os.kill(pid,0) — stale in_progress auto-reset to pending
+  scheduler=PROC_WORKER_FOREMAN has schedule_interval_sec=60 → SchedulerSource fires it every 60s
+
+SCHEMA_RUNNER|updated=2026-03-22a
+  builtins=prim_set,prim_branch,prim_goto,prim_emit,prim_on_error
+  prim_emit=reads key/value from basket, {key} template substitution, appends to results
+  prim_on_error=step-level on_error:N routing; writes ctx[__error__], jumps to step N on exception
+  eval_gate=shared condition evaluator (cognition/eval_gate.py); BG _conditions_match + schema_runner both use it
   ebook_reader|find_book,open_book,open_book_url,read_chunk,jump_to_chapter,reading_position,list_reading_sessions
   word_graph|index_text_into_word_graph,query_word_graph_stats,analyze_word_graph,train_word_graph
   interpretive|add_interpretive_edge,get_interpretive_edges,interpretive_traverse

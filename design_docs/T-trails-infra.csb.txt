@@ -1,83 +1,67 @@
-DOC|T-trails-infra|v1|date=2026-03-22
-STATUS|design-complete|size=L|priority=9|ticket=T-trails-infra
-DEPENDS|T-interoception (milieu input to trail_metadata)
-RELATES|subsystem_memory.dsb, #289 (Hebbian training live), MEMORY.md Trails section
+DOC|T-trails-infra|v2|date=2026-03-22
+STATUS|design-complete|size=M|priority=9|ticket=T-trails-infra
+RELATES|subsystem_memory.dsb, #289 (Hebbian training live)
 
-PROBLEM|
-  tails table in live DB is missing trail_id and sequence_pos columns.
-  Migration was wrapped in a bare `except` and silently failed.
-  Result: whole trail subsystem has been running on empty data since columns were added.
-  Also: no trail_metadata table exists — trails are not first-class objects.
+ACTUAL_STATE|
+  tails: 15,596 rows, 13,018 with trail_id. Migration DID run on Postgres.
+  traces: 2,935 rows. columns: id, recorded_at, query, nodes(JSON).
+  Hebbian training (_apply_trail_training) is wired and running.
+  IGOR_TRAIL_TRAINING_ENABLED is the only gate — flip it to true once schema is clean.
+  Original "phantom data" problem: RESOLVED. Design doc v1 was wrong about this.
 
-PHANTOM_DATA_FIX|
-  Named migration: "tails_v2_trail_id_sequence_pos"
-  ALTER TABLE tails ADD COLUMN IF NOT EXISTS trail_id TEXT;
-  ALTER TABLE tails ADD COLUMN IF NOT EXISTS sequence_pos INTEGER;
-  CREATE INDEX IF NOT EXISTS idx_tails_trail ON tails(trail_id);
-  CREATE INDEX IF NOT EXISTS idx_tails_node ON tails(node_id);
-  CREATE INDEX IF NOT EXISTS idx_tails_time ON tails(recorded_at);
-  Gate: store migration name in cortex._migrations; skip if already applied.
+ARCHITECTURE_CORRECTION|
+  trail_activations table is NOT needed.
+  tails IS the trail_activations table: node_id + weight + trail_id + sequence_pos.
+  The distinction is temporal:
+    tails = heat (decays, 7-day window, Hebbian signal)
+    traces = provenance (permanent, query + result snapshot)
+  Both already exist. The gap is traces missing the join/context columns.
 
-DESIGN|
-  Trails are first-class objects. A trail = one search traversal.
-  tails = heat/Hebbian signal (decay per node, training signal)
-  trail_activations = provenance (which nodes fired, in what order, for this trail)
-  These are two different views of the same underlying activation event.
-  Trails persist permanently. Tails decay (heat fades, trail record stays).
+REAL_WORK|
+  1. Add 4 columns to traces table (all nullable TEXT):
+     purpose      — 'search' | 'habit_trigger' | 'ne_consolidation' | 'interoception'
+     twm_obs_id   — soft FK to twm_observations.id (which attractor drove this search)
+     instance_id  — Igor instance identifier
+     thread_id    — conversation thread
 
-NEW_TABLE|trail_metadata|
-  id TEXT PRIMARY KEY,           -- UUID, minted by cortex at search start
-  started_at TIMESTAMP NOT NULL,
-  closed_at TIMESTAMP,           -- set by cortex when traversal returns (cortex owns lifecycle)
-  query_text TEXT,               -- the search query that spawned this trail
-  purpose TEXT,                  -- 'search' | 'habit_trigger' | 'ne_consolidation' | 'interoception'
-  twm_obs_id TEXT,               -- nullable soft FK to twm_observations.id
-                                 -- makes trail = trace of a TWM attractor's propagation
-  instance_id TEXT,
-  thread_id TEXT
+  2. Named migrations (add to _migrations guard):
+     "traces_v2_purpose_twm"
+     ALTER TABLE traces ADD COLUMN IF NOT EXISTS purpose TEXT;
+     ALTER TABLE traces ADD COLUMN IF NOT EXISTS twm_obs_id TEXT;
+     ALTER TABLE traces ADD COLUMN IF NOT EXISTS instance_id TEXT;
+     ALTER TABLE traces ADD COLUMN IF NOT EXISTS thread_id TEXT;
 
-NEW_TABLE|trail_activations|
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  trail_id TEXT NOT NULL,        -- FK to trail_metadata.id
-  node_id TEXT NOT NULL,         -- FK to memories.id
-  sequence_pos INTEGER NOT NULL, -- traversal order within this trail
-  activation_weight REAL,        -- how strongly this node fired
-  activated_at TIMESTAMP NOT NULL
+  3. Wire twm_obs_id in _record_trace():
+     At call site, look up active TWM attractor via twm_get_attractor().
+     Pass obs_id as optional param. Store in traces row.
+     Caller: cortex.search() already calls _record_trace() — add twm_obs_id lookup there.
+
+  4. Set IGOR_TRAIL_TRAINING_ENABLED=true in .env — data is ready.
+
+  5. Update _record_trace() return value to be consistent:
+     Already returns trace_id (used as trail_id for tails). Confirm no None returns.
+
+WHAT_DOES_NOT_CHANGE|
+  - tails table schema: already correct
+  - traces table data: don't touch existing rows (nullable columns, backfill not needed)
+  - trail_metadata: this is just the traces table. No rename needed.
+  - trail_activations: this is just the tails table. Don't create a duplicate.
+  - Hebbian training code: already wired, just needs gate enabled
 
 TWM_TRAIL_JOIN|
-  trail_metadata.twm_obs_id is a nullable soft FK.
-  When a TWM attractor drives a search (NE, BG habit scoring, cortex.search from active slot):
-    - mint trail at search start
-    - set twm_obs_id = active attractor's obs_id
-  This makes the trail = the trace of that attractor's influence propagating through the graph.
-  Useful later: which TWM attractors produce the richest traversal paths?
-
-TAILS_VS_TRAIL_ACTIVATIONS|
-  tails: heat per node, decays, used for Hebbian co-activation training
-    Purpose: "how hot is this node right now?"
-  trail_activations: provenance per traversal step, permanent
-    Purpose: "what path did this search take?"
-  Both get written at search time. They serve different things even though they're
-  different views into the same activation event.
+  traces.twm_obs_id links a search trail to the TWM attractor that drove it.
+  Makes trails queryable by attractor: "which searches did this TWM slot trigger?"
+  Enables future: attractor quality scoring (rich trail = useful attractor).
 
 THREE_TEMPORAL_SYSTEMS|
-  milieu: body baseline, alpha=0.05 (slow drift, like body temperature)
-  TWM: attractor decay per slot (urgency-weighted, fast for emergency obs)
-  tails: per-node heat decay (Hebbian gradient signal)
-  trail_metadata links them: a trail has a TWM attractor origin, leaves tails heat,
-  and its timing lives in milieu-adjusted context.
+  milieu: body baseline, slow drift (alpha=0.05 after T-interoception)
+  TWM: attractor slots with urgency decay
+  tails: per-node heat, 7-day window, Hebbian signal
+  traces.twm_obs_id: links all three — a trail records which TWM attractor drove it,
+  leaves heat in tails, and its timing is milieu-adjusted context.
 
-IMPLEMENTATION_ORDER|
-  1. Named migration for tails phantom columns (unblocks existing Hebbian training)
-  2. Create trail_metadata table + migration
-  3. Create trail_activations table + migration
-  4. Cortex: start_trail(query, purpose, twm_obs_id) → trail_id
-  5. Cortex: record_trail_activation(trail_id, node_id, seq_pos, weight)
-  6. Cortex: close_trail(trail_id) — sets closed_at
-  7. Wire into cortex.search() — start trail before Phase1, close after Phase2
-  8. Backfill twm_obs_id when search triggered from active TWM slot
-  9. Enable IGOR_TRAIL_TRAINING_ENABLED=true once phantom fix confirmed
+SIZE_CORRECTION|M (was L in v1) — 4 ALTER TABLE migrations + 1 method wire + .env flip
 
-ENV_GATE|IGOR_TRAIL_TRAINING_ENABLED (default=false until phantom fix verified)
+INERTIA|MEDIUM — cortex.py changes; _record_trace() is low-inertia helper method
 
-WORKER_READY|yes — after Akien approval
+WORKER_READY|yes — Akien approved 2026-03-22
