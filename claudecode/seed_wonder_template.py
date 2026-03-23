@@ -41,12 +41,14 @@ WONDER_TEMPLATE_ID = "tpl-wonder"
 
 WONDER_TEMPLATE_SCHEMA = {
     "pattern_name": "WONDER",
-    "version": 1,
+    "schema_version": 1,
+    "substitution_engine": "jinja2",
     "slot_manifest": [
         {
             "name": "trigger_phrase",
             "required": True,
             "type_hint": "str",
+            "validator": {"pattern": r"^[a-z][a-z0-9 _\-']+$"},
         },
         {
             "name": "tool_fn",
@@ -58,24 +60,25 @@ WONDER_TEMPLATE_SCHEMA = {
             "required": False,
             "default": 60,
             "type_hint": "int",
+            "validator": {"min": 1, "max": 3600},
         },
     ],
     "expansion_schema": [
         {
             "habit_type": "reactive",
-            "name": "PROC_WONDER_{trigger_phrase|upper}",
-            "trigger": "{trigger_phrase}",
-            "narrative": "Wonder habit: {trigger_phrase}",
+            "name": "PROC_WONDER_{{ trigger_phrase | upper | replace(' ', '_') }}",
+            "trigger": "{{ trigger_phrase }}",
+            "narrative": "Wonder habit: {{ trigger_phrase }}",
             "metadata": {
-                "code_ref": "{tool_fn}",
-                "twm_ttl_seconds": "{twm_ttl}",
-                "description": "Wonder about {trigger_phrase} via {tool_fn}",
+                "code_ref": "{{ tool_fn }}",
+                "twm_ttl_seconds": "{{ twm_ttl }}",
+                "description": "Wonder about {{ trigger_phrase }} via {{ tool_fn }}",
             },
         }
     ],
     "instantiation_contract": {
         "produces": ["reactive"],
-        "condition_signature": "trigger='{trigger_phrase}'",
+        "condition_signature": "trigger='{{ trigger_phrase }}'",
         "invariants": [
             "code_ref must be registered in tool registry",
         ],
