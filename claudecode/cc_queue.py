@@ -78,8 +78,16 @@ def cmd_list(args):
     if not tasks:
         print("Queue empty.")
         return
+
+    def _priority_int(t):
+        p = t.get("priority", 99)
+        try:
+            return int(str(p).lstrip("pP"))
+        except (ValueError, TypeError):
+            return 99
+
     tasks_sorted = sorted(
-        tasks, key=lambda t: (STATUS_ORDER.get(t["status"], 9), t.get("priority", 99))
+        tasks, key=lambda t: (STATUS_ORDER.get(t["status"], 9), _priority_int(t))
     )
     STATUS_ICON = {"pending": "⬜", "in_progress": "🔵", "blocked": "🔴", "done": "✅"}
     for t in tasks_sorted:
