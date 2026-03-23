@@ -13,7 +13,9 @@ QUEUE_SCRIPT="$HOME/TheIgors/claudecode/cc_queue.py"
 CHANNEL_SCRIPT="$HOME/TheIgors/claudecode/channel.py"
 VENV="$HOME/TheIgors/venv/bin/activate"
 DAEMON_PID_FILE="$HOME/.TheIgors/cc_channel/worker_daemon.pid"
+DONE_FLAG="$HOME/.TheIgors/cc_channel/sprint_done.flag"
 POLL_INTERVAL=20
+SPRINT_TIMEOUT_SECS=5400   # 90 min hard ceiling — kill stalled session
 
 source "$VENV"
 
@@ -36,10 +38,35 @@ while true; do
     NEXT=$(_next_ticket)
     if [ -n "$NEXT" ]; then
         _post "starting sprint: $NEXT"
+        rm -f "$DONE_FLAG"   # clear any stale flag before launch
         export WORKER_TICKET="$NEXT"
-        claude --dangerously-skip-permissions "/sprint $NEXT" || true
+
+        # Launch claude in background — sprint skill never self-exits
+        claude --dangerously-skip-permissions "/sprint $NEXT" &
+        CLAUDE_PID=$!
+
+        # Poll for done-flag or natural exit; enforce hard timeout
+        ELAPSED=0
+        while kill -0 "$CLAUDE_PID" 2>/dev/null; do
+            if [ -f "$DONE_FLAG" ]; then
+                DONE_TICKET=$(cat "$DONE_FLAG" 2>/dev/null || echo "unknown")
+                _post "sprint done: $DONE_TICKET — killing session (PID $CLAUDE_PID)"
+                kill "$CLAUDE_PID" 2>/dev/null || true
+                rm -f "$DONE_FLAG"
+                break
+            fi
+            if [ "$ELAPSED" -ge "$SPRINT_TIMEOUT_SECS" ]; then
+                _post "sprint timeout: $NEXT — killing stalled session (PID $CLAUDE_PID)"
+                kill "$CLAUDE_PID" 2>/dev/null || true
+                break
+            fi
+            sleep 5
+            ELAPSED=$((ELAPSED + 5))
+        done
+        wait "$CLAUDE_PID" 2>/dev/null || true
+
         unset WORKER_TICKET
-        # claude exited — loop immediately for next ticket
+        # session dead — loop immediately for next ticket
     else
         sleep "$POLL_INTERVAL"
     fi

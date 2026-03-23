@@ -50,10 +50,7 @@ habit = Memory(
     memory_type=MemoryType.PROCEDURAL,
     metadata={
         "habit_type": "reactive",
-        "trigger": (
-            "worker_done launch next worker "
-            "start the queue start working on tickets what's next in the queue"
-        ),
+        "trigger": "worker_done",
         "code_ref": "worker_foreman:launch_next_worker",
         "twm_ttl_seconds": 60,
         "why": (
