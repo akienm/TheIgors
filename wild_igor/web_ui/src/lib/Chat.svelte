@@ -10,7 +10,7 @@
   let dragDepth = 0
 
   function connect() {
-    ws = new WebSocket(`ws://${location.host}/ws`)
+    ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`)
     ws.onopen  = () => addMsg('system', '', 'Connected to Igor.')
     ws.onclose = () => {
       addMsg('system', '', 'Disconnected. Retrying…')

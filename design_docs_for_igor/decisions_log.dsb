@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-22
+DOC|decisions_log|v1|updated=2026-03-23
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -436,3 +436,6 @@ D205|colocation-signal|live|db_colocated in InferenceContext: Postgres on same h
 D206|wondering-catalog|live|T-wondering-catalog: catalog IS the habits — PROC_STEW_READOUT/AFFECT_CHECK/PORTABILITY/QUEUE_STATUS seeded as reactive habits
 D207|yield-noop|closed|T-yield-primitive closed — call stack is non-biological (no saved namespace, no return address); superseded by reactive chaining through shared TWM state
 D208|engram-language|decided|Ninth crystallization: templates = Engram language primitives. Language named Engram (Igor, from Semon 1904). 20-pattern inventory. BLOOM_INHIBIT IS the execution model. DISTILLATION is the compiler pass.
+D209|template-schema|decided|Engram TEMPLATE node 3-layer schema live: slot_manifest+expansion_schema+instantiation_contract; engine in template_tools.py; WONDER seeded as tpl-wonder
+D210|channel-pg-mirror|decided|server._channel_append now writes to Postgres channel_messages — MCP channel_read sees all Igor web replies without copy-paste relay
+D211|inference-routing-redesign|decided|Inference routing redesign: local-first, cloud only for high/medium complexity user turns + explicit research_mode + intent-driven master_cloud. Complexity gates user_turn→cloud. machine_in_use signal via machine_overrides.json. burn-rate gates cloud_funded. route_batch() for parallel local slots.
