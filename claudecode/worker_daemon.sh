@@ -15,7 +15,7 @@ VENV="$HOME/TheIgors/venv/bin/activate"
 DAEMON_PID_FILE="$HOME/.TheIgors/cc_channel/worker_daemon.pid"
 DONE_FLAG="$HOME/.TheIgors/cc_channel/sprint_done.flag"
 POLL_INTERVAL=20
-SPRINT_TIMEOUT_SECS=5400   # 90 min hard ceiling — kill stalled session
+SPRINT_TIMEOUT_SECS=1800   # 30 min hard ceiling — kill stalled session
 
 source "$VENV"
 
@@ -31,6 +31,9 @@ _next_ticket() {
     python3 "$QUEUE_SCRIPT" list 2>/dev/null \
         | grep '⬜' | head -1 | sed 's/^[^[]*\[\([^]]*\)\].*/\1/'
 }
+
+# Reset any tickets left in_progress by a prior daemon run
+python3 "$QUEUE_SCRIPT" reset-stale 2>/dev/null | grep -v "^Reset 0" | while IFS= read -r line; do _post "startup: $line"; done || true
 
 _post "worker daemon started (PID $$)"
 
@@ -58,6 +61,7 @@ while true; do
             if [ "$ELAPSED" -ge "$SPRINT_TIMEOUT_SECS" ]; then
                 _post "sprint timeout: $NEXT — killing stalled session (PID $CLAUDE_PID)"
                 kill "$CLAUDE_PID" 2>/dev/null || true
+                python3 "$QUEUE_SCRIPT" reset "$NEXT" 2>/dev/null && _post "reset to pending: $NEXT" || true
                 break
             fi
             sleep 5
@@ -68,6 +72,12 @@ while true; do
         unset WORKER_TICKET
         # session dead — loop immediately for next ticket
     else
+        # No pending tickets — exit if nothing actionable remains
+        PENDING=$(python3 "$QUEUE_SCRIPT" list 2>/dev/null | grep -c '⬜' || echo 0)
+        if [ "$PENDING" -eq 0 ]; then
+            _post "queue empty — daemon exiting cleanly"
+            exit 0
+        fi
         sleep "$POLL_INTERVAL"
     fi
 done

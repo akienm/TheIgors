@@ -17,6 +17,8 @@ Usage:
     cc_queue.py flush_session <session> <summary> — flush session blob to Igor memory
     cc_queue.py worker-launch                     — ensure worker daemon is running (spawns konsole if not)
     cc_queue.py inject <ticket-id> <text>         — deprecated; use worker-launch instead
+    cc_queue.py reset <id>                        — reset one ticket from in_progress → pending (retry after timeout)
+    cc_queue.py reset-stale                       — reset all in_progress tickets → pending (daemon startup cleanup)
 """
 
 import json
@@ -378,6 +380,41 @@ def cmd_inject(args):
     print("Use 'worker-launch' to ensure the daemon is running.")
 
 
+def cmd_reset(args):
+    """Reset a single ticket back to pending (e.g., after a timeout)."""
+    if not args:
+        print("Usage: reset <id>")
+        sys.exit(1)
+    tasks = _load()
+    t = _find(tasks, args[0])
+    if not t:
+        print(f"Task {args[0]} not found.")
+        sys.exit(1)
+    prev = t["status"]
+    t["status"] = "pending"
+    t["claimed_at"] = None
+    _save(tasks)
+    _log({"action": "reset", "id": args[0], "prev_status": prev})
+    print(f"Reset {args[0]}: {prev} → pending")
+
+
+def cmd_reset_stale(args):
+    """Reset all in_progress tickets back to pending (used at daemon startup to clean orphans)."""
+    tasks = _load()
+    reset_count = 0
+    for t in tasks:
+        if t["status"] == "in_progress":
+            prev = t["status"]
+            t["status"] = "pending"
+            t["claimed_at"] = None
+            _log({"action": "reset_stale", "id": t["id"], "prev_status": prev})
+            print(f"  reset stale: {t['id']}")
+            reset_count += 1
+    if reset_count:
+        _save(tasks)
+    print(f"Reset {reset_count} stale in_progress ticket(s).")
+
+
 COMMANDS = {
     "list": cmd_list,
     "show": cmd_show,
@@ -391,6 +428,8 @@ COMMANDS = {
     "worker-launch": cmd_worker_launch,
     "inject": cmd_inject,
     "notify-igor": cmd_notify_igor,
+    "reset": cmd_reset,
+    "reset-stale": cmd_reset_stale,
 }
 
 if __name__ == "__main__":
