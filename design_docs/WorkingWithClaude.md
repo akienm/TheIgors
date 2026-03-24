@@ -41,11 +41,13 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 **CLAUDE.md is the single highest-leverage investment.** For operational detail — inertia levels, env vars, instance data layout, commit policy, do-nots — see `CLAUDE.md` at the repo root. This document covers the *why*; CLAUDE.md covers the *what*. It means Claude starts every session knowing the architecture, the conventions, the inertia levels, the things not to touch. Without it, every session starts from scratch. The quality of Claude's output tracks the quality of your context directly — a well-maintained CLAUDE.md and current design docs produce a different Claude than a blank session.
 
-**Skills are compiled procedures, not prompts.** Claude Code skills (`.claude/skills/`) load only a name token at startup and expand to full instructions on invocation. Use them for any multi-step workflow you want to be repeatable and non-negotiable: `savestate`, `workstep`, `igor`. Each one is a contract. The skill runs the same way every time without having to re-explain the steps. If a workflow requires more than three turns to explain, write a skill.
+**Skills are compiled procedures, not prompts.** Claude Code skills (`.claude/skills/`) load only a name token at startup and expand to full instructions on invocation. Use them for any multi-step workflow you want to be repeatable and non-negotiable: `savestate`, `sprint`, `igor`. Each one is a contract. The skill runs the same way every time without having to re-explain the steps. If a workflow requires more than three turns to explain, write a skill.
 
 **Hooks are better than instructions.** Claude Code hooks (`~/.claude/settings.json`) run on every matching tool call regardless of context length, memory state, or whether Claude "remembers" the instruction. A PostToolUse hook that runs `black` on every edited `.py` file never needs to be asked. A PreToolUse guard that blocks `rm -rf /` never gets overridden by a long session. If a policy needs to be enforced reliably, put it in a hook. Instructions can be forgotten; hooks cannot.
 
 **Design docs are architectural truth — not notes, not comments in code.** Keep DSB format docs in the repo, organized as a tree: a root architecture document with subsystem documents beneath it. Make sure Claude's workflow keeps them current. Current docs mean Claude spends the minimum number of tokens getting clear on where the problems are.
+
+**The two-session pattern: Designer + Worker.** Complex work splits across two roles. The Designer Claude (interactive, with Akien present) handles architecture, planning, teaching, and anything requiring judgment. The Worker Claude runs as an autonomous daemon, consuming tickets from the queue and executing sprints without human interaction. The queue (`~/.TheIgors/cc_channel/queue.json`) is the handoff point. The shared channel (`messages.jsonl`) is the coordination substrate — both sessions post to it and can read each other's output. A context-load at session start reads the channel, the slate, and blob tops rather than reloading full files. This pattern scales: multiple workers on multiple machines can pull from the same queue against the same Postgres DB.
 
 **Save state at the end of every session.** Agree a ledger of work, say "save state and go," and the next session picks up from disk with full context. The session record is a real artifact, not a courtesy.
 
@@ -72,24 +74,22 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 ### Each Work Step
 
-1. Claude reads tickets
-2. Chat about design issues
-3. Update notes and/or create additional tickets from the discussion
-4. Group work, create plan, get approval
-5. Save state
-6. Notify user to run /compact, tell them to reply when done
-7. Start loop
-8. Fix each issue
-9. Add forensic logging
-10. Run live as a black-box test
-11. Update the ticket
-12. Hot-reload the module
-13. Update docs if anything important changed (while context fresh)
-14. Maybe commit, depends on workplan
-15. Loop until all tickets closed
-16. Update discussion
-17. Update in repo distiled compressed block documentation
-18. Commit
+Work is ticket-driven. Every piece of work has a ticket in the queue before implementation starts.
+
+**Interactive session** (Designer + Akien):
+1. `/context-load` — orient, read slate, start session record
+2. Read relevant tickets; chat about design issues; surface inertia concerns
+3. Update or create tickets from the discussion
+4. For L-size: write a complete plan, get approval before writing a line of code
+5. Implement; read every file before editing; forensic logging on non-trivial changes
+6. `/test-fix` — tests green before probe
+7. `/probe` — behavioral verification if criterion defined
+8. `/decided` — record decisions while context is fresh
+9. `/commit` — stage specific files, pull, push
+10. `/savestate` — end of session
+
+**Worker daemon** (automated, no human present):
+The daemon (`worker_daemon.sh`) polls the queue and runs `claude /sprint <id>` for each pending ticket. S and M tickets run fully autonomously. L tickets post a plan to the channel and proceed immediately (the ticket being queued is the approval). Each sprint claims the ticket, implements, tests, probes, posts result, writes a done flag, and exits. The daemon resets timed-out tickets to pending and retries. Exit when queue drains.
 
 ---
 
@@ -120,7 +120,7 @@ Uncaught exception audit. Scan for bare except: blocks, swallowed exceptions, an
 
 Concern consolidation review. Look for scattered code that's really one thing — and hasn't been named yet. The db_proxy gathered all DB timing, reconnect, and metrics concerns into one place. The inference_gateway gathered all routing, fallback, and cost concerns. This is the inverse of separation of concerns — it's recognizing that concerns belong together and giving them a home, a name, and a clean interface. The signal: when you find yourself writing the same kind of logic in three places, or explaining a subsystem by listing scattered files instead of pointing at one module, consolidation is probably overdue.
 
-The items below are in the Automated checklist (see claudecode/review_audit.md):
+The items below are in the automated checklist (see `claudecode/review_audit.md`); the `/audit` skill runs them:
 
 Architectural - Scattered resource managers (DB, HTTP, config, loggers instantiated ad hoc), Parallel conditional trees (same if/elif logic duplicated across multiple locations), Implicit god objects (classes that grew beyond a single clear responsibility), Missing abstraction layers (raw SQL/HTTP in business logic, no service/repository layer), Hardcoded values (magic numbers, model names, ports, thresholds in logic)
 
