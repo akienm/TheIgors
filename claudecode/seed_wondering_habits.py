@@ -43,16 +43,17 @@ habits = [
         id="PROC_STEW_READOUT",
         narrative=(
             "When I wonder what is combining in my mind right now — 'what's in the stew', "
-            "'what's combining', 'stew readout' — I call prim_twm_read to read my active "
-            "transient working memory observations. The result (salience-sorted list of "
-            "what is currently active) surfaces to my pipeline so I can narrate what I "
+            "'what's combining', 'stew readout', 'show stew', 'what's brewing', 'current stew' "
+            "— I call prim_twm_read to read my active transient working memory observations. "
+            "The result (salience-sorted list of what is currently active, with category, "
+            "salience and urgency) surfaces to my pipeline so I can narrate what I "
             "am actually holding and how those elements relate. "
             "This is interoception-lite: seeing my own cognitive stew without inference."
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
             "habit_type": "reactive",
-            "trigger": "what's in the stew what's combining stew readout",
+            "trigger": "what's in the stew|what's combining|stew readout|show stew|what's brewing|current stew",
             "code_ref": "tools/os_primitives.py:prim_twm_read",
             "twm_ttl_seconds": 60,
             "why": (
