@@ -73,7 +73,7 @@ while true; do
         # session dead — loop immediately for next ticket
     else
         # No pending tickets — exit if nothing actionable remains
-        PENDING=$(python3 "$QUEUE_SCRIPT" list 2>/dev/null | grep -c '⬜' || echo 0)
+        PENDING=$(python3 "$QUEUE_SCRIPT" list 2>/dev/null | grep '⬜' | wc -l)
         if [ "$PENDING" -eq 0 ]; then
             _post "queue empty — daemon exiting cleanly"
             exit 0
