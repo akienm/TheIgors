@@ -334,6 +334,68 @@ def _arousal_from_cp(narrative: str, parent_cp: str) -> float:
     return round(base, 2)
 
 
+# ── Completion record ─────────────────────────────────────────────────────────
+
+
+def _deposit_completion_record(
+    cortex: Cortex,
+    book_title: str,
+    author: str,
+    book_key: str,
+    calibre_id: int | None,
+    total_sentences: int,
+    chunks_processed: int,
+    total_deposited: int,
+    status: str,  # "complete" | "partial" | "failed"
+) -> None:
+    """Deposit an EPISODIC memory node recording the reading session outcome.
+
+    Makes "did I finish X?" answerable via normal context search — no special
+    tooling required.  Node id is deterministic so re-runs overwrite, not stack.
+    """
+    import hashlib
+    import datetime
+
+    book_hash = hashlib.md5(book_key.encode()).hexdigest()[:8].upper()
+    node_id = f"READING_{book_hash}"
+
+    verb = {
+        "complete": "completed",
+        "partial": "partially read",
+        "failed": "failed",
+    }.get(status, status)
+    narrative = (
+        f'Reading session for "{book_title}" by {author} {verb}. '
+        f"{chunks_processed} chunk(s) processed, {total_deposited} node(s) deposited. "
+        f"Status: {status}."
+    )
+
+    meta: dict = {
+        "book_key": book_key,
+        "book_title": book_title,
+        "author": author,
+        "total_sentences": total_sentences,
+        "chunks_processed": chunks_processed,
+        "total_deposited": total_deposited,
+        "status": status,
+        "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
+    if calibre_id is not None:
+        meta["calibre_id"] = calibre_id
+
+    mem = Memory(
+        id=node_id,
+        narrative=narrative,
+        memory_type=MemoryType.EPISODIC,
+        source="book_learner",
+        confidence=1.0,
+        context_of_encoding="book_learner|completion",
+        metadata=meta,
+    )
+    cortex.store(mem)
+    print(f"Completion record: {node_id} ({status})")
+
+
 # ── Book/chapter spine builders ────────────────────────────────────────────────
 
 
@@ -687,6 +749,29 @@ def run(args) -> None:
             print(f"reading_list: calibre://{args.calibre_id} → completed")
         except Exception as _rl_e:
             print(f"reading_list update failed: {_rl_e}")
+
+    # Deposit EPISODIC completion record so Igor can answer "did I finish X?"
+    if args.run:
+        if _reached_end:
+            _completion_status = "complete"
+        elif chunks_done > 0:
+            _completion_status = "partial"
+        else:
+            _completion_status = "failed"
+        try:
+            _deposit_completion_record(
+                cortex=cortex,
+                book_title=book_title,
+                author=handle["author"],
+                book_key=book_key,
+                calibre_id=args.calibre_id,
+                total_sentences=total_sentences,
+                chunks_processed=chunks_done,
+                total_deposited=total_deposited,
+                status=_completion_status,
+            )
+        except Exception as _cr_e:
+            print(f"[completion record] failed (non-fatal): {_cr_e}")
 
     print("─" * 60)
     if args.run:
