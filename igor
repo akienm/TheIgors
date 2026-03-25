@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# igor — launcher script for Wild Igor
+# igor — launcher script for Wild Igor (D232)
 # Lives at repo root: TheIgors/igor
 # Symlink: ~/bin/igor -> /home/akien/TheIgors/igor
 #
@@ -12,6 +12,8 @@ REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 WILD_DIR="$REPO_DIR/wild_igor"
 VENV_DIR="$REPO_DIR/venv"
 VENV_PYTHON="$VENV_DIR/bin/python"
+IGOR_HOME="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
+ALERTS_FILE="$IGOR_HOME/alerts.txt"
 
 # Sanity checks
 if [ ! -d "$WILD_DIR" ]; then
@@ -72,6 +74,31 @@ if [[ ! " $* " =~ " --id " ]]; then
     IGOR_ARGS=("--id" "Igor-wild-0001" "$@")
 fi
 
+# Trap function for crash logging
+log_igor_crash() {
+    local exit_code=$1
+    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    mkdir -p "$IGOR_HOME"
+
+    {
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "CRASH: Igor (exit code: $exit_code)"
+        echo "Time: $timestamp"
+        echo "Instance: ${IGOR_INSTANCE_ID:-Igor-wild-0001}"
+        echo "Hostname: $(hostname)"
+        echo "User: $(whoami)"
+
+        # Include last 20 lines of log if available
+        if [[ -f "$IGOR_HOME/${IGOR_INSTANCE_ID:-Igor-wild-0001}/logs/main.log" ]]; then
+            echo ""
+            echo "Last 20 log lines:"
+            tail -20 "$IGOR_HOME/${IGOR_INSTANCE_ID:-Igor-wild-0001}/logs/main.log" | sed 's/^/  /'
+        fi
+        echo ""
+    } >> "$ALERTS_FILE"
+}
+
 # Restart loop: exit code 42 means "please restart"
 # .env is re-read on every restart so env changes take effect immediately.
 while true; do
@@ -108,6 +135,10 @@ while true; do
     if [ $EXIT_CODE -eq 42 ]; then
         echo "[igor] Restarting (re-reading .env)..."
     else
+        # Non-42 exit: log crash if non-zero
+        if [ $EXIT_CODE -ne 0 ]; then
+            log_igor_crash "$EXIT_CODE"
+        fi
         break
     fi
 done

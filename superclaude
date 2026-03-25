@@ -1,70 +1,121 @@
 #!/bin/bash
-# superclaude — Claude Code launcher with Anthropic→OR failover (D088)
-# If Anthropic balance <= $10, routes through OpenRouter to avoid credit exhaustion.
+# superclaude — Claude Code launcher with fresh-install wizard (D232)
+# Checks for API key, runs setup wizard if needed, then launches Claude Code
 
-claude --dangerously-skip-permissions
-if false; then
-    ENV_FILE="${HOME}/.TheIgors/igor_wild_0001/.env"
-    BALANCE_FILE="${HOME}/.TheIgors/cc_channel/anthropic_balance.json"
-    LOG_FILE="${HOME}/.TheIgors/logs/superclaude.log"
-    BALANCE_THRESHOLD=10.00
+set -euo pipefail
 
-    # Source .env to get keys
-    if [[ -f "$ENV_FILE" ]]; then
+IGOR_HOME="${HOME}/.TheIgors"
+REPO_DIR="${HOME}/TheIgors"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Try to source common functions if available
+if [[ -f "${SCRIPT_DIR}/bin/_igor_common.sh" ]]; then
+    # shellcheck disable=SC1091
+    source "${SCRIPT_DIR}/bin/_igor_common.sh"
+elif [[ -f "${HOME}/bin/_igor_common.sh" ]]; then
+    # shellcheck disable=SC1091
+    source "${HOME}/bin/_igor_common.sh"
+fi
+
+# ─ Setup wizard ──────────────────────────────────────────────────────────────
+
+run_setup_wizard() {
+    local instance_dir="${IGOR_HOME}/igor_wild_0001"
+    local env_file="${instance_dir}/.env"
+
+    echo "╔════════════════════════════════════════════════════════════════════════════════╗"
+    echo "║ First-time setup — superclaude                                                 ║"
+    echo "╚════════════════════════════════════════════════════════════════════════════════╝"
+    echo ""
+    echo "This appears to be your first time running Claude Code with Igor."
+    echo "Let's set up your environment."
+    echo ""
+
+    # Check requirements if function is available
+    if declare -f check_requirements &>/dev/null; then
+        echo "Checking requirements..."
+        if ! check_requirements 2>/dev/null; then
+            echo ""
+            echo "ERROR: Missing required tools. Please install:"
+            echo "  - python3"
+            echo "  - git"
+            echo ""
+            return 1
+        fi
+        echo "✓ Requirements met"
+    fi
+    echo ""
+
+    # Create instance directory if needed
+    mkdir -p "$instance_dir"
+
+    # If .env doesn't exist, create a template
+    if [[ ! -f "$env_file" ]]; then
+        echo "Creating template .env at $env_file"
+        cat > "$env_file" << 'ENVEOF'
+# Igor instance configuration — edit with your API keys
+
+# REQUIRED: Anthropic API key for Claude Code
+ANTHROPIC_API_KEY=""
+
+# OPTIONAL: OpenRouter key (fallback if Anthropic balance is low)
+OPENROUTER_API_KEY=""
+
+# OPTIONAL: Local inference (KoboldCpp or Ollama)
+KOBOLDCPP_HOST="localhost"
+KOBOLDCPP_PORT="5001"
+
+# OPTIONAL: Database URL (defaults to local sqlite)
+IGOR_SWARM_DB_URL=""
+
+# OPTIONAL: Instance ID (defaults to igor_wild_0001)
+IGOR_INSTANCE_ID="igor_wild_0001"
+ENVEOF
+
+        echo "✓ Template created"
+    fi
+
+    echo ""
+    echo "Please edit your .env file with your API keys:"
+    echo "  $env_file"
+    echo ""
+    echo "Then re-run: superclaude"
+    echo ""
+    return 1
+}
+
+# ─ Require config ────────────────────────────────────────────────────────────
+
+require_api_key() {
+    local env_file="${IGOR_HOME}/igor_wild_0001/.env"
+
+    # Source .env if it exists
+    if [[ -f "$env_file" ]]; then
         set -a
         # shellcheck disable=SC1090
-        source "$ENV_FILE"
+        source "$env_file"
         set +a
     fi
 
-    REAL_ANTHROPIC_KEY="${ANTHROPIC_API_KEY:-}"
-    OR_KEY="${OPENROUTER_API_KEY:-}"
-
-    # Read balance file if it exists and is < 24h old
-    USE_OR=false
-    BALANCE_USD=""
-
-    if [[ -f "$BALANCE_FILE" ]]; then
-        # Check age: mtime within last 86400 seconds
-        FILE_AGE=$(( $(date +%s) - $(date -r "$BALANCE_FILE" +%s) ))
-        if [[ "$FILE_AGE" -lt 86400 ]]; then
-            BALANCE_USD=$(python3 -c "
-    import json, sys
-    try:
-        d = json.load(open('$BALANCE_FILE'))
-        print(d.get('balance_usd', ''))
-    except Exception:
-        print('')
-    " 2>/dev/null)
-            if [[ -n "$BALANCE_USD" ]]; then
-                # Compare as float
-                LOW=$(python3 -c "print('yes' if float('$BALANCE_USD') <= $BALANCE_THRESHOLD else 'no')" 2>/dev/null)
-                if [[ "$LOW" == "yes" ]]; then
-                    USE_OR=true
-                fi
-            fi
-        fi
+    if [[ -z "${ANTHROPIC_API_KEY:-}" ]]; then
+        return 1
     fi
 
-    TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    return 0
+}
 
-    if [[ "$USE_OR" == "true" ]]; then
-        DECISION="OR_FAILOVER"
-        LOG_MSG="$TIMESTAMP decision=$DECISION balance_usd=$BALANCE_USD — routing via OpenRouter"
-        export ANTHROPIC_API_KEY="$OR_KEY"
-        export ANTHROPIC_BASE_URL="https://openrouter.ai/api"
-    else
-        DECISION="ANTHROPIC_DIRECT"
-        if [[ -z "$BALANCE_USD" ]]; then
-            LOG_MSG="$TIMESTAMP decision=$DECISION balance=unknown (file missing or stale) — using Anthropic direct"
-        else
-            LOG_MSG="$TIMESTAMP decision=$DECISION balance_usd=$BALANCE_USD — using Anthropic direct"
-        fi
-        export ANTHROPIC_API_KEY="$REAL_ANTHROPIC_KEY"
-        unset ANTHROPIC_BASE_URL
+# ─ Main ──────────────────────────────────────────────────────────────────────
+
+# Check if we need to run the setup wizard
+if ! require_api_key; then
+    echo "No ANTHROPIC_API_KEY found."
+    echo ""
+
+    if ! run_setup_wizard; then
+        exit 1
     fi
-
-    echo "$LOG_MSG" >> "$LOG_FILE"
 fi
 
-exec claude --dangerously-skip-permissions "$@"
+# Launch Claude Code
+export ANTHROPIC_API_KEY
+exec claude --dangerously-skip-permissions
