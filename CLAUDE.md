@@ -52,7 +52,7 @@ All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
 <!-- last-updated: 2026-03-13a -->
 - `IGOR_DB_PATH` — path to live SQLite DB
 - `OPENROUTER_API_KEY` — primary cloud inference
-- `KOBOLDCPP_HOST` / `KOBOLDCPP_PORT` — local inference
+- `OLLAMA_HOST` / `OLLAMA_LOCAL_MODEL` — local inference (Ollama; default: localhost:11434, llama3.2:1b)
 - `IGOR_SELF_EDIT_ENABLED` — gates source file writes
 - `IGOR_TIER5_ENABLED` — gates Anthropic direct spend (default false)
 - `IGOR_ARBITER_ENABLED` — human-approval queue (default false — disabled)
@@ -77,7 +77,7 @@ All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
 <!-- last-updated: 2026-03-15b -->
 - **Word graph**: `cognition/word_graph.py` — SQLite-backed two-tier; words + bigram chunks; same weights for parsing (habit scoring) and generation (predict_next).
 - **CC→Igor bridge**: `POST http://localhost:8080/api/cc_send` with `{"content": "..."}` — injects as author "claude-code"
-- **Tier ladder**: tier.1 habit → tier.2 KoboldCpp → tier.3 OR cheap → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic direct (inhibited) → tier.6 arbiter alert
+- **Tier ladder**: tier.1 habit/graph → tier.2 Ollama (local) → tier.3 OR cheap → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic direct (inhibited) → tier.6 arbiter alert
 - **Habit types**: threshold | action | workflow | delegation | reactive | response | question | context_inject | cognitive | tool | passive_capture
 - **Intent gate (D074)**: threshold/workflow/delegation/reactive habits skip when parsed_intent is question-like
 
@@ -109,4 +109,3 @@ Items that are intentionally deferred or known broken. Do not flag these as bugs
 - **`claudecode/seed_resource_gate_habits.py`**: PROC_RESOURCE_AWARENESS trigger contains "memory" — causes misfire on memory questions. Fixed in live DB only. Do not re-run seed script until trigger is updated. Track: gap_analysis.md.
 - **`IGOR_TIER5_ENABLED=false`**: tier.5 (Anthropic direct) intentionally inhibited to prevent runaway spend. Re-enable only when 4090 arrives or explicit decision.
 - **`IGOR_ARBITER_ENABLED=false`**: human-approval queue disabled. Re-enable when arbiter UI is built.
-- **KoboldCpp**: currently not running; tier.2 falls through to tier.3 OR. Not broken, just idle.

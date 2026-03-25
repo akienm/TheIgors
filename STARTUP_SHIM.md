@@ -100,9 +100,9 @@ ANTHROPIC_API_KEY="sk-..."
 # OPTIONAL: OpenRouter fallback
 OPENROUTER_API_KEY="sk-or-..."
 
-# OPTIONAL: Local inference
-KOBOLDCPP_HOST="localhost"
-KOBOLDCPP_PORT="5001"
+# OPTIONAL: Local inference (Ollama)
+OLLAMA_HOST="http://localhost:11434"
+OLLAMA_LOCAL_MODEL="llama3.2:1b"
 
 # OPTIONAL: Remote database
 IGOR_SWARM_DB_URL="postgresql://..."

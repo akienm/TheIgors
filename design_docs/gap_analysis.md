@@ -27,7 +27,7 @@ known deferred items from session notes, and architecture review.
 | Web UI | Starlette server, markdown rendering, WS activity feed | Complete |
 | Tools | bash runner, python runner, web search, gmail, discord, confluence, github, budget, filesystem, self_edit | Complete |
 | Arbiter | file-backed escalation queue | Complete |
-| Boot check | KoboldCpp + Ollama health on cluster machines | Complete |
+| Boot check | Ollama health on cluster machines | Complete |
 | Portable identity | SOUL.md + IDENTITY.md written at every boot | Complete |
 
 ---
