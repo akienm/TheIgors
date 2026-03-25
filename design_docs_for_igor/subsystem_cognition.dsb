@@ -1,6 +1,6 @@
 DOC|subsystem_cognition|v1|updated=2026-03-25
 META|inertia=MEDIUM|parent=architecture_root.dsb
-META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,tools/traversal_context.py,tools/os_primitives.py
+META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,tools/traversal_context.py,tools/os_primitives.py
 
 THALAMUS|
   purpose=classify intent + produce complexity signal
@@ -129,3 +129,14 @@ SCHEDULER_SOURCE|cognition/push_sources.py|added=2026-03-22a|D203
 TEMPORAL_GRADIENT|cognition/temporal_gradient.py
   purpose=single configurable decay primitive; replaces 6 special-cased decay impls
   status=file exists; integration into TWM/milieu/habit decay not yet complete (L-size deferred post-experiment-7)
+
+SELF_TEST|cognition/self_test.py|added=2026-03-25|D230/D231
+  purpose=consolidation of reading via Q&A testing; weaning signal for content internalization
+  entry=consolidate_content(content_id): main function; processes chapters through Q&A protocol
+  protocol=(1) Gemini Q generation from chapter summaries (2) Igor answers via cortex.search(shallow) (3) Gemini grading (4) edge strengthening (+0.02 miss, +0.01 partial, 0 correct) (5) blob_index status→"tested"
+  logging=self_test_log.jsonl per instance; {timestamp,content_id,chapter_idx,question_count,questions,igor_answers,grades,edges_updated,miss_count,miss_rate}
+  weaning_signal=<20% miss rate = content internalized; >50% miss rate = alert to watchlist
+  TODO=_generate_questions_via_gemini (awaiting GeminiSearchChannel implementation)
+  TODO=_grade_answers_via_gemini (awaiting GeminiSearchChannel implementation)
+  helpers=_get_cortex,_get_word_graph,_igor_answer_from_graph,_strengthen_edges_from_answer,_log_test_result,_update_blob_index_status
+  status=live: consolidate_content() callable; Q generation and grading stubs ready for GeminiSearchChannel integration
