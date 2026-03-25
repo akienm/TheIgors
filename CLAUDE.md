@@ -77,7 +77,7 @@ All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
 <!-- last-updated: 2026-03-15b -->
 - **Word graph**: `cognition/word_graph.py` — SQLite-backed two-tier; words + bigram chunks; same weights for parsing (habit scoring) and generation (predict_next).
 - **CC→Igor bridge**: `POST http://localhost:8080/api/cc_send` with `{"content": "..."}` — injects as author "claude-code"
-- **Tier ladder**: tier.1 habit/graph → tier.2 Ollama (local) → tier.3 OR cheap → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic direct (inhibited) → tier.6 arbiter alert
+- **Tier ladder (D234)**: tier.1 habit/graph → tier.2 Ollama (primary, always first) → tier.3 OR cheap (luxury — quality path only) → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic direct (inhibited) → tier.6 arbiter alert. OR fires only when: Ollama failed + user turn + medium/high complexity + budget ok. Background calls never escalate to OR.
 - **Habit types**: threshold | action | workflow | delegation | reactive | response | question | context_inject | cognitive | tool | passive_capture
 - **Intent gate (D074)**: threshold/workflow/delegation/reactive habits skip when parsed_intent is question-like
 
