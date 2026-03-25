@@ -508,3 +508,18 @@ G-WIN1|reading-integrator-windows-crash|open
 // T-trails-infra.csb.txt, T-interoception.csb.txt, T-inference-colocation-signal.csb.txt
 // issue-308.csb.txt, issue-334.csb.txt, issue-335.csb.txt
 // T-test-debt-tooling queued (S, worker-ready)
+
+// ── SESSION 2026-03-24n ────────────────────────────────────────────────────
+
+G-BUDGET-PATH1|budget-db-source-tree-leak|~~closed=2026-03-24n~~
+  was=budget.py used IGOR_DB_PATH to find db path; D224 removed IGOR_DB_PATH; fallback "memory/igor.db" wrote claude_budget.db into source tree
+  fix=_db_path() now uses paths().instance / "claude_budget.db"
+
+G-AKIEN-IDENTITY1|akien-identity-anchor-missing|~~closed=2026-03-24n~~
+  was=no durable FACTUAL/IDENTITY memory for who Akien is; session context decay caused Igor to greet him as stranger
+  fix=deposited IDENTITY node inertia=0.93 boot-critical via cc_send; explicit warning: never greet Akien as stranger
+
+G-STALE-SQLITE1|stale-sqlite-files-in-source-tree|open
+  was=after D224 SQLite removal, stale .db files remain in source tree: wild_igor/igor_memory.db, wild_igor/data/Igor-wild-0001.db, memory/claude_budget.db
+  also=~/.TheIgors/ root has generation_graph.db (83MB), wg_test.db, igor.db, igor_memory.db — all stale
+  ticket=T-stale-sqlite-cleanup (S, needs Akien review before delete)

@@ -1,3 +1,175 @@
+## Session 2026-03-24n
+**Theme**: Kindle browser automation debugging — discovered Calibre library
+**Next session**: Verify Igor uses open_book/read_chunk for Pratchett; commit browser.py + main.py; /audit
+**In-flight**: NONE
+
+## Session 2026-03-24l
+**Theme**: Sprint: 123 — instance vs class memory split
+**Key changes**:
+- sprint: closed 123 — MemoryScope enum + scope column + DB migration + 9 tests; commit 5d13b39
+**Next session**: 1. Commit + test browser profile fix (verify Amazon Kindle loads with Igor's session). 2. Continue whatever was interrupted by the ^C.
+**In-flight**: browser_use_task profile fix applied (profile_directory='Profile 1') — needs commit and live test
+
+## Session 2026-03-24k
+**Theme**: Sprint: T-bg-score-debug — add BG scoring dump to turn trace
+**Key changes**:
+- sprint: closed T-bg-score-debug — BG scoring dump in turn trace; 12 tests; commit 99562ca
+**In-flight**: NONE
+
+## Session 2026-03-24j
+**Theme**: Sprint: T-milieu-inspector — add get_milieu_state() tool
+**Key changes**:
+- sprint: closed T-milieu-inspector — get_milieu_state tool; 9 tests; commit 2a02d41
+**In-flight**: NONE
+
+## Session 2026-03-24i
+**Theme**: Sprint: T-ring-read-tool — expose ring memory read tool
+**Key changes**:
+- sprint: closed T-ring-read-tool — prim_ring_read tool added; commit 5101ad7
+**In-flight**: NONE
+
+## Session 2026-03-24h
+**Theme**: Sprint 122: Containerization eval
+**Key changes**:
+- sprint: closed 122 — containerization eval: proceed; D108+D126+D114 = already container-ready; S/M Dockerfile+compose ticket; post Slate 0
+- sprint: started T-thalamus-graph-weights
+- sprint: closed T-thalamus-graph-weights — relational-pronoun guard in thalamus._classify_intent; 11 tests; commit 3134b77
+- sprint: started T-inline-graph-write
+- sprint: closed T-inline-graph-write — store_memory+link_memory+embed_node tools; rate gate; 14 tests; commit a746070
+- sprint: started T-exit-habit-misfire
+- sprint: closed T-exit-habit-misfire — author_filter list fix in BG + PROC_EXIT_IGOR trigger tightened; commit 153f96e
+- sprint: started T-code-ref-validation
+- sprint: re-closed 122 — worker-daemon had reset to pending; result intact; containerization eval done
+- sprint: closed T-code-ref-validation — code_ref registry validation in openrouter_reasoner; commit 823109c
+**In-flight**: NONE
+
+## Session 2026-03-24g
+**Theme**: Sprint: T-routing-machines-json — machines.json schema update
+**Key changes**:
+- sprint: closed T-routing-machines-json — offline machines akienasus/akienpi now have full D211 schema fields
+- sprint: closed T-primitive-survey — catalog v1→v2; 21 primitives documented; 16 gaps ranked; prim_cc_post + prim_log highest priority
+**In-flight**: NONE
+
+## Session 2026-03-24f
+**Theme**: Theme: Teaching session — ticket repair diagnostic pattern with Igor
+**Key changes**:
+- sprint: closed T-daemon-supervisor, T-network-proxy, 337 — recovered stalled worker sessions; 251 tests pass
+**Next session**: Check minion results (T-distillation-daemon, T-daemon-supervisor, T-network-proxy, 337, 123). Continue Igor teaching: trails+gradients. Fix T-routing-machines-json offline machines.
+**In-flight**: NONE
+
+## Session 2026-03-24e
+**Theme**: Sprint 123: Instance vs class memory split — gather Igor's spec
+**In-flight**: NONE
+
+## Session 2026-03-24d
+**Theme**: Sprint T-daemon-supervisor: DaemonSupervisor thread lifecycle manager
+**Key changes**:
+- sprint: started T-network-proxy
+- sprint: started 337
+**In-flight**: NONE
+
+## Session 2026-03-24c
+**Theme**: Sprint T-tool-registry-proxy: ToolRegistry proxy — per-tool call rates, failures, latency
+**Key changes**:
+- sprint: T-tool-registry-proxy — ToolStats dataclass + ToolRegistry.execute() timing + get_tool_registry_report tool; 17 new tests, 199 total pass
+**In-flight**: NONE
+
+## Session 2026-03-24b
+**Theme**: Sprint T-template-extractor-habit: Igor recognizes and seeds Engram templates himself
+**Key changes**:
+- sprint: closed T-template-extractor-habit — 3 pattern-extractor habits + 2 new tools; 182 tests pass; pushed a0ea45c
+**Next session**: Next: restart Igor, verify D222 fires (browse_as_employer for Making Money QA). Then: complete QA session — confabulation loop + impulse-amplified lies need tickets. PROC_CLOUD_1E48C phantom habit still winning on greetings — delete it.
+**In-flight**: Igor needs restart to pick up D222 system prompt fix. After restart: send browse_as_employer tool call, verify Blobs counter increments.
+
+## Session 2026-03-24a
+**Theme**: Sprint T-cached-probe: CACHED_PROBE Engram template + resource monitor migration
+**Key changes**:
+- sprint: closed T-cached-probe — 6 CACHED_PROBE habits seeded; pushed 720405f
+**Next session**: Next: continue Making Money interpretation with Igor; run another upstream call analysis pass after next chat session; T-prim-turn-trace-read for worker
+**In-flight**: Igor mid-session on Making Money — just asked him to pull the Igor scenes, waiting for response
+
+## Session 2026-03-23i
+**Theme**: Sprint T-200: non-blocking concurrent turn processing
+**Key changes**:
+- sprint: closed T-200 — stdin debounce removed, per-thread worker dispatch, _STDIN_EOF sentinel
+- sprint: started 204
+- sprint: closed 204 — all 3 gaps already implemented in prior sessions; closed queue entry
+**In-flight**: NONE
+
+## Session 2026-03-23h
+**Theme**: Sprint: 336 — ResourceMonitorSource as continuous milieu contributor
+**Key changes**:
+- sprint: closed 336 — InteroceptionSource continuous milieu contributor, nudge_vad(), 16 tests
+- sprint: started 340
+- sprint: closed 340 — prim_twm_read updated (limit+format), PROC_STEW_READOUT trigger extended
+- sprint: closed 308 — hebbian bridge wg↔memory cross-activation (3-part, env-gated)
+- sprint: started T-orphan-threshold-fix
+- sprint: closed T-orphan-threshold-fix — orphan rescue always runs, 3 tests
+- sprint: started T-distillation-daemon
+**Next session**: 1. T-distillation-daemon (M) — metabolism fix, highest priority per Igor's own analysis. 2. T-orphan-threshold-fix (S) — quick win, insert safety. 3. Continue habit misfire audit (scan all habits without author_filter that have action keys).
+**In-flight**: NONE — teaching session closed cleanly
+
+## Session 2026-03-23g
+**Theme**: Sprint: 217 — Calibre ebook library scan + CSV catalog
+**Key changes**:
+- sprint: started 217
+- sprint: closed 217 — calibre_catalog.py + calibre_catalog.csv: 6404 books, 15 topic tags
+- sprint: started 232
+- sprint: closed 232 — /api/system_health endpoint + 6 tests
+- sprint: started T-language-spec
+- sprint: closed T-language-spec — design_docs/engram_language.md, 429 lines, 21 patterns, full spec
+- sprint: closed 186 — deps already installed; blocked on human Google Cloud Console setup
+- sprint: started T-greeting-space-tree
+- sprint: closed T-greeting-space-tree — GREETING_SPACE tree seeded, PROC_GREETING retired
+- sprint: started T-reader-as-habit-program
+- sprint: closed T-reader-as-habit-program — 4 reader habits seeded from templates, first Engram program complete
+- sprint: started 341
+- sprint: closed 341 — BoredomSource + foreman_scan + PROC_BOREDOM_FOREMAN seeded
+- sprint: closed 339 — basket schema D216, __status__ tracking in schema_runner.py
+**In-flight**: NONE
+
+## Session 2026-03-23f
+**Theme**: Sprint: T-220 G-HB3 PROC_RESP_WHO_AM_I vigilance fix
+**Key changes**:
+- sprint: closed 220 — who am i routed through context_inject + D072 vigilance
+- sprint: closed T-anticipation-pull — action-completion hookpoint, record_completion(), 7 tests
+- sprint: started 205
+- sprint: closed 205 — bare except/pass eliminated across 10 files
+- sprint: started 218
+- sprint: closed 218 — CSB files archived to design_docs/archive/
+**In-flight**: NONE
+
+## Session 2026-03-23e
+**Theme**: Sprint: 247 — Dashboard Cloud% label bug + p95 outlier guard
+**Key changes**:
+- sprint: closed 247 — dashboard cloud_mode/cloud_calls label fix + 16 tests
+**In-flight**: NONE
+
+## Session 2026-03-23d
+**Theme**: Sprint: T-anticipation-pull — anticipation/pull signal in NE
+**Key changes**:
+- sprint: closed T-anticipation-pull — anticipation.py + foreman integration + 16 tests
+**In-flight**: NONE
+
+## Session 2026-03-23c
+**Theme**: Sprint: T-routing-cluster-router — ClusterRouter score formula + in_use_now + route_batch
+**Key changes**:
+- sprint: closed T-routing-cluster-router — 63 tests added for score/in_use_now/route_batch
+**In-flight**: NONE
+
+## Session 2026-03-23b
+**Theme**: Sprint: T-habit-templates — seed 21 Engram patterns as TEMPLATE nodes
+**Key changes**:
+- sprint: closed T-template-seed-patterns + T-habit-templates — 21 Engram patterns seeded, committed, pushed
+**Next session**: 1. CC-to-CC experiment — akiendell CC loaded, figure out communication substrate. 2. T-anticipation-pull hookpoint redirect (anticipation.py f838af1 needs action-completion hookpoint). 3. Slate 0 DB work.
+**In-flight**: Windows CC (akiendell) loading context — CC-to-CC communication experiment is next, substrate not yet decided.
+
+## Session 2026-03-23a
+**Theme**: Sprint: T-routing-machine-in-use — seed location habits
+**Key changes**:
+- sprint: closed T-routing-machine-in-use — PROC_LOCATION_SET + PROC_LOCATION_CLEAR seeded, committed
+**In-flight**: NONE
+
 ## Session 2026-03-22a
 **Theme**: Primitive sweep + Engram crystallization: interoception, scheduler, 12 new primitives, wondering habits, colocation signal, yield closed, language named
 **Next session**: Next: T-template-schema (S, p2) — design TEMPLATE node structure with Igor; then T-template-seed-patterns (20 Engram patterns); T-language-spec (Engram grammar doc)

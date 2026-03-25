@@ -1168,6 +1168,28 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 
 ---
 
+### Session 2026-03-24n — Kindle automation abandoned; SQLite removed; D222 guard fix
+
+**Gaps closed:**
+
+- **G-BUDGET-PATH1 ~~CLOSED~~**: `budget.py` derived its DB path from `IGOR_DB_PATH` env var (fallback `"memory/igor.db"` relative). D224 removed `IGOR_DB_PATH` from `.env`; fallback wrote `wild_igor/memory/claude_budget.db` into the source tree. Fixed: `_db_path()` now uses `paths().instance / "claude_budget.db"` → `~/.TheIgors/igor_wild_0001/claude_budget.db`.
+
+**New gaps (open):**
+
+- **G-STALE-SQLITE1** (open): Several stale SQLite files remain in source tree after D224 migration: `wild_igor/igor_memory.db` (52K, Mar 7), `wild_igor/data/Igor-wild-0001.db` (712K, Mar 20), `wild_igor/memory/claude_budget.db` (24K, now fixed), `memory/claude_budget.db` (24K). These are dead files — nothing writes to them. Candidates for deletion after Akien review. Also: `~/.TheIgors/` root has `generation_graph.db` (83MB), `wg_test.db`, `igor.db`, `igor_memory.db` — all stale. Ticket: T-stale-sqlite-cleanup (S-size).
+
+- **G-AKIEN-IDENTITY1 ~~CLOSED~~**: Igor had no durable FACTUAL/IDENTITY memory anchoring who Akien is. PROC_* habits reference "Akien" in text but no core anchor node existed. When session context decayed, Igor greeted Akien as a stranger ("I'm shorry, you have me at a dishadvantage. I am Igor. And you are?"). Fixed 2026-03-24n: deposited durable IDENTITY node (inertia=0.93, boot-critical) via cc_send. Includes explicit failure-state warning: never greet Akien as stranger; gentle check if uncertain.
+
+**Key decisions this session:**
+- D223: Kindle Cloud Reader DOM = blob images; browser automation dead end; Calibre library has full Pratchett collection; use `open_book`/`read_chunk` directly.
+- D224: SQLite fully removed — 31 memories migrated to PG, `IGOR_DB_PATH` removed from `.env`.
+- D225: D222 LLM tool dispatch `not habit` guard removed — tools now fire even when a habit also ran.
+- D226: `PROC_BROWSER_TASK` trigger no longer matches `kindle` keyword — was intercepting `read_kindle_chunk` calls.
+
+*Updated: 2026-03-24n by Claude Code.*
+
+---
+
 ### Session 2026-03-21g — Design sprint (post-Akien signoff)
 
 **Gaps closed:** none (design-only session)
