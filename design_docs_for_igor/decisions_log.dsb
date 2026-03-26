@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-25
+DOC|decisions_log|v1|updated=2026-03-26
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -462,3 +462,12 @@ D235|containerization-approach|decided|Linux/Mac: Docker compose (Igor + Postgre
 D234|tier-ladder-inversion|decided|Ollama is primary inference (always available, local); OR is luxury/tone path (scarce, will exhaust); graph traversal is the long-term goal replacing both. Tier ladder: 1=habit/graph, 2=Ollama, 3=OR, 4=arbiter. Direction is one-way: graph expands, LLM usage shrinks. LLM calls are training signal for their own replacement.
 D235|containerization-approach|decided|Linux/Mac: Docker compose (Igor + Postgres + Ollama sibling); Windows: native Python/ps1 (D232 path) for OS-level agent access — Igor needs Windows network stack for 'both sides of the problem' use case. KoboldCpp removed entirely. Container is not optional post-Slate-0, it is the deployment model. Chrome shm-size handled via compose flag.
 D236|lisp-habit-fix|implemented|Fix Discworld lisp in 9 PROC_RESP_* habit action fields — DB update, no code change needed
+D237|machines-db-table|implemented|machines Postgres table as single source of truth for cluster routing config — replaces machines.json routing role and machine_overrides.json; seeded from verified SSH specs
+D238|simplified-cluster-router|implemented|cluster_router.py rewritten as rank-order walker — no scoring math; reads from machines DB via machine_manager.py; (None,None) only if all machines unreachable
+D239|dynamic-ollama-routing|implemented|OLLAMA_REASONING_HOST removed — ollama_reasoner.py, distillation.py, consolidation.py all call router.route() at call time; no frozen module-level clients
+D240|location-habit-routing|implemented-seeds|PROC_MACHINE_IN_USE + PROC_MACHINE_FREE seeded — Akien location signals trigger set/clear_machine_in_use DB writes in real time
+D241|ollama-reasoner-init-kwargs|live|OllamaReasoner.__init__ accepts model/host kwargs — fixes _t2=None boot bug causing both-inference-unavailable on every turn
+D242|logging-homogenization|live|Python logging hierarchy + ConsoleHandler + Channel inherits IgorBase — closes #343; every IgorBase subclass routes to area log + console for free
+D243|ne-deterministic-arc|live|NE builds arc from obs_list without LLM; IGOR_NE_LLM_ENABLED gates old promotion path; boredom impulses no longer trigger inference
+D244|ollama-keep-alive|live|keep_alive=-1 on all Ollama chat calls — pins model in VRAM, eliminates cold-start timeouts
+D245|tool-habit-type-for-factual-answers|implemented|habit_type='tool' bypasses intent gate for read-only tool habits; 'action' type correctly blocked on question intents; PROC_WHAT_TIME + 5 other question-answer habits migrated

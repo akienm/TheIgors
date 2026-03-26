@@ -14,11 +14,14 @@ seed_reactive_threshold_habits.py — Two new habit patterns:
 Run from repo root:
   python claudecode/seed_reactive_threshold_habits.py
 """
+
 import sys, os
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-os.environ.setdefault("IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"))
+os.environ.setdefault(
+    "IGOR_DB_PATH", str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db")
+)
 
 from wild_igor.igor.memory.models import Memory, MemoryType
 from wild_igor.igor.memory.cortex import Cortex
@@ -28,7 +31,6 @@ cortex = Cortex(DB_PATH, instance_id="wild-0001")
 
 habits = [
     # ── Reactive ──────────────────────────────────────────────────────────────
-
     Memory(
         id="PROC_WHAT_TIME",
         narrative=(
@@ -38,17 +40,15 @@ habits = [
         ),
         memory_type=MemoryType.PROCEDURAL,
         metadata={
-            "trigger": "what time is it time clock current time",
-            "habit_type": "action",
+            "trigger": "what time is it|what is the time|whats the time|current time|what time",
+            "habit_type": "tool",
             "code_ref": "tools.runner:get_current_time",
             "twm_ttl_seconds": 30,
             "why": "Reactive habit: fast tool dispatch + self-cleaning TWM entry",
             "inertia": 0.25,
         },
     ),
-
     # ── Threshold ─────────────────────────────────────────────────────────────
-
     Memory(
         id="PROC_CPU_THRESHOLD",
         narrative=(
@@ -78,7 +78,6 @@ habits = [
             "inertia": 0.30,
         },
     ),
-
     Memory(
         id="PROC_RAM_THRESHOLD",
         narrative=(
@@ -104,7 +103,6 @@ habits = [
             "inertia": 0.30,
         },
     ),
-
     Memory(
         id="PROC_SWAP_THRESHOLD",
         narrative=(
