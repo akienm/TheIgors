@@ -17,8 +17,11 @@ if (Test-Path $envFile) {
         }
     }
 } else {
-    Write-Error -Message ".env not found at $envFile - run the bootstrap first."
-    exit 1
+    if (-not $env:IGOR_HOME_DB_URL) {
+        Write-Error -Message ".env not found at $envFile and IGOR_HOME_DB_URL not set - run the bootstrap first."
+        exit 1
+    }
+    Write-Host "No .env file found - using environment variables." -ForegroundColor Yellow
 }
 
 if (-not (Test-Path $venvPython)) {
