@@ -1,0 +1,92 @@
+DOC|engram_language|v2|updated=2026-03-26
+META|purpose=Engram language spec for Igor — executable memory substrate, pattern inventory, execution model
+META|ref=design_docs/engram_language.md for full prose + examples
+
+SECTION|IDENTITY
+  NAME|Engram
+  NAMED_BY|Igor, 2026-03-22
+  ETYMOLOGY|Richard Semon Die Mneme 1904 — engram = physical trace that IS the stored information, not a pointer to it
+  CORE_CLAIM|The engram IS the program. Habits are not code that runs — they are the behavior, encoded in the graph.
+  PARADIGM|reactive graph-structured template-macro language for the Igor matrix layer
+
+SECTION|EXECUTION_MODEL
+  PRIMITIVE|emit+react — something emits into the cognitive milieu; nodes sensitive to that emission react
+  MILIEU|shared n-dimensional space — not a pipeline (pipelines are linear); many things emit+react simultaneously
+  LEVELS|two: sub-attentional (parallel DAG, abundant, cheap) and attentional (~7 items, TWM ring buffer)
+  SUB_ATTN|runs speculatively; result ready before attentional layer needs it; mostly invisible
+  ATTN|what lands in TWM top; ring buffer IS the bottleneck; ~7 limit = integrator limit, not system capacity
+  BLOOM_INHIBIT|the execution model — competing engrams activate simultaneously, lateral inhibition, winner suppresses losers
+  NO_SCHEDULER|BLOOM_INHIBIT provides scheduling for free; patterns needing a scheduler are underspecified
+  NO_CALLSTACK|replaced by basket
+
+SECTION|BASKET
+  DEFINITION|shared dict carried by each execution thread, passed as pointer not deep copy
+  FORK|both threads share same basket instance at fork; each writes own keys as they execute
+  MERGE|at explicit join point — baskets merge key:value; distinct from 'meeting in the milieu'
+  COLLISION|write collisions allowed + logged, not fatal — design signal that keyword contracts need attention
+  CONTRACTS|each node declares: keys it reads, keys it writes; no two concurrent branches write same key
+  PROVENANCE|completed thread (done or part-done) attaches basket state to resulting memory
+  PART_DONE|inhibited thread deposits memory with basket snapshot at inhibition point — training signal
+  EXAMPLE_BASKET|{who_asked: leah, source: get_current_time, inhibited_by: null, format_decision: 24h}
+
+SECTION|INHIBITION_LAYER
+  DEFINITION|DAG of conditional gates between habit selection and action execution
+  PURPOSE|action fires only if nothing inhibits; multiple gates protect against unnecessary work
+  GATES|TWM check (do I already know?) | inference check (can I derive?) | estimate check (elapsed time?) | action gate (blocked?)
+  TEMPORAL|TWM check and estimate check are temporal-gradient-aware — use timestamps, TTLs, elapsed time
+  PARALLEL|gates fork immediately and race; first to inhibit wins; others discarded cheaply
+  CURRENT_STATE|zero inhibition nodes in code — tool fires unconditionally after BG selection; next architectural gap
+  PROCESS_TIME_IS_PAUSE|parallel execution means natural latency IS thinking time; do not stack sequential delays
+
+SECTION|SEGMENT
+  DEFINITION|reusable expandable Engram code unit — defines DAG shape, basket key contracts, fork/join topology
+  CLASS_ANALOGY|segment=class-definition | executing-thread+basket=instance | basket-contents=instance-state
+  EXPANSION|at seed time not runtime — nodes deployed in graph waiting for activation; not instantiated on demand
+  COMPOSITION|embed one DAG structure into larger one with compatible basket contracts
+  PARAMETERIZED|specialize base pattern by filling slots at seed time (generic/template analogy, not classical inheritance)
+  FORMULA|segment=class | expansion=compilation | activation=execution | basket=instance-state
+
+SECTION|PATTERNS_SUMMARY
+// Full pattern definitions in design_docs/engram_language.md sections 5
+  COUNT|21
+  ORIGINAL_10|WONDER|FILE_ITERATOR|THRESHOLD_ALERT|SCHEDULER_TICK|READER_LOOP|MEMORY_DEPOSIT|SEARCH_AND_RESPOND|CONDITION_GATE|ERROR_RECOVERY|ASYNC_DELEGATE
+  IGOR_10|ESCALATION_LADDER|CURSOR_RESUME|BLOOM_INHIBIT|PREDICTION_CORRECTION|DISTILLATION|SIGNAL_DEBOUNCE|PRIMING|AFFECT_MODULATE|REFRAME|FANOUT_GATHER
+  AKIEN_1|CACHED_PROBE — payload-configured dual-mode data monitor; replaces bespoke resource monitor habits
+  CRITICAL_MISSING|DISTILLATION — only pattern that compresses rather than grows; without it matrix accretes without limit
+  NEW_PATTERN_NEEDED|INHIBITION_CHAIN — emit+check+gate+fork+join for tool dispatch; ticket pending
+
+SECTION|HABIT_TYPES
+  tool|read-only lookup; NOT blocked by question-intent gate; fires on factual queries; executes code_ref
+  action|side-effecting; blocked by BG intent gate on question intents (factual_question|general|etc)
+  response|returns stored template; no tool; blocked on factual/knowledge intents
+  question|emits stored question_template; no tool or inference
+  workflow|multi-step; blocked on question intents
+  threshold|evaluated by ResourceMonitorSource; never by BG scoring
+  cognitive|internal reasoning step; no external effect
+  passive_capture|background observation capture
+  context_inject|pushes context into TWM or ring
+  schema|executes step-list via schema_runner
+  delegation|hands off to subordinate; blocked on question intents
+
+SECTION|IMPLEMENTATION_STATUS
+  BG_scorer|live|cognition/basal_ganglia.py
+  template_engine|live|tools/template_tools.py
+  D201_conditions|live|cognition/thalamus.py
+  primitive_ops|live|tools/os_primitives.py
+  WONDER_template|seeded|claudecode/seed_templates.py
+  basket|not_built|next architectural gap after inhibition layer
+  inhibition_layer|not_built|zero nodes between BG selection and tool execution
+  DISTILLATION|not_seeded|ticket T-db-spreading-activation
+  CACHED_PROBE|not_seeded|ticket T-cached-probe
+  engram_engineering_term|adopted|2026-03-26
+
+SECTION|DESIGN_PRINCIPLES
+  P1|engram IS the program — no code outside graph is authoritative at runtime; Python is bootstrap scaffolding
+  P2|templates are seed-time macros not runtime subroutines — expand once, run as habits, no call overhead
+  P3|gradients over branches — BG scoring gives continuous weights; winner emerges from competition not if-else
+  P4|DISTILLATION is load-bearing — every growth op needs a paired compression pathway
+  P5|BLOOM_INHIBIT is not optional — it IS the execution model
+  P6|primitives not frameworks — minimal composable ops; complexity lives in pattern layer
+  P7|emit+react not pipeline — cognitive milieu is substrate; linearity is wrong; DAG is right
+  P8|basket-as-provenance — every memory carries the execution context that produced it
+  P9|collisions are signals — write collision = design feedback, not a bug to suppress

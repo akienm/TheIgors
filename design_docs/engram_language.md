@@ -414,7 +414,112 @@ HABIT PROC_DISTILL_DAILY {
 
 ---
 
-## 9. Design Principles
+## 9. Execution Model: Emit+React and the Cognitive Milieu
+
+*Added 2026-03-26. Supersedes the "cognition as pipeline" framing.*
+
+### The Fundamental Primitive
+
+**The cognitive milieu is the substrate. Emit+react is the primitive. Everything else is subtree shape.**
+
+Something emits into the shared cognitive space → nodes sensitive to that emission react → reactions may themselves emit → eventually something rises to the attentional layer → output.
+
+"Pipeline" was wrong because pipelines are linear. The milieu is n-dimensional: many things can emit and react simultaneously. The DAG is the correct shape.
+
+All cognitive reactions — greetings, tool calls, habit chains, memory surfaces, NE arcs — use the same emit+react pattern on different subtrees. What varies is subtree depth and shape, not the primitive.
+
+### Two Capacity Levels
+
+**Sub-attentional** — the DAG nodes. Parallel, abundant, fast, cheap, mostly invisible. TWM lookups, inhibition checks, "who asked", temporal gradient reads. Run speculatively — a check that races and loses is nearly free. By the time the attentional layer needs a result, the sub-attentional work is already done.
+
+**Attentional** — what lands in TWM at the top. The ~7-item limit applies here. The ring buffer models this bottleneck. What rises is the winner of the sub-attentional races, already resolved.
+
+The ~7 limit is the integrator's bottleneck, not the system's capacity. Akien: *"I can see them if I look hard, but even for me, I'm really only aware at this level with great focus."*
+
+### The Inhibition Layer
+
+Between habit selection and action execution lies a DAG of conditional gates — the inhibition layer. The action only fires if nothing inhibits it. Current code has zero inhibition nodes; tools fire unconditionally after habit selection. This is the next architectural gap.
+
+Example inhibition chain for `get_current_time`:
+```
+TWM check: do I already know? (episodic, temporal-aware)  →  yes → short-circuit
+Inference check: can I derive it?                         →  yes → short-circuit
+Estimate check: can I reason from elapsed time?           →  yes → short-circuit
+Action gate: is this action blocked?                      →  no  → proceed
+  → tool fires
+```
+
+Temporal gradient checks ("when did I last look?", "how long ago?") live here, not in inference.
+
+### Process Time Is the Pause
+
+Parallel execution means natural process latency IS the thinking time. Don't stack: `tool_call(500ms) + inference(800ms) + artificial_pause(500ms) = 1800ms` when `parallel = max(500, 800) = 800ms`. Fork at the earliest branch point, join at the latest necessary point. Start expensive operations as soon as you know you'll need them.
+
+---
+
+## 10. The Basket
+
+*Added 2026-03-26. Defines execution context for Engram threads.*
+
+### Structure
+
+Each execution thread carries a **basket**: a shared dict passed as a pointer, not a deep copy. When a fork happens, both threads hold a reference to the same basket instance. This correctly mirrors biological hardware constraints — brains don't deep-copy working context on a fork.
+
+### Fork and Merge
+
+- **Fork**: both threads share the basket pointer; as they execute, each writes its own keys
+- **Merge** (explicit join, distinct from "meeting in the milieu"): baskets merge key by key at the join point
+- **Write collision**: allowed and logged, not fatal. Two branches writing the same key is a design signal — the keyword contracts need attention. Log the collision; look for logic failures downstream. Repeated collisions on the same key mean the subtree was designed wrong.
+
+### Keyword Contracts
+
+Each node declares: which basket keys it reads, which it writes. No two concurrent branches should write the same key — this is the design-time invariant. Enforcement is by contract discipline at the design layer, not by runtime locking.
+
+### Basket as Provenance
+
+When a thread completes (done or part-done), the basket state at completion attaches to the resulting memory as provenance.
+
+```
+episodic_result.basket = {
+  who_asked: "leah",
+  source: "get_current_time",
+  inhibited_by: null,
+  format_decision: "24h",
+  resolved_at: 1711461803.4
+}
+```
+
+"Why did Igor say 14:23?" → read the basket on that episodic record.
+
+**Part-done is a valid result state.** An inhibited thread deposits a memory with the basket snapshot at point of inhibition: "I was going to do X, got stopped by Y, here's what I knew when I stopped." That's a training signal: this basket state → this inhibition = pattern to learn.
+
+---
+
+## 11. Engram Segment as Composable Unit
+
+*Added 2026-03-26.*
+
+An **Engram segment** is a reusable, expandable piece of Engram code. The "class?" question:
+
+| OOP concept | Engram equivalent |
+|---|---|
+| Class definition | Segment — defines DAG shape, basket keys, fork/join topology |
+| Runtime instantiation | Activation — thread spins up carrying a basket |
+| Object instance | Executing thread + basket |
+| Instance state (fields) | Basket contents |
+| Subclassing/inheritance | Parameterized expansion at seed time |
+| Method call | Emission into the milieu that activates a node |
+| Call stack | Absent — replaced by basket |
+
+**Key difference from OOP classes**: classes instantiate on demand at runtime. Engram segments expand once at seed time — the nodes are already deployed in the graph, waiting for the right emission to activate them. "Instantiation" happened at deposit time.
+
+**Segment = class. Expansion = compilation. Activation = execution. Basket = instance state.**
+
+A segment is class-like but with the call stack replaced by the basket. Composing segments means embedding one DAG structure into a larger one, with compatible basket contracts.
+
+---
+
+## 12. Design Principles
 
 1. **The engram IS the program.** No code outside the graph is authoritative at runtime. Python is bootstrap scaffolding that comes down as the graph densifies.
 
