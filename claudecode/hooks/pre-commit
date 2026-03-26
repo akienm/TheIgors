@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# pre-commit hook: sync ~/.claude/skills/ into claudecode/cc_skills/ before every commit.
+# Install: ln -sf ../../claudecode/hooks/pre-commit .git/hooks/pre-commit
+# (run from repo root, or let install_igor_linux.sh do it)
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+SKILLS_SRC="$HOME/.claude/skills"
+SKILLS_DST="$REPO_ROOT/claudecode/cc_skills"
+
+if [ -d "$SKILLS_SRC" ]; then
+    rsync -a --delete "$SKILLS_SRC/" "$SKILLS_DST/"
+    git add "$SKILLS_DST"
+fi
