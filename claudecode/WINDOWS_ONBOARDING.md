@@ -5,6 +5,63 @@ You are Claude Code running in an elevated PowerShell with `--dangerously-skip-p
 Complete the entire bootstrap autonomously. Do not wait for Akien. Do not ask for confirmation.
 If a step fails, diagnose and fix it before moving on.
 
+The repo root on this machine is wherever `WINDOWS_ONBOARDING.md` lives — find it with:
+```powershell
+$repoRoot = Split-Path -Parent (Get-Item $PSCommandPath -ErrorAction SilentlyContinue).FullName
+# If that fails (interactive session), ask Akien for the path or check common locations:
+# C:\Users\akien\OneDrive\AkiensWorkshop\dev\src\TheIgors
+# C:\automation\local\TheIgors
+```
+
+---
+
+## Step 0 — Install Claude Code skills and settings
+
+This installs the same slash-command skills that the Linux Claude Code instance uses.
+Skills live in the repo at `claudecode/cc_skills/` and must be copied to `~/.claude/skills/`.
+
+```powershell
+$skillsSrc = "$repoRoot\claudecode\cc_skills"
+$skillsDst = "$env:USERPROFILE\.claude\skills"
+New-Item -ItemType Directory -Force -Path $skillsDst | Out-Null
+Copy-Item -Recurse -Force "$skillsSrc\*" "$skillsDst\"
+Write-Host "Skills installed to $skillsDst" -ForegroundColor Green
+ls $skillsDst
+```
+
+Then create `~/.claude/settings.json` if it doesn't exist.
+The Windows settings omit the Linux-specific hooks (they reference `/home/akien` paths):
+
+```powershell
+$settingsPath = "$env:USERPROFILE\.claude\settings.json"
+if (-not (Test-Path $settingsPath)) {
+    $settings = @'
+{
+    "skipDangerousModePermissionPrompt": true,
+    "permissions": {
+        "allow": [
+            "Bash(git add*)",
+            "Bash(git commit*)",
+            "Bash(git pull*)",
+            "Bash(git push*)",
+            "Bash(git diff*)",
+            "Bash(git status*)",
+            "Bash(git log*)",
+            "Bash(git stash*)"
+        ]
+    }
+}
+'@
+    $settings | Out-File -FilePath $settingsPath -Encoding UTF8
+    Write-Host "settings.json created" -ForegroundColor Green
+} else {
+    Write-Host "settings.json already exists — not overwriting" -ForegroundColor Yellow
+}
+```
+
+After this step, skills like `/savestate`, `/commit`, `/context-load`, `/decided` will work in this session.
+**Restart Claude Code after installing skills** — they load at startup, not hot.
+
 ---
 
 ## Credentials
