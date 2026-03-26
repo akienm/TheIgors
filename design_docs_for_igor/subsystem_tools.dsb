@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-24n
+DOC|subsystem_tools|v1|updated=2026-03-26e
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -90,4 +90,6 @@ KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 // browser fully working 2026-03-14g: upgraded to 0.12.2; gpt-4o-mini LLM; Gemini navigation confirmed
 // G-BRW1 open: CC bridge fires PROC_GREETING for action requests at tier.2; workaround=call learn_about() directly from venv
 CLUSTER_SSH|tools/cluster_ssh.py; ssh_exec(machine,command)+cluster_status()+ssh_exec_all(windows_cmd,linux_cmd)+update_swarm(); D204
+SELF_TRAINING|tools/self_trainer.py; run_self_training_pass() — scans interaction.YYYYMMDD.log, extracts knowledge gaps from cloud turns (cost>threshold, input>MIN_LEN), deposits FACTUAL memories; habit PROC_SELF_TRAINING fires every 30min via SchedulerSource; T-self-training-loop
+OUTPUT_TRAINING|tools/output_trainer.py; run_output_training_pass() — scans cloud turns (short input 10-80 chars, response<200 chars), seeds RESPONSE habits (tier.1 no-inference); dedup=TRIGGER_OVERLAP_DEDUP(3) tokens; habit PROC_OUTPUT_TRAINING fires every 45min; T-output-trainer 2026-03-26e
 DECISIONS|D030,D204
