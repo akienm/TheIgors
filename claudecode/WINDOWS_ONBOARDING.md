@@ -62,6 +62,22 @@ if (-not (Test-Path $settingsPath)) {
 After this step, skills like `/savestate`, `/commit`, `/context-load`, `/decided` will work in this session.
 **Restart Claude Code after installing skills** — they load at startup, not hot.
 
+Also install the pre-commit hook so skills stay in sync with the repo automatically:
+```powershell
+# From repo root:
+$hookSrc = "..\..\claudecode\hooks\pre-commit"
+$hookDst = ".git\hooks\pre-commit"
+if (-not (Test-Path $hookDst)) {
+    # Git hooks on Windows are shell scripts — need Git Bash or WSL to run them.
+    # Copy the hook script and wrap it for Windows Git:
+    Copy-Item "$repoRoot\claudecode\hooks\pre-commit" "$repoRoot\.git\hooks\pre-commit"
+    Write-Host "pre-commit hook installed" -ForegroundColor Green
+} else {
+    Write-Host "pre-commit hook already exists" -ForegroundColor Yellow
+}
+```
+Note: Windows Git runs hooks via Git Bash (sh.exe bundled with Git for Windows) — the hook will work as long as `rsync` is available. If rsync is missing, the hook silently skips the sync step (it checks `[ -d "$SKILLS_SRC" ]` first). On Windows you can install rsync via: `winget install RsyncProject.Rsync`
+
 ---
 
 ## Credentials
