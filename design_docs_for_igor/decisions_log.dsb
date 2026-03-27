@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-26
+DOC|decisions_log|v1|updated=2026-03-27
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -476,3 +476,6 @@ D247|basket-execution-context|decided|each thread carries shared-dict pointer (n
 D248|inhibition-layer-design|decided|DAG of conditional gates between BG selection and tool execution; temporal-aware; nodes start as stubs returning default; arriving at node IS the condition (trigger is the gate); simplest nodes are 'if true emit X into milieu'
 D249|engram-segment-composition|decided|segment=class-definition; expansion=compilation; activation=execution; basket=instance-state; practice named engram engineering; implementation need not follow biology at node level — stubs ok, Igor extends
 D250|basket-key-taxonomy|decided|basket keys use concern-tree taxonomy (requester/system/tool/twm/format/affect), not generator_node_id; node ID is provenance on the value; Python module.attribute analogy; write collision on same concern.slot = design signal
+D246|budget-warn-absolute-floor|live|Budget warn threshold changed from percentage-based (20% of total_purchased) to absolute $10 floor — percentage was wrong for cumulative-purchase OR accounts
+D247|greeting-tier1-response-habit|live|GREETING_STANDARD changed to habit_type=response with trigger_only match + direct response_template — hello/hi/hey answered at tier.1 with zero inference
+D248|curiosity-drain-habit|live|PROC_CURIOSITY_DRAIN: SchedulerSource tool habit fires learn_top_gap() every 30 min — reads highest-salience NARRATIVE_GAP from TWM, queues topic to reading_list as igor_self

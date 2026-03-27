@@ -95,7 +95,8 @@ def cmd_list(args):
     for t in tasks_sorted:
         icon = STATUS_ICON.get(t["status"], "?")
         size = t.get("size", "?")
-        print(f"  {icon} [{t['id']}] ({size}) {t['title']}  [{t['status']}]")
+        epic = f" #{t['epic']}" if t.get("epic") else ""
+        print(f"  {icon} [{t['id']}] ({size}){epic} {t['title']}  [{t['status']}]")
         if t["status"] == "blocked" and t.get("result"):
             print(f"       BLOCKED: {t['result']}")
         if t["status"] == "done" and t.get("result"):
@@ -431,6 +432,27 @@ COMMANDS = {
     "reset": cmd_reset,
     "reset-stale": cmd_reset_stale,
 }
+
+
+def cmd_set_epic(args):
+    """Set the epic tag on one or more tickets: set-epic <epic> <id> [<id> ...]"""
+    if len(args) < 2:
+        print("Usage: set-epic <epic> <ticket-id> [<ticket-id> ...]")
+        sys.exit(1)
+    epic, ids = args[0], args[1:]
+    tasks = _load()
+    idx = {t["id"]: t for t in tasks}
+    for tid in ids:
+        if tid not in idx:
+            print(f"  not found: {tid}")
+            continue
+        idx[tid]["epic"] = epic
+        print(f"  {tid} → #{epic}")
+    _save(tasks)
+
+
+COMMANDS["set-epic"] = cmd_set_epic
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
