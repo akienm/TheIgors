@@ -159,6 +159,8 @@ if (-not (Test-Path $envFile)) {
         "IGOR_SELF_EDIT_ENABLED=false",
         "IGOR_TIER5_ENABLED=false",
         "IGOR_ARBITER_ENABLED=false",
+        "IGOR_HOME_DB_URL=$dbUrl",
+        "IGOR_LOCAL_DB_URL=$dbUrl",
         "",
         "# Models",
         "OLLAMA_LOCAL_MODEL=qwen2.5:7b",
