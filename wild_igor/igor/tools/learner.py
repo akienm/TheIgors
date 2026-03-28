@@ -809,7 +809,7 @@ def add_to_reading_list(**kwargs) -> str:
     try:
         with _igor_db_proxy()() as conn:
             row = conn.execute(
-                "SELECT MAX(CAST(SUBSTR(id,4) AS INTEGER)) FROM reading_list"
+                "SELECT MAX(CAST(SUBSTRING(id FROM 4) AS INTEGER)) FROM reading_list WHERE id ~ '^RL_[0-9]+$'"
             ).fetchone()
             max_n = row[0] or 0
             new_id = f"RL_{max_n + 1:03d}"
@@ -1012,6 +1012,842 @@ def annotate_learning(**kwargs) -> str:
         return f"Noted. Deposited as personal experience [{mem_id}]: {narrative[:120]}"
     except Exception as e:
         return f"Error depositing experience: {e}"
+
+
+def learn_top_gap(**_kwargs) -> str:
+    """
+    Self-directed curiosity drain. Reads the highest-salience unexpired NARRATIVE_GAP
+    from TWM (twm_observations), extracts the question, adds it to reading_list.
+    Called by SchedulerSource via PROC_CURIOSITY_DRAIN every 30 min.
+    """
+    import time as _time
+
+    try:
+        with _igor_db_proxy()() as conn:
+            row = conn.execute(
+                """SELECT content_csb FROM twm_observations
+                   WHERE content_csb LIKE %s
+                     AND (expires_at IS NULL OR expires_at > to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+                   ORDER BY salience DESC LIMIT 1""",
+                ("NARRATIVE_GAP|%",),
+            ).fetchone()
+    except Exception as e:
+        return f"[learn_top_gap] DB error: {e}"
+
+    if not row:
+        return "[learn_top_gap] no active gaps — nothing to queue"
+
+    content = row[0] if isinstance(row, (list, tuple)) else row["content_csb"]
+    # Parse: NARRATIVE_GAP|question=...|salience=...|threat=...
+    question = ""
+    for part in content.split("|"):
+        if part.startswith("question="):
+            question = part[len("question=") :]
+            break
+
+    if not question:
+        return f"[learn_top_gap] could not parse question from: {content[:80]}"
+
+    result = add_to_reading_list(
+        title=question,
+        book_type="curiosity",
+        encoding_arousal=0.5,
+        priority=30,
+        added_by="igor_self",
+        notes="Self-queued from NARRATIVE_GAP",
+    )
+
+    try:
+        from ..cognition.forensic_logger import log_anomaly as _la
+
+        _la(kind="CURIOSITY_QUEUED", detail=f"queued: {question[:120]} → {result}")
+    except Exception:
+        pass
+
+    return result
+
+
+registry.register(
+    Tool(
+        name="learn_top_gap",
+        description="Self-directed curiosity drain: reads highest-salience NARRATIVE_GAP from TWM and queues topic to reading_list. Called by SchedulerSource via PROC_CURIOSITY_DRAIN.",
+        parameters={"type": "object", "properties": {}},
+        fn=learn_top_gap,
+    )
+)
+
+
+# ── Arch doc ingest ────────────────────────────────────────────────────────────
+
+# Files in design_docs_for_igor/ that Igor should know as self-defining material.
+# Tuple: (relative_path, priority, encoding_arousal)
+_ARCH_DOCS = [
+    # Core identity — highest priority
+    ("design_docs_for_igor/igor_identity_master.dsb", 1, 0.95),
+    ("design_docs_for_igor/decisions_log.dsb", 1, 0.95),
+    ("design_docs_for_igor/ethical_framework.dsb", 1, 0.95),
+    # Architecture + capabilities
+    ("design_docs_for_igor/architecture_root.dsb", 2, 0.90),
+    ("design_docs_for_igor/capabilities_index.dsb", 2, 0.90),
+    ("design_docs_for_igor/cognition_pipeline.dsb", 2, 0.90),
+    ("design_docs_for_igor/engram_language.dsb", 2, 0.90),
+    ("design_docs_for_igor/inertia_registry.dsb", 2, 0.88),
+    # Subsystems + supporting docs
+    ("design_docs_for_igor/gap_analysis.dsb", 3, 0.85),
+    ("design_docs_for_igor/glossary.dsb", 3, 0.85),
+    ("design_docs_for_igor/failure_modes.dsb", 3, 0.85),
+    ("design_docs_for_igor/dev_process.dsb", 3, 0.83),
+    ("design_docs_for_igor/subsystem_cognition.dsb", 3, 0.83),
+    ("design_docs_for_igor/subsystem_memory.dsb", 3, 0.83),
+    ("design_docs_for_igor/subsystem_inference.dsb", 3, 0.83),
+    ("design_docs_for_igor/subsystem_tools.dsb", 3, 0.80),
+    ("design_docs_for_igor/subsystem_reading.dsb", 3, 0.80),
+    ("design_docs_for_igor/subsystem_self_edit.dsb", 3, 0.80),
+    ("design_docs_for_igor/subsystem_cluster.dsb", 3, 0.78),
+    ("design_docs_for_igor/subsystem_web_network.dsb", 3, 0.75),
+]
+
+_REPO_ROOT = Path(__file__).parent.parent.parent.parent
+
+
+def ingest_arch_docs(**_kwargs) -> str:
+    """
+    Queue Igor's own architecture docs into reading_list at high encoding_arousal.
+    Idempotent — skips entries already present by source URL.
+    Called once at setup or on demand. NOT scheduled.
+    """
+    queued = []
+    skipped = []
+    errors = []
+
+    # Fetch already-queued sources to avoid duplicates
+    try:
+        with _igor_db_proxy()() as conn:
+            rows = conn.execute(
+                "SELECT source FROM reading_list WHERE book_type = 'igor-architecture'"
+            ).fetchall()
+        existing_sources = {r[0] for r in rows if r[0]}
+    except Exception as e:
+        return f"[ingest_arch_docs] DB error fetching existing: {e}"
+
+    for rel_path, priority, arousal in _ARCH_DOCS:
+        full_path = _REPO_ROOT / rel_path
+        source_url = f"file://{full_path}"
+
+        if source_url in existing_sources:
+            skipped.append(rel_path)
+            continue
+
+        if not full_path.exists():
+            errors.append(f"missing: {rel_path}")
+            continue
+
+        # Use filename stem as title for readability
+        title = full_path.stem.replace("_", " ").title()
+        result = add_to_reading_list(
+            title=title,
+            source=source_url,
+            book_type="igor-architecture",
+            encoding_arousal=arousal,
+            priority=priority,
+            added_by="arch_ingest",
+            notes=f"Igor self-architecture doc — {rel_path}",
+        )
+        if result.startswith("Error"):
+            errors.append(f"{rel_path}: {result}")
+        else:
+            queued.append(result)
+
+    summary = f"[ingest_arch_docs] queued={len(queued)} skipped={len(skipped)} errors={len(errors)}"
+    try:
+        from ..cognition.forensic_logger import log_anomaly as _la
+
+        _la(
+            kind="ARCH_INGEST_DONE",
+            detail=summary + (f" | errors: {errors}" if errors else ""),
+        )
+    except Exception:
+        pass
+
+    return summary
+
+
+registry.register(
+    Tool(
+        name="ingest_arch_docs",
+        description="Queue Igor's own architecture design docs (decisions_log, capabilities_index, subsystem docs, etc.) into reading_list at high priority and encoding_arousal. Idempotent — safe to call multiple times.",
+        parameters={"type": "object", "properties": {}},
+        fn=ingest_arch_docs,
+    )
+)
+
+
+# ── Self-directed gap flagging ──────────────────────────────────────────────────
+
+_GAP_FLAG_SALIENCE_THRESHOLD = 0.7
+_GAP_FLAG_COOLDOWN_SEC = 900  # don't re-flag the same question within 15 min
+_gap_flag_last: dict[str, float] = {}  # question → last flagged timestamp
+
+
+def flag_top_gap(**_kwargs) -> str:
+    """
+    If the highest-salience unexpired NARRATIVE_GAP exceeds the threshold, post
+    an 'I noticed:' message to the channel so Akien sees Igor noticing things.
+    Called by SchedulerSource via PROC_FLAG_ANOMALY every 5 min.
+    Writes directly to channel_messages (Postgres) + messages.jsonl.
+    """
+    import json as _json
+    import time as _time
+    from datetime import datetime, timezone
+
+    # Query highest-salience unexpired NARRATIVE_GAP
+    try:
+        with _igor_db_proxy()() as conn:
+            row = conn.execute(
+                """SELECT content_csb, salience FROM twm_observations
+                   WHERE content_csb LIKE %s
+                     AND (expires_at IS NULL OR expires_at > to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+                   ORDER BY salience DESC LIMIT 1""",
+                ("NARRATIVE_GAP|%",),
+            ).fetchone()
+    except Exception as e:
+        return f"[flag_top_gap] DB error: {e}"
+
+    if not row:
+        return "[flag_top_gap] no active gaps"
+
+    content = row[0] if isinstance(row, (list, tuple)) else row["content_csb"]
+    salience = float(row[1] if isinstance(row, (list, tuple)) else row["salience"])
+
+    if salience < _GAP_FLAG_SALIENCE_THRESHOLD:
+        return f"[flag_top_gap] top gap salience={salience:.2f} below threshold — quiet"
+
+    # Parse question
+    question = ""
+    for part in content.split("|"):
+        if part.startswith("question="):
+            question = part[len("question=") :]
+            break
+    if not question:
+        return f"[flag_top_gap] could not parse question from: {content[:80]}"
+
+    # Cooldown — don't spam the same question
+    now = _time.time()
+    if (
+        question in _gap_flag_last
+        and now - _gap_flag_last[question] < _GAP_FLAG_COOLDOWN_SEC
+    ):
+        return f"[flag_top_gap] cooldown active for: {question[:60]}"
+    _gap_flag_last[question] = now
+
+    message = f"[Igor notices] {question} (salience={salience:.2f})"
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Write to Postgres channel_messages
+    try:
+        import os as _os
+        import psycopg2 as _pg
+
+        pg_url = _os.environ.get("IGOR_HOME_DB_URL", "") or _os.environ.get(
+            "IGOR_DB_URL", ""
+        )
+        if pg_url:
+            conn_pg = _pg.connect(pg_url)
+            with conn_pg:
+                with conn_pg.cursor() as c:
+                    c.execute(
+                        "INSERT INTO channel_messages (ts, author, type, content) VALUES (%s, %s, %s, %s)",
+                        (ts, "igor", "message", message),
+                    )
+            conn_pg.close()
+    except Exception:
+        pass  # non-fatal — JSONL write below is the backup
+
+    # Write to JSONL channel file
+    try:
+        channel_file = paths().cc_channel / "messages.jsonl"
+        channel_file.parent.mkdir(parents=True, exist_ok=True)
+        entry = _json.dumps(
+            {"ts": ts, "author": "igor", "type": "message", "content": message},
+            ensure_ascii=False,
+        )
+        with open(channel_file, "a", encoding="utf-8") as f:
+            f.write(entry + "\n")
+    except Exception:
+        pass  # non-fatal
+
+    try:
+        from ..cognition.forensic_logger import log_anomaly as _la
+
+        _la(kind="GAP_FLAGGED", detail=f"salience={salience:.2f} q={question[:120]}")
+    except Exception:
+        pass
+
+    return f"[flag_top_gap] flagged: {question[:80]}"
+
+
+registry.register(
+    Tool(
+        name="flag_top_gap",
+        description="Check if any high-salience NARRATIVE_GAP exists in TWM; if so, post '[Igor notices]: {question}' to the channel as author=igor. Called every 5 min by PROC_FLAG_ANOMALY.",
+        parameters={"type": "object", "properties": {}},
+        fn=flag_top_gap,
+    )
+)
+
+
+# ── Nightly turn-trace self-review ─────────────────────────────────────────────
+
+
+def _parse_turn_trace_logs(log_dirs: list, since_hours: int = 24) -> list[dict]:
+    """
+    Walk turn_trace.*.log files in log_dirs modified within since_hours.
+    Return list of parsed turn dicts for cloud-escape turns
+    (reasoning.tier contains 'cloud' AND habit_exec has no habit_id).
+    """
+    import glob as _glob
+    import json as _json
+    import re as _re
+    import time as _time
+
+    cutoff = _time.time() - since_hours * 3600
+    escapes = []
+
+    for log_dir in log_dirs:
+        pattern = str(Path(log_dir) / "turn_trace.*.log")
+        for fpath in _glob.glob(pattern):
+            try:
+                if Path(fpath).stat().st_mtime < cutoff:
+                    continue
+                text = Path(fpath).read_text(encoding="utf-8", errors="replace")
+                parts = _re.split(r"(?=^=== turn )", text, flags=_re.MULTILINE)
+                dec = _json.JSONDecoder()
+                for part in parts:
+                    if not part.strip():
+                        continue
+                    m = _re.match(r"^=== turn ([^\s]+)[^\n]+\n(.*)", part, _re.DOTALL)
+                    if not m:
+                        continue
+                    turn_id = m.group(1)
+                    body = m.group(2).strip()
+                    try:
+                        obj, _ = dec.raw_decode(body)
+                    except Exception:
+                        continue
+                    reasoning_tier = obj.get("reasoning", {}).get("tier", "")
+                    habit_id = obj.get("habit_exec", {}).get("habit_id", "")
+                    if "cloud" in reasoning_tier and not habit_id:
+                        escapes.append(
+                            {
+                                "turn_id": turn_id,
+                                "ts": obj.get("ts", ""),
+                                "input": obj.get("input", "")[:200],
+                                "intent": obj.get("thalamus", {}).get("intent", ""),
+                                "routing_tier": obj.get("routing", {}).get("tier", ""),
+                                "cost_usd": obj.get("TOTAL", {}).get("cost_usd", 0.0),
+                                "bg_winner": obj.get("bg_scoring", {}).get(
+                                    "winner", ""
+                                ),
+                            }
+                        )
+            except Exception:
+                continue
+
+    return escapes
+
+
+def review_turn_traces(**_kwargs) -> str:
+    """
+    Nightly self-review: scan recent turn traces for cloud escalations where no
+    habit fired. Each unique escape is added to reading_list as book_type=cloud-escape-gap
+    so Akien and Claude can review and build plugs. Deposits one summary NARRATIVE_GAP
+    into twm_observations so PROC_FLAG_ANOMALY surfaces it.
+    Called by SchedulerSource via PROC_TRACE_REVIEW once per day.
+    """
+    import time as _time
+    from datetime import datetime, timezone
+
+    log_dirs = [
+        paths().runtime / "logs",  # ~/.TheIgors/logs/ (legacy)
+        paths().logs,  # ~/.TheIgors/local/logs/ (current)
+    ]
+    escapes = _parse_turn_trace_logs(log_dirs, since_hours=24)
+    if not escapes:
+        return "[review_turn_traces] no cloud escapes in last 24h"
+
+    # Fetch already-queued trace sources to avoid duplicates
+    try:
+        with _igor_db_proxy()() as conn:
+            rows = conn.execute(
+                "SELECT source FROM reading_list WHERE book_type = 'cloud-escape-gap'"
+            ).fetchall()
+        existing_sources = {r[0] for r in rows if r[0]}
+    except Exception as e:
+        return f"[review_turn_traces] DB error fetching existing: {e}"
+
+    queued = []
+    for esc in escapes:
+        source = f"trace://{esc['turn_id']}"
+        if source in existing_sources:
+            continue
+        inp_clean = esc["input"].replace("\n", " ")[:120]
+        title = f"Cloud escape [{esc['intent']}]: {inp_clean}"
+        result = add_to_reading_list(
+            title=title,
+            source=source,
+            book_type="cloud-escape-gap",
+            encoding_arousal=0.6,
+            priority=10,
+            added_by="trace_review",
+            notes=f"tier={esc['routing_tier']} bg={esc['bg_winner'][:30]} ts={esc['ts']}",
+        )
+        if not result.startswith("Error"):
+            queued.append(esc["turn_id"])
+            existing_sources.add(source)
+
+    # Deposit a summary NARRATIVE_GAP into TWM so flag_top_gap can surface it
+    if queued:
+        summary_q = f"I escalated to cloud {len(queued)} time(s) recently without a habit firing — what plugs are missing?"
+        try:
+            ts_now = datetime.now(timezone.utc)
+            expires = ts_now.strftime("%Y-%m-%dT%H:%M:%S")  # will be extended below
+            from datetime import timedelta
+
+            expires = (ts_now + timedelta(hours=6)).strftime("%Y-%m-%dT%H:%M:%S")
+            with _igor_db_proxy()() as conn:
+                conn.execute(
+                    """INSERT INTO twm_observations
+                       (content_csb, salience, expires_at, timestamp, source, urgency)
+                       VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (
+                        f"NARRATIVE_GAP|question={summary_q}|salience=0.75|threat=0.1",
+                        0.75,
+                        expires,
+                        ts_now.strftime("%Y-%m-%dT%H:%M:%S"),
+                        "trace_review",
+                        0.5,
+                    ),
+                )
+        except Exception:
+            pass  # non-fatal — reading_list entries are the durable artifact
+
+    summary = (
+        f"[review_turn_traces] new_escapes={len(queued)} total_found={len(escapes)}"
+    )
+    try:
+        from ..cognition.forensic_logger import log_anomaly as _la
+
+        _la(kind="TRACE_REVIEW_DONE", detail=summary)
+    except Exception:
+        pass
+
+    return summary
+
+
+registry.register(
+    Tool(
+        name="review_turn_traces",
+        description="Nightly self-review: scan turn trace logs for cloud escalations with no habit firing; deposit each as cloud-escape-gap in reading_list and post a summary NARRATIVE_GAP to TWM. Called daily by PROC_TRACE_REVIEW.",
+        parameters={"type": "object", "properties": {}},
+        fn=review_turn_traces,
+    )
+)
+
+
+# ── Calibre Igor-tagged book ingest ────────────────────────────────────────────
+
+_CALIBRE_DB = Path(
+    "/home/akien/.TheIgors/akien/onedrive/AkiensMedia/Ebooks"
+    "/Calibre Portable/Calibre Library/metadata.db"
+)
+
+# Tag sets for secondary-tier classification of Igor-tagged books.
+# Checked in priority order — first match wins.
+_CALIBRE_PROG_SUBJECTS = {
+    "computers",
+    "programming",
+    "software",
+    "computer science",
+    "python",
+    "javascript",
+    "java",
+    "c#",
+    "c++",
+    "ruby",
+    "algorithms",
+    "data structures",
+    "machine learning",
+    "artificial intelligence",
+    "web development",
+    "computer programming",
+    "software engineering",
+    "open source",
+    "linux",
+    "unix",
+    "database",
+    "electronics",
+    "electrical",
+    "engineering",
+    "circuits",
+}
+_CALIBRE_PROG_TITLE_KW = {
+    "python",
+    "javascript",
+    "java",
+    "linux",
+    "unix",
+    "algorithm",
+    "programming",
+    "software",
+    "coding",
+    "developer",
+    "kubernetes",
+    "docker",
+    "sql",
+    "api",
+    "devops",
+    "agile",
+    "c#",
+    ".net",
+    "wpf",
+    "asp.net",
+    "selenium",
+    "playwright",
+    "automation",
+    "refactoring",
+    "compiler",
+    "debugger",
+    "programmer",
+    "electronics",
+    "electrical",
+    "circuits",
+    "engineering",
+}
+_CALIBRE_NEURO_TAGS = {
+    "neurology",
+    "neuroscience",
+    "neuropsychology",
+    "neural networks",
+    "neural networks (computer science)",
+    "brain",
+    "consciousness",
+    "physiological psychology",
+    "human anatomy & physiology",
+    "life sciences",
+    "cognitive neuroscience",
+}
+_CALIBRE_PSYCH_TAGS = {
+    "psychology",
+    "applied psychology",
+    "cognitive psychology",
+    "conflict (psychology)",
+    "ego (psychology)",
+    "pscyhology",
+    "pyschology",
+    "psychological aspects",
+    "physiological aspects",
+    "emotions",
+    "time - psychological aspects",
+    "personality",
+    "psychiatry",
+    "consciousness - physiological aspects",
+    "emotions - physiological aspects",
+}
+_CALIBRE_FICTION_TAGS = {
+    "fiction",
+    "fantasy fiction",
+    "visionary fiction",
+    "literary",
+    "fantasy",
+}
+_CALIBRE_CULTURE_TAGS = {
+    "culture",
+    "history",
+    "social science",
+    "sociology",
+    "civilization",
+    "anthropology",
+    "social history",
+    "world",
+    "history & surveys",
+}
+_CALIBRE_HEALTH_TAGS = {
+    "health",
+    "health & fitness",
+    "health and hygiene",
+    "men's health",
+    "medical",
+    "mind & body",
+    "mental health",
+    "exercise",
+    "men - health and hygiene",
+}
+
+
+def _calibre_classify(tags: set, title: str) -> tuple:
+    """Return (arousal, tier_name) for a calibre-igor book.
+
+    Tier order (highest first):
+      akien → computers → neurology → psychology → culture → other → fiction → health
+    """
+    t = tags  # already lowercased by caller
+    title_words = set(title.lower().split())
+
+    if "akien" in t:
+        return 0.85, "akien"
+    if t & _CALIBRE_PROG_SUBJECTS or title_words & _CALIBRE_PROG_TITLE_KW:
+        return 0.65, "computers"
+    if t & _CALIBRE_NEURO_TAGS:
+        return 0.62, "neurology"
+    if t & _CALIBRE_PSYCH_TAGS:
+        return 0.55, "psychology"
+    if t & _CALIBRE_CULTURE_TAGS:
+        return 0.25, "culture"
+    if t & _CALIBRE_FICTION_TAGS:
+        return 0.18, "fiction"
+    if t & _CALIBRE_HEALTH_TAGS:
+        return 0.12, "health"
+    return 0.20, "other"
+
+
+def ingest_calibre_igor_books(**_kwargs) -> str:
+    """Scan Calibre for books tagged 'Igor', insert new ones and update mis-tiered ones.
+
+    Tier map (arousal): akien=0.85, computers=0.65, neurology=0.62,
+      psychology=0.55, culture=0.25, other=0.20, fiction=0.18, health=0.12.
+    Igor tag overrides SKIP categories — manual curation wins.
+    Idempotent by calibre://{id} source URL; re-run after adding Calibre tags.
+    Called daily by PROC_CALIBRE_INGEST.
+    """
+    import sqlite3
+
+    if not _CALIBRE_DB.exists():
+        return f"[ingest_calibre_igor_books] Calibre DB not found: {_CALIBRE_DB}"
+
+    # ── Load Igor-tagged books from Calibre ────────────────────────────────────
+    try:
+        cal = sqlite3.connect(str(_CALIBRE_DB))
+        cal.row_factory = sqlite3.Row
+        cur = cal.cursor()
+
+        cur.execute("""
+            SELECT DISTINCT b.id, b.title, a.name AS author
+            FROM books b
+            JOIN books_tags_link btl ON b.id = btl.book
+            JOIN tags t ON btl.tag = t.id AND lower(t.name) = 'igor'
+            LEFT JOIN books_authors_link bal ON b.id = bal.book
+            LEFT JOIN authors a ON bal.author = a.id
+            ORDER BY b.title
+        """)
+        igor_books = [dict(r) for r in cur.fetchall()]
+
+        book_ids = [b["id"] for b in igor_books]
+        tags_by_id: dict = {}
+        if book_ids:
+            placeholders = ",".join("?" * len(book_ids))
+            cur.execute(
+                f"SELECT btl.book, t.name FROM books_tags_link btl "
+                f"JOIN tags t ON btl.tag = t.id WHERE btl.book IN ({placeholders})",
+                book_ids,
+            )
+            for row in cur.fetchall():
+                tags_by_id.setdefault(row[0], set()).add(row[1].lower())
+        cal.close()
+    except Exception as e:
+        return f"[ingest_calibre_igor_books] Calibre read error: {e}"
+
+    # ── Fetch existing calibre:// entries with their current arousal ───────────
+    try:
+        with _igor_db_proxy()() as conn:
+            rows = conn.execute(
+                "SELECT source, encoding_arousal FROM reading_list WHERE source LIKE ?",
+                ("calibre://%",),
+            ).fetchall()
+        existing: dict = {r[0]: float(r[1]) for r in rows if r[0]}
+    except Exception as e:
+        return f"[ingest_calibre_igor_books] DB error fetching existing: {e}"
+
+    # ── Seed per-tier priority counters from current DB maxima ────────────────
+    _tier_ranges = {
+        "akien": (15, 29),
+        "computers": (210, 239),
+        "neurology": (240, 269),
+        "psychology": (320, 359),
+        "culture": (400, 449),
+        "other": (600, 649),
+        "fiction": (650, 699),
+        "health": (700, 749),
+    }
+    pri_counters: dict = {}
+    try:
+        with _igor_db_proxy()() as conn:
+            for tier, (lo, hi) in _tier_ranges.items():
+                r = conn.execute(
+                    "SELECT MAX(priority) FROM reading_list WHERE priority BETWEEN ? AND ?",
+                    (lo, hi),
+                ).fetchone()
+                pri_counters[tier] = (r[0] or lo - 1) + 1
+    except Exception:
+        pri_counters = {t: lo for t, (lo, _) in _tier_ranges.items()}
+
+    # ── Classify and insert/update ────────────────────────────────────────────
+    inserted: dict = {}  # tier → count
+    updated: dict = {}
+    skipped = 0
+
+    for book in igor_books:
+        source = f"calibre://{book['id']}"
+        tags = tags_by_id.get(book["id"], set())
+        arousal, tier = _calibre_classify(tags, book["title"])
+        notes = f"tier={tier} tags={','.join(sorted(tags))[:70]}"
+
+        if source not in existing:
+            priority = pri_counters.get(tier, 600)
+            pri_counters[tier] = priority + 1
+            add_to_reading_list(
+                title=book["title"],
+                author=book["author"] or "Unknown",
+                source=source,
+                book_type="calibre-igor",
+                encoding_arousal=arousal,
+                priority=priority,
+                added_by="igor_self",
+                notes=notes,
+            )
+            inserted[tier] = inserted.get(tier, 0) + 1
+        elif abs(existing[source] - arousal) > 0.001:
+            # Arousal changed (re-tiered) — update in place
+            try:
+                with _igor_db_proxy()() as conn:
+                    conn.execute(
+                        "UPDATE reading_list SET encoding_arousal=?, notes=? WHERE source=?",
+                        (arousal, notes, source),
+                    )
+                updated[tier] = updated.get(tier, 0) + 1
+            except Exception:
+                pass
+        else:
+            skipped += 1
+
+    total_in = sum(inserted.values())
+    total_up = sum(updated.values())
+    summary = (
+        f"[ingest_calibre_igor_books] inserted={total_in} updated={total_up} "
+        f"skipped={skipped} tiers={inserted or updated}"
+    )
+    try:
+        from ..cognition.forensic_logger import log_anomaly as _la
+
+        _la(kind="CALIBRE_INGEST_DONE", detail=summary)
+    except Exception:
+        pass
+
+    return summary
+
+
+registry.register(
+    Tool(
+        name="ingest_calibre_igor_books",
+        description="Scan Calibre for books tagged 'Igor' and insert/update reading_list entries. Tiers by secondary tag: akien=0.85, computers=0.65, neurology=0.62, psychology=0.55, culture=0.25, other=0.20, fiction=0.18, health=0.12. Idempotent — re-run after Akien tags more books in Calibre. Called daily by PROC_CALIBRE_INGEST.",
+        parameters={"type": "object", "properties": {}},
+        fn=ingest_calibre_igor_books,
+    )
+)
+
+
+# ── Reading list → learn_queue feeder ─────────────────────────────────────────
+
+_FEEDER_BATCH = 20  # items to move into learn_queue.json per run
+
+
+def feed_reading_list(**_kwargs) -> str:
+    """Pull the top-priority pending/queued items from reading_list into learn_queue.json.
+
+    Reads reading_list WHERE status IN ('pending','queued') ORDER BY
+    encoding_arousal DESC, priority ASC LIMIT _FEEDER_BATCH, converts each
+    to a learn_queue.json entry (url=source, title, cloud_ok=True for URLs /
+    False for calibre:// so drain runner uses local inference for ebooks),
+    deduplicates against existing queue by URL, appends new entries, then
+    spawns drain_learn_queue.py if not already running.
+
+    Called hourly by PROC_READING_FEEDER.
+    """
+    # ── Fetch top items from reading_list ─────────────────────────────────────
+    try:
+        with _igor_db_proxy()() as conn:
+            rows = conn.execute(
+                """SELECT source, title, author, encoding_arousal
+                   FROM reading_list
+                   WHERE status IN ('pending', 'queued') AND source IS NOT NULL AND source != ''
+                   ORDER BY encoding_arousal DESC, priority ASC
+                   LIMIT ?""",
+                (_FEEDER_BATCH,),
+            ).fetchall()
+    except Exception as e:
+        return f"[feed_reading_list] DB error: {e}"
+
+    if not rows:
+        return "[feed_reading_list] reading_list is empty — nothing to feed"
+
+    # ── Load existing queue, dedup by url ─────────────────────────────────────
+    existing_q = _load_queue()
+    existing_urls = {e.get("url") for e in existing_q}
+    pending_in_q = sum(1 for e in existing_q if not e.get("done"))
+
+    added = 0
+    for row in rows:
+        source = row[0]
+        title = row[1] or source
+        author = row[2] or ""
+
+        if source in existing_urls:
+            continue
+
+        # calibre:// sources → local inference (no cloud spend for bulk ebooks)
+        cloud_ok = not source.startswith("calibre://")
+
+        label = f"{title} — {author}".strip(" —") if author else title
+        existing_q.append(
+            {
+                "url": source,
+                "title": label[:100],
+                "cloud_ok": cloud_ok,
+                "done": False,
+            }
+        )
+        existing_urls.add(source)
+        added += 1
+
+    if added:
+        _save_queue(existing_q)
+
+    # ── Start drain runner if not already running ──────────────────────────────
+    launched = False
+    if pending_in_q + added > 0:
+        launched = _launch_queue_runner()
+
+    summary = (
+        f"[feed_reading_list] added={added} already_queued={pending_in_q} "
+        f"drain_launched={launched}"
+    )
+    try:
+        from ..cognition.forensic_logger import log_anomaly as _la
+
+        _la(kind="READING_FEEDER_RUN", detail=summary)
+    except Exception:
+        pass
+
+    return summary
+
+
+registry.register(
+    Tool(
+        name="feed_reading_list",
+        description="Pull top-priority items from reading_list (by encoding_arousal DESC) into learn_queue.json and start the drain runner. Feeds up to 20 items per call. Called hourly by PROC_READING_FEEDER. Safe to call manually to kick off reading.",
+        parameters={"type": "object", "properties": {}},
+        fn=feed_reading_list,
+    )
+)
 
 
 registry.register(

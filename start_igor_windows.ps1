@@ -1,11 +1,13 @@
 # start_igor_windows.ps1
-# Starts Igor (igor_wild_windows_0001) using the shared Postgres DB on akiendelllinux.
-# Run from anywhere — paths are derived from this script's location.
+# Starts Igor using the shared Postgres DB on akiendelllinux.
+# Instance determined by IGOR_INSTANCE_ID env var (default: igor_wild_windows_0001).
+# Run from anywhere - paths are derived from this script's location.
 # Usage: .\start_igor_windows.ps1
 
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$instanceId = if ($env:IGOR_INSTANCE_ID) { $env:IGOR_INSTANCE_ID } else { "igor_wild_windows_0001" }
 $venvPython = "$env:USERPROFILE\.TheIgors\venv\Scripts\python.exe"
-$envFile = "$env:USERPROFILE\.TheIgors\igor_wild_windows_0001\.env"
+$envFile = "$env:USERPROFILE\.TheIgors\$instanceId\.env"
 
 # Load .env into this session
 if (Test-Path $envFile) {
@@ -15,20 +17,21 @@ if (Test-Path $envFile) {
         }
     }
 } else {
-    Write-Error ".env not found at $envFile — run the bootstrap first."
-    exit 1
+    if (-not $env:IGOR_HOME_DB_URL) {
+        Write-Error -Message ".env not found at $envFile and IGOR_HOME_DB_URL not set - run the bootstrap first."
+        exit 1
+    }
+    Write-Host "No .env file found - using environment variables." -ForegroundColor Yellow
 }
 
 if (-not (Test-Path $venvPython)) {
-    Write-Error "venv not found at $venvPython — run the bootstrap first."
+    Write-Error -Message "venv not found at $venvPython - run the bootstrap first."
     exit 1
 }
 
-Write-Host "Starting Igor (igor_wild_windows_0001)..." -ForegroundColor Cyan
+Write-Host "Starting Igor ($instanceId)..." -ForegroundColor Cyan
 Set-Location "$repoRoot\wild_igor"
 & $venvPython -m igor.main
-
-# SIG # Begin signature block
 # MIIFcwYJKoZIhvcNAQcCoIIFZDCCBWACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
 # AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjoHVPNV+kspFLlCXnoxh6gsl
