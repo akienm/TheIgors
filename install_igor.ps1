@@ -206,7 +206,7 @@ if (-not $cert) {
     Write-OK "Existing AkienLocalSigning cert found"
 }
 
-foreach ($script in @("igor_loop.ps1", "start_igor_windows.ps1")) {
+foreach ($script in @("igor.ps1", "start_igor_windows.ps1")) {
     $scriptPath = "$RepoRoot\$script"
     if (-not (Test-Path $scriptPath)) { Write-Warn "$script not found - skipping"; continue }
     $result = Set-AuthenticodeSignature -FilePath $scriptPath -Certificate $cert
@@ -219,7 +219,7 @@ foreach ($script in @("igor_loop.ps1", "start_igor_windows.ps1")) {
 
 # Step 9: Scheduled task
 Write-Step "Scheduled task: IgorStartup"
-$loopScript = "$RepoRoot\igor_loop.ps1"
+$loopScript = "$RepoRoot\igor.ps1"
 $action   = New-ScheduledTaskAction -Execute "powershell.exe" `
                 -Argument ("-WindowStyle Normal -ExecutionPolicy Bypass -File `"" + $loopScript + "`"")
 $trigger  = New-ScheduledTaskTrigger -AtLogOn

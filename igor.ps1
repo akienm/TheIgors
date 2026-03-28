@@ -1,9 +1,9 @@
-# igor_loop.ps1 — Igor launcher with git-pull-and-restart loop (Windows)
+# igor.ps1 — Igor launcher with git-pull-and-restart loop (Windows)
 # Equivalent to the Linux `igor` bash wrapper.
 # Signed by sign_igor_script.ps1 — do not edit without re-signing.
 #
 # Usage:
-#   .\igor_loop.ps1                     # start with default instance
+#   .\igor.ps1                     # start with default instance
 #   igor                                # if igor.bat is in PATH
 
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
@@ -33,7 +33,7 @@ if (-not (Test-Path $venvPython)) {
 $exitCode = 0
 do {
     # Pull latest code before each run
-    Write-Host "[igor_loop] git pull..." -ForegroundColor DarkCyan
+    Write-Host "[igor] git pull..." -ForegroundColor DarkCyan
     git -C $repoRoot pull --ff-only 2>&1
 
     # Load .env for this run (re-read on every restart so changes take effect)
@@ -45,7 +45,7 @@ do {
         }
     }
 
-    Write-Host "[igor_loop] Starting Igor ($instanceId)..." -ForegroundColor Cyan
+    Write-Host "[igor] Starting Igor ($instanceId)..." -ForegroundColor Cyan
     Set-Location "$repoRoot\wild_igor"
     $env:PYTHONUTF8 = '1'
     $env:PYTHONIOENCODING = 'utf-8'
@@ -53,8 +53,8 @@ do {
     $exitCode = $LASTEXITCODE
 
     if ($exitCode -eq 42) {
-        Write-Host "[igor_loop] Restarting (re-reading .env + pulling latest)..." -ForegroundColor Cyan
+        Write-Host "[igor] Restarting (re-reading .env + pulling latest)..." -ForegroundColor Cyan
     } else {
-        Write-Host "[igor_loop] Igor exited (code $exitCode)." -ForegroundColor Yellow
+        Write-Host "[igor] Igor exited (code $exitCode)." -ForegroundColor Yellow
     }
 } while ($exitCode -eq 42)

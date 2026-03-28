@@ -1,5 +1,5 @@
 # sign_igor_script.ps1
-# Signs start_igor_windows.ps1 and igor_loop.ps1 with the local AkienLocalSigning cert.
+# Signs start_igor_windows.ps1 and igor.ps1 with the local AkienLocalSigning cert.
 # Creates the cert if it doesn't exist yet.
 # Run this after any edit to either script, or on a fresh machine.
 # Will self-elevate to admin if needed.
@@ -12,7 +12,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $repoRoot = "$env:USERPROFILE\OneDrive\AkiensWorkshop\dev\src\TheIgors"
 $scriptsToSign = @(
     "$repoRoot\start_igor_windows.ps1",
-    "$repoRoot\igor_loop.ps1"
+    "$repoRoot\igor.ps1"
 )
 
 $cert = Get-ChildItem Cert:\CurrentUser\My |
