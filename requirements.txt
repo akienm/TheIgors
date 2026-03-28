@@ -40,6 +40,7 @@ httpx-sse==0.4.3
 idna==3.11
 inquirerpy==0.3.4
 jiter==0.13.0
+Jinja2==3.1.6
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 lxml==6.0.2
