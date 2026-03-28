@@ -479,3 +479,9 @@ D250|basket-key-taxonomy|decided|basket keys use concern-tree taxonomy (requeste
 D246|budget-warn-absolute-floor|live|Budget warn threshold changed from percentage-based (20% of total_purchased) to absolute $10 floor — percentage was wrong for cumulative-purchase OR accounts
 D247|greeting-tier1-response-habit|live|GREETING_STANDARD changed to habit_type=response with trigger_only match + direct response_template — hello/hi/hey answered at tier.1 with zero inference
 D248|curiosity-drain-habit|live|PROC_CURIOSITY_DRAIN: SchedulerSource tool habit fires learn_top_gap() every 30 min — reads highest-salience NARRATIVE_GAP from TWM, queues topic to reading_list as igor_self
+D249|arch-ingest|decided|20 Igor arch docs queued to reading_list at encoding_arousal 0.75-0.95 (book_type=igor-architecture); ingest_arch_docs() tool registered; idempotent
+D250|flag-anomaly-habit|decided|PROC_FLAG_ANOMALY: flag_top_gap() posts [Igor notices] to channel when NARRATIVE_GAP salience>0.7; cooldown 15min; author=igor; fires every 5min
+D251|trace-review-loop|decided|PROC_TRACE_REVIEW: review_turn_traces() nightly scans turn_trace logs; cloud escapes → reading_list(cloud-escape-gap) + TWM NARRATIVE_GAP(6h TTL); idempotent by source
+D252|calibre-igor-8tier|live|Calibre igor-tagged books classified into 8 arousal tiers by secondary tag: akien=0.85, computers=0.65, neurology=0.62, psychology=0.55, culture=0.25, other=0.20, fiction=0.18, health=0.12
+D253|reading-list-feeder|live|PROC_READING_FEEDER (hourly): feed_reading_list() pulls reading_list items by encoding_arousal DESC into learn_queue.json and starts drain runner — bridges the reading queue gap
+D254|human-first-cloud|decided|Interactive human turns skip tier.2 Ollama, route directly to tier.3+ cloud; Ollama reserved for background tasks; cloud budget exhaustion is the only fallback
