@@ -141,6 +141,19 @@ registry.register(
 # ── Tool: cluster_status ──────────────────────────────────────────────────────
 
 
+def _ping(ip: str) -> bool:
+    """ICMP ping — returns True if box responds, False if unreachable. Near-instant (2s max)."""
+    try:
+        result = subprocess.run(
+            ["ping", "-c", "1", "-W", "2", ip],
+            capture_output=True,
+            timeout=4,
+        )
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
 def _ollama_models(ip: str, port: int = 11434, timeout: int = 5) -> list[str] | None:
     """Return list of model names from Ollama HTTP API, or None on failure."""
     try:
@@ -167,6 +180,12 @@ def _cluster_status() -> str:
         ip = m["ip"]
         host = m["hostname"]
         port = m.get("ollama_port", 11434)
+        # Ping first — fast reachability check
+        alive = _ping(ip)
+        ping_str = "PING ✓" if alive else "PING ✗"
+        if not alive:
+            lines.append(f"  {host:<18} {ping_str}  (unreachable)")
+            continue
         # Ollama health via HTTP (works regardless of SSH/PATH issues)
         models = _ollama_models(ip, port)
         if models is None:
@@ -177,10 +196,10 @@ def _cluster_status() -> str:
         if m.get("ssh"):
             user = m.get("ssh_user", _DEFAULT_USER)
             result = _ssh_run(ip, user, "echo ssh_ok", timeout=8)
-            ssh_str = "SSH ✓" if "ssh_ok" in result else f"SSH ✗"
+            ssh_str = "SSH ✓" if "ssh_ok" in result else "SSH ✗"
         else:
             ssh_str = "SSH —"
-        lines.append(f"  {host:<18} {ollama_str:<28} {ssh_str}")
+        lines.append(f"  {host:<18} {ping_str}  {ollama_str:<28} {ssh_str}")
     return "\n".join(lines)
 
 
@@ -354,6 +373,21 @@ def get_cluster_loads(force_refresh: bool = False) -> dict[str, dict]:
 
         ip = m["ip"]
         user = m.get("ssh_user", _DEFAULT_USER)
+
+        # Ping first — if box is truly down, skip the SSH load check entirely
+        if not _ping(ip):
+            entry = {
+                "verdict": "unreachable",
+                "cpu": 0,
+                "ram": 0,
+                "swap": 0,
+                "ts": now,
+                "ping": False,
+            }
+            _LOAD_CACHE[host] = entry
+            result[host] = entry
+            continue
+
         raw = _ssh_run(ip, user, _LOAD_CMD, timeout=10)
 
         try:
@@ -373,9 +407,18 @@ def get_cluster_loads(force_refresh: bool = False) -> dict[str, dict]:
                 "ram": ram,
                 "swap": swap,
                 "ts": now,
+                "ping": True,
             }
         except Exception:
-            entry = {"verdict": "unreachable", "cpu": 0, "ram": 0, "swap": 0, "ts": now}
+            # Ping succeeded but SSH load check failed — box is up but SSH load cmd broken
+            entry = {
+                "verdict": "unreachable",
+                "cpu": 0,
+                "ram": 0,
+                "swap": 0,
+                "ts": now,
+                "ping": True,
+            }
 
         _LOAD_CACHE[host] = entry
         result[host] = entry
@@ -554,33 +597,46 @@ _WINDOWS_UPDATE_CMD = (
 def ssh_exec_all(
     windows_cmd: str,
     linux_cmd: str,
-    timeout: int = 60,
+    timeout: int = 20,
+    machines: list[dict] | None = None,
 ) -> dict[str, str]:
     """
     D204: Run OS-typed commands on all SSH-capable online machines.
     Dispatches PowerShell on Windows machines, bash on Linux machines.
     Returns {hostname: output_string} for all attempted machines.
     Does NOT run on the local host (caller handles local separately).
+
+    Runs machines in parallel (ThreadPoolExecutor, max 3 workers).
+    Pass a pre-filtered `machines` list to skip certain hosts (e.g. overloaded boxes).
     """
     import socket as _socket
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     local_host = _socket.gethostname()
-    machines = [
-        m
-        for m in _load_machines()
-        if m.get("ip")
-        and m.get("ssh")
-        and m.get("status") == "online"
-        and m["hostname"] != local_host
-    ]
-    results: dict[str, str] = {}
-    for m in machines:
+    if machines is None:
+        machines = [
+            m
+            for m in _load_machines()
+            if m.get("ip")
+            and m.get("ssh")
+            and m.get("status") == "online"
+            and m["hostname"] != local_host
+        ]
+
+    def _run_one(m: dict) -> tuple[str, str]:
         ip = m["ip"]
         host = m["hostname"]
         user = m.get("ssh_user", _DEFAULT_USER)
         os_type = m.get("os", "linux").lower()
         cmd = windows_cmd if os_type == "windows" else linux_cmd
-        results[host] = _ssh_run(ip, user, cmd, timeout=timeout)
+        return host, _ssh_run(ip, user, cmd, timeout=timeout)
+
+    results: dict[str, str] = {}
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = {pool.submit(_run_one, m): m["hostname"] for m in machines}
+        for fut in as_completed(futures):
+            host, out = fut.result()
+            results[host] = out
     return results
 
 
@@ -602,8 +658,31 @@ def _update_swarm() -> str:
 
     lines = ["Swarm update initiated:"]
 
-    # ── 1. Remote boxes ──────────────────────────────────────────────────────
-    remote_results = ssh_exec_all(_WINDOWS_UPDATE_CMD, _LINUX_UPDATE_CMD, timeout=90)
+    # ── 1. Remote boxes — load pre-screen then parallel SSH ──────────────────
+    # G40: check cluster loads first (10s SSH, 60s cached).
+    # Skip boxes that are critical or unreachable — they'll catch the next update.
+    loads = get_cluster_loads()
+    all_remote = [
+        m
+        for m in _load_machines()
+        if m.get("ip")
+        and m.get("ssh")
+        and m.get("status") == "online"
+        and m["hostname"] != _socket.gethostname()
+    ]
+    eligible: list[dict] = []
+    for m in all_remote:
+        host = m["hostname"]
+        verdict = loads.get(host, {}).get("verdict", "unreachable")
+        if verdict in ("critical", "unreachable"):
+            cpu = loads.get(host, {}).get("cpu", 0)
+            lines.append(f"  ~ {host}: skipped (load={verdict}, cpu={cpu:.0f}%)")
+        else:
+            eligible.append(m)
+
+    remote_results = ssh_exec_all(
+        _WINDOWS_UPDATE_CMD, _LINUX_UPDATE_CMD, timeout=20, machines=eligible
+    )
     for host, out in remote_results.items():
         if "PULL_OK" in out:
             # Extract instance count if present
