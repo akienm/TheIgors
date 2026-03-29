@@ -1,10 +1,88 @@
+## Session 2026-03-28b
+**Theme**: Theme: instance dir double-prefix bug fix + igor_wild_0001 stale dir audit
+**Key changes**:
+- done: main.py double-prefix bug — _instance_dir(), _export_portable_identity(), response_habituation all constructed igor_{instance_id} instead of using paths().instance; when IGOR_INSTANCE_ID=Igor-wild-0001 this created igor_Igor_wild_0001 dir; fix: use _paths().instance directly (847e2a35)
+**Next session**: Next session: 1. rm stale dirs (igor_igor_wild_0001, igor_Igor_wild_0001, igor_wild_0001). 2. Gmail app password on akiendell (noise). 3. cluster_router 'no local machine' warnings may self-resolve.
+**In-flight**: NONE
+
+## Session 2026-03-28a
+**Theme**: Theme: swarm citizenship — SSH auth fix, Windows update loop, igor.ps1
+**Key changes**:
+- done: SSH auth root cause — Windows admin users need C:\ProgramData\ssh\administrators_authorized_keys not ~/.ssh/authorized_keys; fixed on akiendell + yoga9i via sftp with LF-only file
+- done: Windows update stash/pull/pop — igor_loop.ps1 + start_igor_windows.ps1 local mods blocked git pull --rebase; fixed _WINDOWS_UPDATE_CMD in cluster_ssh.py
+- done: restart.flag scan fixed — SSH user (igor_wild_0001) != Igor runtime user (akien); updated to scan C:\Users\*\.TheIgors\* instead of $env:USERPROFILE
+- done: igor_loop.ps1 renamed to igor.ps1 — canonical Windows launch command with restart loop; start_igor_windows.ps1 was one-shot (no loop), causing restart.flag exits to drop to PS prompt
+- done: swarm update end-to-end green — all 4 boxes (akiendell 14 instances, yogai7 6, yoga9i 5, akiendelllinux local) pulling and flagging
+**Next session**: Next: 1. Gmail app password on akiendell (low priority — just noise). 2. cluster_router 'no local machine' warnings from igor_wild_windows_0001 — may self-resolve once Windows Igor settles. 3. Find 24 training chapters when ready.
+**In-flight**: NONE
+
+## Session 2026-03-27c
+**Theme**: Theme: calibre 8-tier arousal, reading queue bridge, yogai7 SSH
+**Decisions**: D252, D253, D254
+**Key changes**:
+- done: calibre P0 tier in scan_ebooks.py + ingest_calibre_igor_books() 8-tier classification (D252) — 96 books ingested
+- done: feed_reading_list() + PROC_READING_FEEDER (D253) — drain runner live, arch docs processing
+- done: T-reading-list-feeder closed
+- done: PROC_CALIBRE_INGEST seeded (daily, tools.learner:ingest_calibre_igor_books)
+- done: T-yogai7-ssh-fix — bidirectional SSH akiendelllinux↔yogai7 working; root cause was missing key on yogai7 + StrictModes blocking administrators_authorized_keys; yogai7 CC self-solved via ticket
+- done: D254 T-human-first-cloud — inference_gateway.py interactive section: human turns skip Ollama, go direct to cloud; last-resort retry updated
+**Next session**: 1. Igor restart to pick up D254 (human-first-cloud). 2. Swarm update when reading load settles. 3. SSH to yoga9i/akiendell already works — swarm timeouts are load-only.
+**In-flight**: D254 committed+pushed, Igor not yet restarted. Swarm update times out due to reading load on remote boxes — not broken, will self-resolve.
+
+## Session 2026-03-27b
+**Theme**: Theme: Igor as co-designer — arch ingest, gap-flagging, nightly self-review loop
+**Key changes**:
+- done: T-igor-arch-ingest — 20 arch docs (igor_identity_master, decisions_log, ethical_framework, architecture_root, capabilities_index, cognition_pipeline, engram_language, inertia_registry, all subsystem DSBs) queued to reading_list priority 1-3, arousal 0.75-0.95
+- done: T-flag-anomaly-habit — flag_top_gap() + PROC_FLAG_ANOMALY (5min interval). Writes author=igor to channel_messages + JSONL. Cooldown 15min/question. Test confirmed.
+- done: T-turn-trace-self-review — review_turn_traces() + PROC_TRACE_REVIEW (86400s). Parses turn_trace.*.log, finds cloud escapes (reasoning.tier=cloud, no habit_exec.habit_id), queues reading_list entries + 6h TWM NARRATIVE_GAP. Live: 3 escapes found → RL_060-062.
+- done: T-reading-list-feeder — feed_reading_list() bridges reading_list→learn_queue.json; PROC_READING_FEEDER hourly; drain live, arch docs processing
+**Next session**: 1. Igor reads arch docs (drain runner will process RL_040-059). 2. T-self-training-loop — automated engram-building from cloud escapes (Slate 1). 3. Restart Igor to load new habits (PROC_TRACE_REVIEW, PROC_FLAG_ANOMALY, PROC_CURIOSITY_DRAIN).
+**In-flight**: NONE
+
+## Session 2026-03-27a
+**Theme**: Theme: reading list consolidation — Calibre Windows import + 244 URLs queued
+**Key changes**:
+- done: C:\ebooks junction mapped on Windows; all ebook folders consolidated into Calibre (Kindle + SORTUS-EBOOKS imported)
+- done: scan_ebooks.py re-run post-import — P3 now 6 books (Design Patterns GoF, Documenting SW Arch, SW Systems Arch, C# Vol I/II, On Intelligence), 3342 total
+- done: T-reading-list-urls — 99 Gemini programming/CS/AI URLs inserted into reading_list with encoding_arousal by category
+- done: Mathematics for Machine Learning (mml-book.github.io/book/mml-book.pdf) added at arousal=0.7 — open-access, matrix decompositions directly relevant to Igor's substrate
+- done: 44 URLs from master_training_list.txt — 12 trainmymonkey blog posts (arousal=0.9, Akien's own writing on emotional engineering + how he works), LinkedIn, GitHub, neuroscience papers, psychology papers, systems architecture papers
+- done: 100 Gutenberg vocabulary corpus URLs queued at back (priority 500+, arousal=0.2) — language graph density, not on critical path for programming training
+- decided: Kindle Cloud Reader renders to canvas not DOM — OCR/vision path needed for DRM books, ~$3-5 for 3 books via OR vision model. Deferred to T-kindle-drm-pipeline
+- decided: reading priority order — akien-identity (arousal=0.9) → agentic-ai (0.7) → ai-theory/neuroscience (0.6) → systems (0.5) → cs-foundations (0.4) → languages/linux (0.3) → gutenberg corpus (0.2)
+- fixed: budget warn threshold changed from percentage-based (WARN_FRACTION=0.20 of total_purchased) to absolute 0 floor — percentage was wrong for cumulative-purchase accounts like OR; budget.py + push_sources.py both updated
+- done: T-greeting-habit — GREETING_STANDARD now tier.1 response habit (trigger_only, response_template). No inference on hello/hi/hey.
+- done: T-curiosity-loop — learn_top_gap() + PROC_CURIOSITY_DRAIN. Igor self-queues NARRATIVE_GAPs to reading_list every 30 min. Fixed add_to_reading_list RL_WEB_ ID bug.
+**Next session**: Budget warn fixed (absolute 0 floor). GREETING_STANDARD upgraded to response+trigger_only — hello now tier.1. PROC_CURIOSITY_DRAIN seeded — Igor self-queues NARRATIVE_GAPs every 30min. learn_top_gap() added to learner.py with RL_WEB ID bug fix. scan_ebooks.py C# keyword gap fixed.
+**In-flight**: NONE
+
+## Session 2026-03-26g
+**Theme**: New session — context loading
+**Key changes**:
+- done: T-ebook-scan — scan_ebooks.py written; reads Calibre SQLite + OPF files; 3107 books, Making Money P1, 41 Pratchett P2; output at ~/TheIgors/ebook_candidates.md
+- decided: epics as tag field on tickets — Cognition/Training/Swarm/Productization/Database/Operations/Claude; set-epic command + epic display added to cc_queue.py
+- decided: /slateclose wired into /day-close; stale ticket detector in context-load + day-close; handoff in /sprint + /fixit
+- decided: /sprint-minion skill to push to minion queue; /fixit kept as pre-sprint wrapper (S/M only)
+- decided: master ebook index across 4 trees (Calibre, Kindle, SORTUS, Readings); DRM tools confirmed (kindlekey+mobidedrm exist); Playwright+OCR as fallback
+- decided: scan_ebooks.py P3 false-positives fixed (technology tag removed, fiction markers guard added, 'code' title keyword removed); --calibre-only flag added for fast runs
+- ticketed: T-epic-field, T-slateclose-in-day-close, T-stale-ticket-detector, T-sprint-minion, T-handoff-in-sprint, T-ebook-master-index, T-kindle-drm-pipeline, T-readings-ingest, T-kindle-programming-books; all assigned to epics; /fixit skill written
+- decided: full training arc captured — identity books → igor arch ingest (identity_weight=1.0) → programming books → programming engrams (Claude process as habit program) → neuroscience books → neuro self-model engrams → META: Igor as programmer, Claude as guide; 4 new tickets: T-programming-engrams, T-igor-arch-ingest, T-neuroscience-engrams, T-igor-as-programmer
+- decided: plug-building loop captured — read → review turn traces → identify cloud escapes → build engram at earlier pipeline position → instant local response. Tested and confirmed. T-programming-engrams is two-phase: A=review logs after reading, B=design+seed plugs. Next session: design programming engrams after compact.
+**Next session**: Next: (1) T-epic-field — group /context-load and /slate by epic tag; (2) T-slateclose-in-day-close — wire slateclose into day-close; (3) T-stale-ticket-detector — DB vs slate.md drift check; (4) T-ebook-master-index — extend scan to all 4 trees + Kindle DRM pipeline test
+**In-flight**: NONE — session was planning/organizing; all tickets committed to DB, no code in mid-flight
+
+## Session 2026-03-26f
+**Theme**: Theme: Windows cluster bring-up — Ollama, SSH, boot fixes
+**Next session**: Next: rebuild Phase 2 programming URL list for CognitionTraining.txt; fix T-fix-drain-log-titles; seed reading_list table with igor books
+**In-flight**: About to rebuild Phase 2 programming books list — Calibre has almost nothing; will use web URLs; haven't written any yet
+
 ## Session 2026-03-26e
 **Theme**: T-self-training-loop + T-output-trainer — both training loops shipped; acceleration roadmap queued
 **Key changes**:
 - done: T-output-trainer — OutputTrainer class, 21 tests, seed script, PROC_OUTPUT_TRAINING seeded at 45 min schedule; dedup threshold bug fixed (min(len(tokens), TRIGGER_OVERLAP_DEDUP)); committed+pushed; 516 tests pass
 - decided: acceleration roadmap — Making Money → unread Igor books → programming ebooks → AI/ML+neuroscience → T-distillation-habit; all 5 queued
 - docs: igor_user_guide.md + lab_map.md — launch commands, log reference, .TheIgors tree map, CC tooling, troubleshooting, inhibited features
-**Next session**: Next session: (1) T-read-making-money — queue Making Money in Calibre pipeline with has_igor_characters:true + identity_weight=0.8 tags; (2) T-read-igor-books-remaining; (3) T-distillation-habit when deposit volume warrants
+**Next session**: Next session: (1) T-read-making-money — queue Making Money in Calibre with has_igor_characters:true + identity_weight=0.8; (2) T-read-igor-books-remaining; (3) T-distillation-habit when deposit volume warrants
 **In-flight**: NONE
 
 ## Session 2026-03-26d
