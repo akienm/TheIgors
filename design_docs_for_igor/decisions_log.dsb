@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-27
+DOC|decisions_log|v1|updated=2026-03-29
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -485,3 +485,6 @@ D251|trace-review-loop|decided|PROC_TRACE_REVIEW: review_turn_traces() nightly s
 D252|calibre-igor-8tier|live|Calibre igor-tagged books classified into 8 arousal tiers by secondary tag: akien=0.85, computers=0.65, neurology=0.62, psychology=0.55, culture=0.25, other=0.20, fiction=0.18, health=0.12
 D253|reading-list-feeder|live|PROC_READING_FEEDER (hourly): feed_reading_list() pulls reading_list items by encoding_arousal DESC into learn_queue.json and starts drain runner — bridges the reading queue gap
 D254|human-first-cloud|decided|Interactive human turns skip tier.2 Ollama, route directly to tier.3+ cloud; Ollama reserved for background tasks; cloud budget exhaustion is the only fallback
+D255|facia-is-the-thread|decided|The facia node IS the thread object — edges to history/state/spawned memories; thread state is the graph; no separate state machine
+D256|timestamp-node-id|decided|Node ID = YYYYMMDDHHMMSSuuuuuu (microseconds); node_registry(node_id, table_name, row_id) in Postgres; Redis cache for O(1) lookup; serial calving protocol
+D257|tree-as-traversal-index|decided|A tree is a named traversal pattern over a shared node pool; same node can be facia of one tree and interior of another; trees do not own nodes
