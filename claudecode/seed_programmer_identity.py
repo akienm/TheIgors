@@ -45,6 +45,7 @@ def seed(habit: Memory, parent: str = "CP1") -> None:
     if existing:
         existing.narrative = habit.narrative
         existing.metadata = habit.metadata
+        existing.memory_type = habit.memory_type  # ensure type is updated too
         cortex.store(existing)
         print(f"  [updated] {habit.id}")
     else:
