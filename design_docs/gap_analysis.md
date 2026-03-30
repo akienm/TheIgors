@@ -1225,6 +1225,24 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 
 **New gaps (open):**
 
-- **G-FACTUAL-RETRIEVAL1** (open): 10,711 of 10,714 FACTUAL nodes have activation_count=0 — never retrieved by cortex.search(). `factual_compression.py` (T-factual-compression, closed this session) compresses clusters into richer INTERPRETIVE nodes, making them more searchable. But the root cause (why cortex.search() doesn't surface raw FACTUALs) is uninvestigated. May be: FACTUALs not included in search scope, embedding coverage low, or similarity threshold too high. Needs tracing via search() call path.
+- **G-FACTUAL-RETRIEVAL1 ~~CLOSED 2026-03-30~~**: 10,714 FACTUAL nodes had activation_count=0 — 5-fix chain in cortex.py+thalamus.py+main.py now surfaces them. Probe confirmed. See 2026-03-30a session entry.
 
 *Updated: 2026-03-29 by Claude Code.*
+
+---
+
+### Session 2026-03-29c (continued) / 2026-03-30a — Training Bridge + bg-job fix + tool facia
+
+**Gaps closed:**
+
+- **G-FACTUAL-RETRIEVAL1 ~~CLOSED~~**: 10,714 FACTUAL nodes activation_count=0 — cortex.search() never surfacing book knowledge. Root cause: 5 compounding issues. Fixes: (1) thalamus.py `_classify_question_traversal()` — "what do you know about" → `factual_leaf`+`semantic_anchor` traversal mode; (2) cortex.py `semantic_anchor` traversal path added; (3) cortex.py per-term ILIKE FACTUAL supplement with stop-word filter (~20 lines); (4) cortex.py Phase 2 force-inject for FACTUAL supplement nodes; (5) main.py `_tier0_response()` uses `parsed.core_input` not raw `user_input` to strip routing directives from subject extraction. Probe confirmed: "what do you know about Hebbian learning" → "fire together wire together." T-factual-retrieval-trace closed.
+
+- **G-BG-JOB-TOOL1 ~~CLOSED~~**: `store_memory` calls in bg-job context produced hallucinated responses — LLM generated `<tool_call>` + fabricated `<tool_response>` block in output text, `_bg_reason()` returned raw text without executing anything. Surfaced during Phase C canonical exercise when Igor's 3 engrams needed manual seeding. Fix: `_bg_reason()` now calls `_extract_tool_call(response_text)`; on match, executes via registry, writes PENDING_ACTION+TOOL_RESULT to ring_memory. T-store-memory-bg-fix closed.
+
+**New features (not gap-closing, proactive):**
+
+- **Tool registry facia**: 187 INTERPRETIVE facia nodes seeded — TOOL_REGISTRY_ROOT (CP1 child) + INTERP_FACIA_<name> for all 186 registered tools. `facia: true` in metadata. Key tools have enhanced narratives connecting natural-language phrasings to correct tool names (run_bash, store_memory, patch_source_file, etc.). Fixes the `shell` vs `run_bash` class of tool-name guessing error via spreading activation.
+
+- **Training Bridge Phases A/B/C complete**: Retrieval probe passed (Hebbian learning → factual answer). Codebase trace (Igor greps/reads his own code). Canonical exercise: Igor authored 3 engrams — PROC_ARCH_RETRIEVAL_FIRST, PROC_ON_IT_TWM_PUSH, FACT_BG_VALENCE_AMBIGUITY. Phase D (unattended canonical exercise) is next.
+
+*Updated: 2026-03-30 by Claude Code.*

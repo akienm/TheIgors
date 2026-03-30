@@ -1,4 +1,4 @@
-DOC|subsystem_inference|v1|updated=2026-03-29c
+DOC|subsystem_inference|v1|updated=2026-03-30a
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/inference_gateway.py,cognition/cloud_mode.py,cognition/reasoners/
 
@@ -13,6 +13,7 @@ DESIGN_POINTS|
   DP8|local_only parameter: gateway returns graceful message without hitting any API
   DP9|D203: _log_err=None defined at top of reason() — was undefined, causing NameError to crash error handler when any tier failed; OR 400 assistant-prefill guard in _call_api(): if messages[-1].role==assistant, synthetic user nudge appended before POST
   DP10|D259: _HUMAN_AUTHORS=frozenset({"claude-code","akien"}) in main.py; background jobs from human authors get is_user_turn=True + complexity=parsed.complexity, threading through _bg_reason() → gateway.reason(is_user_turn=True) → cloud gate fires; prevents CC/Akien questions routing to tier.6
+  DP11|bg-job tool dispatch: _bg_reason() now parses <tool_call> blocks from LLM output via _extract_tool_call(); if found, executes via registry and writes PENDING_ACTION+TOOL_RESULT entries to ring_memory; prevents hallucinated store_memory where Igor fabricates <tool_response> without persisting
 
 TIER_ROUTING|
   level=background_batch → pool.reason_batch() (local quality priority); return empty on fail

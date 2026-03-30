@@ -549,8 +549,9 @@ G-PROC-REGISTRY1|stale-task-reaper-dead-code-ref|closed
   fix=registry.register() added to stale_task_reaper.py; module added to tools/__init__.py imports
   closed=2026-03-29c (post-audit fix)
 
-G-FACTUAL-RETRIEVAL1|factual-nodes-never-retrieved|open
+G-FACTUAL-RETRIEVAL1|factual-nodes-never-retrieved|closed
   was=10,711 of 10,714 FACTUAL nodes have activation_count=0; cortex.search() doesn't surface them
   partial=factual_compression.py (T-factual-compression) compresses clusters into richer INTERPRETIVE nodes
   root_cause=unknown: may be FACTUAL excluded from search scope, low embedding coverage, or threshold too high
   needs=cortex.search() call path tracing to understand why FACTUALs are invisible
+G-BG-JOB-TOOL1|bg-job-store-memory-hallucination|closed
