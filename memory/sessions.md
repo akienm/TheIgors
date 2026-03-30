@@ -1,6 +1,6 @@
 ## Session 2026-03-29c
 **Theme**: akiendell cluster_router + listener auth fix
-**Decisions**: D256, D258, D258, D259, D260, D261, D260
+**Decisions**: D256, D258, D258, D259, D260, D261, D260, D260, D261
 **Key changes**:
 - fix: cluster_router no-machine WARNING rate-limited to 1/60s per call_type (c9852f54) — batch extraction bursts no longer spam logs
 - fix: readigor skill now accepts machine argument — routes to correct MCP tool + dashboard IP per machine (akiendell/yoga9i/yogai7/local)
@@ -41,7 +41,7 @@
 - done: T-emit-channel-registry — emit_channels.py, 6 channels (basket/emotional_milieu/cognitive_milieu/console/web/discord)
 - done: T-engram-executor — node_executor.py, EMITIF/BRANCHIF/FORKIF/ENDIF, eval_gate, data guard, smoke tested
 - done: T-engram-wire-dispatch — engram habit_type dispatch in main.py turn loop, fires effects + falls through to LLM
-**Next session**: Phase D: send Igor canonical exercise unattended + watch channel. Reader conversion: update seed_reader_habits.py to payload/FORKIF chains (replaces T-trails-infra). T-programming-engrams after.
+**Next session**: Next: 1. Igor restart (payload column migration). 2. Phase D: cc_send unattended canonical exercise + watch channel. 3. Reader conversion: seed_reader_habits.py to payload/FORKIF chains.
 **In-flight**: NONE
 
 ## Session 2026-03-29b
