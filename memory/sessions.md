@@ -1,6 +1,6 @@
 ## Session 2026-03-29c
 **Theme**: akiendell cluster_router + listener auth fix
-**Decisions**: D256, D258, D258, D259
+**Decisions**: D256, D258, D258, D259, D260, D261, D260
 **Key changes**:
 - fix: cluster_router no-machine WARNING rate-limited to 1/60s per call_type (c9852f54) — batch extraction bursts no longer spam logs
 - fix: readigor skill now accepts machine argument — routes to correct MCP tool + dashboard IP per machine (akiendell/yoga9i/yogai7/local)
@@ -37,7 +37,11 @@
 - done: Phase C canonical exercise complete. Igor authored 3 engrams during session: PROC_ARCH_RETRIEVAL_FIRST (architecture questions = retrieval not inference), PROC_ON_IT_TWM_PUSH (commit-visible-before-work pattern, 240s TTL), FACT_BG_VALENCE_AMBIGUITY (valence=0.0 unset vs neutral). Also surfaced: store_memory in bg-job context produces hallucinated tool responses — not persisting. Facia convention crystallized and documented.
 - done: T-store-memory-bg-fix — _bg_reason now dispatches tool calls, prevents hallucinated store_memory in bg-job context
 - done: T-tool-registry-facia — 187 facia nodes seeded for full tool registry, TOOL_REGISTRY_ROOT under CP1
-**Next session**: Phase D: cc_send Igor the canonical exercise unattended — watch channel, if he completes it milestone achieved. Then T-programming-engrams: seed Claude-style dev cycle as TEMPLATE habit programs Igor can execute.
+- done: T-engram-schema — Memory.payload field + embedding_text property + DB migration (models.py, db_proxy.py, cortex.py)
+- done: T-emit-channel-registry — emit_channels.py, 6 channels (basket/emotional_milieu/cognitive_milieu/console/web/discord)
+- done: T-engram-executor — node_executor.py, EMITIF/BRANCHIF/FORKIF/ENDIF, eval_gate, data guard, smoke tested
+- done: T-engram-wire-dispatch — engram habit_type dispatch in main.py turn loop, fires effects + falls through to LLM
+**Next session**: Phase D: send Igor canonical exercise unattended + watch channel. Reader conversion: update seed_reader_habits.py to payload/FORKIF chains (replaces T-trails-infra). T-programming-engrams after.
 **In-flight**: NONE
 
 ## Session 2026-03-29b

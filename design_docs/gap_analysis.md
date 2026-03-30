@@ -1246,3 +1246,17 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **Training Bridge Phases A/B/C complete**: Retrieval probe passed (Hebbian learning → factual answer). Codebase trace (Igor greps/reads his own code). Canonical exercise: Igor authored 3 engrams — PROC_ARCH_RETRIEVAL_FIRST, PROC_ON_IT_TWM_PUSH, FACT_BG_VALENCE_AMBIGUITY. Phase D (unattended canonical exercise) is next.
 
 *Updated: 2026-03-30 by Claude Code.*
+
+---
+
+### Session 2026-03-30a — Engram execution model (D260/D261)
+
+**No gaps closed** — this session built new capability:
+
+- **Engram execution stack**: Memory.payload field (models.py + db_proxy.py + cortex.py migration), emit_channels.py (6 channels: basket/emotional_milieu/cognitive_milieu/console/web/discord), node_executor.py (EMITIF/BRANCHIF/FORKIF/ENDIF instruction set, eval_gate conditions, data guard), main.py engram habit_type dispatch. D260/D261 implemented end-to-end.
+
+**New gaps surfaced (open):**
+
+- **G-ENGRAM-CURSOR1**: Engram BRANCHIF/FORKIF cursors are logged to ring_memory but not actually traversed — next_node/spawned are returned in ExecutionResult but the dispatcher in main.py doesn't follow them. Full cursor execution (loading next node, re-entering execute_node) is not yet wired. Design needed: cursor loop in main.py vs. separate cursor_runner.
+
+*Updated: 2026-03-30 by Claude Code.*

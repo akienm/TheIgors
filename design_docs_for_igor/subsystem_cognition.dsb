@@ -1,6 +1,6 @@
-DOC|subsystem_cognition|v1|updated=2026-03-29c
+DOC|subsystem_cognition|v1|updated=2026-03-30
 META|inertia=MEDIUM|parent=architecture_root.dsb
-META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,tools/traversal_context.py,tools/os_primitives.py
+META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,cognition/emit_channels.py,cognition/node_executor.py,tools/traversal_context.py,tools/os_primitives.py
 
 THALAMUS|
   purpose=classify intent + produce complexity signal
@@ -141,3 +141,19 @@ SELF_TEST|cognition/self_test.py|added=2026-03-25|D230/D231
   TODO=_grade_answers_via_gemini (awaiting GeminiSearchChannel implementation)
   helpers=_get_cortex,_get_word_graph,_igor_answer_from_graph,_strengthen_edges_from_answer,_log_test_result,_update_blob_index_status
   status=live: consolidate_content() callable; Q generation and grading stubs ready for GeminiSearchChannel integration
+
+EMIT_CHANNELS|cognition/emit_channels.py|added=2026-03-30|D260
+  purpose=named I/O surfaces for EMITIF instruction dispatch; executor resolves channel_name→channel.write(key,value,basket)
+  channels=basket(write trail state) | emotional_milieu(valence/arousal/dominance; supports "+0.1" delta) | cognitive_milieu(TWM push via _cortex in basket) | console(stdout debug) | web(POST /api/emit) | discord(stub)
+  registry=singleton EmitChannelRegistry; get_registry() lazy-init; all 6 registered at boot
+  basket_channel=bidirectional; closes the loop — EMITIF can write back to the trail basket
+
+NODE_EXECUTOR|cognition/node_executor.py|added=2026-03-30|D260/D261
+  purpose=walk one payload cell from a Memory node; called when cognition cursor lands on engram node
+  instruction_set=EMITIF[condition,key,value,channel] | BRANCHIF[condition,target_node_id] | FORKIF[condition,target_node_id] | ENDIF
+  data_guard=only executes payload fields named in memory.triggers.values(); NARRATIVE/data fields invisible
+  condition_eval=True/False constant | [key,op,rhs] via eval_gate(); evaluates against basket (primary) or payload data (secondary)
+  value_resolution=["basket",key]→basket.get(key) | ["payload",field]→payload.get(field) | constant→as-is
+  result=ExecutionResult(next_node,spawned,basket,instructions_run,stopped_by); BRANCHIF sets next_node+stops; FORKIF appends spawned+continues
+  cursor_model=BRANCHIF moves cursor; FORKIF spawns second cursor sharing same basket instance (pointer not copy)
+  limit=_MAX_INSTRUCTIONS=200 guard against runaway cells

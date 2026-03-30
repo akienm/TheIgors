@@ -555,3 +555,8 @@ G-FACTUAL-RETRIEVAL1|factual-nodes-never-retrieved|closed
   root_cause=unknown: may be FACTUAL excluded from search scope, low embedding coverage, or threshold too high
   needs=cortex.search() call path tracing to understand why FACTUALs are invisible
 G-BG-JOB-TOOL1|bg-job-store-memory-hallucination|closed
+
+G-ENGRAM-CURSOR1|engram-cursor-traversal-not-wired|open
+  was=BRANCHIF/FORKIF return next_node/spawned in ExecutionResult; main.py logs to ring_memory but does not load+execute next node
+  needs=cursor loop in main.py or separate cursor_runner; design choice: inline vs. daemon cursor executor
+  opened=2026-03-30 during D260/D261 implementation
