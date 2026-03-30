@@ -1,4 +1,4 @@
-DOC|engram_language|v2|updated=2026-03-26
+DOC|engram_language|v3|updated=2026-03-30
 META|purpose=Engram language spec for Igor — executable memory substrate, pattern inventory, execution model
 META|ref=design_docs/engram_language.md for full prose + examples
 
@@ -21,7 +21,7 @@ SECTION|EXECUTION_MODEL
 
 SECTION|BASKET
   DEFINITION|shared dict carried by each execution thread, passed as pointer not deep copy
-  FORK|both threads share same basket instance at fork; each writes own keys as they execute
+  FORK|FORKIF instruction spawns new cursor at target node; both threads share same basket instance at fork; each writes own keys as they execute
   MERGE|at explicit join point — baskets merge key:value; distinct from 'meeting in the milieu'
   COLLISION|write collisions allowed + logged, not fatal — design signal that keyword contracts need attention
   CONTRACTS|each node declares: keys it reads, keys it writes; no two concurrent branches write same key
@@ -74,11 +74,33 @@ SECTION|IMPLEMENTATION_STATUS
   D201_conditions|live|cognition/thalamus.py
   primitive_ops|live|tools/os_primitives.py
   WONDER_template|seeded|claudecode/seed_templates.py
-  basket|not_built|next architectural gap after inhibition layer
+  basket|not_built|D260: emit-to-basket valid; channel registry + executor needed
+  channel_registry|not_built|T-channel-registry: named I/O surfaces + write semantics
+  node_executor|not_built|T-engram-executor: walk cell instructions, eval conditions, dispatch to channels
   inhibition_layer|not_built|zero nodes between BG selection and tool execution
   DISTILLATION|not_seeded|ticket T-db-spreading-activation
   CACHED_PROBE|not_seeded|ticket T-cached-probe
   engram_engineering_term|adopted|2026-03-26
+
+SECTION|CHANNEL_EMIT_MODEL|D260
+  EMIT_EMITS|a value (not a node) to a named channel
+  VALUE_SOURCES|constant (e.g. 0.3, "happy+1") | basket lookup (basket.key) | payload field (payload.field) | any evaluable
+  CHANNELS|named I/O surfaces; unidirectional or bidirectional
+  CHANNEL_EXAMPLES|emotional_milieu (write arousal/valence/dominance) | cognitive_milieu | basket | console | web | discord
+  BASKET_AS_CHANNEL|EMIT to basket is valid — nodes write back to trail state; closes the loop
+  KEY_CONTRACTS|basket key names are by area of concern / receiver — e.g. emotional.valence, cognitive.focus, trail.current_node
+  CELL_INDEPENDENCE|each trigger cell is independent — no fall-through; ends with END or BRANCHIF; multi-trigger node has N independent cells
+  PAYLOAD_DUAL_USE|payload carries both program cells (named by trigger dispatch) and data fields (constants this node brings, e.g. emotional_value)
+  CONDITION_EVAL|conditionals evaluate against basket data (primary) or payload data (secondary); never against external state directly
+  NODE_SCHEMA|id=timestamp | memory_type=root_field | metadata={facia,...} | triggers={string: cell_name} | payload={cell_name: [instructions], NARRATIVE: str, data_fields: ...}
+  INSTRUCTION_SET|EMITIF [condition, key, value, channel] | BRANCHIF [condition, target_node_id] | FORKIF [condition, target_node_id] | ENDIF
+  EMITIF_KEY|the target slot in the channel: basket dict key | milieu dimension (valence/arousal/dominance) | console label | web field name
+  EMITIF_FIRES_ALL|multiple EMITs in one cell all fire if their conditions pass — sequential, independent evaluation
+  BRANCHIF|conditional jump — cursor moves to target node; current cell stops executing
+  FORKIF|conditional fork — spawns NEW cursor at target; current cursor continues executing; both share same basket instance (pointer not copy)
+  ENDIF|explicit cell terminator — optional; implicit end when instructions exhausted
+  DATA_GUARD|executor only executes payload fields named in triggers.values(); NARRATIVE/links/data fields never touched — no duck-typing needed
+  NARRATIVE_IN_PAYLOAD|payload.NARRATIVE is the embedding source; embedder reads payload.NARRATIVE if present, falls back to top-level narrative for legacy nodes
 
 SECTION|DESIGN_PRINCIPLES
   P1|engram IS the program — no code outside graph is authoritative at runtime; Python is bootstrap scaffolding

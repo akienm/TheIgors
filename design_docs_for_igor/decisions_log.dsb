@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-29
+DOC|decisions_log|v1|updated=2026-03-30
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -492,3 +492,5 @@ D256|timestamp-node-id|decided|Node ID = YYYYMMDDHHMMSSuuuuuu.swarm_name[.instan
 D258|coa-isolation-deferred|decided|COA (Center of Attention) isolation requires twm_observations + ring_memory to gain coa_id column; global memories + interpretive_edges pool stays shared; deferred to post-node-registry ticket; node_registry machine_id field is the prerequisite
 D258|coa-isolation|deferred|COA (Center of Attention) isolation — each COA gets own TWM + ring_memory + narrative; coa_id FK on twm_observations + ring_memory; deferred post D257
 D259|author-aware-cloud-routing|decided|author=claude-code or human → cloud_ok_override=True + is_user_turn=True for all downstream inference including background job synthesis
+D260|channel-emit-execution-model|decided|EMIT emits a value (constant|basket|payload) to a named channel; basket is a valid channel; each trigger cell is independent; payload carries program cells + data fields; conditions evaluate against basket/payload; key names by receiver
+D261|engram-instruction-set|decided|EMITIF/BRANCHIF/FORKIF/ENDIF instruction set: BRANCHIF stops cell+jumps, FORKIF spawns new cursor+continues, ENDIF explicit or implicit; data guard: executor only runs payload fields named in triggers.values()
