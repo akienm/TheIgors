@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-16h
+DOC|gap_analysis|v1|updated=2026-03-29c
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -523,3 +523,34 @@ G-STALE-SQLITE1|stale-sqlite-files-in-source-tree|open
   was=after D224 SQLite removal, stale .db files remain in source tree: wild_igor/igor_memory.db, wild_igor/data/Igor-wild-0001.db, memory/claude_budget.db
   also=~/.TheIgors/ root has generation_graph.db (83MB), wg_test.db, igor.db, igor_memory.db — all stale
   ticket=T-stale-sqlite-cleanup (S, needs Akien review before delete)
+
+G-NE-ARC1|ne-arc-expiry|closed
+  was=NARRATIVE_GAP entries had no max-age; cycling TASK_SETs re-pushed gaps indefinitely; NE arced 195+ min on stale topics
+  fix=first_pushed_at metadata on gap push; auto-close in _process_gaps() when age>NARRATIVE_GAP_MAX_AGE_MINUTES(60); PROC_STALE_TASK_REAPER shelves TASK_SET >2h
+  closed=2026-03-29c (T-ne-arc-expiry)
+
+G-BG-INHIBIT1|bg-lateral-inhibition|closed
+  was=BG winner had no graph-level lateral inhibition; near-misses could win next cycle
+  fix=_inhibit_neighbors() writes direction=inhibition interpretive edges from winner to near-miss nodes
+  closed=2026-03-29c (T-inhibition-propagation)
+
+G-BINDING1|coalition-binding|closed
+  was=spreading activation produced heat field but no binding step (connected cluster = percept)
+  fix=detect_coalitions() in cognition/coalition.py; BFS over hot nodes; top coalition logged per NE cycle
+  closed=2026-03-29c (T-binding)
+
+G-HUMAN-ROUTING1|human-author-cloud-routing|closed
+  was=CC/Akien background jobs got is_user_turn=False → cloud gate never fired → tier.6 Ollama timeout
+  fix=_HUMAN_AUTHORS frozenset in main.py; human-author jobs thread is_user_turn=True + full complexity through _bg_reason()
+  closed=2026-03-29c (D259, T-cc-human-routing)
+
+G-PROC-REGISTRY1|stale-task-reaper-dead-code-ref|closed
+  was=PROC_STALE_TASK_REAPER had dead code_ref — run_stale_task_reaper not in tool registry; habit couldn't fire
+  fix=registry.register() added to stale_task_reaper.py; module added to tools/__init__.py imports
+  closed=2026-03-29c (post-audit fix)
+
+G-FACTUAL-RETRIEVAL1|factual-nodes-never-retrieved|open
+  was=10,711 of 10,714 FACTUAL nodes have activation_count=0; cortex.search() doesn't surface them
+  partial=factual_compression.py (T-factual-compression) compresses clusters into richer INTERPRETIVE nodes
+  root_cause=unknown: may be FACTUAL excluded from search scope, low embedding coverage, or threshold too high
+  needs=cortex.search() call path tracing to understand why FACTUALs are invisible

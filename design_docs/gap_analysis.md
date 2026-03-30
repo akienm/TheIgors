@@ -1206,3 +1206,25 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 **Queue additions:** T-test-debt-tooling (S) — tests for session_manager.py + decision_manager.py.
 
 *Updated: 2026-03-22 by Claude Code.*
+
+---
+
+### Session 2026-03-29c — Slate 1+2: cognition depth + D259 human routing + factual compression
+
+**Gaps closed:**
+
+- **G-NE-ARC1 ~~CLOSED~~**: NARRATIVE_GAP entries in TWM had no max-age — a cycling TASK_SET could re-push gaps indefinitely, causing NE to arc on stale topics for 195+ min. Fix: `first_pushed_at` metadata on gap push; `_process_gaps()` auto-closes gaps older than `NARRATIVE_GAP_MAX_AGE_MINUTES=60`; ring log `NARRATIVE_GAP_TIMEDOUT`. Complemented by PROC_STALE_TASK_REAPER (shelves TASK_SET memories >2h with no resolved status). T-ne-arc-expiry closed.
+
+- **G-BG-INHIBIT1 ~~CLOSED~~**: BG winner-take-all had no lateral inhibition at the graph level — near-miss habits could win next cycle with near-identical scores. Fix: `_inhibit_neighbors()` in basal_ganglia.py writes `direction="inhibition"` interpretive edges from winner to graph-connected near-misses; inhibition is durable. T-inhibition-propagation closed.
+
+- **G-BINDING1 ~~CLOSED~~**: No coalition detection after spreading activation — the hot node set was logged but binding (connected cluster = percept) was missing. Fix: `detect_coalitions()` in cognition/coalition.py; BFS over hot nodes (heat≥0.3) connected via interpretive_edges; top coalition logged per NE cycle. T-binding closed.
+
+- **G-HUMAN-ROUTING1 ~~CLOSED~~**: Background jobs submitted while `author` was `"claude-code"` or `"akien"` got `is_user_turn=False`/`complexity="low"` — cloud gate never fired, Ollama timeouts → tier.6. Fix: `_HUMAN_AUTHORS` frozenset in main.py; human-author jobs thread `is_user_turn=True` + full `parsed.complexity` through `_bg_reason()` → OR always available. D259. T-cc-human-routing closed.
+
+- **G-PROC-REGISTRY1 ~~CLOSED~~**: PROC_STALE_TASK_REAPER had a dead code_ref (`run_stale_task_reaper` not registered). `stale_task_reaper.py` was missing from tools/__init__.py and had no `registry.register()` call. Fixed in post-audit. Habit health: 83/83 live.
+
+**New gaps (open):**
+
+- **G-FACTUAL-RETRIEVAL1** (open): 10,711 of 10,714 FACTUAL nodes have activation_count=0 — never retrieved by cortex.search(). `factual_compression.py` (T-factual-compression, closed this session) compresses clusters into richer INTERPRETIVE nodes, making them more searchable. But the root cause (why cortex.search() doesn't surface raw FACTUALs) is uninvestigated. May be: FACTUALs not included in search scope, embedding coverage low, or similarity threshold too high. Needs tracing via search() call path.
+
+*Updated: 2026-03-29 by Claude Code.*

@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-03-26e
+DOC|subsystem_tools|v1|updated=2026-03-29c
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -13,7 +13,8 @@ REGISTRY|
   class=Tool(name,description,parameters,fn)|execute(**kwargs)→str
   to_anthropic_schema()|to_openai_schema()|to_text_description()
   registry.execute(name,kwargs)|returns error string on unknown tool (never raises)
-  load=tools/__init__.py imports all modules; hot_reload.py added 2026-03-13
+  load=tools/__init__.py imports all modules; hot_reload.py added 2026-03-13; stale_task_reaper added 2026-03-29c (was missing — PROC_STALE_TASK_REAPER dead code_ref fixed)
+  tool_count=185 (2026-03-29c)
 
 KEY_TOOLS|
   self_edit|patch_source_file(preferred),edit_source_file|gate=IGOR_SELF_EDIT_ENABLED|auto-commit+push

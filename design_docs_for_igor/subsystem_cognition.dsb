@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-25
+DOC|subsystem_cognition|v1|updated=2026-03-29c
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,tools/traversal_context.py,tools/os_primitives.py
 
@@ -16,7 +16,7 @@ BASAL_GANGLIA|
   score=trigger_score(1.0 if trigger in input) + keyword_bonus(≤0.15) + activation_bonus(≤0.15) + inertia_bonus(≤0.10) + valence_bonus(≤0.10) + conditions_bonus(+0.08/matched field, D201)
   conditions=D201: metadata.conditions dict {intent,tone,min/max_complexity,tags,keywords,not_intent}; match_mode=conditions_first(default)|trigger_only|both; conditions_first gates on conditions when present, trigger optional; PROC_GREETING migrated to conditions-only (no trigger) as PoC, tested live
   threshold=BASE 0.50; modulated by milieu: high_arousal→lower(more reactive); low_dominance→higher(more cautious); clamped [0.30,0.70]
-  lateral_inhibition=max scorer wins; tiebreak by activation_count
+  lateral_inhibition=max scorer wins; tiebreak by activation_count; graph_inhibition=_inhibit_neighbors() writes direction=inhibition interpretive edges from winner to near-miss nodes connected by existing edges (T-inhibition-propagation, 2026-03-29c); inhibition is durable in the graph — re-activating suppressed node costs extra
   compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection
   trigger_formats=3 formats: pipe-separated(hello|hi|hey), legacy-space(min5-token), single-token(routing_decision)
   intent_gate=D074: skip habit_type="threshold" always; skip (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in {factual_question,meta_question,explanation_request,general,conversation}; D074 expansion (#254, G-OVN-1d): knowledge_request added to _QUESTION_INTENTS; ALL response habits skip on factual_question or knowledge_request → fall through to LLM+winnow
@@ -48,7 +48,8 @@ NARRATIVE_ENGINE|
   NE_MIN_INTERVAL_SEC=5 (was 30; cursor makes fast cycles safe)
   traversal_cursor=TraversalCursor dataclass; thread_id/topic_history/depth/status/promotions_this_thread; oscillation detection (same topic × NE_OSCILLATION_DEPTH + 0 promotions → reset); convergence (≥2 promotions); _cursor_context() injected into every prompt; LLM outputs thread_topic field; NE_CURSOR| snapshots to ring_memory; D077
   episodic_to_semantic_merge=occurrence_dates list in metadata; multiple occurrences→one semantic node; frequency=semantic weight; #250; not yet implemented
-  affective_narrative_engine=D183-D186; gap registry: NARRATIVE_GAP| TWM entries accumulate tension 5%*arousal/cycle; frame selection: effective_importance=importance*(1-w)+milieu_alignment*w (w=0.4*arousal); closure dopamine: resolved gap fires milieu ingest_ne_state(valence=0.3+tension*0.4,arousal=0.4+tension*0.3); arousal amplifies initial gap salience by arousal*0.2
+  affective_narrative_engine=D183-D186; gap registry: NARRATIVE_GAP| TWM entries accumulate tension 5%*arousal/cycle; frame selection: effective_importance=importance*(1-w)+milieu_alignment*w (w=0.4*arousal); closure dopamine: resolved gap fires milieu ingest_ne_state(valence=0.3+tension*0.4,arousal=0.4+tension*0.3); arousal amplifies initial gap salience by arousal*0.2; arc_expiry=NARRATIVE_GAP_MAX_AGE_MINUTES=60; gaps auto-close via first_pushed_at metadata if age>60min; ring: NARRATIVE_GAP_TIMEDOUT (T-ne-arc-expiry, 2026-03-29c)
+  coalition_binding=T-binding 2026-03-29c: detect_coalitions() in cognition/coalition.py; post-spreading-activation BFS of hot nodes (heat≥0.3) connected via interpretive_edges; top coalition logged COALITION|size=N|weight=X|centroid=Y to ring(ne_diagnostic) each NE cycle
   night_consolidation=#310: notify_interactive() resets idle timer; is_consolidation_eligible() gate (IGOR_CONSOLIDATION_IDLE_MIN default 20min); _deep_consolidation_pass() 5 steps: TWM promo@0.5, episodic merge@0.80 cosine, weak link prune (weight<0.05 after 10d), orphan adoption batch=100, reading integration batch=50; main.py wires both; G-NE-LOOP1 fix: _last_consolidation_ts set at end of pass prevents immediate re-run
   decisions=D007,D009,D018,D077,D183,D184,D185,D186
 
