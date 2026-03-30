@@ -1,8 +1,63 @@
+## Session 2026-03-29c
+**Theme**: akiendell cluster_router + listener auth fix
+**Decisions**: D256, D258, D258, D259
+**Key changes**:
+- fix: cluster_router no-machine WARNING rate-limited to 1/60s per call_type (c9852f54) — batch extraction bursts no longer spam logs
+- fix: readigor skill now accepts machine argument — routes to correct MCP tool + dashboard IP per machine (akiendell/yoga9i/yogai7/local)
+- T-node-registry: node_id.py written (timestamp IDs, Redis cache, registry write/lookup); node_registry DDL; migrate_node_ids.py run (31651 memories + 541 reading_list migrated, 0 dangling edges); cortex.store() wired to replace uuid-default IDs and register to node_registry; 538 tests pass
+- T-tree-index-design: tree_index.py written (TreeIndex class, trees DDL, 8 seeded trees); test_tree_index.py 18/18; full suite 556 pass
+- slateclose: Slate 0 (Database architecture) closed. Archive: slate_archive_2026-03-29-1737.md. GitHub posted. slate.md cleared for Slate 1.
+- decided: Slate 0 closed — D256 node registry + D257 tree index both DONE; migration complete; all nodes timestamp IDs
+- decided: Slate 1 locked — theme: Self-training loop + cognition depth; scope: T-self-training-loop, T-ne-arc-expiry, T-inhibition-propagation, T-binding, T-distillation-habit
+- decided: T-ne-arc-expiry created — NE arcs need TTL-based expiry; DISTILLATION is long-term closer
+- done: sent Igor message — T-book-learner-hash-lookup fix approach explained; arc cycling issue context given
+- done: T-stale-task-reaper — PROC_STALE_TASK_REAPER seeded; stale_task_reaper.py written; shelves TASK_SET >2h with no status
+- done: T-stale-task-reaper — PROC_STALE_TASK_REAPER seeded, stale_task_reaper.py written, shelves TASK_SET >2h
+- decided: T-self-training-loop phase 1 — diagnose interaction logging (cloud turns not written since 2026-03-25); phase 2 — DB-based signal from EPISODIC tier_hint>=tier.3 + fix deposit() to use new_node_id()
+- done: T-self-training-loop — self-training loop working end-to-end; 3 deposits on first manual pass; PROC_SELF_TRAINING seeded at 30min schedule
+- done: Mashter lisp removed from main.py — all canned response strings cleaned, _igor_lisp() made no-op passthrough; needs restart
+- done: T-book-learner-hash-lookup — graph_integrator.py fixed; tier.6 logging now captures CPU/mem state
+- decided: T-ne-arc-expiry plan — NARRATIVE_GAP auto-close on max age (60min) via first_pushed_at metadata; _process_gaps() + gap push in narrative_engine.py
+- done: T-ne-arc-expiry — NARRATIVE_GAP TTL: first_pushed_at metadata + age-check in _process_gaps(); NARRATIVE_GAP_MAX_AGE_MINUTES=60; NARRATIVE_GAP_TIMEDOUT ring log
+- decided: T-inhibition-propagation plan — BG inhibition edges from winner to near-miss graph neighbors; set_cortex() in basal_ganglia.py + main.py wire
+- done: T-inhibition-propagation — _inhibit_neighbors() in basal_ganglia.py + set_cortex() boot wire in main.py; winner suppresses near-miss graph neighbors via inhibition edges
+- decided: T-binding plan — detect_coalitions() in coalition.py; NE calls it with TWM-seeded heat field; logs COALITION to ring
+- done: T-binding — coalition.py detect_coalitions() + NE integration; COALITION logged to ring each NE cycle when ≥2 hot connected nodes
+- decided: D259 author-aware cloud routing — T-cc-human-routing created (P2); T-distillation-habit closed (phase 1 done); T-factual-compression created for FACTUAL->INTERPRETIVE pass
+- decided: Slate 2 locked — T-cc-human-routing (P2) + T-factual-compression (P3)
+- done: T-cc-human-routing — D259 implemented; _bg_reason + job lambda + _HUMAN_AUTHORS in main.py; claude-code/akien background jobs always reach cloud
+- decided: T-factual-compression plan — factual_compression.py (NEW); FACTUAL keyword-cluster → INTERPRETIVE with provenance; wired in main.py
+- done: T-factual-compression — factual_compression.py (FACTUAL→INTERPRETIVE concept compression, keyword Jaccard clustering, provenance-preserving book_title/book_author/source_ids, novelty check, Ollama synthesis) wired into main.py background loop alongside distillation
+**Next session**: Next: seed PROC_STALE_TASK_REAPER habit via Igor cc_send; wire T-igor-as-programmer engram; factual_compression first run review (check ring/distillation logs after restart)
+**In-flight**: NONE
+
+## Session 2026-03-29b
+**Theme**: Theme: reading system facia — PROC_LIST_ABSORBED_BOOKS fix + facia habits seeded
+**Key changes**:
+- done: T-fix-reading-status-query — list_absorbed_books() now queries reading_list completed + trigger updated (commit 76dbb0a1)
+- done: FACIA_READING_SYSTEM seeded in Igor DB — context_inject habit, full reading system map, trigger narrowed to avoid competing with PROC_LIST_ABSORBED_BOOKS
+- done: facia_reading_system.md created in CC memory — full reading pipeline map for Claude sessions
+- done: decisions_log.dsb committed + pushed (D255/D256/D257 from prior session)
+**Next session**: Next: Slate 0 DB tickets — T-db-lemmatize (2.1M→~80K stems) then T-db-wg-replace-cooccur. Igor needs to be down for both.
+**In-flight**: NONE
+
+## Session 2026-03-29a
+**Theme**: Theme: reading pipeline fix + design crystallizations (D255-D257)
+**Decisions**: D255, D256, D257
+**Key changes**:
+- fix: feed_reading_list dedup bug — done items blocked new batches; data fix + code fix (10e36356); reading now running (20 items active)
+- decided: D255 facia=thread, D256 timestamp node IDs + Postgres/Redis node registry + calving, D257 tree as traversal index; facia memory term coined; ring memory term confirmed
+**Next session**: Next session: Slate 0 DB tickets (T-db-lemmatize, T-db-wg-replace-cooccur). Check reading progress. T-node-registry and T-tree-index-design are L-size design work for when ready.
+**In-flight**: NONE
+
 ## Session 2026-03-28b
 **Theme**: Theme: instance dir double-prefix bug fix + igor_wild_0001 stale dir audit
+**Decisions**: D255, D256, D257
 **Key changes**:
 - done: main.py double-prefix bug — _instance_dir(), _export_portable_identity(), response_habituation all constructed igor_{instance_id} instead of using paths().instance; when IGOR_INSTANCE_ID=Igor-wild-0001 this created igor_Igor_wild_0001 dir; fix: use _paths().instance directly (847e2a35)
-**Next session**: Next session: 1. rm stale dirs (igor_igor_wild_0001, igor_Igor_wild_0001, igor_wild_0001). 2. Gmail app password on akiendell (noise). 3. cluster_router 'no local machine' warnings may self-resolve.
+- done: conftest.py — patches PathManager.inbox to temp dir; prevents pytest from creating stray igor_wild_0001/ on every run (63eb6e88). Audit: 516 passed, no new issues.
+- decided: D255 facia=thread, D256 timestamp node IDs + node registry, D257 tree as traversal index; ring memory confirmed as the term; facia memory term coined; feed_reading_list dedup fix live (10e36356)
+**Next session**: Next session: Slate 0 DB tickets (T-db-lemmatize, T-db-wg-replace-cooccur). Gmail app password akiendell (low priority noise).
 **In-flight**: NONE
 
 ## Session 2026-03-28a
