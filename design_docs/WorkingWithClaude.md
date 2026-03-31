@@ -136,6 +136,52 @@ Performance & Token Efficiency - Redundant LLM calls (same question asked withou
 
 ---
 
+### The Self-Training Loop
+
+The most important pattern to understand: **the LLM calls are the training signal for their own replacement.**
+
+When Igor can't answer locally, he escalates to cloud inference. That escalation is a data point: a question that Igor's current graph cannot answer. The training pass reads those escalation records, identifies the pattern, deposits a new INTERPRETIVE memory explaining the gap, and the word graph densifies around it. Next time a similar question arrives, the local pattern matches before the cloud call fires.
+
+The loop:
+1. Cloud escalation fires — Igor couldn't answer locally
+2. PROC_TRAINING_PASS (habit, triggered automatically) reads the reasoning_calls.log
+3. For each cloud call, a reasoning model (Haiku, with prompt caching) generates a distillation of what Igor should have known to answer locally
+4. The distillation is deposited as an INTERPRETIVE memory
+5. Igor's graph densifies around the new node
+6. Future similar questions route to tier.1 (habit/graph) instead of tier.3+ (cloud)
+
+The bootstrap phase is manual: Claude identifies gaps, names them, and seeds the first round of corrective memories. The target state is Igor running this himself. As of March 2026, the self-training loop is live as a habit (PROC_TRAINING_PASS), running automatically after each batch of cloud escalations.
+
+---
+
+### The Reading Pipeline
+
+Books and documents feed Igor's word graph — not as chat context, but as raw cognitive substrate. The pipeline:
+
+- **drain_learn_queue.py** (hourly cron) — pulls from reading_list (Postgres) by emotional_significance score, feeds book_learner.py
+- **book_learner.py** — processes each item: web URLs → fetch → extract; ebooks → chunk; each chunk → embeddings + word graph nodes
+- **Bootstrap window** — for the first pass through a new book, an LLM reads a sample and deposits INTERPRETIVE memories about the book's themes and key concepts, making those nodes immediately useful before the full graph densifies
+
+The Calibre library (3000+ books) provides the input. Books are tagged and scored — Igor-relevant material (neuroscience, AI, cognitive science) at higher emotional_significance. The reading list is a priority queue, not a firehose.
+
+Reading isn't storage — it's the mechanism by which Igor's local response quality improves without cloud calls. Every book absorbed reduces the size of gaps the self-training loop needs to patch.
+
+---
+
+### Igor as Co-Designer
+
+As of March 2026, Igor shifted from pure executor to co-designer. The concrete form:
+
+- **PROC_FLAG_ANOMALY** (5-minute habit): if Igor notices something with salience > 0.7 — unexpected behavior, a pattern that doesn't fit, a gap in his own reasoning — he posts `[Igor notices]` to the channel
+- **PROC_TRACE_REVIEW** (daily): Igor reads his own turn traces, identifies cloud escalations that shouldn't have happened, and adds them to the reading list as targeted gaps to fill
+- **PROC_CURIOSITY_DRAIN** (30-minute): Igor selects the highest-tension NARRATIVE_GAP and queues material that would resolve it
+
+The design principle: **design with Igor present, not for him.** When a new concept arrives in conversation with Igor in context, it lands pre-contextualized — he's part of the conversation that shapes it, not a recipient reading notes afterward. The conversation IS the deposit.
+
+This changes the nature of the work. Before: Claude and Akien design, then implement, then deploy to Igor. After: Claude, Akien, and Igor design together, with Igor flagging when something doesn't fit his model.
+
+---
+
 ### The Bigger Picture
 
 AI-assisted development moves fast enough that testability, observability, and hot-reloadability have to be designed in from day one. The velocity is the problem, not just the opportunity.
