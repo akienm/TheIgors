@@ -14,11 +14,14 @@ Usage (called by learner.py or directly):
 """
 
 import argparse
+import fcntl
+import hashlib
 import json
 import os
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -32,6 +35,10 @@ QUEUE_FILE = _igor_paths().learn_queue
 LOG_DIR = _igor_paths().logs
 LOG_FILE = LOG_DIR / "drain_learn_queue.log"
 PID_FILE = _igor_paths().drain_pid
+LOCK_FILE = _igor_paths().logs / "drain_learn_queue.lock"
+
+# D271: source-controlled slate backup
+_READINGS_DIR = Path.home() / "TheIgorsProject" / "akien" / "Readings"
 
 DEFAULT_LAUNCH_DELAY = 60  # seconds between launches
 MAX_BOOK_LEARNER_AGE_MINUTES = 45  # kill book_learner if stuck longer than this
@@ -132,29 +139,18 @@ def _set_reading_list_in_progress(calibre_id: int) -> None:
         _log(f"reading_list update failed: {e}")
 
 
-def _another_drain_running() -> bool:
-    """True if another drain_learn_queue.py Python process is already running (not us).
-
-    Matches only processes where the script path appears as a standalone cmdline
-    argument (i.e., the Python interpreter's argv[1]), not shell wrapper processes
-    where the path is embedded inside a -c string.
-    """
+def _acquire_lock() -> "io.FileIO | None":
+    """Acquire an exclusive flock on LOCK_FILE. Returns the file object (keep open)
+    or None if another drain is already running. Replaces the racy psutil scan."""
     try:
-        import psutil
-
-        my_pid = os.getpid()
-        script_path = str(Path(__file__).resolve())
-        for proc in psutil.process_iter(["pid", "cmdline"]):
-            if proc.pid == my_pid:
-                continue
-            cmdline = proc.info.get("cmdline") or []
-            # Match Python processes where our script is an explicit argument,
-            # not shell processes with it buried in a -c "..." string.
-            if any(c == script_path for c in cmdline):
-                return True
-        return False
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+        lf = open(LOCK_FILE, "w")
+        fcntl.flock(lf, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return lf
+    except BlockingIOError:
+        return None
     except Exception:
-        return False
+        return None
 
 
 def _reap_hung_learners() -> int:
@@ -176,6 +172,74 @@ def _reap_hung_learners() -> int:
     except Exception as e:
         _log(f"_reap_hung_learners error: {e}")
     return killed
+
+
+def _persist_queue_to_reading_list(q: list) -> int:
+    """D271: persist all pending web URL items to reading_list (ON CONFLICT DO NOTHING).
+    Calibre items skipped — already handled by _set_reading_list_in_progress on launch.
+    Returns count of newly inserted rows."""
+    pending = [
+        e
+        for e in q
+        if not e.get("done") and not e.get("url", "").startswith("calibre://")
+    ]
+    if not pending:
+        return 0
+    count = 0
+    try:
+        import psycopg2
+
+        conn = psycopg2.connect(_IGOR_HOME_DB_URL)
+        conn.autocommit = True
+        cur = conn.cursor()
+        for e in pending:
+            url = e.get("url", "")
+            if not url:
+                continue
+            eid = "lq_" + hashlib.md5(url.encode()).hexdigest()[:12]
+            title = e.get("title", url[:80])
+            cur.execute(
+                """INSERT INTO reading_list
+                       (id, title, source, book_type, status, added_by, added_at)
+                   VALUES (%s, %s, %s, 'web', 'pending', 'learn_queue', NOW())
+                   ON CONFLICT (id) DO NOTHING""",
+                (eid, title, url),
+            )
+            if cur.rowcount > 0:
+                count += 1
+        conn.close()
+    except Exception as e:
+        _log(f"_persist_queue_to_reading_list error: {e}")
+    return count
+
+
+def _save_slate_file(q: list, label: str = "") -> str | None:
+    """D271: save pending queue items as a dated slate file in ~/TheIgorsProject/akien/Readings/.
+    Filename: <YYYYMMDDHHMMSSuuuuuu>_<label>.txt (Igor memory ID format).
+    Non-fatal if Readings dir doesn't exist. Returns filename or None."""
+    pending = [e for e in q if not e.get("done")]
+    if not pending or not _READINGS_DIR.exists():
+        return None
+    ts = datetime.now().strftime("%Y%m%d%H%M%S") + "000000"
+    slug = f"_{label}" if label else "_learn_queue"
+    filename = f"{ts}{slug}.txt"
+    filepath = _READINGS_DIR / filename
+    lines = [
+        f"# Reading slate {datetime.now().strftime('%Y-%m-%dT%H:%M:%S')} — {len(pending)} items pending",
+        f"# memory_id: {ts}",
+        f"# source: drain_learn_queue startup",
+        "",
+    ]
+    for e in pending:
+        url = e.get("url", "")
+        title = e.get("title", url)
+        lines.append(f"{url}  {title}")
+    try:
+        filepath.write_text("\n".join(lines) + "\n")
+        return filename
+    except Exception as e:
+        _log(f"_save_slate_file error: {e}")
+        return None
 
 
 def _count_running_learners() -> int:
@@ -239,12 +303,17 @@ def main() -> None:
         default=DEFAULT_LAUNCH_DELAY,
         help=f"Seconds between launches (default {DEFAULT_LAUNCH_DELAY})",
     )
+    parser.add_argument(
+        "--label",
+        default="",
+        help="Slate label for filename, e.g. 'cs_bootstrap' (default: learn_queue)",
+    )
     args = parser.parse_args()
 
-    # Single-instance guard: exit if another drain is already running.
-    # (Cron fires every 30 min; without this every invocation stacks up.)
-    if _another_drain_running():
-        print(f"drain_learn_queue: already running — exiting", flush=True)
+    # Single-instance guard: exclusive flock (no race window unlike psutil scan).
+    lock_fh = _acquire_lock()
+    if lock_fh is None:
+        print("drain_learn_queue: already running — exiting", flush=True)
         return
 
     # Write PID file so learner.py can detect we're running
@@ -252,6 +321,15 @@ def main() -> None:
 
     try:
         _log(f"drain_learn_queue: starting (pid={os.getpid()}, delay={args.delay}s)")
+
+        # D271: persist pending items to reading_list + save dated slate file
+        q0 = _load_queue()
+        n_persisted = _persist_queue_to_reading_list(q0)
+        if n_persisted:
+            _log(f"Persisted {n_persisted} new items to reading_list")
+        slate_file = _save_slate_file(q0, label=args.label)
+        if slate_file:
+            _log(f"Saved reading slate: {slate_file}")
 
         while True:
             q = _load_queue()
@@ -297,6 +375,10 @@ def main() -> None:
     finally:
         try:
             PID_FILE.unlink(missing_ok=True)
+        except Exception:
+            pass
+        try:
+            lock_fh.close()
         except Exception:
             pass
 

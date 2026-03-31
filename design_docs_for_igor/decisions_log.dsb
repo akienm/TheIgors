@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-30
+DOC|decisions_log|v1|updated=2026-03-31
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -501,3 +501,12 @@ D263|cc-channel-response-routing|active|cc_send responses + CC-sourced bg_job co
 D264|phase-d-narration-gap|active|Phase D exercises reveal: inference narrates tool calls rather than executing them; cc_send→channel loop works (D263); first training target identified
 D265|identity-gate-file-content-fp|open|fast_identity_check runs on tool results (read_file) not just LLM output — gap_analysis.md doc of CP5 phrases triggers gate, silently drops file content
 D264|narration-vs-execution-gap|partial|single-arg habit dispatch works (store_factual, read_file_from_text); multi-arg tools still narrate; fix: single-arg wrappers per tool needed
+D266|code-ref-extract-tool-fix|implemented|skip _extract_tool_call on code_ref tool output; inline synthesis with 800-char fallback cap; Phase D Exercise 2 unblocked
+D267|skill-model-routing-haiku|implemented|haiku for filter/audit/slateclose/readigor/slate/fixit; sonnet for sprint/review/savestate/decided; model: frontmatter convention in CLAUDE.md
+D268|reading-bootstrap-mode|implemented|TWM category=mode_override + _force_cloud_mode in gateway; PROC_READING_BOOTSTRAP habit pushes min_tier=tier.4 with TTL; bootstrap_reader.py tools; TTL auto-restores normal routing
+D269|inner-cc-revamp|decided|revise inner_cc.py: model-selectable (haiku/sonnet), multi-turn via OpenRouterReasoner, OR prompt caching (cache_control ephemeral + anthropic-beta header) for stable system prompts across training exercises
+D270|training-pass-habit-pattern|decided|PROC_TRAINING_PASS same shape as PROC_READING_BOOTSTRAP: reads turn traces, spawns inner Claude (Haiku default) via revised inner_cc in long-running mode, deposits INTERPRETIVE/NARRATIVE_GAP memories from cloud-escape gap analysis
+D268|reading-bootstrap-mode|live|MODE override pushes tier.4 to TWM; inference_gateway forces cloud on active entries
+D269|inner-cc-model-flexible|live|inner_cc: model-agnostic, multi-turn, OR prompt caching for anthropic/* models
+D270|proc-training-pass|live|PROC_TRAINING_PASS reads cloud escalations → inner_cc_long gap analysis → INTERPRETIVE deposits
+D271|reading-slate-persistence|live|Reading slates saved as <memoryid>_<label>.txt in ~/TheIgorsProject/akien/Readings/ for source-controlled durability; memory ID format ties file to Igor graph facia; drain persists items to reading_list DB on startup
