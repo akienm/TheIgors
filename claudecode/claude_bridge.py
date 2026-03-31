@@ -54,11 +54,9 @@ LOG_DIR = Path.home() / ".TheIgors" / "logs"
 LOG_FILE = LOG_DIR / "claude_bridge.log"
 GAP_ANALYSIS = REPO / "design_docs" / "gap_analysis.md"
 CLAUDE_MD = REPO / "CLAUDE.md"
-IGOR_DB = Path(
-    os.environ.get(
-        "IGOR_DB_PATH",
-        str(INSTANCE_DIR / "wild-0001.db"),
-    )
+IGOR_HOME_DB_URL = os.environ.get(
+    "IGOR_HOME_DB_URL",
+    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
 )
 
 # ── Config ─────────────────────────────────────────────────────────────────────
@@ -126,15 +124,17 @@ def _save_history(history: list) -> None:
 def _read_habits_from_db(limit: int = 30) -> str:
     """Pull PROCEDURAL habits from Igor's DB for context seeding."""
     try:
-        import sqlite3
+        import psycopg2
 
-        conn = sqlite3.connect(str(IGOR_DB))
-        rows = conn.execute(
+        conn = psycopg2.connect(IGOR_HOME_DB_URL)
+        cur = conn.cursor()
+        cur.execute(
             "SELECT id, narrative, metadata FROM memories"
             " WHERE memory_type = 'PROCEDURAL'"
-            " ORDER BY inertia DESC LIMIT ?",
+            " ORDER BY inertia DESC LIMIT %s",
             (limit,),
-        ).fetchall()
+        )
+        rows = cur.fetchall()
         conn.close()
         lines = []
         for mid, narr, meta_json in rows:

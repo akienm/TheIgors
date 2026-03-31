@@ -109,26 +109,24 @@ def _save_queue(q: list) -> None:
     QUEUE_FILE.write_text(json.dumps(q, indent=2))
 
 
-_IGOR_DB_PATH = Path(
-    os.environ.get(
-        "IGOR_DB_PATH",
-        Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db",
-    )
+_IGOR_HOME_DB_URL = os.environ.get(
+    "IGOR_HOME_DB_URL",
+    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
 )
 
 
 def _set_reading_list_in_progress(calibre_id: int) -> None:
     """G-RL3: mark reading_list entry in_progress when drain launches it."""
     try:
-        import sqlite3 as _sqlite3
+        import psycopg2
 
-        conn = _sqlite3.connect(str(_IGOR_DB_PATH))
-        conn.execute(
-            "UPDATE reading_list SET status='in_progress', started_at=datetime('now')"
-            " WHERE source=? AND status='queued'",
+        conn = psycopg2.connect(_IGOR_HOME_DB_URL)
+        conn.autocommit = True
+        conn.cursor().execute(
+            "UPDATE reading_list SET status='in_progress', started_at=NOW()"
+            " WHERE source=%s AND status='queued'",
             (f"calibre://{calibre_id}",),
         )
-        conn.commit()
         conn.close()
     except Exception as e:
         _log(f"reading_list update failed: {e}")

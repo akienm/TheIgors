@@ -96,6 +96,10 @@ DB_PATH = Path(
         "IGOR_DB_PATH", Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
     )
 )
+IGOR_HOME_DB_URL = os.environ.get(
+    "IGOR_HOME_DB_URL",
+    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+)
 PROGRESS_DIR = Path.home() / ".TheIgors" / "book_learner_progress"
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_REFERER = "https://github.com/akienm/TheIgors"
@@ -736,15 +740,15 @@ def run(args) -> None:
     _reached_end = (live_handle.position >= total_sentences) and not args.limit
     if args.run and _reached_end and args.calibre_id:
         try:
-            import sqlite3 as _sqlite3
+            import psycopg2 as _psycopg2
 
-            _conn = _sqlite3.connect(str(DB_PATH))
-            _conn.execute(
-                "UPDATE reading_list SET status='completed', completed_at=datetime('now')"
-                " WHERE source=? AND status IN ('in_progress','queued')",
+            _conn = _psycopg2.connect(IGOR_HOME_DB_URL)
+            _conn.autocommit = True
+            _conn.cursor().execute(
+                "UPDATE reading_list SET status='completed', completed_at=NOW()"
+                " WHERE source=%s AND status IN ('in_progress','queued')",
                 (f"calibre://{args.calibre_id}",),
             )
-            _conn.commit()
             _conn.close()
             print(f"reading_list: calibre://{args.calibre_id} → completed")
         except Exception as _rl_e:
