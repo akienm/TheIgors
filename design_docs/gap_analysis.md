@@ -1249,6 +1249,29 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 
 ---
 
+### Session 2026-03-30b — Cognition depth + body sense + collaboration loop
+
+**Gaps closed:**
+
+- **G-THREAD-BUFFER1 (closed)**: Igor was losing anaphoric reference across turns — "On it" → silence because BG/thalamus couldn't see recent conversation context. Fix: last 3 TWM turns injected at salience 0.9/0.85/0.7 into TWM before each turn (T-thread-buffer, main.py).
+- **G-SCHEMA-MIGRATION1 (closed)**: Schema migrations were scattered individual try/except ALTER TABLE blocks with no idempotency tracking. Postgres path had missing payload column (boot crash). Fix: `_SCHEMA_MIGRATIONS` list (26 entries m001-m026) + `_run_schema_migrations()` with `_migrations` tracking table — versioned, idempotent, shared across Postgres+SQLite (T-migration-runner, cortex.py).
+- **G-FACIA-SURFACE1 (closed)**: Tool facia nodes existed in graph but didn't surface when Igor wondered what tools he had — semantic search returned book nodes, not INTERP_FACIA_* nodes. Fix: ProprioceptionSource (D262) — 60s heartbeat, direct `WHERE id LIKE 'INTERP_FACIA_%'` query, pushes 186 facia nodes to TWM at salience 0.35 category=body.motor. Tools are body parts, not a lookup table.
+
+**New capability:**
+
+- **T-on-it-fork**: "On it" habit (PROC_ON_IT_TWM_PUSH) now has `fork_bg: true` — spawns background job after acknowledgment. Acknowledgment is no longer a thread-killer.
+- **PROC_CLAUDE_QUERY**: New response habit seeded — trigger: "consult/ask Claude, question for Claude"; emits `[CLAUDE_QUERY] {input}` to CC channel for Claude to read. Direct Igor→Claude communication channel.
+- **PROC_HABIT_COMPILER CC guard removed**: CC bridge can now trigger habit compilation. Only NE action impulses blocked. Claude/Akien can compile habits via cc_send.
+- **_to_memory timestamp guard**: NULL or psycopg2 datetime objects no longer crash boot — isinstance guard with datetime.now() fallback.
+
+**New gaps surfaced (open):**
+
+- None.
+
+*Updated: 2026-03-30b by Claude Code.*
+
+---
+
 ### Session 2026-03-30a — Engram execution model (D260/D261)
 
 **No gaps closed** — this session built new capability:

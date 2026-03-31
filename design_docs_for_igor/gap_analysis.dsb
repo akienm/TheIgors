@@ -556,6 +556,21 @@ G-FACTUAL-RETRIEVAL1|factual-nodes-never-retrieved|closed
   needs=cortex.search() call path tracing to understand why FACTUALs are invisible
 G-BG-JOB-TOOL1|bg-job-store-memory-hallucination|closed
 
+G-THREAD-BUFFER1|igor-loses-anaphoric-reference|closed
+  was=BG/thalamus couldn't see recent conversation — thread buffer only fed LLM prefix, invisible to pre-LLM cognition
+  fix=TWM injection of last 3 turns at salience 0.9/0.85/0.7 before each turn; T-thread-buffer; main.py
+  closed=2026-03-30b
+
+G-SCHEMA-MIGRATION1|scattered-idempotent-migrations|closed
+  was=~15 individual try/except ALTER TABLEs; no tracking; Postgres path missing payload column → boot crash
+  fix=_SCHEMA_MIGRATIONS list 26 entries + _run_schema_migrations() with _migrations table; T-migration-runner; cortex.py
+  closed=2026-03-30b
+
+G-FACIA-SURFACE1|tool-facia-nodes-not-surfacing|closed
+  was=semantic search on 'tool facia entry point' returned 54 book nodes; Igor couldn't feel his own tools
+  fix=ProprioceptionSource D262 — 60s heartbeat; WHERE id LIKE 'INTERP_FACIA_%'; 186 nodes to TWM salience=0.35 category=body.motor
+  closed=2026-03-30b
+
 G-ENGRAM-CURSOR1|engram-cursor-traversal-not-wired|open
   was=BRANCHIF/FORKIF return next_node/spawned in ExecutionResult; main.py logs to ring_memory but does not load+execute next node
   needs=cursor loop in main.py or separate cursor_runner; design choice: inline vs. daemon cursor executor

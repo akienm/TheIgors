@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-03-30
+DOC|subsystem_cognition|v1|updated=2026-03-30b
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,cognition/emit_channels.py,cognition/node_executor.py,tools/traversal_context.py,tools/os_primitives.py
 
@@ -17,7 +17,7 @@ BASAL_GANGLIA|
   conditions=D201: metadata.conditions dict {intent,tone,min/max_complexity,tags,keywords,not_intent}; match_mode=conditions_first(default)|trigger_only|both; conditions_first gates on conditions when present, trigger optional; PROC_GREETING migrated to conditions-only (no trigger) as PoC, tested live
   threshold=BASE 0.50; modulated by milieu: high_arousal→lower(more reactive); low_dominance→higher(more cautious); clamped [0.30,0.70]
   lateral_inhibition=max scorer wins; tiebreak by activation_count; graph_inhibition=_inhibit_neighbors() writes direction=inhibition interpretive edges from winner to near-miss nodes connected by existing edges (T-inhibition-propagation, 2026-03-29c); inhibition is durable in the graph — re-activating suppressed node costs extra
-  compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection
+  compile_precheck=PROC_HABIT_COMPILER fires at confidence 0.95 on compile-phrase detection; CC bridge allowed (2026-03-30b: removed cc_msg guard — only NE action impulses blocked); PROC_CLAUDE_QUERY habit seeded: trigger=consult/ask Claude → emits [CLAUDE_QUERY] to channel; CC reads tagged messages and responds
   trigger_formats=3 formats: pipe-separated(hello|hi|hey), legacy-space(min5-token), single-token(routing_decision)
   intent_gate=D074: skip habit_type="threshold" always; skip (action+proactive with code_ref) + (workflow,delegation,reactive) when intent in {factual_question,meta_question,explanation_request,general,conversation}; D074 expansion (#254, G-OVN-1d): knowledge_request added to _QUESTION_INTENTS; ALL response habits skip on factual_question or knowledge_request → fall through to LLM+winnow
   response_habit_fixes=2026-03-15f: cognitive/passive_capture habits with no action template fall through to LLM (HABIT_FALLTHROUGH ring entry — was leaking 'Habit executed' debug text); G-OVN-1c: response habits with suppress_on_factual_intent=true skip on factual_question; PROC_RESP_DONT_KNOW trigger trimmed (removed 'what do you know about'/'have you heard of' — was misfiring on knowledge queries); 2026-03-25: response habits (PROC_RESP_ACTION_ANNOUNCE, PROC_RESP_SELF_CORRECT) without response_template now fall through to LLM for natural reply (main.py line 3963 fallthrough check extended) — T-habit-metadata-leak
@@ -117,10 +117,19 @@ OS_PRIMITIVES|tools/os_primitives.py|updated=2026-03-22a
 
 INTEROCEPTION_SOURCE|cognition/push_sources.py|added=2026-03-22a|D202
   purpose=continuous VAD gradient from machine resource state → milieu nudge + TWM (body→affect)
+  body_sense=visceral (how the body feels)
   poll=30s; cpu/mem/disk via psutil
   mapping=cpu>85→arousal↑↑+valence↓; mem>90→valence↓↓; all<30→valence↑+arousal↓(calm)
   twm=INTEROCEPTION|cpu|mem|disk|dV|dA|dD|stress; salience=0.25+stress*0.7; ttl=60s
   distinct_from=ResourceMonitorSource (discrete threshold alerts)
+
+PROPRIOCEPTION_SOURCE|cognition/push_sources.py|added=2026-03-30b|D262
+  purpose=keeps INTERP_FACIA_* tool nodes warm in TWM — tools are motor body sense, not lookup table
+  body_sense=motor (where the limbs are and what they can do)
+  poll=60s; direct LIKE query WHERE id LIKE 'INTERP_FACIA_%' (not semantic search — you know where your arm is)
+  twm=TOOL_REGISTRY_ROOT at salience=0.40 + each facia node at salience=0.35; ttl=120s; category=body.motor
+  ring=PROPRIOCEPTION|tools=N|root_found=bool each cycle
+  result=when Igor wonders what tools he has, facia nodes already warm via spreading activation
 
 SCHEDULER_SOURCE|cognition/push_sources.py|added=2026-03-22a|D203
   purpose=fire tool-based habits (code_ref) on schedule_interval_sec; distinct from ProactiveHabitSource
