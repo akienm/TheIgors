@@ -498,3 +498,6 @@ D260|channel-emit-model|live|EMIT emits values (not nodes) to named channels (ba
 D261|engram-instruction-set|live|EMITIF/BRANCHIF/FORKIF/ENDIF instruction set; BRANCHIF stops cell, FORKIF spawns cursor sharing basket; node_executor.py
 D262|proprioception-body-sense|live|ProprioceptionSource: tools are motor body sense (parallel to InteroceptionSource visceral) — INTERP_FACIA_* nodes always warm in TWM on 60s heartbeat
 D263|cc-channel-response-routing|active|cc_send responses + CC-sourced bg_job completions now post to channel_messages; routing directive removed
+D264|phase-d-narration-gap|active|Phase D exercises reveal: inference narrates tool calls rather than executing them; cc_send→channel loop works (D263); first training target identified
+D265|identity-gate-file-content-fp|open|fast_identity_check runs on tool results (read_file) not just LLM output — gap_analysis.md doc of CP5 phrases triggers gate, silently drops file content
+D264|narration-vs-execution-gap|partial|single-arg habit dispatch works (store_factual, read_file_from_text); multi-arg tools still narrate; fix: single-arg wrappers per tool needed
