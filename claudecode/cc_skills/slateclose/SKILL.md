@@ -1,6 +1,7 @@
 ---
 name: slateclose
 description: Closes the current work slate for TheIgors project. Reviews open tickets, notes what's done/deferred/carried, posts summary to GitHub discussion, archives slate.md. Use when Akien says /slateclose, "close the slate", "wrap up this slate", or "start a fresh slate".
+model: haiku
 ---
 
 # Slateclose — Close the Current Work Slate

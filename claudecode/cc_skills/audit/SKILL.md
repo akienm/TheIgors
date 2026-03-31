@@ -1,6 +1,8 @@
 ---
 name: audit
 description: Automated code + system audit for TheIgors. MANDATORY part of day-close — never skip. Runs tests, file placement, code smells, registry coherence, inertia check, thread hygiene, log sizes, OR burn rate, DB schema, dead code, duplication, habit health, TWM coverage, dependency hygiene, credential scan, and simplification review. Fix small issues now, ticket anything bigger.
+model: haiku
+model_exception: Step 16 (simplification review) requires Sonnet — escalate that step inline.
 ---
 
 # Audit — Automated Health Check

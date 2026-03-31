@@ -1,6 +1,8 @@
 ---
 name: slate
 description: Start-of-slate planning ritual for TheIgors. Reviews open tickets, gap analysis, and last audit results, then plans the current slate and discusses priorities. Use when Akien says /slate, "start a new slate", "plan the slate", or "what are we working on".
+model: haiku
+model_exception: Step 5 (propose the slate) and Step 6 (discussion) require Sonnet — the synthesis and priority judgment cannot be delegated.
 ---
 
 # Slate — Start-of-Slate Planning

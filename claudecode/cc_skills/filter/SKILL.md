@@ -1,6 +1,7 @@
 ---
 name: filter
 description: Plan verification filter for TheIgors work. Checks that inertia levels are stated, tests exist or are planned, forensic logging is in plan, and scope boundary is explicit. Use when Akien says /filter, "verify the plan", "check the plan", or "is this ready to implement?".
+model: haiku
 ---
 
 # Filter — Plan Verification

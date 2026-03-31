@@ -1,6 +1,7 @@
 ---
 name: readigor
 description: Reads Igor's recent replies from the shared channel. Shows what Igor has been saying. Use when Akien says /readigor, "what did Igor say", "read Igor's replies", or "check Igor's output". Accepts optional machine argument (akiendell, yoga9i, yogai7, local).
+model: haiku
 ---
 
 # Readigor — Read Igor's Recent Output

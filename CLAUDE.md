@@ -81,6 +81,19 @@ All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
 - **Habit types**: threshold | action | workflow | delegation | reactive | response | question | context_inject | cognitive | tool | passive_capture
 - **Intent gate (D074)**: threshold/workflow/delegation/reactive habits skip when parsed_intent is question-like
 
+### Skill model routing (cost discipline)
+<!-- last-updated: 2026-03-31 -->
+Skills with `model: haiku` in their frontmatter must be spawned via `Agent(model="haiku", subagent_type="general-purpose", prompt="...")` instead of executed inline with the `Skill` tool. This routes mechanical work to Haiku 4.5 (~10× cheaper than Sonnet 4.6).
+
+| Model | Skills | Rationale |
+|---|---|---|
+| **Haiku 4.5** | `/filter`, `/audit` (steps 1–15), `/fixit` (ticket+filter phases), `/slateclose`, `/readigor`, `/slate` (steps 1–4) | Pattern-matching, checklist execution, mechanical reads |
+| **Sonnet 4.6** | `/sprint`, `/review`, `/savestate`, `/decided` (design synthesis), `/audit` step 16, `/slate` step 5 | Architecture, design reasoning, synthesis |
+
+**How to invoke a Haiku skill**: pass the full skill content + arguments as the Agent prompt. The Agent tool's `model: "haiku"` parameter selects the model. Return results to the user as normal.
+
+**Exception**: if a Haiku skill step requires design judgment mid-execution (e.g. audit step 16 "simplification review"), escalate that step to inline Sonnet reasoning rather than delegating blindly.
+
 ### End-of-session savestate (REQUIRED)
 <!-- last-updated: 2026-03-15c -->
 Run `/savestate`. It's not optional — skipping means the next session starts blind. Full checklist: `.claude/skills/savestate/SKILL.md`

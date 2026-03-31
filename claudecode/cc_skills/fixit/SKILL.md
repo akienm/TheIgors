@@ -1,3 +1,10 @@
+---
+name: fixit
+description: Quick-fix loop for TheIgors. Ticket → Filter → Sprint → Slate. Use when Akien says /fixit, "fix this", or "quick fix for X".
+model: haiku
+model_exception: Step 4 (/sprint) runs under Sonnet — implementation requires full reasoning capability.
+---
+
 # fixit — Ticket → Filter → Sprint → Slate
 
 Quick-fix loop. Takes a known problem (bug, misfire, small gap) and drives it
