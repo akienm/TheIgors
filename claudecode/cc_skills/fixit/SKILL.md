@@ -2,92 +2,96 @@
 name: fixit
 description: Quick-fix loop for TheIgors. Ticket → Filter → Sprint → Slate. Use when Akien says /fixit, "fix this", or "quick fix for X".
 model: haiku
-model_exception: Step 4 (/sprint) runs under Sonnet — implementation requires full reasoning capability.
+model_exception: Step 3 (/sprint) runs under Sonnet — implementation requires full reasoning capability.
 ---
 
-# fixit — Ticket → Filter → Sprint → Slate
+# fixit — Triage → Ticket → Filter → Sprint
 
-Quick-fix loop. Takes a known problem (bug, misfire, small gap) and drives it
-to done in one motion: ensures a ticket exists, gates on filter, runs sprint,
-updates the slate.
+Primary job: ensure everything is ticketed. Filter and sprint follow for S/M
+items that are ready to work now. L items get ticketed and queued — they need
+plan approval separately.
 
-Use when: something small is broken and you want to fix it right now without
-manually orchestrating ticket → filter → sprint → slate update.
+Use when: Akien has one or more things to fix, ideas to queue, or descriptions
+of gaps. Can be a single bug or a list of improvements. /fixit makes sure
+nothing falls through without a ticket.
 
 Arguments:
-  /fixit <description>        — creates ticket, then works it
-  /fixit <ticket-id>          — picks up existing ticket, works it
+  /fixit <description>           — ticket one item, then work it
+  /fixit <ticket-id>             — pick up existing ticket, work it
+  /fixit <item1> / <item2> / … — ticket multiple items, work S/M ones in order
 
 ---
 
-## Step 1 — Ensure a ticket exists
+## Step 1 — Ticket everything
 
-If an existing ticket ID was given, read it:
+For each item (description or ticket ID) in the argument list:
+
+If it's an existing ticket ID, read it:
 ```bash
 python3 ~/TheIgors/claudecode/cc_queue.py show <ticket-id>
 ```
 
-If a description was given (no ticket ID), create a minimal ticket:
+If it's a description with no ticket, create one:
 ```bash
 python3 ~/TheIgors/claudecode/cc_queue.py add "<title>" "<one-line description>" --priority 2
 ```
-Capture the returned ticket ID. Use it for the rest of the steps.
 
-Add to today's slate (position 0):
+Add each ticket to today's slate:
 ```bash
 DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/slate_manager.py add-ticket 0 "<ticket-id>" "<title>"
 ```
 
+After all tickets are created, print a summary table:
+| # | Ticket ID | Title | Size |
+|---|-----------|-------|------|
+
+Classify size (S/M/L) based on scope. If unsure, default to M.
+
 ---
 
-## Step 2 — State the plan (one paragraph)
+## Step 2 — Separate S/M from L
 
-Write out explicitly:
+- **S/M tickets**: proceed to Step 3 for each, in order
+- **L tickets**: stop here. Flag them: "L ticket <id> queued — needs plan approval before sprint."
+
+If ALL tickets are L, end here. Slate is updated; that's enough.
+
+---
+
+## Step 3 — Plan + Filter + Sprint (S/M only, one at a time)
+
+For each S/M ticket:
+
+**3a. State the plan** (one paragraph):
 - What file(s) change (with inertia level)
 - What the fix does
 - What test verifies it
 - What is NOT changing (scope boundary)
 
-This is the plan that /filter will check. Keep it tight — /fixit is for small fixes.
+**3b. Run /filter** on the plan. Fix any blocking issues. Non-blocking notes: proceed and annotate.
 
----
-
-## Step 3 — Run /filter
-
-```
-/filter
-```
-
-Pass the plan from Step 2 as the argument. Fix any blocking issues before continuing.
-If filter fails on a non-blocking note, proceed and note the exception.
-
----
-
-## Step 4 — Run /sprint <ticket-id>
-
-```
-/sprint <ticket-id>
-```
+**3c. Run /sprint <ticket-id>**
 
 Sprint handles: implement → test-fix → probe → record → close ticket → render slate.
 
 ---
 
-## Step 5 — Confirm slate updated
+## Step 4 — Confirm slate
 
-After sprint completes, verify the ticket shows closed on the slate:
+After all S/M tickets are worked, render the slate:
 ```bash
 DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/slate_manager.py render
 ```
 
-Print the updated P1/P2 section so Akien can see it landed.
+Print the P1/P2 section so Akien can see what landed and what's queued.
 
 ---
 
 ## Hard rules
 
-- One fix per /fixit — if scope grows during implementation, stop and ticket the new scope
-- S/M size only — if the fix turns out to be L, stop at Step 2 and escalate to /sprint directly
+- Always ticket before working — the ticket is truth, not the conversation
 - Always add to slate before working — the slate is truth
+- L tickets get ticketed and stopped — never sprint an L without plan approval
+- If scope expands mid-sprint, stop, ticket the new scope, return to Step 1

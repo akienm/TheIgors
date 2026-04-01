@@ -219,6 +219,7 @@ def cmd_add(args):
         nt.setdefault("result", None)
         nt.setdefault("claimed_at", None)
         nt.setdefault("completed_at", None)
+        nt.setdefault("required_files", [])
         tasks.append(nt)
         _log({"action": "add", "id": nt["id"], "title": nt["title"]})
         print(f"  added: {nt['id']} — {nt['title']}")
