@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-03-31
+DOC|decisions_log|v1|updated=2026-04-01
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -516,3 +516,8 @@ D272|boredom-idle-loop|decided|Boredom = milieu too-settled threshold → idle t
 D273|self-healing-startup-loop|live|igor script: crash → check debug_session.flag → if absent launch claude --dangerously-skip-permissions to fix+commit+exit; SIGTERM handler exits 0; context-load writes flag, savestate deletes flag
 D274|action-node-dispatch-gap|open|Cognitive habits (PROC_CODE_A_TICKET) load as context but action nodes (queue_task, disk_check) win dispatch — multi-step ticket workflows need thread continuity mechanism
 D275|goal-as-thread|open|Goals are first-class TWM nodes: GOAL_TACTICAL (completable, success_condition, BRANCHIF on failure) vs GOAL_STRATEGIC (orientation, never completes, tilts BG scoring field)
+D275|goal-as-thread|implemented|GOAL_TACTICAL memory type: success_condition, current_strategy, failure_count, TTL. Stored in cortex instance-scoped + TWM at salience 0.85 for cross-turn persistence.
+D276|executive-function-persistence-hunting|implemented|goal_fail_active: failure increments count, searches cortex for alternatives, escalates to channel at 3+ failures. PROC_GOAL_STUCK fires on stuck/error signals.
+D277|biological-patterns-gap-inventory|defined|6 missing biological patterns: predictive coding, lateral inhibition (BG), dopamine→weight update, chunking, refractory/habituation, homeostatic setpoints, consolidation.
+D272|boredom-idle-loop|implemented|PROC_BOREDOM_TRIGGER (10min): milieu arousal<0.08 + |valence|<0.15 → EF/topic traversal → [Igor wonders] channel post. EF_FACIA + TOPICS_FACIA seeded.
+D274|goal-continuation-scheduler|implemented|PROC_GOAL_CONTINUATION (2min): reads active GOAL, step 0=claim ticket, step 1=show ticket, step 2=ready signal. Closes silence gap after goal adoption.
