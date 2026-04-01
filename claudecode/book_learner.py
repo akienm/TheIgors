@@ -180,6 +180,100 @@ def _save_progress(book_key: str, state: dict) -> None:
     _progress_path(book_key).write_text(json.dumps(state, indent=2))
 
 
+# ── Per-book readable report (READING_<hash>.md) ──────────────────────────────
+#
+# Named to match the READING_<hash> Postgres completion node so humans and
+# Igor can correlate file → memory. Written incrementally so partial runs
+# leave a visible trace even if the process is killed or DB write fails.
+
+
+def _report_id(book_key: str) -> str:
+    """Return the READING_XXXXXXXX ID for this book (matches completion node ID)."""
+    h = hashlib.md5(book_key.encode()).hexdigest()[:8].upper()
+    return f"READING_{h}"
+
+
+def _report_path(book_key: str) -> Path:
+    PROGRESS_DIR.mkdir(parents=True, exist_ok=True)
+    return PROGRESS_DIR / f"{_report_id(book_key)}.md"
+
+
+def _write_report_header(
+    book_key: str,
+    book_title: str,
+    author: str,
+    model: str,
+    calibre_id: int | None,
+) -> None:
+    """Write (or overwrite) the report header at the start of a run."""
+    import datetime
+
+    rid = _report_id(book_key)
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    lines = [
+        f"# {rid}",
+        f"",
+        f"**Book**: {book_title}",
+        f"**Author**: {author}",
+        f"**Model**: {model}",
+        f"**Started**: {ts}",
+    ]
+    if calibre_id:
+        lines.append(f"**Calibre ID**: {calibre_id}")
+    lines += ["", "## Chunks", ""]
+    try:
+        _report_path(book_key).write_text("\n".join(lines) + "\n")
+    except Exception:
+        pass
+
+
+def _append_report_chunk(
+    book_key: str,
+    chunk_label: str,
+    n_deposited: int,
+    summary: str,
+    is_error: bool,
+    model_tag: str,
+) -> None:
+    """Append one chunk line to the report. Called after every chunk attempt."""
+    icon = "✗" if is_error else ("→" if n_deposited else "·")
+    line = f"- `{chunk_label}` [{model_tag}] {icon} {n_deposited}n  {summary[:80]}\n"
+    try:
+        with open(_report_path(book_key), "a", encoding="utf-8") as f:
+            f.write(line)
+    except Exception:
+        pass
+
+
+def _write_report_footer(
+    book_key: str,
+    chunks_done: int,
+    total_deposited: int,
+    errors: int,
+    status: str,
+) -> None:
+    """Append the footer summary at the end of the run."""
+    import datetime
+
+    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    lines = [
+        "",
+        "## Summary",
+        "",
+        f"- **Status**: {status}",
+        f"- **Chunks processed**: {chunks_done}",
+        f"- **Nodes deposited**: {total_deposited}",
+        f"- **Errors**: {errors}",
+        f"- **Finished**: {ts}",
+        "",
+    ]
+    try:
+        with open(_report_path(book_key), "a", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+    except Exception:
+        pass
+
+
 # ── LLM extraction ────────────────────────────────────────────────────────────
 
 
@@ -626,6 +720,22 @@ def run(args) -> None:
             f"★ New book — starting absorption: \"{book_title}\" by {handle['author']}"
         )
 
+    # Write readable report header (READING_<hash>.md) — named to match the
+    # Postgres completion node so file ↔ memory are always correlatable.
+    if args.run:
+        _model_label = (
+            "local:" + os.getenv("OLLAMA_LOCAL_MODEL", "qwen2.5:7b").split("#")[0]
+            if args.local
+            else args.model
+        )
+        _write_report_header(
+            book_key=book_key,
+            book_title=book_title,
+            author=handle["author"],
+            model=_model_label,
+            calibre_id=args.calibre_id,
+        )
+
     # ── Seek to start position ─────────────────────────────────────────────
     # Access the live BookHandle from cache for position management
     from igor.tools.ebook_reader import _HANDLE_CACHE
@@ -708,9 +818,18 @@ def run(args) -> None:
             nodes = extraction.get("nodes", [])
             summary = extraction.get("summary", "")
 
+            _chunk_model_tag = "local" if _should_use_local(args.local) else "cloud"
             if "ERROR" in summary or "error" in summary.lower():
                 print(f"{chunk_label} ERROR: {summary}")
                 errors += 1
+                _append_report_chunk(
+                    book_key,
+                    chunk_label,
+                    0,
+                    summary,
+                    is_error=True,
+                    model_tag=_chunk_model_tag,
+                )
             else:
                 n_dep = _deposit_nodes(
                     nodes, cortex, book_title, pos, chapter_node_id=_chapter_node_id
@@ -725,6 +844,14 @@ def run(args) -> None:
                 progress["processed_positions"] = list(processed_positions)
                 progress["total_deposited"] = total_deposited
                 _save_progress(book_key, progress)
+                _append_report_chunk(
+                    book_key,
+                    chunk_label,
+                    n_dep,
+                    summary,
+                    is_error=False,
+                    model_tag=_chunk_model_tag,
+                )
 
             if args.delay > 0:
                 time.sleep(args.delay)
@@ -746,7 +873,7 @@ def run(args) -> None:
             _conn.autocommit = True
             _conn.cursor().execute(
                 "UPDATE reading_list SET status='completed', completed_at=NOW()"
-                " WHERE source=%s AND status IN ('in_progress','queued')",
+                " WHERE source=%s AND status IN ('in_progress','queued','pending')",
                 (f"calibre://{args.calibre_id}",),
             )
             _conn.close()
@@ -776,6 +903,15 @@ def run(args) -> None:
             )
         except Exception as _cr_e:
             print(f"[completion record] failed (non-fatal): {_cr_e}")
+
+        _write_report_footer(
+            book_key=book_key,
+            chunks_done=chunks_done,
+            total_deposited=total_deposited,
+            errors=errors,
+            status=_completion_status,
+        )
+        print(f"Report: {_report_path(book_key)}")
 
     print("─" * 60)
     if args.run:
