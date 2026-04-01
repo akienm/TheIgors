@@ -72,6 +72,15 @@ Then run `/day-close` to handle steps 4–9 (gap_analysis, subsystem DSBs, MEMOR
 
 ---
 
+## Step 3.5 — Remove debug session flag (D273)
+
+Re-enable Igor's crash auto-fixer now that the Claude Code session is ending:
+```bash
+rm -f ~/.TheIgors/Igor-wild-0001/debug_session.flag
+```
+
+---
+
 ## ⛔ Step 4 — Output compact string
 
 **Always do this last. Do not skip.**

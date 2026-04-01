@@ -6,6 +6,18 @@ No Igor required. No Postgres required.
 
 ---
 
+## Step 0 — Write debug session flag (D273)
+
+Suppress Igor's crash auto-fixer while Claude Code is active:
+```bash
+touch ~/.TheIgors/Igor-wild-0001/debug_session.flag
+```
+
+This flag tells the `igor` startup script not to launch the auto-fixer if Igor crashes
+during this session (Claude Code is already present to diagnose).
+
+---
+
 ## Step 1 — Read the slate
 
 ```bash

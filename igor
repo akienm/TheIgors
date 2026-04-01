@@ -99,6 +99,10 @@ log_igor_crash() {
     } >> "$ALERTS_FILE"
 }
 
+# Debug session flag: written by /context-load, deleted by /savestate.
+# When present, crash auto-fixer is suppressed (Claude Code session is already on it).
+DEBUG_SESSION_FLAG="$RUNTIME_ROOT/${IGOR_INSTANCE_ID:-Igor-wild-0001}/debug_session.flag"
+
 # Restart loop: exit code 42 means "please restart"
 # .env is re-read on every restart so env changes take effect immediately.
 while true; do
@@ -109,6 +113,9 @@ while true; do
     # Pin IGOR_INSTANCE_ID to the canonical dir name — overrides any stale .env value.
     # This is the authoritative source: the dir that contains the .env IS the instance.
     export IGOR_INSTANCE_ID=$(basename "$(dirname "$ENV_FILE")")
+
+    # Refresh debug flag path in case IGOR_INSTANCE_ID changed after .env re-read.
+    DEBUG_SESSION_FLAG="$RUNTIME_ROOT/$IGOR_INSTANCE_ID/debug_session.flag"
 
     # Kill any stale igor.main processes left over from a prior crash.
     # pgrep returns PIDs of all matching processes; exclude current shell's children
@@ -130,15 +137,40 @@ while true; do
             sleep 1
         done
     fi
-    python -m igor.main "${IGOR_ARGS[@]}"
+
+    # Capture stderr to a temp file for crash diagnosis while still showing it live.
+    _crash_log=$(mktemp /tmp/igor-crash-XXXXXX.log)
+    python -m igor.main "${IGOR_ARGS[@]}" 2> >(tee -a "$_crash_log" >&2)
     EXIT_CODE=$?
+
     if [ $EXIT_CODE -eq 42 ]; then
+        rm -f "$_crash_log"
         echo "[igor] Restarting (re-reading .env)..."
-    else
-        # Non-42 exit: log crash if non-zero
-        if [ $EXIT_CODE -ne 0 ]; then
-            log_igor_crash "$EXIT_CODE"
-        fi
+    elif [ $EXIT_CODE -eq 0 ] || [ $EXIT_CODE -eq 130 ] || [ $EXIT_CODE -eq 143 ]; then
+        # Clean exit: 0=quit, 130=SIGINT (Ctrl-C), 143=SIGTERM
+        rm -f "$_crash_log"
         break
+    else
+        # Unexpected crash
+        log_igor_crash "$EXIT_CODE"
+        if [ -f "$DEBUG_SESSION_FLAG" ]; then
+            echo "[igor] Debug session active — not launching auto-fixer. Exiting."
+            rm -f "$_crash_log"
+            break
+        fi
+        echo "[igor] Crash detected (exit $EXIT_CODE). Launching Claude auto-fixer..."
+        _traceback=$(tail -80 "$_crash_log")
+        rm -f "$_crash_log"
+        claude --dangerously-skip-permissions -p "Igor crashed with exit code $EXIT_CODE.
+
+Traceback (last 80 lines of stderr):
+$_traceback
+
+Task: diagnose the root cause, fix the code in ~/TheIgors/wild_igor/, run tests
+(cd ~/TheIgors && source venv/bin/activate && python -m pytest tests/ -x -q),
+commit the fix, then exit cleanly. Do not restart Igor — the startup script will
+restart it after you exit."
+        echo "[igor] Auto-fixer exited. Restarting Igor..."
+        # Continue the loop — Igor restarts with the fix applied.
     fi
 done
