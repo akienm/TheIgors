@@ -58,8 +58,10 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-cha
 Read every file before editing. Key gates:
 - S/M size: implement directly after reading relevant files
 - L size:
-  - If `$WORKER_TICKET` env var is set (minion mode): post plan to channel then **proceed immediately** — the ticket being queued is the approval. Do NOT wait for user input.
-  - If interactive (foreground) session: post plan to channel, wait for Akien approval before coding
+  - **Run /filter on the plan first.** If filter FAILS with blocking issues, stop and report before posting to channel or writing any code.
+  - Log filter result to `~/.TheIgors/logs/worker_daemon.log`: `[filter] <ticket-id> result=PASS|FAIL ts=<timestamp>`
+  - If `$WORKER_TICKET` env var is set (minion mode): post plan + filter result to channel then **proceed immediately** — the ticket being queued is the approval. Do NOT wait for user input.
+  - If interactive (foreground) session: post plan + filter result to channel, wait for Akien approval before coding
 - Forensic logging for non-trivial changes
 
 Post progress updates to channel:
