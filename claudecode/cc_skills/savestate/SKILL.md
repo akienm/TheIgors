@@ -81,21 +81,33 @@ rm -f ~/.TheIgors/Igor-wild-0001/debug_session.flag
 
 ---
 
-## ⛔ Step 4 — Output compact string
+## ⛔ Step 4 — Compose compact string
 
-**Always do this last. Do not skip.**
+**Do this before Step 4.5.**
 
-Output the following for Akien to copy into the `/compact` command:
+Compose the preserve string (do not copy/paste; write fresh):
 
 ```
 preserve: session=YYYY-MM-DDx finalized. Done this session: <2-3 line summary of key changes>.
 Next: <top priority>. In-flight: <hypothesis or NONE>.
 ```
 
-Example:
+Example format:
 > `preserve: session=2026-03-22a finalized. Done: D211 local-first routing, boot_check import fix, ollama daemon thread fix, T-resource-history burn tracking. Next: seed location habits for machine_in_use. In-flight: NONE.`
 
-This is the input string for `/compact`. Copy it exactly.
+---
+
+## Step 4.5 — Inject compaction via MCP
+
+**If CLAUDE_TMUX_SESSION env var is set** (Claude Code running in tmux):
+
+Call the MCP tool to inject `/compact` into the tmux session automatically:
+- Tool: `request_compaction`
+- Argument: the preserve string from Step 4
+
+**If tmux is not available or CLAUDE_TMUX_SESSION not set**: Skip this step and output the preserve string for manual `/compact` copy (fallback to Step 4 behavior).
+
+Compaction fires automatically when the MCP tool succeeds — no manual copy needed.
 
 ---
 
