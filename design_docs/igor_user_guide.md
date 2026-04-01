@@ -1,6 +1,6 @@
 # Igor User Guide
 
-*Updated: 2026-03-26*
+*Updated: 2026-04-01*
 
 The practical reference for running, talking to, and maintaining Igor.
 For architecture, see `design_docs/ProjectOverview.md`.
@@ -89,6 +89,68 @@ Type these directly into Igor's terminal prompt:
 | `/arbiter` | Arbiter queue status |
 | `/restart` | Restart Igor (re-reads .env) |
 | `/quit` or `/exit` | Exit cleanly |
+
+---
+
+## Igor Tools (callable via cc_send or habit trigger)
+
+These are registered tools Igor can invoke. Send via `cc_send` to trigger by name,
+or they fire automatically when a matching habit is active.
+
+### Goal / Task Management
+
+| Tool | Args | What It Does |
+|---|---|---|
+| `goal_adopt` | `task: str` | Adopt a goal; stores as active GOAL memory at high salience |
+| `goal_close` | `goal_id: str` | Close a goal by memory ID (sets goal_active=False) |
+| `close_goal_by_ticket` | `ticket_id: str` | Close active GOAL whose source_message contains ticket_id |
+| `goal_fail_active` | — | Mark the current active goal as failed |
+| `goal_scan` | — | Report all active GOAL memories |
+| `run_goal_continuation` | — | D274: drive mechanical steps on active GOAL (claim→show→grep→ready) |
+| `adopt_top_queue_ticket` | — | D278: check queue.json, adopt top pending ticket as new goal |
+| `read_queue_top` | — | Return top pending ticket from queue.json (no adoption) |
+| `queue_task` | `task: str` | Add a task to the cc_queue |
+
+### Memory / Knowledge
+
+| Tool | Args | What It Does |
+|---|---|---|
+| `store_decision` | `text: str` | Store a design decision as INTERPRETIVE memory |
+| `store_session_note` | `text: str` | Store a session note as EPISODIC memory |
+| `flush_habit_cache` | — | Flush the BG habit score cache (after seeding new habits) |
+
+### Monitoring / Diagnostics
+
+| Tool | Args | What It Does |
+|---|---|---|
+| `get_escalation_stats` | — | D279: cloud escalation trend — this week vs last week, grouped by topic |
+
+---
+
+## Claude Code Skills (available in CC sessions)
+
+Type `/skill-name` in a Claude Code session. All skills live in `~/.claude/skills/` (synced from `claudecode/cc_skills/`).
+
+| Skill | What It Does |
+|---|---|
+| `/context-load` | Trail-based session startup — reads slate, blob tops, channel, starts session record |
+| `/savestate` | End-of-session ritual — flush summary, record decisions, finalize session, commit |
+| `/decided` | Record a design decision or work completion mid-session |
+| `/sprint` | Worker session — reads ticket, implements, reports, exits |
+| `/filter` | Pre-implementation plan verification checklist |
+| `/audit` | Full subsystem audit against design docs |
+| `/fixit` | Ticket + filter + implement loop |
+| `/review` | Code review against Igor conventions |
+| `/commit` | Structured git commit with session record |
+| `/readigor` | Read Igor's recent channel output (supports machine arg: akiendell/yoga9i/yogai7) |
+| `/probe` | Send a test message to Igor and observe response |
+| `/slate` | Render/update the active work slate |
+| `/slateclose` | Close completed slate items |
+| `/day-close` | End-of-day ritual (gap analysis, subsystem DSBs, GitHub discussion, commit) |
+| `/notethat` | Quick note to session record |
+| `/validate-files` | Check file integrity / inertia before editing |
+| `/igor` | Igor meta-skill (diagnose, inspect, send commands) |
+| `/test-fix` | Run failing tests and iterate until green |
 
 ---
 
