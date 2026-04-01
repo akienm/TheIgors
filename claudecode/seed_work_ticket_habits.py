@@ -72,39 +72,47 @@ seed_pg(
     {
         "id": "PROC_CODE_A_TICKET",
         "narrative": (
-            "When I have a coding ticket to work (worker=igor), I follow this loop:\n\n"
-            "1. READ THE TICKET. Use cc_queue.py show <id> or read the task "
-            "description fully before touching anything.\n\n"
+            "When I have a coding ticket to work (worker=igor), I follow this loop. "
+            "I am the worker. No one is coming to help. I do each step myself.\n\n"
+            "0. CLAIM AND ANNOUNCE. Run:\n"
+            "   python3 ~/TheIgors/claudecode/cc_queue.py claim <ticket-id>\n"
+            "   python3 ~/TheIgors/claudecode/channel.py post 'T-<id>: claimed. Starting.' --as igor\n\n"
+            "1. READ THE TICKET. Run: python3 ~/TheIgors/claudecode/cc_queue.py show <id>\n"
+            "   Post to channel: 'T-<id>: ticket read. Description: <one line>.'\n\n"
             "2. GREP THE CODEBASE. Find the relevant files before deciding what "
-            "to change. Use grep or glob to locate the function, class, or "
-            "pattern. Never assume I know where something lives.\n\n"
+            "to change. Use run_bash with grep/glob to locate the function, class, or "
+            "pattern. Never assume I know where something lives.\n"
+            "   Post to channel: 'T-<id>: found files: <list>.'\n\n"
             "3. READ THE FILES. Read every file I plan to touch before editing. "
-            "Understand what's already there. No blind edits.\n\n"
+            "Understand what's already there. No blind edits.\n"
+            "   Post to channel: 'T-<id>: read <files>. Plan: <one sentence>.'\n\n"
             "4. PLAN IN ONE PARAGRAPH. State: which files change, what the fix "
-            "does, what test verifies it, what is NOT changing. Keep it tight.\n\n"
+            "does, what test verifies it, what is NOT changing. Keep it tight.\n"
+            "   Post to channel: 'T-<id>: plan: <paragraph>.'\n\n"
             "5. SELF_EDIT. Make the changes using patch_source_file. One targeted "
-            "edit at a time. If the edit is larger than expected, stop and re-plan.\n\n"
-            "6. RUN PYTEST. cd ~/TheIgors && source venv/bin/activate && "
+            "edit at a time. If the edit is larger than expected, stop and re-plan.\n"
+            "   Post to channel: 'T-<id>: edit done — <what changed in one line>.'\n\n"
+            "6. RUN PYTEST. Use run_bash: cd ~/TheIgors && source venv/bin/activate && "
             "python -m pytest tests/ -x -q. Tests must be green before proceeding. "
-            "If tests fail, diagnose and fix — do not skip.\n\n"
+            "If tests fail, diagnose and fix — do not skip.\n"
+            "   Post to channel: 'T-<id>: tests pass.' or 'T-<id>: tests FAIL — <error>.'\n\n"
             "7. DEPOSIT EPISODIC. Record what was done: what changed, what the "
             "test showed, what I learned.\n\n"
-            "8. POST DIFF SUMMARY. Run: git diff HEAD --stat to get changed files. "
-            "Post to channel: 'T-<id>: changed <files>. Tests pass. Awaiting review.' "
-            "Keep it one sentence per file changed.\n\n"
-            "9. MARK NEEDS_REVIEW. Run: "
-            "python3 ~/TheIgors/claudecode/cc_queue.py needs-review <ticket-id>. "
-            "This signals Akien that the work is ready to inspect.\n\n"
+            "8. POST DIFF SUMMARY. Use run_bash: git diff HEAD --stat\n"
+            "   Post to channel: 'T-<id>: changed <files>. Tests pass. Awaiting review.'\n\n"
+            "9. MARK NEEDS_REVIEW. Run:\n"
+            "   python3 ~/TheIgors/claudecode/cc_queue.py needs-review <ticket-id>\n\n"
             "10. WAIT. Do not commit. Do not restart. Akien reviews the diff and "
             "says 'approved' or 'looks good' to proceed. If changes are needed, "
             "Akien will say what to fix — go back to step 5.\n\n"
             "HARD RULE: Igor never self-initiates a git commit or restart. "
-            "Those are human checkpoints."
+            "Those are human checkpoints.\n\n"
+            "REMINDER: Use run_bash (not bash) for all shell commands."
         ),
         "memory_type": "PROCEDURAL",
         "source": "seed",
         "confidence": 1.0,
-        "context_of_encoding": "D273 review gate — seed_work_ticket_habits 2026-03-31",
+        "context_of_encoding": "D273 review gate + channel visibility — seed_work_ticket_habits 2026-03-31b",
         "metadata": {
             "habit_type": "cognitive",
             "trigger": (
