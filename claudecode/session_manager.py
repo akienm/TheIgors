@@ -12,6 +12,8 @@ Usage:
         — accumulate key_changes as work happens (called by /decided)
     python3 claudecode/session_manager.py append-decision <id> "Dxxx"
         — accumulate decision IDs (called by /decided alongside decision_manager.py add)
+    python3 claudecode/session_manager.py append-tool-output <id> "<tool: output summary>"
+        — accumulate tool call summaries for crash recovery (called by PostToolUse hook)
     python3 claudecode/session_manager.py finalize <id> "<next>" "<in_flight>"
         — add synthesis fields at clean session end (optional — crash-safe without it)
     python3 claudecode/session_manager.py add <id> <theme> <decisions> <key_changes> <next> <in_flight>
@@ -71,6 +73,7 @@ def _ensure_table():
                     theme        TEXT NOT NULL,
                     decisions    TEXT DEFAULT '',     -- comma-separated "D130, D131"
                     key_changes  TEXT DEFAULT '',     -- freeform multi-line
+                    tool_outputs TEXT DEFAULT '',     -- one-line per tool call for crash recovery
                     next_session TEXT DEFAULT '',
                     in_flight    TEXT DEFAULT 'NONE',
                     created_at   TEXT
@@ -84,6 +87,11 @@ def _ensure_table():
             """,
                 (datetime.now().isoformat(),),
             )
+            # Add tool_outputs column if it doesn't exist (migration for existing tables)
+            c.execute("""
+                ALTER TABLE sessions
+                ADD COLUMN IF NOT EXISTS tool_outputs TEXT DEFAULT ''
+            """)
         conn.commit()
 
 
@@ -296,6 +304,46 @@ def cmd_append_decision(args: list[str]):
     print(f"Decision recorded → {sid}: {did}")
 
 
+def cmd_append_tool_output(args: list[str]):
+    """Append one tool output summary (tool name + key tokens). Args: [id] summary (id defaults to current_session.txt)"""
+    if len(args) < 1:
+        print("Usage: session_manager.py append-tool-output [id] <summary>")
+        sys.exit(2)
+    # If first arg looks like a session ID (date format), use it; else use state file
+    if len(args) >= 2 and re.match(r"^\d{4}-\d{2}-\d{2}", args[0]):
+        sid, summary = args[0], args[1]
+    else:
+        sid = current_session_id()
+        summary = args[0]
+        if not sid:
+            print(
+                "ERROR: no current session. Run session_manager.py start first.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+    with _conn() as conn:
+        with conn.cursor() as c:
+            c.execute(
+                """
+                UPDATE sessions
+                SET tool_outputs = CASE
+                    WHEN tool_outputs = '' THEN %s
+                    ELSE tool_outputs || E'\\n' || %s
+                END
+                WHERE id = %s
+            """,
+                (summary, summary, sid),
+            )
+            if c.rowcount == 0:
+                print(
+                    f"  [warn] Session {sid} not found — tool output not recorded",
+                    file=sys.stderr,
+                )
+                return
+        conn.commit()
+    print(f"Tool output recorded → {sid}: {summary}")
+
+
 def cmd_finalize(args: list[str]):
     """Add next_session and in_flight to complete a session record. Args: id next in_flight"""
     if len(args) < 2:
@@ -353,6 +401,8 @@ def cmd_get(sid: str):
         print(f"**Decisions**: {r['decisions']}")
     if r.get("key_changes"):
         print(f"**Key changes**:\n{r['key_changes']}")
+    if r.get("tool_outputs"):
+        print(f"**Tool outputs**:\n{r['tool_outputs']}")
     if r.get("next_session"):
         print(f"**Next session**: {r['next_session']}")
     print(f"**In-flight**: {r.get('in_flight', 'NONE')}")
@@ -423,6 +473,8 @@ def main():
         cmd_append_change(sys.argv[2:])
     elif cmd == "append-decision":
         cmd_append_decision(sys.argv[2:])
+    elif cmd == "append-tool-output":
+        cmd_append_tool_output(sys.argv[2:])
     elif cmd == "finalize":
         cmd_finalize(sys.argv[2:])
     elif cmd == "add":
