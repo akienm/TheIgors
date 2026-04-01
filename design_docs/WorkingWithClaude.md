@@ -43,7 +43,7 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 **Skills are compiled procedures, not prompts.** Claude Code skills (`.claude/skills/`) load only a name token at startup and expand to full instructions on invocation. Use them for any multi-step workflow you want to be repeatable and non-negotiable: `savestate`, `sprint`, `igor`. Each one is a contract. The skill runs the same way every time without having to re-explain the steps. If a workflow requires more than three turns to explain, write a skill.
 
-**Hooks are better than instructions.** Claude Code hooks (`~/.claude/settings.json`) run on every matching tool call regardless of context length, memory state, or whether Claude "remembers" the instruction. A PostToolUse hook that runs `black` on every edited `.py` file never needs to be asked. A PreToolUse guard that blocks `rm -rf /` never gets overridden by a long session. If a policy needs to be enforced reliably, put it in a hook. Instructions can be forgotten; hooks cannot.
+**Hooks are better than instructions.** Claude Code hooks (`~/.claude/settings.json`) run on every matching tool call regardless of context length, memory state, or whether Claude "remembers" the instruction. A PostToolUse hook that runs `black` on every edited `.py` file never needs to be asked. A PreToolUse guard that blocks `rm -rf /` never gets overridden by a long session. If a policy needs to be enforced reliably, put it in a hook. Instructions can be forgotten; hooks cannot. One particularly useful PostToolUse hook: write a one-line tool summary (tool name + key output tokens) to the session record after every tool call. A crash then loses only the synthesis fields — every tool invocation and its result survives for reconstruction.
 
 **Design docs are architectural truth — not notes, not comments in code.** Keep DSB format docs in the repo, organized as a tree: a root architecture document with subsystem documents beneath it. Make sure Claude's workflow keeps them current. Current docs mean Claude spends the minimum number of tokens getting clear on where the problems are.
 
@@ -77,7 +77,7 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 Work is ticket-driven. Every piece of work has a ticket in the queue before implementation starts.
 
 **Interactive session** (Designer + Akien):
-1. `/context-load` — orient, read slate, start session record
+1. `/context-load` — orient, read slate, start session record (2000-token budget; ~4 chars per token; stop when ~8000 characters read)
 2. Read relevant tickets; chat about design issues; surface inertia concerns
 3. Update or create tickets from the discussion
 4. For L-size: write a complete plan, get approval before writing a line of code
@@ -89,7 +89,9 @@ Work is ticket-driven. Every piece of work has a ticket in the queue before impl
 10. `/savestate` — end of session
 
 **Worker daemon** (automated, no human present):
-The daemon (`worker_daemon.sh`) polls the queue and runs `claude /sprint <id>` for each pending ticket. S and M tickets run fully autonomously. L tickets post a plan to the channel and proceed immediately (the ticket being queued is the approval). Each sprint claims the ticket, implements, tests, probes, posts result, writes a done flag, and exits. The daemon resets timed-out tickets to pending and retries. Exit when queue drains.
+The daemon (`worker_daemon.sh`) polls the queue and runs `claude /sprint <id>` for each pending ticket. S and M tickets run fully autonomously. L tickets run `/filter` on the plan automatically before posting to the channel — blocking filter failures stop execution before any code is written. The ticket being queued is the approval signal; no additional gate needed. Each sprint claims the ticket, implements, tests, probes, posts result, writes a done flag, and exits. The daemon resets timed-out tickets to pending and retries. Exit when queue drains.
+
+**Ticket schema includes `required_files` and `related_to`.** Pre-declaring which files a ticket needs (`required_files: [...]`) lets `/sprint` load them at open instead of discovering them mid-work — saves 2-3 turns per ticket. `related_to` links tickets that share context so the daemon can prefer the leave-running-minion pattern systematically rather than relying on human recognition of relatedness.
 
 ---
 
