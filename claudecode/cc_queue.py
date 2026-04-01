@@ -19,6 +19,8 @@ Usage:
     cc_queue.py inject <ticket-id> <text>         — deprecated; use worker-launch instead
     cc_queue.py reset <id>                        — reset one ticket from in_progress → pending (retry after timeout)
     cc_queue.py reset-stale                       — reset all in_progress tickets → pending (daemon startup cleanup)
+    cc_queue.py set-worker <worker> <id> [<id>]  — assign worker (igor|claude) to ticket(s)
+    cc_queue.py needs-review <id>                — mark ticket needs_review (Igor self-coding review gate)
 """
 
 import json
@@ -41,7 +43,13 @@ def _ssl_ctx() -> ssl.SSLContext:
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
-STATUS_ORDER = {"pending": 0, "in_progress": 1, "blocked": 2, "done": 3}
+STATUS_ORDER = {
+    "pending": 0,
+    "in_progress": 1,
+    "needs_review": 2,
+    "blocked": 3,
+    "done": 4,
+}
 
 
 def _load():
@@ -91,12 +99,21 @@ def cmd_list(args):
     tasks_sorted = sorted(
         tasks, key=lambda t: (STATUS_ORDER.get(t["status"], 9), _priority_int(t))
     )
-    STATUS_ICON = {"pending": "⬜", "in_progress": "🔵", "blocked": "🔴", "done": "✅"}
+    STATUS_ICON = {
+        "pending": "⬜",
+        "in_progress": "🔵",
+        "needs_review": "🟡",
+        "blocked": "🔴",
+        "done": "✅",
+    }
     for t in tasks_sorted:
         icon = STATUS_ICON.get(t["status"], "?")
         size = t.get("size", "?")
         epic = f" #{t['epic']}" if t.get("epic") else ""
-        print(f"  {icon} [{t['id']}] ({size}){epic} {t['title']}  [{t['status']}]")
+        worker_tag = " [igor]" if t.get("worker") == "igor" else ""
+        print(
+            f"  {icon} [{t['id']}] ({size}){epic}{worker_tag} {t['title']}  [{t['status']}]"
+        )
         if t["status"] == "blocked" and t.get("result"):
             print(f"       BLOCKED: {t['result']}")
         if t["status"] == "done" and t.get("result"):
@@ -198,6 +215,7 @@ def cmd_add(args):
             print(f"  skip (exists): {nt['id']}")
             continue
         nt.setdefault("status", "pending")
+        nt.setdefault("worker", "claude")
         nt.setdefault("result", None)
         nt.setdefault("claimed_at", None)
         nt.setdefault("completed_at", None)
@@ -452,6 +470,49 @@ def cmd_set_epic(args):
 
 
 COMMANDS["set-epic"] = cmd_set_epic
+
+
+def cmd_set_worker(args):
+    """Assign worker (igor|claude) to one or more tickets: set-worker <worker> <id> [<id> ...]"""
+    if len(args) < 2:
+        print("Usage: set-worker <worker> <ticket-id> [<ticket-id> ...]")
+        sys.exit(1)
+    worker, ids = args[0], args[1:]
+    if worker not in ("igor", "claude"):
+        print(f"Unknown worker '{worker}' — use igor or claude")
+        sys.exit(1)
+    tasks = _load()
+    idx = {t["id"]: t for t in tasks}
+    for tid in ids:
+        if tid not in idx:
+            print(f"  not found: {tid}")
+            continue
+        idx[tid]["worker"] = worker
+        print(f"  {tid} → worker={worker}")
+    _save(tasks)
+
+
+COMMANDS["set-worker"] = cmd_set_worker
+
+
+def cmd_needs_review(args):
+    """Mark a ticket needs_review — Igor self-coding review gate."""
+    if not args:
+        print("Usage: needs-review <id>")
+        sys.exit(1)
+    tasks = _load()
+    t = _find(tasks, args[0])
+    if not t:
+        print(f"Task {args[0]} not found.")
+        sys.exit(1)
+    t["status"] = "needs_review"
+    t["needs_review_at"] = _now()
+    _save(tasks)
+    _log({"action": "needs_review", "id": args[0], "title": t["title"]})
+    print(f"Needs review: {args[0]}: {t['title']}")
+
+
+COMMANDS["needs-review"] = cmd_needs_review
 
 
 if __name__ == "__main__":
