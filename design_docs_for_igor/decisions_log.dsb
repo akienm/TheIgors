@@ -510,3 +510,7 @@ D268|reading-bootstrap-mode|live|MODE override pushes tier.4 to TWM; inference_g
 D269|inner-cc-model-flexible|live|inner_cc: model-agnostic, multi-turn, OR prompt caching for anthropic/* models
 D270|proc-training-pass|live|PROC_TRAINING_PASS reads cloud escalations → inner_cc_long gap analysis → INTERPRETIVE deposits
 D271|reading-slate-persistence|live|Reading slates saved as <memoryid>_<label>.txt in ~/TheIgorsProject/akien/Readings/ for source-controlled durability; memory ID format ties file to Igor graph facia; drain persists items to reading_list DB on startup
+D272|boredom-idle-loop|decided|Boredom = milieu too-settled threshold → idle traversal: threads → long-term projects (new) → EF questions tree (9 Qs) → topics tree (9 areas); COA-per-task is future direction
+D273|self-healing-startup-loop|decided|Igor startup scripts (igor.sh/ps1/bat) catch unexpected exits: exit 42=restart, exit 0=stop, else capture traceback + launch claude --dangerously-skip-permissions to fix+commit+exit; debug_session.flag suppresses auto-fixer when Claude Code session active
+D272|boredom-idle-loop|decided|Boredom = milieu too-settled threshold → idle traversal: threads → long-term projects (new) → EF questions tree (9 Qs) → topics tree (9 areas); COA-per-task is future direction
+D273|self-healing-startup-loop|live|igor script: crash → check debug_session.flag → if absent launch claude --dangerously-skip-permissions to fix+commit+exit; SIGTERM handler exits 0; context-load writes flag, savestate deletes flag
