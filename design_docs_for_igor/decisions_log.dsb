@@ -515,3 +515,4 @@ D273|self-healing-startup-loop|decided|Igor startup scripts (igor.sh/ps1/bat) ca
 D272|boredom-idle-loop|decided|Boredom = milieu too-settled threshold → idle traversal: threads → long-term projects (new) → EF questions tree (9 Qs) → topics tree (9 areas); COA-per-task is future direction
 D273|self-healing-startup-loop|live|igor script: crash → check debug_session.flag → if absent launch claude --dangerously-skip-permissions to fix+commit+exit; SIGTERM handler exits 0; context-load writes flag, savestate deletes flag
 D274|action-node-dispatch-gap|open|Cognitive habits (PROC_CODE_A_TICKET) load as context but action nodes (queue_task, disk_check) win dispatch — multi-step ticket workflows need thread continuity mechanism
+D275|goal-as-thread|open|Goals are first-class TWM nodes: GOAL_TACTICAL (completable, success_condition, BRANCHIF on failure) vs GOAL_STRATEGIC (orientation, never completes, tilts BG scoring field)
