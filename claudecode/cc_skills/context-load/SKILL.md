@@ -59,13 +59,23 @@ See what other sessions have posted recently. Who is working on what.
 
 ---
 
-## Step 4 — Assemble briefing
+## Step 4 — Assemble briefing with token budget
+
+**Token budget: 2000 tokens (~8000 characters). Stop reading when approaching this limit.**
 
 Synthesize into 5-10 lines:
 - Current active tickets
 - Key design context (1-2 sentences per active area)
 - What other sessions are doing (if any)
 - What you should NOT touch (in-progress by another session)
+
+**Token counting heuristic**: ~4 characters ≈ 1 token (for English prose). To estimate tokens:
+```
+(total_characters_read) / 4 = approximate_tokens
+```
+
+Stop reading blob tops when cumulative character count approaches 8000 (≈2000 tokens).
+If you've read slate + 1-2 blob tops + channel, you're usually well within budget.
 
 Output format:
 ```
@@ -74,6 +84,7 @@ Active: <ticket IDs>
 Design thread: <one line>
 Channel: <recent activity or "quiet">
 Do not touch: <files/areas in use>
+[Token count: ~NNN tokens]
 Ready.
 ```
 
@@ -101,6 +112,7 @@ This creates a partial record AND writes `~/.TheIgors/cc_channel/current_session
 
 ## Hard rules
 
+- **Token budget: 2000 tokens max (~8000 characters).** Stop adding context when cumulative character count approaches this limit.
 - Never read more than 40 lines of any blob — if you need more, something is wrong with the blob
 - Never load CLAUDE.md as your primary context — slate + blob tops replace it
 - If slate is missing: fall back to MEMORY.md + decisions top + channel read
