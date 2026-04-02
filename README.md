@@ -1,13 +1,18 @@
 # Igor
 
+Can we prove that narrative is the nature of consciousness?
+
+And in the process make an agent that will organize my life?
+
+Without using LLMs to do the reasoning?
+
+Based on the race called The Igors in Terry Pratchett's Diskworld books. 
+
 *"What shall we try next, mathter?"*
 
-**An AI agent that learns from experience, explains its reasoning, and optimizes for all life.**
+**The Igors are an AI agent that learns from experience, explains its reasoning, and optimizes for all things that experience.**
 
-Discord: [https://discord.com/channels/1473757915851657221]
-This document attempts to explain the vision for The Igors, not the current status. 
-
-2026 MAR 11: This code requires a somewhat pre-populated database to work correctly. We're working on that now. At the rate we've been going, should be two weeks or less. 
+2026 APR 02: This code requires a somewhat pre-populated database to work correctly. We're working on that now. This has turned out to be the hardest part of the project so far... Once that's done, installers will be made available. Discord (awaiting a fix for intermittency): [https://discord.com/channels/1473757915851657221]
 
 ---
 
