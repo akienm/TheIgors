@@ -414,7 +414,53 @@ HABIT PROC_DISTILL_DAILY {
 
 ---
 
-## 9. Execution Model: Emit+React and the Cognitive Milieu
+## 9. Architecture Layers
+
+The engram system is organized in four layers:
+
+| Layer | Name | Contents |
+|---|---|---|
+| 0 | Substrate | Memory nodes, Postgres, weighted edges, the graph |
+| 1 | Instruction set | Engram primitives: EMITIF, BRANCHIF, FORKIF, LABEL, STOPIF, ENDIF, channels |
+| 2 | System calls | 21 primitive patterns (SEARCH_AND_RESPOND, MEMORY_DEPOSIT, FILE_ITERATOR, etc.) |
+| 3 | Standard library | Cognitive subroutines: planning, decomposition, observation, replanning |
+| 4 | Applications | Workflow templates: sprint, coding loop, reading pipeline |
+
+Layer 1 is implemented. Layer 2 patterns are seeded as TEMPLATE nodes. Layer 3 is the current design frontier.
+
+---
+
+## 10. Layer 3 — Cognitive Standard Library (D297, D298)
+
+Planning is not a single engram — it is the composition of smaller cognitive bricks. These eight primitives are the foundational layer 3 components. Confidence threading runs through all of them; each brick emits a confidence signal to basket so downstream nodes can branch on certainty.
+
+**Re-entrance principle**: these bricks are not one-shot. Planning recurs after every execution step — observe result → replan → act → observe. OBSERVE and REPLAN are the feedback loop that makes debugging work.
+
+**Chaining model**: each brick is a TEMPLATE Memory node. A planning chain is a cursor traversal — basket persists across nodes, each brick reads its inputs from basket and writes its outputs back. Chaining uses FORKIF to hand off to the next node.
+
+| Brick | Input (basket keys) | Output (basket keys) | Purpose |
+|---|---|---|---|
+| PARSE_GOAL | user_input | parsed_goal, parse_confidence | Extract actual intent from surface input |
+| SITUATE | parsed_goal | twm_loaded, situate_confidence | Load relevant cortex context into TWM |
+| DECOMPOSE | parsed_goal | sub_goals[], dependency_map, decompose_confidence | Break goal into ordered sub-steps |
+| CONSTRAIN | sub_goals[], risk_signals{} | constraint_ok, violations[] | Check plan against known constraints |
+| OBSERVE | expected, actual | delta, observation_confidence | Compare expected vs actual result |
+| HYPOTHESIZE | delta, twm_loaded, time_direction | hypothesis, hypothesis_confidence | Abductive reasoning: forward=anticipate risks, backward=explain observed delta (D298) |
+| REPLAN | delta, sub_goals[] | sub_goals[], replan_confidence | Update decomposition given observation delta |
+| SCOPE_CHECK | current_action, parsed_goal | scope_ok, drift_signal | Verify action is still solving the original goal |
+
+> **D298**: HYPOTHESIZE is the universal predictive-coding primitive. `time_direction=forward` is what was formerly ANTICIPATE (predict what could go wrong). `time_direction=backward` is abductive explanation (how might this delta have occurred). The brain does not distinguish predicting from explaining — same loop, two temporal orientations.
+
+These bricks compose into planning programs:
+- Basic plan: PARSE_GOAL → SITUATE → DECOMPOSE → CONSTRAIN
+- Risk scan: DECOMPOSE → HYPOTHESIZE(time_direction=forward) → CONSTRAIN
+- Execution loop: DECOMPOSE → [act] → OBSERVE → REPLAN (re-entrant)
+- Debug loop: OBSERVE → HYPOTHESIZE(time_direction=backward) → CONSTRAIN → REPLAN
+- Scope guard: SCOPE_CHECK fires continuously alongside execution
+
+---
+
+## 11. Execution Model: Emit+React and the Cognitive Milieu
 
 *Added 2026-03-26. Supersedes the "cognition as pipeline" framing.*
 
@@ -457,7 +503,7 @@ Parallel execution means natural process latency IS the thinking time. Don't sta
 
 ---
 
-## 10. The Basket
+## 12. The Basket
 
 *Added 2026-03-26. Defines execution context for Engram threads.*
 
@@ -495,7 +541,7 @@ episodic_result.basket = {
 
 ---
 
-## 11. Engram Segment as Composable Unit
+## 13. Engram Segment as Composable Unit
 
 *Added 2026-03-26.*
 
@@ -519,7 +565,7 @@ A segment is class-like but with the call stack replaced by the basket. Composin
 
 ---
 
-## 12. Design Principles
+## 14. Design Principles
 
 1. **The engram IS the program.** No code outside the graph is authoritative at runtime. Python is bootstrap scaffolding that comes down as the graph densifies.
 

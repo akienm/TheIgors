@@ -524,3 +524,24 @@ D274|goal-continuation-scheduler|implemented|PROC_GOAL_CONTINUATION (2min): read
 D274|goal-continuation-scheduler|implemented|PROC_GOAL_CONTINUATION (2min): step 0=claim, step 1=show+parse grep_for via _load_ticket, step 2=grep codebase (if grep_for), step 3=ready signal. Phase D ex4 verified 2026-04-01c.
 D278|goal-queue-consumer-autonomous-drain|implemented|PROC_QUEUE_DRAIN (30min): adopt_top_queue_ticket() checks for active GOAL, reads queue.json top pending ticket (priority ASC), fires goal_adopt if none active. Closes autonomy loop — Igor drains backlog unattended.
 D279|predictive-coding-gap-deposit|active|Cloud escalation (non-human-author paths) deposits real-time NARRATIVE_GAP (query+reply). Refractory inhibition per topic. Paired with escalation_stats monitoring tool. Ticket to revisit trend data in ~2 weeks.
+D280|engram-compare-value-sources|defined|Compare values in engram nodes: literal true, from basket, or from memory payload. Basket emit allowed. Payload write NOT allowed — payload is read-only within engram execution. Compare types TBD.
+D281|"engram-branch-targets"|"defined"|"Branch
+D282|"engram-compare-types"|"defined"|"Compare
+D283|"engram-basket-semantics"|"defined"|"Basket
+D284|"engram-null-handling"|"defined"|"Missing
+D285|"engram-payload-write"|"defined"|"Payload
+D286|"engram-always-conditional"|"defined"|"No
+D287|"engram-condition-composition"|"defined"|"AND/OR
+D288|"engram-no-endif"|"defined"|"No
+D289|"engram-facia-mid-node"|"defined"|"Facia
+D290|engram-label-instruction|defined|LABEL instruction: no-op marker in payload cell. ['LABEL', '@name']. BRANCHIF target starting with '@' = local label; bare string = memory node ID. Executor loop must be index-based to support backward jumps.
+D291|engram-stopif-instruction|defined|STOPIF instruction: ['STOPIF', condition]. Conditional terminator. IF x STOP. Complements ENDIF (unconditional stop). Simpler than BRANCHIF-to-nowhere.
+D292|engram-branch-trigger|defined|Reserved trigger '__entry__' fires on every branch arrival at a node. Original trigger already in trail (inspectable). Additional trigger cells on target node may also fire on top of __entry__.
+D293|engram-fork-async|defined|FORKIF spawns async background jobs — not inline. Biology wouldn't do it synchronously.
+D294|engram-loop-detection|defined|Loop termination: track {node_id: basket_snapshot} per traversal. On arrival: if node seen before AND basket unchanged since last visit → stop. Basket mutation = progress, continue. Identical basket = infinite loop, exit.
+D295|engram-memory-channel|defined|EmitChannel 'memory': deposits a new memory node. key=memory_type (EPISODIC/PROCEDURAL/etc.), value=content string. Extra metadata from basket: _mem_tags (list), _mem_identity_weight (float, default 0.5), _mem_salience (float, default 0.5). Requires _cortex in basket.
+D296|engram-branchif-trigger-target|defined|BRANCHIF target syntax: 'node_id#trigger_name' invokes a specific cell on the target node. Hash separator. Bare node_id still uses __entry__ as default. Enables if/else/loop patterns — same node, different arrival cells. ExecutionResult gains next_trigger field.
+D297|layer3-cognitive-stdlib|defined|Layer 3 cognitive standard library: 8 foundational bricks (PARSE_GOAL, SITUATE, DECOMPOSE, ANTICIPATE, CONSTRAIN, OBSERVE, REPLAN, SCOPE_CHECK). Planning = chaining these. Confidence threading runs through all. Re-entrant by design — planning recurs after every step, not front-loaded. Foundation for coding/planning engrams.
+D297|layer3-cognitive-stdlib|defined|Layer 3 cognitive standard library: 9 foundational bricks (PARSE_GOAL, SITUATE, DECOMPOSE, ANTICIPATE, CONSTRAIN, OBSERVE, HYPOTHESIZE, REPLAN, SCOPE_CHECK). Planning = chaining these. Confidence threading runs through all. Re-entrant by design. HYPOTHESIZE = abductive reasoning from delta — how might that work? Foundation for coding/planning engrams.
+D298|hypothesize-universal-primitive|defined|HYPOTHESIZE is the universal cognitive primitive. ANTICIPATE = HYPOTHESIZE(forward, goal). Debug hypothesize = HYPOTHESIZE(backward, delta). OBSERVE = prediction error signal. Same loop at every level. ANTICIPATE collapses into HYPOTHESIZE with time_direction basket key (forward/backward). Mirrors D279 predictive coding at layer 3 — brain does not distinguish predicting from explaining. One primitive, two temporal orientations.
+D299|forkif-null-target-safe|defined|FORKIF skips targets that are None, falsy, or the string 'None'. Makes optional next_node slot safe in TEMPLATE expansion — Jinja2 renders None slot as 'None' string; node_executor now drops it silently instead of spawning a bad node.

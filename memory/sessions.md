@@ -1,6 +1,148 @@
+## Session 2026-04-01h
+**Theme**: Engram layer3 stdlib: T-layer3-parse-goal + T-layer3-situate + engram_language.md D298 update
+**Next session**: 1. T-programming-engrams layer 4 sketch. 2. Commit all layer 3 seeds + tests. 3. Seed layer 3 templates to live DB.
+**In-flight**: NONE
+
+## Session 2026-04-01g
+**Theme**: Resume: T-programming-engrams design + book queue
+**Decisions**: D280, D280, D281, D282, D283, D284, D285, D286, D287, D288, D289, D290, D291, D292, D293, D294, D295, D296, D297, D298
+**Key changes**:
+- decided: D280 engram compare value sources — literal true / basket / payload (read-only); payload write prohibited; compare types TBD
+- decided: D281-D289 engram execution model (branch targets, compare types, baskets, null handling, payload write, always-conditional, condition composition, no ENDIF, facia mid-node)
+- decided: D290-D291 LABEL+STOPIF; created T-engram-label-stopif
+- done: T-engram-label-stopif — LABEL+STOPIF in node_executor.py, 730 tests green
+- decided: D292-D294 traversal trigger/fork/loop-detection; created T-engram-cursor-traversal
+- done: T-engram-cursor-traversal (G-ENGRAM-CURSOR1 CLOSED) — traversal loop, loop detection, async forks. 730 tests.
+- decided: D295-D296 memory channel + trigger-target; created T-engram-memory-channel-and-trigger-target
+- done: T-engram-memory-channel-and-trigger-target — MemoryChannel + trigger-target syntax. 754 tests.
+- decided: D297 layer3 stdlib; created T-layer3-{parse-goal,situate,decompose,anticipate,constrain,observe,replan,scope-check}; engram_language.md update in progress
+- decided: D298 HYPOTHESIZE as universal primitive — ANTICIPATE collapses, predictive coding at layer 3
+**Next session**: 1. T-layer3-parse-goal + T-layer3-situate (foundational pair). 2. Update engram_language.md: collapse ANTICIPATE into HYPOTHESIZE per D298. 3. T-programming-engrams layer 4 sketch.
+**In-flight**: NONE
+
+## Session 2026-04-01f
+**Theme**: Theme: T-cc-compact-mcp — tmux+MCP self-compaction tool
+**Key changes**:
+- sprint: started T-cc-compact-mcp
+- sprint: closed T-cc-compact-mcp — tmux+MCP self-compaction tool (cc_mcp_server.py + savestate integration)
+- sprint: started T-book-learner-completion
+- sprint: closed T-book-learner-completion — READING_<hash>.md report + reading_list pending fix
+**Next session**: Next: T-programming-engrams design discussion; re-queue programming books with cloud_ok for Design Patterns re-run; T-book-learner-completion verified on next drain run
+**In-flight**: NONE
+
+## Session 2026-04-01e
+**Theme**: Theme: slate housekeeping + D279 predictive coding + slate structure
+**Decisions**: D279
+**Key changes**:
+- done: D279 T-predictive-coding + T-escalation-stats (56 new tests, committed 5b6ea560)
+- done: user guide updated (Igor tools + CC skills tables), skills inventory deposited to Igor memory
+- done: Slate 0 closed (all DB criteria met), Slate 1 closed (trails+self-training done), Slate 2=Igor-programs-himself opened, Slate 3=Productization
+**Next session**: 1. T-read-programming-books (queue Igor's programming ebook reading). 2. T-programming-engrams design discussion. 3. Verify PROC_QUEUE_DRAIN fired autonomously.
+**In-flight**: NONE
+
+## Session 2026-04-01d
+**Theme**: Theme: T-refractory-period + T-homeostatic-setpoints + T-deadend-ack-filter + T-goal-close-habit
+**Decisions**: D279
+**Key changes**:
+- done: D279 T-predictive-coding (gap deposit on cloud escalation, refractory inhibition) + T-escalation-stats (monitoring tool, log-file based trend report). 56 new tests. Committed 5b6ea560.
+**Next session**: 1. Skills unfolder: update repo cc_skills + create sync script for Windows setup. 2. T-predictive-coding (MEDIUM inertia — discuss first). 3. Verify PROC_QUEUE_DRAIN fires during next idle cycle.
+**In-flight**: NONE — all five tickets committed cleanly.
+
+## Session 2026-04-01c
+**Theme**: Phase D ex4 — Igor does step 3 (grep/search) after goal ready signal
+**Key changes**:
+- T-rl-status-collapse: migrated 274 queued→pending rows in reading_list. Updated learner.py: default, valid statuses, icon map, feeder WHERE clause.
+- Phase D ex4 VERIFIED: goal_continuation.py extended with step 2 (grep). _load_ticket() reads queue.json directly (fixes 500-char truncation bug). Full D274 loop: claim(0s)→show+grep_for(2min)→grep wg_cooccur(4min)→ready(6min) confirmed on channel.
+- D277 remaining gaps: created T-predictive-coding, T-refractory-period, T-homeostatic-setpoints, T-habit-chunking tickets with full specs.
+- New bugs surfaced: T-deadend-ack-filter (Fair. On it. violates system_prompt.py:142 but tier.2 ignores it), T-goal-close-habit (close goal trigger missing, LLM hallucinated goals.py). Both ticketed.
+- NEXT: ex5 design (Igor stores grep results as store_factual). Implement T-refractory-period + T-homeostatic-setpoints after Akien review. Fix T-deadend-ack-filter + T-goal-close-habit. Stale TWM job: restart_self needs clearing.
+**Next session**: 1. Implement T-refractory-period + T-homeostatic-setpoints (MEDIUM inertia — discuss specs first). 2. Fix T-deadend-ack-filter (post-gen filter in main.py for bare ack phrases). 3. Fix T-goal-close-habit (close_goal_by_ticket wrapper + habit seed).
+**In-flight**: NONE — Phase D ex4 fully verified and committed. No code in flight.
+
+## Session 2026-04-01b
+**Theme**: D272/D274 boredom idle + goal continuation — Phase D ex3 verified
+**Decisions**: D272, D274
+**Key changes**:
+- T-ef-tree-complete: EF_FACIA + EF_Q1-Q4 seeded in Postgres (seed_ef_questions_tree.py)
+- T-topics-tree-seed: TOPICS_FACIA + 9 topic nodes seeded (seed_topics_tree.py)
+- T-boredom-idle-loop: boredom_idle.py + PROC_BOREDOM_TRIGGER (D272, 10min scheduler)
+- D274: goal_continuation.py + PROC_GOAL_CONTINUATION (2min scheduler) — claim/show/ready steps
+- Phase D ex3: full D274 loop verified — work ticket → On it → claim(0s) → show(2min) → ready(4min)
+**Next session**: Next: Phase D ex4 — longer exercise where Igor does step 3 (grep/search codebase after ready signal). Design remaining D277 biological gaps. Watch boredom idle loop for [Igor wonders] output quality.
+**In-flight**: NONE — D274 loop proven. Both schedulers (boredom + goal_continuation) confirmed firing.
+
+## Session 2026-04-01a
+**Theme**: Theme: goal-as-thread architecture + biological patterns gap — pre-training prerequisite slate
+**Decisions**: D276, D277
+**Key changes**:
+- decided: D276 executive-function-persistence-hunting, D277 biological-patterns-gap-inventory
+- decided: created T-onit-rebuild, T-goal-as-thread, T-lateral-inhibition, T-failure-detection, T-dopamine-weight-update, T-queue-task-fix — pre-training prerequisite slate
+- sprint: closed T-queue-task-fix — empty queue.json guard + trigger narrowed
+- sprint: closed T-onit-rebuild — On it rebuilt, goal_adopt tool registered
+- sprint: closed T-goal-as-thread — GOAL type + goal_adopt/scan/close tools + TWM persistence
+- sprint: closed T-lateral-inhibition — goal-context boost in BG scoring
+- sprint: closed T-failure-detection — goal_fail_active + PROC_GOAL_STUCK seeded
+- sprint: closed T-dopamine-weight-update — learning loop closed via gap closure → wg reinforce_text
+**In-flight**: NONE
+
+## Session 2026-03-31c
+**Theme**: Theme: T-signal-handlers done; D274/D275 crystallized
+**Decisions**: D274, D275
+**Key changes**:
+- done: T-signal-handlers — SIGINT handler added main.py:8113
+**Next session**: Next: design D275 implementation (GOAL_TACTICAL/GOAL_STRATEGIC as TWM nodes); address D274 thread-continuity; T-ef-tree-complete + T-topics-tree-seed queued
+**In-flight**: D275 first pass crystallized — not yet implemented
+
+## Session 2026-03-31b
+**Theme**: Theme: First live Igor self-coding exercise — T-signal-handlers
+**Key changes**:
+- suppressed On-it habit (inertia→0); updated PROC_CODE_A_TICKET with channel posts at each step; diagnosed D274 action-node dispatch gap; set akiendell in-use 30min
+**Next session**: Next: resume T-signal-handlers from Igor console (type directly, not cc_send); fix queue_task node (ID 20260316142050372144) to not fire on cc_queue.py messages; address D274 thread continuity gap
+**In-flight**: T-signal-handlers in_progress — Igor claimed ticket, grepped (SIGINT NOT FOUND), stalled at step 3. Resume with console input: work ticket T-signal-handlers
+
+## Session 2026-03-31a
+**Theme**: D268-D270: reading bootstrap + inner_cc revamp + self-training pass
+**Decisions**: D268, D269, D270, D271, D272, D273
+**Key changes**:
+- done: T-reading-bootstrap-mode — TWM mode override, inference_gateway bootstrap forcing, tests 555+5 green
+- done: T-inner-cc-revamp (D269) — model-flexible inner_cc, multi-turn, OR prompt caching
+- done: T-training-pass-habit (D270) — training_pass.py + PROC_TRAINING_PASS seeded
+- fix: HABIT_FALLTHROUGH response_template fallback; T-close-task-tool ticketed
+- feat: design DSBs prepended to learn_queue.json; bootstrap window active
+- done: T-fix-drain-log-titles — D271 reading slate persistence, reading_list persist on startup, flock race fix
+- sprint: started T-tool-discovery-habit
+- sprint: closed T-tool-discovery-habit — tool discovery habit + facia seeded
+- sprint: started T-facia-query-pattern
+- sprint: closed T-facia-query-pattern — facia discovery tools + habits seeded
+- sprint: closed T-on-it-reply-gate — REPLY DISCIPLINE added to system prompt (both paths)
+- sprint: started T-standards-doc
+- sprint: closed T-standards-doc — design_docs/standards.md, 388 lines, 7 sections
+- sprint: started T-phase-d-canonical
+- fix: memory_query get_tool_registry_report — relative import fixes 'No module named wild_igor' when Igor runs as python -m igor.main
+- decided: D272 boredom idle loop — T-ef-tree-complete, T-topics-tree-seed, T-boredom-idle-loop ticketed
+- decided: D273 self-healing startup loop — T-self-healing-startup, T-proc-work-ticket, T-worker-field ticketed
+- sprint: closed T-worker-field — worker field + needs_review status + set-worker/needs-review commands in cc_queue
+- sprint: closed T-proc-work-ticket — review gate habits seeded (PROC_CODE_A_TICKET updated, PROC_APPROVE_CHANGE, PROC_CHECK_IGOR_QUEUE)
+- sprint: closed T-self-healing-startup — D273 crash recovery in igor script + SIGTERM handler in main.py
+**Next session**: Next: restart Igor, send 'work ticket T-signal-handlers' as first live self-coding exercise. Then T-ef-tree-complete + T-topics-tree-seed + T-boredom-idle-loop. Commit decisions_log.dsb.
+**In-flight**: About to assign T-signal-handlers to Igor as first worker=igor coding exercise — IGOR_SELF_EDIT_ENABLED=true, igor needs restart, then cc_send 'work ticket T-signal-handlers'.
+
+## Session 2026-03-30b
+**Theme**: Phase D canonical exercises + habit dispatch fixes
+**Decisions**: D264, D265
+**Key changes**:
+- fix: sqlite3 removed from cortex.py (dead import), drain_learn_queue.py, book_learner.py, claude_bridge.py — all converted to psycopg2
+- feat: store_factual(narrative) + read_file_from_text(text) — single-arg habit dispatch wrappers; PROC_TASK_STORE_MEMORY + PROC_TASK_READ_FILE updated to use them
+- fix: check_process habits — 'igor' removed from conditions keywords to prevent false positives on any message mentioning Igor
+- fix: swarm update trigger pipe-separated — 'igors' substring in file paths no longer fires PROC_SWARM_UPDATE
+- Phase D Exercise 1 DONE: store_factual dispatched via PROC_TASK_STORE_MEMORY, memory 20260331032022639288 deposited
+- discovered D265: identity gate fires on file content — gap_analysis.md documents CP5 phrases, silently drops read_file output
+**Next session**: Next: 1) D265 fix — identity gate should skip tool results (read_file output), only gate LLM responses; 2) Phase D Exercise 2 retry with safe file; 3) Exercise B (gap_analysis read + NARRATIVE_GAP deposit via cc_send)
+**In-flight**: Phase D Exercise 2 in-flight: read_file_from_text sent to Igor for decisions_log.dsb — result not yet visible in channel
+
 ## Session 2026-03-29c
 **Theme**: akiendell cluster_router + listener auth fix
-**Decisions**: D256, D258, D258, D259, D260, D261, D260, D260, D261
+**Decisions**: D256, D258, D258, D259, D260, D261, D260, D260, D261, D268, D269, D270
 **Key changes**:
 - fix: cluster_router no-machine WARNING rate-limited to 1/60s per call_type (c9852f54) — batch extraction bursts no longer spam logs
 - fix: readigor skill now accepts machine argument — routes to correct MCP tool + dashboard IP per machine (akiendell/yoga9i/yogai7/local)
@@ -41,6 +183,11 @@
 - done: T-emit-channel-registry — emit_channels.py, 6 channels (basket/emotional_milieu/cognitive_milieu/console/web/discord)
 - done: T-engram-executor — node_executor.py, EMITIF/BRANCHIF/FORKIF/ENDIF, eval_gate, data guard, smoke tested
 - done: T-engram-wire-dispatch — engram habit_type dispatch in main.py turn loop, fires effects + falls through to LLM
+- done: T-reading-bootstrap-mode — TWM mode override, inference_gateway bootstrap forcing, tests 555+5 green
+- done: T-inner-cc-revamp (D269) — model-flexible inner_cc, multi-turn call_inner_cc_long, OR prompt caching for anthropic/* models
+- done: T-training-pass-habit (D270) — training_pass.py + PROC_TRAINING_PASS habit seeded
+- fix: HABIT_FALLTHROUGH on memory 20260310192223347663 — added response_template fallback; T-close-task-tool ticketed
+- feat: reading bootstrap activated — design DSBs prepended to learn_queue.json (14 items); bootstrap window 30min OR Sonnet routing live
 **Next session**: Next: 1. Igor restart (payload column migration). 2. Phase D: cc_send unattended canonical exercise + watch channel. 3. Reader conversion: seed_reader_habits.py to payload/FORKIF chains.
 **In-flight**: NONE
 
