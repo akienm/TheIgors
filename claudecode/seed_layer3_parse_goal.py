@@ -202,6 +202,16 @@ TEMPLATE_SCHEMA = {
                         ["payload", "default_confidence"],
                         "basket",
                     ],
+                    # Push parsed_goal into TWM as ACTIVE_GOAL singleton (T-twm-goal-slot).
+                    # CognitiveMilieuChannel evicts any prior active_goal before inserting,
+                    # so TWM always holds exactly one ACTIVE_GOAL (or none). TTL=300s.
+                    [
+                        "EMITIF",
+                        True,
+                        "ACTIVE_GOAL",
+                        ["basket", "parsed_goal"],
+                        "cognitive_milieu",
+                    ],
                     # Fork to next planning brick if goal was successfully extracted
                     # AND a next_node was provided at expansion time.
                     # Target "{{ next_node }}" is baked in by Jinja2 at expansion time.

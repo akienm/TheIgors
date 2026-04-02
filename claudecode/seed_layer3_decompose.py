@@ -103,6 +103,7 @@ TEMPLATE_SCHEMA = {
         "side_effects": [
             "FORKIF next_node if slot provided",
             "overwrites sub_goals/dependency_map on re-entry",
+            "writes PLAN_READY=sub_goals to cognitive_milieu (TWM inter-subsystem channel, D300)",
         ],
     },
     "slot_manifest": [
@@ -234,6 +235,16 @@ TEMPLATE_SCHEMA = {
                         "decompose_confidence",
                         ["payload", "default_confidence"],
                         "basket",
+                    ],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # PLAN_READY carries sub_goals so downstream subsystems can observe
+                    # the current decomposition without basket access.
+                    [
+                        "EMITIF",
+                        True,
+                        "PLAN_READY",
+                        ["basket", "sub_goals"],
+                        "cognitive_milieu",
                     ],
                     # Fork to next planning brick if decomposition was produced
                     # AND a next_node was provided at expansion time.

@@ -436,27 +436,33 @@ Planning is not a single engram — it is the composition of smaller cognitive b
 
 **Re-entrance principle**: these bricks are not one-shot. Planning recurs after every execution step — observe result → replan → act → observe. OBSERVE and REPLAN are the feedback loop that makes debugging work.
 
-**Chaining model**: each brick is a TEMPLATE Memory node. A planning chain is a cursor traversal — basket persists across nodes, each brick reads its inputs from basket and writes its outputs back. Chaining uses FORKIF to hand off to the next node.
+**Chaining model (D300)**: TWM is the interface channel between subsystems — not basket. Each brick writes its durable output to TWM; the next brick fires reactively when it observes its precondition in TWM. Basket is within-node scratch space only (ephemeral, local to a single execution). The cascade is emit+react, not a call chain. A brick does not "call" the next brick — it changes observable TWM state and the next habit fires when its threshold is met.
 
-| Brick | Input (basket keys) | Output (basket keys) | Purpose |
-|---|---|---|---|
-| PARSE_GOAL | user_input | parsed_goal, parse_confidence | Extract actual intent from surface input |
-| SITUATE | parsed_goal | twm_loaded, situate_confidence | Load relevant cortex context into TWM |
-| DECOMPOSE | parsed_goal | sub_goals[], dependency_map, decompose_confidence | Break goal into ordered sub-steps |
-| CONSTRAIN | sub_goals[], risk_signals{} | constraint_ok, violations[] | Check plan against known constraints |
-| OBSERVE | expected, actual | delta, observation_confidence | Compare expected vs actual result |
-| HYPOTHESIZE | delta, twm_loaded, time_direction | hypothesis, hypothesis_confidence | Abductive reasoning: forward=anticipate risks, backward=explain observed delta (D298) |
-| REPLAN | delta, sub_goals[] | sub_goals[], replan_confidence | Update decomposition given observation delta |
-| SCOPE_CHECK | current_action, parsed_goal | scope_ok, drift_signal | Verify action is still solving the original goal |
+> Example: PARSE_GOAL writes `ACTIVE_GOAL` to TWM → SITUATE's trigger fires when it sees `ACTIVE_GOAL` in TWM → SITUATE loads context → writes `CONTEXT_LOADED` to TWM → DECOMPOSE fires. No function calls, no passed parameters between steps.
+
+Basket keys in the table below are convenience outputs for same-turn in-node use. For multi-turn or cross-subsystem handoff, the durable form is the TWM write.
+
+| Brick | Input (basket keys) | Output (basket keys) | TWM write | Purpose |
+|---|---|---|---|---|
+| PARSE_GOAL | user_input | parsed_goal, parse_confidence | `ACTIVE_GOAL` (singleton, TTL=300s) | Extract actual intent from surface input |
+| SITUATE | parsed_goal | twm_loaded, situate_confidence | `CONTEXT_LOADED` + loaded memories | Load relevant cortex context into TWM |
+| DECOMPOSE | parsed_goal | sub_goals[], dependency_map, decompose_confidence | `PLAN_READY` + sub_goals chunk | Break goal into ordered sub-steps |
+| CONSTRAIN | sub_goals[], risk_signals{} | constraint_ok, violations[] | `CONSTRAINT_RESULT` (ok/violations) | Check plan against known constraints |
+| OBSERVE | expected, actual | delta, observation_confidence | `DELTA` observation | Compare expected vs actual result |
+| HYPOTHESIZE | delta, twm_loaded, time_direction | hypothesis, hypothesis_confidence | `HYPOTHESIS` chunk | Abductive reasoning: forward=anticipate risks, backward=explain observed delta (D298) |
+| REPLAN | delta, sub_goals[] | sub_goals[], replan_confidence | `PLAN_READY` (updated) | Update decomposition given observation delta |
+| SCOPE_CHECK | current_action, parsed_goal | scope_ok, drift_signal | `SCOPE_DRIFT` if drift detected | Verify action is still solving the original goal |
 
 > **D298**: HYPOTHESIZE is the universal predictive-coding primitive. `time_direction=forward` is what was formerly ANTICIPATE (predict what could go wrong). `time_direction=backward` is abductive explanation (how might this delta have occurred). The brain does not distinguish predicting from explaining — same loop, two temporal orientations.
 
-These bricks compose into planning programs:
-- Basic plan: PARSE_GOAL → SITUATE → DECOMPOSE → CONSTRAIN
-- Risk scan: DECOMPOSE → HYPOTHESIZE(time_direction=forward) → CONSTRAIN
-- Execution loop: DECOMPOSE → [act] → OBSERVE → REPLAN (re-entrant)
-- Debug loop: OBSERVE → HYPOTHESIZE(time_direction=backward) → CONSTRAIN → REPLAN
-- Scope guard: SCOPE_CHECK fires continuously alongside execution
+These bricks compose into planning programs via TWM state observation (D300):
+- Basic plan: PARSE_GOAL emits `ACTIVE_GOAL` → SITUATE fires → emits `CONTEXT_LOADED` → DECOMPOSE fires → emits `PLAN_READY`
+- Risk scan: `PLAN_READY` → HYPOTHESIZE(forward) fires → emits `HYPOTHESIS` → CONSTRAIN fires
+- Execution loop: `PLAN_READY` → [act] → OBSERVE fires on result → emits `DELTA` → REPLAN fires → emits `PLAN_READY` (re-entrant)
+- Debug loop: `DELTA` → HYPOTHESIZE(backward) fires → emits `HYPOTHESIS` → CONSTRAIN fires → REPLAN fires
+- Scope guard: SCOPE_CHECK fires on any `current_action` TWM observation alongside execution; emits `SCOPE_DRIFT` if drift detected
+
+No function calls between bricks. Each step fires because the previous step changed observable TWM state.
 
 ---
 

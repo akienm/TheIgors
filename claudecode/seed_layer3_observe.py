@@ -100,7 +100,10 @@ TEMPLATE_SCHEMA = {
     "basket_contract": {
         "reads": ["actual", "expected"],
         "writes": ["delta", "observation_confidence"],
-        "side_effects": ["FORKIF next_node if slot provided"],
+        "side_effects": [
+            "FORKIF next_node if slot provided",
+            "writes DELTA=delta to cognitive_milieu (TWM inter-subsystem channel, D300)",
+        ],
     },
     "slot_manifest": [
         {
@@ -229,6 +232,16 @@ TEMPLATE_SCHEMA = {
                         "observation_confidence",
                         ["payload", "default_confidence"],
                         "basket",
+                    ],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # DELTA carries the observation delta so downstream subsystems
+                    # (REPLAN, HYPOTHESIZE) can read it from TWM, not only from basket.
+                    [
+                        "EMITIF",
+                        True,
+                        "DELTA",
+                        ["basket", "delta"],
+                        "cognitive_milieu",
                     ],
                     # Fork to next planning brick if delta was produced
                     # AND a next_node was provided at expansion time.

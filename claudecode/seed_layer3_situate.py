@@ -97,6 +97,7 @@ TEMPLATE_SCHEMA = {
         "side_effects": [
             "FORKIF next_node if slot provided",
             "populates TWM via code_ref",
+            "writes CONTEXT_LOADED=True to cognitive_milieu (TWM inter-subsystem channel, D300)",
         ],
     },
     "slot_manifest": [
@@ -216,6 +217,16 @@ TEMPLATE_SCHEMA = {
                         "situate_confidence",
                         ["payload", "default_confidence"],
                         "basket",
+                    ],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # cognitive_milieu channel evicts prior CONTEXT_LOADED before inserting,
+                    # so TWM always holds exactly one CONTEXT_LOADED (or none). TTL=300s.
+                    [
+                        "EMITIF",
+                        True,
+                        "CONTEXT_LOADED",
+                        True,
+                        "cognitive_milieu",
                     ],
                     # Fork to next planning brick if context was loaded
                     # AND a next_node was provided at expansion time.

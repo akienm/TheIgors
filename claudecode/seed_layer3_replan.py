@@ -104,6 +104,7 @@ TEMPLATE_SCHEMA = {
         "side_effects": [
             "FORKIF next_node if slot provided",
             "basket.sub_goals is overwritten (not appended)",
+            "writes PLAN_READY=sub_goals to cognitive_milieu (TWM inter-subsystem channel, D300)",
         ],
     },
     "slot_manifest": [
@@ -235,6 +236,17 @@ TEMPLATE_SCHEMA = {
                         "replan_confidence",
                         ["payload", "default_confidence"],
                         "basket",
+                    ],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # PLAN_READY carries revised sub_goals — same key as DECOMPOSE uses,
+                    # so replanning updates PLAN_READY in TWM (the current plan is always
+                    # accessible to other subsystems via this key).
+                    [
+                        "EMITIF",
+                        True,
+                        "PLAN_READY",
+                        ["basket", "sub_goals"],
+                        "cognitive_milieu",
                     ],
                     # Fork to next planning brick if replanning produced confidence
                     # AND a next_node was provided at expansion time.

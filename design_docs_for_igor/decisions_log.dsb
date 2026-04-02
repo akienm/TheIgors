@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-04-01
+DOC|decisions_log|v1|updated=2026-04-02
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -545,3 +545,4 @@ D297|layer3-cognitive-stdlib|defined|Layer 3 cognitive standard library: 8 found
 D297|layer3-cognitive-stdlib|defined|Layer 3 cognitive standard library: 9 foundational bricks (PARSE_GOAL, SITUATE, DECOMPOSE, ANTICIPATE, CONSTRAIN, OBSERVE, HYPOTHESIZE, REPLAN, SCOPE_CHECK). Planning = chaining these. Confidence threading runs through all. Re-entrant by design. HYPOTHESIZE = abductive reasoning from delta — how might that work? Foundation for coding/planning engrams.
 D298|hypothesize-universal-primitive|defined|HYPOTHESIZE is the universal cognitive primitive. ANTICIPATE = HYPOTHESIZE(forward, goal). Debug hypothesize = HYPOTHESIZE(backward, delta). OBSERVE = prediction error signal. Same loop at every level. ANTICIPATE collapses into HYPOTHESIZE with time_direction basket key (forward/backward). Mirrors D279 predictive coding at layer 3 — brain does not distinguish predicting from explaining. One primitive, two temporal orientations.
 D299|forkif-null-target-safe|defined|FORKIF skips targets that are None, falsy, or the string 'None'. Makes optional next_node slot safe in TEMPLATE expansion — Jinja2 renders None slot as 'None' string; node_executor now drops it silently instead of spawning a bad node.
+D300|twm-as-inter-subsystem-channel|defined|TWM is the interface channel between cognitive subsystems. Each planning brick writes its durable output to TWM (not just basket); the next brick fires reactively when it observes its precondition in TWM. Basket = within-node scratch space (ephemeral, local). TWM = inter-step pipe (observable, persistent across turns, triggers downstream habits). This is emit+react applied to multi-step planning — not a call chain, not a basket pipeline.

@@ -98,7 +98,10 @@ TEMPLATE_SCHEMA = {
     "basket_contract": {
         "reads": ["current_action", "parsed_goal"],
         "writes": ["scope_ok", "drift_signal"],
-        "side_effects": ["FORKIF next_node if slot provided"],
+        "side_effects": [
+            "FORKIF next_node if slot provided",
+            "writes SCOPE_DRIFT=drift_signal to cognitive_milieu when scope_ok is False (D300)",
+        ],
     },
     "slot_manifest": [
         {
@@ -212,6 +215,16 @@ TEMPLATE_SCHEMA = {
                     # string when drift is detected, e.g. "action 'write DB schema' does
                     # not address goal 'answer user's question about Python syntax'"
                     ["EMITIF", True, "drift_signal", None, "basket"],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # SCOPE_DRIFT fires only when scope_ok is False — signals downstream
+                    # subsystems that the current action is drifting from the parsed_goal.
+                    [
+                        "EMITIF",
+                        ["scope_ok", "==", False],
+                        "SCOPE_DRIFT",
+                        ["basket", "drift_signal"],
+                        "cognitive_milieu",
+                    ],
                     # Fork to alert/replan node after scope check completes.
                     # Target "{{ next_node }}" is baked in by Jinja2 at expansion time.
                     # When next_node slot is None (standalone use), Jinja2 renders "None"

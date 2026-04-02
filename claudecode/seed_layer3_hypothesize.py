@@ -100,7 +100,10 @@ TEMPLATE_SCHEMA = {
     "basket_contract": {
         "reads": ["delta", "twm_loaded", "time_direction"],
         "writes": ["hypothesis", "hypothesis_confidence"],
-        "side_effects": ["FORKIF next_node if slot provided"],
+        "side_effects": [
+            "FORKIF next_node if slot provided",
+            "writes HYPOTHESIS=hypothesis to cognitive_milieu (TWM inter-subsystem channel, D300)",
+        ],
     },
     "slot_manifest": [
         {
@@ -225,6 +228,16 @@ TEMPLATE_SCHEMA = {
                         "hypothesis_confidence",
                         ["payload", "default_confidence"],
                         "basket",
+                    ],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # HYPOTHESIS carries the causal explanation so downstream subsystems
+                    # can observe it from TWM without needing basket access.
+                    [
+                        "EMITIF",
+                        True,
+                        "HYPOTHESIS",
+                        ["basket", "hypothesis"],
+                        "cognitive_milieu",
                     ],
                     # Fork to next planning brick if hypothesis was formed
                     # AND a next_node was provided at expansion time.

@@ -96,7 +96,10 @@ TEMPLATE_SCHEMA = {
     "basket_contract": {
         "reads": ["sub_goals", "risk_signals"],
         "writes": ["constraint_ok", "violations"],
-        "side_effects": ["FORKIF next_node if slot provided"],
+        "side_effects": [
+            "FORKIF next_node if slot provided",
+            "writes CONSTRAINT_VIOLATION=violations to cognitive_milieu when constraint_ok is False (D300)",
+        ],
     },
     "slot_manifest": [
         {
@@ -216,6 +219,16 @@ TEMPLATE_SCHEMA = {
                     # Emit violations = [] (scaffold empty default)
                     # Real impl populates with violated constraint names/descriptions.
                     ["EMITIF", True, "violations", [], "basket"],
+                    # Write durable output to TWM as inter-subsystem signal (D300).
+                    # CONSTRAINT_VIOLATION fires only when constraint_ok is False —
+                    # signals downstream subsystems that the plan has a constraint breach.
+                    [
+                        "EMITIF",
+                        ["constraint_ok", "==", False],
+                        "CONSTRAINT_VIOLATION",
+                        ["basket", "violations"],
+                        "cognitive_milieu",
+                    ],
                     # Fork to next planning brick after constraint check.
                     # Fires when constraint_ok is set (non-None) — regardless of value.
                     # Caller (EXECUTE, HYPOTHESIZE) branches on constraint_ok value.
