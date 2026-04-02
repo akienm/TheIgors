@@ -116,6 +116,11 @@ if ! require_api_key; then
     fi
 fi
 
+# Ensure tmux session exists for auto-compaction (T-cc-compact-mcp)
+CLAUDE_TMUX_SESSION="${CLAUDE_TMUX_SESSION:-claude-main}"
+tmux new-session -d -s "$CLAUDE_TMUX_SESSION" 2>/dev/null || true
+export CLAUDE_TMUX_SESSION
+
 # Launch Claude Code
 export ANTHROPIC_API_KEY
 exec claude --dangerously-skip-permissions
