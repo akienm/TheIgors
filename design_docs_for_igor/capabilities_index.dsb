@@ -1,10 +1,10 @@
-DOC|capabilities_index|v1|updated=2026-03-20h
+DOC|capabilities_index|v1|updated=2026-04-03a
 
 META|purpose=quick lookup index of all registered tools and integrations|inertia=LOW
 // This is an INDEX not deep docs. One line per tool. Go to subsystem_*.dsb for detail.
 // Update whenever a tool is added or removed. Total count tracked in TOTALS section.
 
-TOTALS|tools=148|integrations=13|env_gates=10|updated=2026-03-20h
+TOTALS|tools=148|integrations=13|env_gates=10|cc_skills=19|updated=2026-04-03a
 
 SECTION_SYSTEM|
   run_bash|runner.py|run shell commands in workspace (30s timeout)
@@ -244,3 +244,27 @@ SECTION_INTEGRATIONS|
   kindle|local .mobi + Cloud Reader via browser
   cluster_ssh|paramiko key-based auth
   ollama|local inference via HTTP
+
+SECTION_CC_SKILLS|
+  // Claude Code slash commands — invoked in CC sessions or sent via cc_send/queue_task
+  // Sonnet 4.6 (reasoning): /sprint /savestate /decided /review /day-close /notethat /context-load /deep-audit
+  // Haiku 4.5 (mechanical): /filter /audit /fixit /slateclose /readigor /slate /test-fix /validate-files /commit
+  /context-load|session startup: read dated slate+decisions+channel, start session record in DB
+  /savestate|end-of-session ritual: flush summary to Igor, record decisions, finalize session, compact
+  /decided [Dxxx]|record design decision or work completion mid-session; updates decisions_log.dsb + DB
+  /sprint [ticket-id]|claim ticket → implement → test-fix → probe → commit → close; one ticket per sprint
+  /fixit <desc>|triage → ticket → filter → sprint for one or more fix items
+  /filter|plan filter checklist: scope ok? risk? test plan? returns PASS or blocking list; gates sprint start
+  /audit|17-step code quality audit on changed files: forensic logging, error handling, inertia, etc.
+  /deep-audit|extended audit with deeper checklist; slower than /audit
+  /commit|full commit cycle: run tests + audit staged changes + git add + commit + pull + push
+  /probe <criterion>|inject probe stimulus → Igor via cc_send, read channel response, return result
+  /readigor [machine]|read Igor's recent channel output; machine arg: akiendell|yoga9i|yogai7 (default: local)
+  /notethat <topic>|capture conversation bookmark to notes file + headline in today's slate
+  /day-close|end-of-day ritual: tests, probes, audit, docs sync, gap analysis, GitHub discussion, commit, savestate
+  /slateclose|close work slate: post summary to GH discussion, archive slate.md
+  /slate|slate management: render + add ticket + update sections
+  /review|code review of staged changes against Igor conventions
+  /test-fix|run tests iteratively and fix failures until green
+  /validate-files|check file integrity: inertia level, imports, syntax before editing
+  /igor|Igor meta-skill: diagnose, inspect session state, send commands
