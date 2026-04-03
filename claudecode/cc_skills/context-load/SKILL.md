@@ -18,23 +18,39 @@ during this session (Claude Code is already present to diagnose).
 
 ---
 
-## Step 1 — Read today's dated slate
+## Step 1 — Create today's slate if missing, then read it
 
 D304: slates are daily files at `~/.TheIgors/claudecode/YYYYMMDD.slate.txt`.
 
+If today's slate does not exist, create a fresh one (no done tickets carried forward):
+
 ```bash
-cat ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt 2>/dev/null || echo "(no slate yet today)"
+SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+if [ ! -f "$SLATE" ]; then
+  mkdir -p "$(dirname "$SLATE")"
+  cat > "$SLATE" <<EOF
+# Slate $(date +%Y-%m-%d)
+
+## Active
+
+## Done today
+
+## Tools
+Skills: /sprint /deep-audit /decided /commit /savestate /fixit /context-load /day-close /audit /probe /notethat /slateclose /readigor
+MCP: mcp__igor__memory_get(id) · mcp__igor__cc_send(text) · mcp__igor__channel_read(limit=N)
+DB: psql postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+Design docs: ~/TheIgors/design_docs_for_igor/ or mcp__igor__memory_get('D304')
+Epics: Claude · Cognition · Training · Operations · Database · Swarm · Productization
+EOF
+  echo "Created fresh slate: $SLATE"
+fi
+cat "$SLATE"
 ```
 
 The slate tells you:
 - Active tickets (what's open now)
 - Done today (already closed this day)
 - Tools block: skills, MCP, DB, design_docs pointers, epics
-
-If no slate exists yet today, fall back to yesterday's:
-```bash
-ls -t ~/.TheIgors/claudecode/*.slate.txt 2>/dev/null | head -1 | xargs cat
-```
 
 ---
 

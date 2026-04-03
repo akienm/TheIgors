@@ -43,6 +43,7 @@ def _ssl_ctx() -> ssl.SSLContext:
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
+CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/claudecode/closed_tickets.txt")
 STATUS_ORDER = {
     "pending": 0,
     "in_progress": 1,
@@ -74,6 +75,19 @@ def _log(entry: dict):
 
 def _now():
     return datetime.now(timezone.utc).isoformat()
+
+
+def _prepend_closed_ticket(tid: str, title: str) -> None:
+    """Prepend one line to closed_tickets.txt (newest at top)."""
+    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    line = f"{date_str} | {tid} | {title}\n"
+    os.makedirs(os.path.dirname(CLOSED_TICKETS_PATH), exist_ok=True)
+    existing = ""
+    if os.path.exists(CLOSED_TICKETS_PATH):
+        with open(CLOSED_TICKETS_PATH) as f:
+            existing = f.read()
+    with open(CLOSED_TICKETS_PATH, "w") as f:
+        f.write(line + existing)
 
 
 def _find(tasks, tid):
@@ -111,8 +125,9 @@ def cmd_list(args):
         size = t.get("size", "?")
         epic = f" #{t['epic']}" if t.get("epic") else ""
         worker_tag = " [igor]" if t.get("worker") == "igor" else ""
+        gh_tag = f" GH#{t['github_issue']}" if t.get("github_issue") else ""
         print(
-            f"  {icon} [{t['id']}] ({size}){epic}{worker_tag} {t['title']}  [{t['status']}]"
+            f"  {icon} [{t['id']}] ({size}){epic}{worker_tag}{gh_tag} {t['title']}  [{t['status']}]"
         )
         if t["status"] == "blocked" and t.get("result"):
             print(f"       BLOCKED: {t['result']}")
@@ -165,6 +180,7 @@ def cmd_done(args):
     t["completed_at"] = _now()
     _save(tasks)
     _log({"action": "done", "id": args[0], "title": t["title"], "result": args[1]})
+    _prepend_closed_ticket(args[0], t["title"])
     print(f"Completed {args[0]}: {t['title']}")
 
 
@@ -221,6 +237,7 @@ def cmd_add(args):
         nt.setdefault("completed_at", None)
         nt.setdefault("required_files", [])
         nt.setdefault("related_to", None)
+        nt.setdefault("github_issue", None)
         tasks.append(nt)
         _log({"action": "add", "id": nt["id"], "title": nt["title"]})
         print(f"  added: {nt['id']} — {nt['title']}")
@@ -515,6 +532,31 @@ def cmd_needs_review(args):
 
 
 COMMANDS["needs-review"] = cmd_needs_review
+
+
+def cmd_set_github_issue(args):
+    """Write a GitHub issue number back to a ticket: set-github-issue <id> <number>"""
+    if len(args) < 2:
+        print("Usage: set-github-issue <ticket-id> <github-issue-number>")
+        sys.exit(1)
+    tid, issue_num = args[0], args[1]
+    try:
+        issue_num = int(issue_num)
+    except ValueError:
+        print(f"Issue number must be an integer, got: {issue_num}")
+        sys.exit(1)
+    tasks = _load()
+    t = _find(tasks, tid)
+    if not t:
+        print(f"Task {tid} not found.")
+        sys.exit(1)
+    t["github_issue"] = issue_num
+    _save(tasks)
+    _log({"action": "set_github_issue", "id": tid, "github_issue": issue_num})
+    print(f"Set {tid} github_issue → {issue_num}")
+
+
+COMMANDS["set-github-issue"] = cmd_set_github_issue
 
 
 if __name__ == "__main__":

@@ -42,18 +42,36 @@ No copying or clearing — tomorrow's `/context-load` reads tomorrow's file.
 
 ---
 
-## Step 3 — Post slate summary to GitHub discussion #62
+## Step 3 — Post slate summary to today's GitHub Discussion
 
-Compose a 3-5 bullet summary and post:
+If today's GitHub Discussion was already created (day-close creates it): add a comment to it.
+If this is the only slate and no Discussion exists yet: create one now (same as day-close Step 10).
 
+**Add comment to existing Discussion** (if you know the day's discussion number):
 ```bash
+# Replace D_kwDORR89g84Axxx with today's discussion node ID
 gh api graphql -f query='mutation {
   addDiscussionComment(input: {
-    discussionId: "D_kwDORR89g84AkjSM",
-    body: "## Slate close YYYY-MM-DDx — <theme>\n\n**Done**: ...\n**Deferred**: ...\n**Carried to next slate**: ...\n**Next slate focus**: ..."
+    discussionId: "D_kwDORR89g84Axxx",
+    body: "## Slate close YYYY-MM-DDx — <theme>\n\n**Done**: ...\n**Deferred**: ...\n**Carried**: ...\n**Next**: ..."
   }) { comment { id } }
 }'
 ```
+
+**Create new Discussion** (if none exists yet today):
+```bash
+# Repo: R_kgDORR89gw  Category General: DIC_kwDORR89g84C3wqk
+gh api graphql -f query='mutation {
+  createDiscussion(input: {
+    repositoryId: "R_kgDORR89gw",
+    categoryId: "DIC_kwDORR89g84C3wqk",
+    title: "Day YYYY-MM-DD — <theme>",
+    body: "## Done\n- ...\n\n## Deferred\n- ...\n\n## Next\n- ..."
+  }) { discussion { number url } }
+}'
+```
+
+#62 is the master plan — do not post slate summaries there.
 
 ---
 

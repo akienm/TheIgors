@@ -75,7 +75,20 @@ Skim it — you need to know which DSBs to update in Step 7.
 
 ---
 
-## Step 6 — Sync docs DB + render sessions.md
+## Step 6 — Push cc_queue tickets to GitHub Issues
+
+Create GitHub Issues for any non-done tickets missing a `github_issue` number, and write the
+issue number back to the queue:
+
+```bash
+python3 ~/TheIgors/claudecode/github_sync.py push-queue
+```
+
+Non-fatal — if gh CLI is unavailable or rate-limited, skip and continue.
+
+---
+
+## Step 7 — Sync docs DB + render sessions.md
 
 ```bash
 DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
@@ -89,7 +102,7 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py render
 
 ---
 
-## Step 7 — Update affected subsystem DSBs
+## Step 8 — Update affected subsystem DSBs
 
 For each subsystem touched today (infer from session key_changes):
 - Update `updated=` date in the DSB header
@@ -112,7 +125,7 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/docs_sync.py sync
 
 ---
 
-## Step 8 — Gap analysis review (judgment required)
+## Step 9 — Gap analysis review (judgment required)
 
 Read the current gap_analysis:
 ```bash
@@ -131,7 +144,7 @@ If no gaps opened or closed: skip this step.
 
 ---
 
-## Step 9 — Update MEMORY.md if persistent facts changed
+## Step 10 — Update MEMORY.md if persistent facts changed
 
 Read `~/.claude/projects/-home-akien-TheIgors/memory/MEMORY.md`.
 Update only if something **non-obvious and durable** changed — architecture, known issues, priority shifts.
@@ -139,23 +152,30 @@ Do not add ephemeral notes. Do not duplicate what's already in sessions.md.
 
 ---
 
-## Step 10 — Post GitHub discussion #62
+## Step 11 — Create today's GitHub Discussion
 
-Compose a brief session summary (3-5 bullets) and post:
+Each day gets its own Discussion (not a comment on #62 — that's the master plan).
+Compose a brief day summary (3-5 bullets) as the body and create it:
+
 ```bash
+# Repo ID: R_kgDORR89gw  Category: General (DIC_kwDORR89g84C3wqk)
 gh api graphql -f query='mutation {
-  addDiscussionComment(input: {
-    discussionId: "D_kwDORR89g84AkjSM",
-    body: "## Session YYYY-MM-DDx — <theme>\n\n**Decisions**: D130, D131\n**Done**: ...\n**Next**: ..."
-  }) { comment { id } }
+  createDiscussion(input: {
+    repositoryId: "R_kgDORR89gw",
+    categoryId: "DIC_kwDORR89g84C3wqk",
+    title: "Day YYYY-MM-DD — <one-line theme>",
+    body: "## Done\n- ...\n\n## Decisions\n- D### — ...\n\n## Next\n- ..."
+  }) { discussion { number url } }
 }'
 ```
 
-Keep it short — it's a log entry, not an essay.
+Save the returned Discussion number — this becomes the day's reference (e.g. `#77`).
+Keep it short — it's a day log, not an essay.
+#62 stays as the master plan; individual days are separate threads.
 
 ---
 
-## Step 11 — Commit docs
+## Step 12 — Commit docs
 
 Stage only docs/memory/design files:
 ```bash
@@ -179,7 +199,7 @@ If pull fails due to unstaged changes: `git stash && git pull --rebase origin ma
 
 ---
 
-## Step 12 — Savestate
+## Step 13 — Savestate
 
 ```
 /savestate

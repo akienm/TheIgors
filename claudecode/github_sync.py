@@ -6,11 +6,13 @@ DB is source of truth after sync. GitHub is the upstream source.
 Deltas are printed so the Organizer can summarise what changed.
 
 Usage:
-    python3 claudecode/github_sync.py sync     — pull GitHub → DB, print delta
-    python3 claudecode/github_sync.py list     — show current DB state
-    python3 claudecode/github_sync.py delta    — show changes since last sync
+    python3 claudecode/github_sync.py sync        — pull GitHub → DB, print delta
+    python3 claudecode/github_sync.py list        — show current DB state
+    python3 claudecode/github_sync.py delta       — show changes since last sync
+    python3 claudecode/github_sync.py push-queue  — create GH Issues for cc_queue tickets
+                                                    missing github_issue field; write numbers back
 
-Ref: D130, T-organizer-github-sync
+Ref: D130, T-organizer-github-sync, T-github-issues-sync
 """
 
 import json
@@ -217,15 +219,107 @@ def cmd_delta():
         print(f"  {mark} #{r['number']}: {r['title']}")
 
 
+QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
+CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/claudecode/closed_tickets.txt")
+
+
+def cmd_push_queue():
+    """Create GitHub Issues for cc_queue tickets that lack a github_issue number.
+
+    For each non-done ticket with github_issue == None:
+    1. Creates a GH Issue titled "[T-xxx] <title>"
+    2. Writes the returned issue number back via cc_queue.py set-github-issue
+    """
+    if not os.path.exists(QUEUE_PATH):
+        print("Queue empty — nothing to push.")
+        return
+
+    with open(QUEUE_PATH) as f:
+        tasks = json.load(f)
+
+    to_push = [
+        t for t in tasks if t.get("status") != "done" and not t.get("github_issue")
+    ]
+
+    if not to_push:
+        print("All non-done tickets already have github_issue numbers.")
+        return
+
+    print(f"Creating GH Issues for {len(to_push)} ticket(s)...")
+    created = 0
+    for t in to_push:
+        tid = t["id"]
+        title = f"[{tid}] {t['title']}"
+        body_parts = [f"cc_queue ticket: **{tid}**\n"]
+        if t.get("description"):
+            body_parts.append(t["description"])
+        if t.get("epic"):
+            body_parts.append(f"\n**Epic**: {t['epic']}")
+        if t.get("size"):
+            body_parts.append(f"**Size**: {t['size']}")
+        if t.get("priority"):
+            body_parts.append(f"**Priority**: {t['priority']}")
+        body = "\n".join(body_parts)
+
+        cmd = [
+            "gh",
+            "issue",
+            "create",
+            "--repo",
+            REPO,
+            "--title",
+            title,
+            "--body",
+            body,
+        ]
+
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"  ERROR creating issue for {tid}: {result.stderr.strip()}")
+            continue
+
+        # gh issue create prints the URL on stdout: https://github.com/.../issues/NNN
+        url = result.stdout.strip()
+        try:
+            issue_num = int(url.rstrip("/").split("/")[-1])
+        except (ValueError, IndexError):
+            print(f"  WARNING: could not parse issue number from: {url}")
+            continue
+
+        # Write number back to queue
+        wb = subprocess.run(
+            [
+                "python3",
+                os.path.expanduser("~/TheIgors/claudecode/cc_queue.py"),
+                "set-github-issue",
+                tid,
+                str(issue_num),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if wb.returncode != 0:
+            print(f"  WARNING: set-github-issue failed for {tid}: {wb.stderr.strip()}")
+        else:
+            print(f"  {tid} → GH #{issue_num}  {url}")
+            created += 1
+
+    print(f"\nDone — created {created} issue(s).")
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 
 def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "sync"
+
+    if cmd == "push-queue":
+        cmd_push_queue()
+        return
+
     if not DB_URL:
         print("ERROR: IGOR_HOME_DB_URL not set", file=sys.stderr)
         sys.exit(1)
-
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "sync"
 
     if cmd == "sync":
         cmd_sync()
@@ -235,7 +329,7 @@ def main():
     elif cmd == "delta":
         cmd_delta()
     else:
-        print(f"Unknown command: {cmd}  (sync|list|delta)")
+        print(f"Unknown command: {cmd}  (sync|list|delta|push-queue)")
         sys.exit(2)
 
 
