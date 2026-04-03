@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-04-02
+DOC|decisions_log|v1|updated=2026-04-03
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -549,3 +549,5 @@ D300|twm-as-inter-subsystem-channel|defined|TWM is the interface channel between
 D301|twm-trigger-dispatch-heartbeat|done|HeartbeatSource._check_twm_trigger_habits: scan for twm_trigger metadata, push proactive ACTION_IMPULSE when TWM category matches
 D302|cascade-management-phrases|done|MANAGEMENT_PHRASES for coding cascade tools — adopt top ticket, goal continuation, coding sprint, close goal, read active goal bypass BG to direct code_ref dispatch
 D303|cascade-end-to-end-bugs-fixed|done|Three bugs blocked D301 cascade: (1) get_procedural_by_metadata_key used SQLite json_extract on PG — fixed to jsonb_exists(); (2) _check_twm_trigger_habits used twm_read(limit=5 ASC) — GOAL_READY buried under reading entries, fixed to category-filtered direct query; (3) ACTION_IMPULSE buried under 50 non-integrated READING_STEW in drain queue — fixed to call code_ref directly. run_coding_sprint also needed ACTIVE_GOAL fallback (2h TTL expires before sprint fires).
+D304|slates-are-dailies|defined|Slates are daily work files at ~/.TheIgors/claudecode/YYYYMMDD.slate.txt — one per day, no numbering, no topic sections. Epics are permanent category tags on tickets. History is in dated files; queue is truth for what's pending.
+D305|context-load-tree-shape|defined|Context load tree: (1) today's dated slate — pending/in_progress only, (2) decisions_log.dsb top 30, (3) channel last 5, (4) session last-change, (5) what-you-have block listing skills+MCP+DB+design_docs pointers. Drop: sessions.md blob, gap_analysis blob, full MEMORY.md index. MEMORY.md becomes 20-line hot-facts only.

@@ -172,7 +172,18 @@ def active_sessions(within_minutes: int = 10) -> list[str]:
 
 def format_entry(e: dict, color: bool = True) -> str:
     """Format a channel entry for terminal display."""
-    ts = e.get("ts", "")[-8:-1] if e.get("ts") else "?"  # HH:MM:SS
+    ts_raw = e.get("ts", "")
+    ts = "?"
+    if ts_raw:
+        try:
+            # Full ISO format — convert UTC → local
+            utc_dt = datetime.strptime(ts_raw, "%Y-%m-%dT%H:%M:%SZ").replace(
+                tzinfo=timezone.utc
+            )
+            ts = utc_dt.astimezone().strftime("%H:%M:%S")
+        except ValueError:
+            # Short format (HH:MM:SS) — display as-is
+            ts = ts_raw[:8] if len(ts_raw) >= 8 else ts_raw
     author = e.get("author", "?")
     content = e.get("content", "")
     msg_type = e.get("type", "message")

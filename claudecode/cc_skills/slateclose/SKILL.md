@@ -1,6 +1,6 @@
 ---
 name: slateclose
-description: Closes the current work slate for TheIgors project. Reviews open tickets, notes what's done/deferred/carried, posts summary to GitHub discussion, archives slate.md. Use when Akien says /slateclose, "close the slate", "wrap up this slate", or "start a fresh slate".
+description: Closes the current work slate for TheIgors project. Reviews open tickets, notes what's done/deferred/carried, posts summary to GitHub discussion. D304: slates are daily dated files — no archive step needed. Use when Akien says /slateclose, "close the slate", "wrap up this slate", or "start a fresh slate".
 model: haiku
 ---
 
@@ -9,6 +9,9 @@ model: haiku
 Runs when a slate of work is complete or at a natural break point.
 Not the same as day-close — a day can have multiple slates.
 Not the same as savestate — session state is separate from slate state.
+
+D304: Slates are daily dated files at `~/.TheIgors/claudecode/YYYYMMDD.slate.txt`.
+Each file IS the archive. No copy/clear step needed — just render the final state.
 
 ---
 
@@ -25,7 +28,21 @@ Categorize each ticket:
 
 ---
 
-## Step 2 — Post slate summary to GitHub discussion #62
+## Step 2 — Render final slate
+
+Write the final done/active state to today's dated file:
+
+```bash
+DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/slate_manager.py render
+```
+
+The dated file at `~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt` is the record.
+No copying or clearing — tomorrow's `/context-load` reads tomorrow's file.
+
+---
+
+## Step 3 — Post slate summary to GitHub discussion #62
 
 Compose a 3-5 bullet summary and post:
 
@@ -38,20 +55,6 @@ gh api graphql -f query='mutation {
 }'
 ```
 
-Post before archiving slate.md — in case of crash.
-
----
-
-## Step 3 — Archive slate.md
-
-```bash
-cp ~/.TheIgors/cc_channel/slate.md \
-   ~/.TheIgors/cc_channel/slate_archive_$(date +%Y-%m-%d-%H%M).md
-> ~/.TheIgors/cc_channel/slate.md
-```
-
-The archive is the record. The empty slate.md is ready for the next `/slate`.
-
 ---
 
 ## Step 4 — Optionally trigger day-close
@@ -63,6 +66,6 @@ If more slates are planned today: skip.
 
 ## Hard rules
 
-- Never delete archived slates — they're the record
-- Always post to GitHub before clearing slate.md
+- Never delete dated slate files — they're the record
+- D304: each day's file is self-contained; no slate.md to clear
 - Carried tickets stay in queue as in_progress — do not close them

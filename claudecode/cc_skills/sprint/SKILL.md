@@ -80,6 +80,11 @@ Run tests and fix any failures:
 
 Do not proceed to probe until tests are green.
 
+After tests pass, kill any lingering pytest zombie processes:
+```bash
+pkill -f "python.*pytest" 2>/dev/null; pkill -f "pytest.*tests/" 2>/dev/null; true
+```
+
 ---
 
 ## Step 5 — Probe (if defined for this ticket)

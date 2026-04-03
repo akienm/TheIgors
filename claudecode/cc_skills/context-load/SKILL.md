@@ -18,79 +18,89 @@ during this session (Claude Code is already present to diagnose).
 
 ---
 
-## Step 1 — Read the slate
+## Step 1 — Read today's dated slate
+
+D304: slates are daily files at `~/.TheIgors/claudecode/YYYYMMDD.slate.txt`.
 
 ```bash
-cat ~/.TheIgors/cc_channel/slate.md
+cat ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt 2>/dev/null || echo "(no slate yet today)"
 ```
 
 The slate tells you:
-- What's actively being worked (tickets)
-- Which blobs are relevant and where they live
-- One-paragraph current context
+- Active tickets (what's open now)
+- Done today (already closed this day)
+- Tools block: skills, MCP, DB, design_docs pointers, epics
 
----
-
-## Step 2 — Read blob tops
-
-For each blob listed in the slate, read the top 40 lines only:
-
+If no slate exists yet today, fall back to yesterday's:
 ```bash
-head -40 <blob-path>
+ls -t ~/.TheIgors/claudecode/*.slate.txt 2>/dev/null | head -1 | xargs cat
 ```
 
-Blobs are newest-first (prepend convention). The top is the hottest context.
-Stop reading when you have enough. You rarely need the bottom.
+---
 
-Standard blobs (always read if no slate):
-- `~/.claude/projects/-home-akien-TheIgors/memory/MEMORY.md` — project memory index
-- `~/.TheIgors/cc_channel/messages.jsonl` — recent channel activity (last 10 lines)
-- `~/TheIgors/design_docs_for_igor/decisions_log.dsb` — top 30 lines = recent decisions
+## Step 2 — Read decisions top 30
+
+```bash
+head -30 ~/TheIgors/design_docs_for_igor/decisions_log.dsb
+```
+
+Recent decisions are at the top. Stop at 30 lines — that's the hot window.
 
 ---
 
-## Step 3 — Read recent channel
+## Step 3 — Read recent channel (last 5)
 
 ```bash
-python3 ~/TheIgors/claudecode/channel.py read 10
+python3 ~/TheIgors/claudecode/channel.py read 5
 ```
 
 See what other sessions have posted recently. Who is working on what.
 
 ---
 
-## Step 4 — Assemble briefing with token budget
+## Step 4 — Read session last-change (if session active)
+
+```bash
+DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py show 1
+```
+
+Scan the `key_changes` field only — skip the rest. One line tells you where the session left off.
+
+---
+
+## Step 5 — Assemble briefing with token budget
 
 **Token budget: 2000 tokens (~8000 characters). Stop reading when approaching this limit.**
 
-Synthesize into 5-10 lines:
-- Current active tickets
-- Key design context (1-2 sentences per active area)
-- What other sessions are doing (if any)
-- What you should NOT touch (in-progress by another session)
+D305 load tree (in order, stop when budget is reached):
+1. Today's dated slate (active tickets + done + Tools block)
+2. decisions_log.dsb top 30
+3. channel last 5
+4. session last-change
+
+The Tools block in the slate already lists: skills, MCP tools, DB connection, design_docs pointer, epics.
+Do NOT load MEMORY.md, sessions.md, or gap_analysis as primary context — they are too large.
 
 **Token counting heuristic**: ~4 characters ≈ 1 token (for English prose). To estimate tokens:
 ```
 (total_characters_read) / 4 = approximate_tokens
 ```
 
-Stop reading blob tops when cumulative character count approaches 8000 (≈2000 tokens).
-If you've read slate + 1-2 blob tops + channel, you're usually well within budget.
-
 Output format:
 ```
 CONTEXT LOAD — <timestamp>
 Active: <ticket IDs>
-Design thread: <one line>
+Design thread: <one line from decisions top>
 Channel: <recent activity or "quiet">
-Do not touch: <files/areas in use>
+Do not touch: <files/areas in use by another session>
 [Token count: ~NNN tokens]
 Ready.
 ```
 
 ---
 
-## ⛔ Step 5 — Start session record in DB (REQUIRED — do not skip)
+## ⛔ Step 6 — Start session record in DB (REQUIRED — do not skip)
 
 Check if a session is already in progress (e.g. prior tab or crash recovery):
 ```bash

@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
 """
-slate_manager.py — Manage the active slate in Postgres.
+slate_manager.py — Manage the active daily slate in Postgres.
 
-A slate is a named, themed bundle of work (~1 day). It has:
-  - position: 0=today, 1=next, 2=after, 3+=future (vaguer as position increases)
-  - done_when: one-sentence completion criterion
+D304: Slates are daily files at ~/.TheIgors/claudecode/YYYYMMDD.slate.txt.
+Epics are category tags on tickets (not slate sections).
+
+A slate (DB) represents one day's work bundle:
+  - position: 0=today (the only active one rendered to file)
   - tickets: [{id, title, type: primary|adopted_bug, status}]
-  - notes: free-form shape description (for vague future slates)
 
 Usage:
-    python3 claudecode/slate_manager.py show          — print current slates
-    python3 claudecode/slate_manager.py render        — write slate.md from DB
-    python3 claudecode/slate_manager.py seed          — seed DB from current slate.md (first run)
+    python3 claudecode/slate_manager.py show          — print current slate from DB
+    python3 claudecode/slate_manager.py render        — write YYYYMMDD.slate.txt from DB
+    python3 claudecode/slate_manager.py seed          — seed DB (first run only)
     python3 claudecode/slate_manager.py add-ticket <slate_pos> <ticket_id> <title> [--bug]
     python3 claudecode/slate_manager.py close-ticket <ticket_id>
-    python3 claudecode/slate_manager.py advance       — close slate 0, shift 1→0 2→1 etc.
+    python3 claudecode/slate_manager.py advance       — close today's slate, shift remaining
 
 DB: IGOR_HOME_DB_URL (Postgres). Falls back to printing only if not set.
 
-Ref: D130, D132
+Ref: D130, D132, D304
 """
 
 import json
@@ -27,8 +28,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-SLATE_MD = Path.home() / ".TheIgors" / "cc_channel" / "slate.md"
 DB_URL = os.getenv("IGOR_HOME_DB_URL") or os.getenv("IGOR_DB_URL")
+
+_SLATE_DIR = Path.home() / ".TheIgors" / "claudecode"
+
+
+def _today_slate_path() -> Path:
+    """Return today's dated slate file path: ~/.TheIgors/claudecode/YYYYMMDD.slate.txt"""
+    return _SLATE_DIR / datetime.now().strftime("%Y%m%d.slate.txt")
 
 
 # ── DB helpers ────────────────────────────────────────────────────────────────
@@ -251,67 +258,69 @@ def cmd_show():
             print(f"    {mark} [bug] {t['id']}: {t['title']}")
 
 
+def _queue_done_ids() -> set:
+    """Return set of ticket IDs marked done in cc_queue (cross-reference for render)."""
+    try:
+        q = Path.home() / ".TheIgors" / "cc_channel" / "queue.json"
+        import json as _json
+
+        tasks = _json.loads(q.read_text())
+        return {t["id"] for t in tasks if t.get("status") == "done"}
+    except Exception:
+        return set()
+
+
 def cmd_render():
-    """Write slate.md from DB."""
+    """Write today's dated slate file from DB (D304: slates are daily files)."""
     slates = _load_slates()
-    now = datetime.now().strftime("%Y-%m-%d")
-    lines = [f"# Active Slate — {now}", ""]
+    today_slate = next((s for s in slates if s["position"] == 0), None)
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    out_path = _today_slate_path()
+    _SLATE_DIR.mkdir(parents=True, exist_ok=True)
 
-    labels = {0: "TODAY", 1: "NEXT", 2: "AFTER NEXT"}
+    # Cross-reference with queue: tickets done in queue are done on slate too
+    queue_done = _queue_done_ids()
 
-    for s in slates:
-        label = labels.get(s["position"], "FUTURE")
-        lines.append(f"---")
-        lines.append(f"")
-        lines.append(f"## Slate {s['position']} — {s['name']} ({label})")
-        if s.get("done_when"):
-            lines.append(f"**Done when**: {s['done_when']}")
-        if s.get("notes"):
-            lines.append(f"**Shape**: {s['notes']}")
-        lines.append("")
+    lines = [f"# Slate {date_str}", ""]
 
-        tickets = s.get("tickets") or []
-        primary = [t for t in tickets if t.get("type") != "adopted_bug"]
-        bugs = [t for t in tickets if t.get("type") == "adopted_bug"]
-        done = [t for t in tickets if t.get("status") == "done"]
+    if today_slate:
+        tickets = today_slate.get("tickets") or []
+        # A ticket is done if slate says so OR queue says so
+        for t in tickets:
+            if t["id"] in queue_done:
+                t["status"] = "done"
+        open_tickets = [t for t in tickets if t.get("status") != "done"]
+        done_tickets = [t for t in tickets if t.get("status") == "done"]
 
-        open_primary = [t for t in primary if t.get("status") != "done"]
-        if open_primary:
-            lines.append("### Tickets")
-            for t in open_primary:
+        if open_tickets:
+            lines.append("## Active")
+            for t in open_tickets:
                 lines.append(f"- {t['id']}: {t['title']}")
             lines.append("")
 
-        open_bugs = [t for t in bugs if t.get("status") != "done"]
-        if open_bugs:
-            lines.append("### Adopted bugs")
-            for t in open_bugs:
-                lines.append(f"- {t['id']}: {t['title']}")
-            lines.append("")
-
-        if done:
-            lines.append("### Done this slate")
-            for t in done:
+        if done_tickets:
+            lines.append("## Done today")
+            for t in done_tickets:
                 lines.append(f"- ~~{t['id']}~~ ✓  {t['title']}")
             lines.append("")
 
     lines += [
-        "---",
-        "",
-        "## Blobs (read tops for context)",
-        "- decisions: ~/TheIgors/design_docs_for_igor/decisions_log.dsb",
-        "- sessions: ~/TheIgors/memory/sessions.md",
-        "- memory: ~/.claude/projects/-home-akien-TheIgors/memory/MEMORY.md",
-        "- process: ~/.claude/projects/-home-akien-TheIgors/memory/project_process_development_tools.md",
+        "## Tools",
+        "Skills: /sprint /deep-audit /decided /commit /savestate /fixit /context-load /day-close /audit /probe /notethat /slateclose /readigor",
+        "MCP: mcp__igor__memory_get(id) · mcp__igor__cc_send(text) · mcp__igor__channel_read(limit=N)",
+        "DB: psql postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+        "Design docs: ~/TheIgors/design_docs_for_igor/ or mcp__igor__memory_get('D304')",
+        "Epics: Claude · Cognition · Training · Operations · Database · Swarm · Productization",
         "",
         "## Design thread",
-        "D130: DB is source of truth; GitHub/files are sync targets; trails = newest-first traversal.",
+        "D304: Slates = daily files at ~/.TheIgors/claudecode/YYYYMMDD.slate.txt. Epics = category tags on tickets.",
+        "D305: Context load: dated slate + decisions top 30 + channel last 5 + session last-change + Tools block.",
+        "D130: DB is source of truth; GitHub/files are sync targets.",
         "D131: DSB/CSB docs mirrored as Postgres nodes — token-efficient context load.",
-        "D132: Slate schema in Postgres — slates table; slate_manager.py renders slate.md.",
     ]
 
-    SLATE_MD.write_text("\n".join(lines) + "\n")
-    print(f"Rendered → {SLATE_MD}")
+    out_path.write_text("\n".join(lines) + "\n")
+    print(f"Rendered → {out_path}")
 
 
 def cmd_add_ticket(pos: int, ticket_id: str, title: str, is_bug: bool = False):
