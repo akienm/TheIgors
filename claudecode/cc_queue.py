@@ -97,7 +97,32 @@ def _find(tasks, tid):
     return None
 
 
+def _format_task_line(t: dict) -> str:
+    STATUS_ICON = {
+        "pending": "⬜",
+        "in_progress": "🔵",
+        "needs_review": "🟡",
+        "blocked": "🔴",
+        "done": "✅",
+    }
+    icon = STATUS_ICON.get(t["status"], "?")
+    size = t.get("size", "?")
+    epic = f" #{t['epic']}" if t.get("epic") else ""
+    worker_tag = " [igor]" if t.get("worker") == "igor" else ""
+    gh_tag = f" GH#{t['github_issue']}" if t.get("github_issue") else ""
+    return f"  {icon} [{t['id']}] ({size}){epic}{worker_tag}{gh_tag} {t['title']}  [{t['status']}]"
+
+
+def _print_task(t: dict) -> None:
+    print(_format_task_line(t))
+    if t["status"] == "blocked" and t.get("result"):
+        print(f"       BLOCKED: {t['result']}")
+    if t["status"] == "done" and t.get("result"):
+        print(f"       done: {t['result']}")
+
+
 def cmd_list(args):
+    by_epic = "--by-epic" in args
     tasks = _load()
     if not tasks:
         print("Queue empty.")
@@ -113,26 +138,20 @@ def cmd_list(args):
     tasks_sorted = sorted(
         tasks, key=lambda t: (STATUS_ORDER.get(t["status"], 9), _priority_int(t))
     )
-    STATUS_ICON = {
-        "pending": "⬜",
-        "in_progress": "🔵",
-        "needs_review": "🟡",
-        "blocked": "🔴",
-        "done": "✅",
-    }
-    for t in tasks_sorted:
-        icon = STATUS_ICON.get(t["status"], "?")
-        size = t.get("size", "?")
-        epic = f" #{t['epic']}" if t.get("epic") else ""
-        worker_tag = " [igor]" if t.get("worker") == "igor" else ""
-        gh_tag = f" GH#{t['github_issue']}" if t.get("github_issue") else ""
-        print(
-            f"  {icon} [{t['id']}] ({size}){epic}{worker_tag}{gh_tag} {t['title']}  [{t['status']}]"
-        )
-        if t["status"] == "blocked" and t.get("result"):
-            print(f"       BLOCKED: {t['result']}")
-        if t["status"] == "done" and t.get("result"):
-            print(f"       done: {t['result']}")
+
+    if by_epic:
+        from collections import defaultdict
+
+        groups: dict[str, list] = defaultdict(list)
+        for t in tasks_sorted:
+            groups[t.get("epic") or "(no epic)"].append(t)
+        for epic_name in sorted(groups):
+            print(f"\n## #{epic_name}")
+            for t in groups[epic_name]:
+                _print_task(t)
+    else:
+        for t in tasks_sorted:
+            _print_task(t)
 
 
 def cmd_show(args):

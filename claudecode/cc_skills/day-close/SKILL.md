@@ -26,6 +26,15 @@ cd ~/TheIgors && source venv/bin/activate && python -m pytest tests/ -x -q 2>&1 
 
 If tests fail: run `/test-fix` before proceeding.
 
+```bash
+# Stale ticket check — flag in_progress tickets not in today's slate
+SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+python3 ~/TheIgors/claudecode/cc_queue.py list 2>/dev/null | grep "🔵" | \
+  sed 's/.*\[\(T-[^]]*\)\].*/\1/' | while read tid; do
+    grep -q "$tid" "$SLATE" 2>/dev/null || echo "⚠ STALE: $tid in_progress but not in slate — reset to pending?"
+  done
+```
+
 ---
 
 ## Step 2 — Run defined probe tests
@@ -199,7 +208,17 @@ If pull fails due to unstaged changes: `git stash && git pull --rebase origin ma
 
 ---
 
-## Step 13 — Savestate
+## Step 13 — Slateclose
+
+```
+/slateclose
+```
+
+This archives the day's slate and posts to the day's GitHub Discussion.
+
+---
+
+## Step 14 — Savestate
 
 ```
 /savestate

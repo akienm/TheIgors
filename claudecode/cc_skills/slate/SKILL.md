@@ -26,7 +26,7 @@ Otherwise skip — use the briefing already in context.
 ## Step 2 — Review open tickets
 
 ```bash
-python3 ~/TheIgors/claudecode/cc_queue.py list
+python3 ~/TheIgors/claudecode/cc_queue.py list --by-epic
 ```
 
 Note: pending tickets, in-progress tickets, anything blocked.

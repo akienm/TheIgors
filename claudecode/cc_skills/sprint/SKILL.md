@@ -53,6 +53,25 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-cha
 
 ---
 
+## Step 2.5 — Write handoff note to slate
+
+Write in-flight state immediately after claiming — before any code is written.
+This survives auto-compact and budget-exhaustion session ends.
+
+```bash
+SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+echo "" >> "$SLATE"
+echo "## In-flight $(date +%H:%M) — <ticket-id>" >> "$SLATE"
+echo "claimed: <ticket-id> — <title>" >> "$SLATE"
+echo "status: implementation not started" >> "$SLATE"
+```
+
+Update this note as work progresses (after IMPLEMENT, after TEST). The last written state
+is what context-load will see if the session dies. A clean close in Step 8 will replace it
+with the done summary.
+
+---
+
 ## Step 3 — Implement
 
 Read every file before editing. Key gates:

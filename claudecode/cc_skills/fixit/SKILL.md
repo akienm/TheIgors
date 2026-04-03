@@ -71,6 +71,16 @@ For each S/M ticket:
 
 **3b. Run /filter** on the plan. Fix any blocking issues. Non-blocking notes: proceed and annotate.
 
+**3b.5 Write handoff note to slate** (before sprint starts):
+```bash
+SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+echo "" >> "$SLATE"
+echo "## In-flight $(date +%H:%M) — <ticket-id>" >> "$SLATE"
+echo "claimed: <ticket-id> — <title>" >> "$SLATE"
+echo "status: fixit — entering sprint" >> "$SLATE"
+```
+This survives auto-compact and budget-exhaustion. Sprint Step 8 replaces it with the done summary.
+
 **3c. Run /sprint <ticket-id>**
 
 Sprint handles: implement → test-fix → probe → record → close ticket → render slate.

@@ -85,6 +85,22 @@ Scan the `key_changes` field only — skip the rest. One line tells you where th
 
 ---
 
+## Step 4.5 — Stale ticket check
+
+Flag in_progress tickets not mentioned in today's slate (DB vs slate drift):
+
+```bash
+SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+python3 ~/TheIgors/claudecode/cc_queue.py list 2>/dev/null | grep "🔵" | \
+  sed 's/.*\[\(T-[^]]*\)\].*/\1/' | while read tid; do
+    grep -q "$tid" "$SLATE" 2>/dev/null || echo "⚠ STALE: $tid is in_progress but not in today's slate"
+  done
+```
+
+If any stale tickets appear: surface them in the briefing and decide whether to re-claim or reset to pending.
+
+---
+
 ## Step 5 — Assemble briefing with token budget
 
 **Token budget: 2000 tokens (~8000 characters). Stop reading when approaching this limit.**
