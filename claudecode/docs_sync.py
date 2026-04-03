@@ -15,6 +15,7 @@ Usage:
 Ref: D130, D131, T-docs-tree-in-db
 """
 
+import hashlib
 import os
 import re
 import sys
@@ -107,6 +108,7 @@ def _parse_dsb(path: Path) -> list[dict]:
                 "entry_key": key,
                 "entry_type": etype,
                 "content": line,
+                "content_hash": hashlib.md5(line.encode()).hexdigest(),
                 "synced_at": now,
             }
         )
@@ -123,19 +125,29 @@ def _conn():
 def _upsert_entries(entries: list[dict]) -> int:
     if not entries:
         return 0
+    now = datetime.now().isoformat()
     with _conn() as conn:
         with conn.cursor() as c:
             for e in entries:
                 c.execute(
                     """
-                    INSERT INTO docs_entries (source, entry_key, entry_type, content, synced_at)
-                    VALUES (%(source)s, %(entry_key)s, %(entry_type)s, %(content)s, %(synced_at)s)
+                    INSERT INTO docs_entries
+                        (source, entry_key, entry_type, content, content_hash, synced_at, last_modified)
+                    VALUES
+                        (%(source)s, %(entry_key)s, %(entry_type)s, %(content)s,
+                         %(content_hash)s, %(synced_at)s, %(now)s)
                     ON CONFLICT (source, entry_key) DO UPDATE SET
-                        entry_type = EXCLUDED.entry_type,
-                        content    = EXCLUDED.content,
-                        synced_at  = EXCLUDED.synced_at
+                        entry_type    = EXCLUDED.entry_type,
+                        content       = EXCLUDED.content,
+                        content_hash  = EXCLUDED.content_hash,
+                        synced_at     = EXCLUDED.synced_at,
+                        last_modified = CASE
+                            WHEN docs_entries.content_hash IS DISTINCT FROM EXCLUDED.content_hash
+                            THEN EXCLUDED.last_modified
+                            ELSE docs_entries.last_modified
+                        END
                 """,
-                    e,
+                    {**e, "now": now},
                 )
         conn.commit()
     return len(entries)
@@ -205,6 +217,29 @@ def cmd_query(args: list[str]):
                 for r in rows:
                     print(f"  {r['content'].strip()}")
                 print(f"\n{len(rows)} tools matched")
+
+            elif kind == "changed-since":
+                # changed-since <ISO-datetime> — entries modified after that time
+                since = args[1] if len(args) > 1 else "1970-01-01"
+                c.execute(
+                    """
+                    SELECT source, entry_key, entry_type, content, last_modified
+                    FROM docs_entries
+                    WHERE last_modified > %s
+                    ORDER BY last_modified DESC
+                    LIMIT %s
+                """,
+                    (since, limit),
+                )
+                rows = c.fetchall()
+                for r in rows:
+                    ts = r["last_modified"] or "?"
+                    if hasattr(ts, "isoformat"):
+                        ts = ts.isoformat()
+                    print(
+                        f"  [{ts}] {r['source']}:{r['entry_key']} {r['content'][:80]}"
+                    )
+                print(f"\n{len(rows)} entries changed since {since}")
 
             else:
                 # Generic source query
