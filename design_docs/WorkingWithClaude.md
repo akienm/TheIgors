@@ -49,7 +49,15 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 **The two-session pattern: Designer + Worker.** Complex work splits across two roles. The Designer Claude (interactive, with Akien present) handles architecture, planning, teaching, and anything requiring judgment. The Worker Claude runs as an autonomous daemon, consuming tickets from the queue and executing sprints without human interaction. The queue (`~/.TheIgors/cc_channel/queue.json`) is the handoff point. The shared channel (`messages.jsonl`) is the coordination substrate — both sessions post to it and can read each other's output. A context-load at session start reads the channel, the slate, and blob tops rather than reloading full files. This pattern scales: multiple workers on multiple machines can pull from the same queue against the same Postgres DB.
 
-**Save state at the end of every session.** Agree a ledger of work, say "save state and go," and the next session picks up from disk with full context. The session record is a real artifact, not a courtesy.
+**Save state at the end of every session.** Agree a ledger of work, say "save state and go," and the next session picks up from disk with full context. The session record is a real artifact, not a courtesy. More precisely: savestate runs *when decisions are made and work starts*, not only at the end — so that a crash mid-session loses only the in-flight hypothesis, not the decisions.
+
+**Daily slates are dated files, not a rolling document.** Each day gets a fresh `YYYYMMDD.slate.txt` at `~/.TheIgors/claudecode/`. Old closed tickets don't carry forward — they go into a separate `closed_tickets.txt` blob (newest at top: date / ticket ID / description), readable by tailing from the top until satisfied. Context-load creates today's slate if it doesn't exist. The slate shows only active and pending tickets, today's decisions, and any `/notethat` bookmarks — nothing more.
+
+**Tickets live in both the local queue and GitHub Issues.** The local cc_queue is the primary source of truth for work state. GitHub Issues are the cloud backup and the visibility layer. Each ticket carries a `github_issue` field linking to the GitHub issue number; GitHub issues include the cc_queue slug in their title so either side is searchable. `/day-close` syncs any tickets that are missing a GitHub issue number. This matters because if the local drive dies, the queue dies with it — GitHub is what survives.
+
+**Each day gets its own GitHub Discussion.** Not a comment on the master plan thread — a new Discussion. The day's Discussion echoes the slate: tickets opened, tickets closed, decisions made, notes captured. The master plan thread (#62 in TheIgors) is for roadmap and architecture, updated occasionally but not daily.
+
+**`/notethat` appends to today's slate.** Invoke when you want to preserve an idea, insight, or conversation fragment before it evaporates. The full note goes to a dated file in `~/.TheIgors/cc_channel/notes/`; a one-liner headline lands in today's slate so context-load picks it up next session. Depth is a judgment call — a sentence or a full conversation excerpt, whatever the idea needs.
 
 **Use `/compact preserve: [...]` at natural breakpoints.** Auto-compact fires at unpredictable moments. If you run it manually with explicit preservation instructions — open gaps, modified files, current hypothesis — the summary targets what matters instead of what's statistically prominent. In CLAUDE.md, a "Compact Instructions" section primes the summarizer for every auto-compact too. Both together mean context transitions don't lose the thread.
 
@@ -65,10 +73,13 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 ### The Daily Loop
 
-- Review open tickets against the next milestone
-- Discuss how they fit together; resolve open design questions (this may spawn new tickets)
-- Add anything else that surfaces
+Each day opens with a fresh slate file (`YYYYMMDD.slate.txt`). Context-load creates it if it doesn't exist.
+
+- `/context-load` — read today's slate, orient on active tickets and notes from prior session
+- Review open tickets; discuss how they fit together; resolve design questions (may spawn new tickets)
+- Add anything that surfaces; use `/notethat` to bookmark ideas mid-discussion
 - Finalize the plan and approve it
+- At day's end: `/day-close` syncs docs, creates a new GitHub Discussion for the day's record, and pushes any tickets missing GitHub issues
 
 ---
 
