@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-04-03
+DOC|decisions_log|v1|updated=2026-04-04
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -552,3 +552,7 @@ D303|cascade-end-to-end-bugs-fixed|done|Three bugs blocked D301 cascade: (1) get
 D304|slates-are-dailies|defined|Slates are daily work files at ~/.TheIgors/claudecode/YYYYMMDD.slate.txt — one per day, no numbering, no topic sections. Epics are permanent category tags on tickets. History is in dated files; queue is truth for what's pending.
 D305|context-load-tree-shape|updated|Context load tree: (1) today's dated slate — pending/in_progress only, (2) decisions_log.dsb tail-10 (recent decisions at BOTTOM, not top — fixed T-context-load-token-trim), (3) channel last 5, (4) session last-change, (5) what-you-have block listing skills+MCP+DB+design_docs pointers. Drop: sessions.md blob, gap_analysis blob, full MEMORY.md index. MEMORY.md becomes 20-line hot-facts only.
 D306|igor-queue-loop-fix|decided|adopt_top_queue_ticket filters worker=igor not worker=claude; run_coding_sprint calls run_pe_chain() directly instead of posting to channel for CC pickup
+D307|oscillatory-timing-tiers|implemented|Push sources declare TIMING_TIER (fast/medium/slow); run_background_sources() gates tier groups at 2s/30s/300s wall-clock — mirrors biological theta/beta/gamma cortex-BG loops
+D308|milieu-aware-salience|implemented|BasePushSource.milieu_scale(sal,urg): high arousal (>0.3) suppresses background salience; low arousal (<-0.2) boosts exploratory surfacing; urgency not scaled (criticality not mood)
+D309|costs-log-append-only|implemented|costs.log at ~/.TheIgors/logs/costs.log: append-only chronological record per inference call (ts|provider|model|tier|cost_usd|tokens_in|tokens_out|caller); query_costs_log(window_days) for daily/weekly totals
+D310|bg-noise-gate|implemented|IGOR_HABIT_NOISE_ENABLED (default off): epsilon-greedy Gaussian noise ±0.05 at 8% prob per habit per BG scoring turn — prevents winner-take-all lock-in; IGOR_SURPRISE_REWARD_ENABLED default flipped to true
