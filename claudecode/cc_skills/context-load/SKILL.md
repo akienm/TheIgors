@@ -54,13 +54,13 @@ The slate tells you:
 
 ---
 
-## Step 2 — Read decisions top 30
+## Step 2 — Read decisions hot window (last 10)
 
 ```bash
-head -30 ~/TheIgors/design_docs_for_igor/decisions_log.dsb
+tail -10 ~/TheIgors/design_docs_for_igor/decisions_log.dsb
 ```
 
-Recent decisions are at the top. Stop at 30 lines — that's the hot window.
+Recent decisions are appended at the BOTTOM. `tail -10` gives the 10 most recent decisions — the actual hot window. Skip the foundational D001-D030 block (already stable, derivable from CLAUDE.md).
 
 ---
 
