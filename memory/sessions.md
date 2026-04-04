@@ -1,3 +1,83 @@
+## Session 2026-04-03b
+**Theme**: Training: T-read-making-money — seed Igor voice + identity memories from Making Money
+**Decisions**: D307
+**Key changes**:
+- sprint: started T-read-making-money
+- sprint: closed T-read-making-money — 95 memories tagged + READING_MAKING_MONEY completion record
+- sprint: closed T-read-making-money — 18 Making Money FACTUAL memories tagged; completion record verified
+- sprint: closed T-read-making-money — verified 120/125 Making Money memories tagged; 5 real-world episodic correctly excluded
+- sprint: started T-read-igor-books-remaining
+- decided: D307 infrastructure/cognition separation — utility closet pattern. T-utility-closet added (Operations/M). T-mcp-primitive unblocked. bash→run_bash alias noted.
+- sprint: re-closed T-read-making-money — daemon timeout reset corrected; work verified done from 2026-04-03b
+- done: T-bash-tool-alias — bash→run_bash alias live in tools/registry.py
+- sprint: closed T-read-igor-books-remaining — 4 Discworld BOOK_ nodes tagged fiction+igor; 3 reading_list entries added; book_learner PG port gap noted
+- done: T-mcp-primitive — MCPCALL instruction live in node_executor + 4 tests
+- sprint: started T-basket-fork-sharing
+- done: T-utility-closet — utility_closet.sh live, tmux launch + self-install
+- done: T-post-channel-utility — _post_to_channel extracted to channel_post.py
+- done: T-or-model-auto-update + T-nightly-memory-count — both tools + habits seeded, 1670 tests pass
+- audit: 1670 pass, 5 dead code_refs ticketed (T-register-pe-habits), log rotation ticketed (T-log-rotation)
+**Next session**: 1. Review tonight's audit findings. 2. T-tree-traversal-review (use audit + hot_nodes/tail_heat data). 3. T-igor-as-programmer planning discussion (sprint+commit habits as matrix programs).
+**In-flight**: NONE — all tickets closed cleanly.
+
+## Session 2026-04-03a
+**Theme**: T-igor-as-programmer: PROC_PLAN + PROC_FILTER + PROC_PROBE habits + skills-update
+**Key changes**:
+- done: T-igor-skills-update — SECTION_CC_SKILLS added to capabilities_index.dsb
+- done: T-igor-plan-habit + T-igor-filter-habit + T-igor-probe-habit — pe_chain now has PLAN+FILTER+PROBE steps
+- done: T-habit-chunking — habit_chunker.py + CHUNK_ memories, D277 complete
+**In-flight**: NONE
+
+## Session 2026-04-02b
+**Theme**: Theme: T-multi-twm — fix READING_STEW/FACIA contaminating goal signal window
+**Decisions**: D304, D305, D306
+**Key changes**:
+- done: T-multi-twm — READING_STEW category='reading_stew', FACIA category='body.motor' kwarg fix
+- done: T-llm-tool-dispatch — [CODING SPRINT] detection forces cloud escalation + OR agentic loop for multi-step tool execution
+- done: fix run_coding_sprint() author='claude-code' — sprint was posting as igor so Igor ignored his own message; auto-trigger was silently failing
+- done: T-greeting-content-gate — PROC_GREETING conditions={max_complexity:low}+match_mode=both applied to DB; prevents greeting habit firing on substantive messages
+- done: T-goal-adopt-category — synced goal_adopt TWM category='goal'→'active_goal' for consistency with twm_get_active_goal()
+- decided: T-programming-engrams sub-ticketed (T-pe-basket through T-pe-close-loop) + T-basket-fork-sharing + T-tree-traversal-review. Basket = shared Python dict, fork reads parent + emits back, no copy-on-fork.
+- done: T-pe-entry-nodes — pe_chain.py ENTRY/CLAIM/READ_TICKET steps, PROC_PE_CHAIN seeded, 22 tests
+- done: T-pe-situate — SITUATE step in pe_chain, fast/slow path, 32 tests
+- done: T-pe-observe — two-pass grep+read OBSERVE step, 45 tests
+- done: T-pe-hypothesize — tier.2→structured edit JSON, parse+validate, 61 tests
+- done: T-pe-implement-test — IMPLEMENT/TEST steps, 71 tests total
+- done: T-programming-engrams epic — 7 sub-tickets complete, full PROC_CODE_A_TICKET chain wired and tested, code seeded to DB, 71+ tests passing
+- done: fixed pe_chain T-test-ticket loop — zombie pytest processes were writing to real channel via unmocked _post_to_channel in test_full_chain_with_situate_uses_required_files; added _post_to_channel+pe_test mocks; fixed pe_chain.py ISO timestamp; channel.py local-time display; 77 tests passing
+- done: T-pytest-zombie-cleanup — added pytest zombie cleanup step to sprint skill after test-fix
+- decided: T-deep-audit-parallel expanded to 11 specialists (added process/meta engineer, systems dynamics analyst, production SRE); liveliness question added to #3+#4; self-testing question added to #7; meta-questions added to synthesis step
+- done: T-deep-audit-parallel — built /deep-audit skill, 11 specialist panels, Haiku parallel + Sonnet synthesis
+- decided: D304+D305 — slates=dailies (YYYYMMDD.slate.txt), epics=categories; context-load tree redesigned; tickets T-slate-daily-files + T-context-load-token-audit queued
+- sprint: started T-slate-daily-files
+- sprint: closed T-slate-daily-files — dated slate files, local-time channel, pe_chain test fixes
+- sprint: closed T-context-load-token-audit — MEMORY.md 462→94 lines, context-load rewritten for D305 tree
+- decided: codes-himself roadmap order — ex5(T-phase-d-canonical) → T-goal-queue-consumer → T-refractory-period → T-homeostatic-setpoints → T-predictive-coding → T-programming-engrams-layer4. New: T-response-truncation (Igor mid-sentence cutoff). ACTIVE_GOAL slot already done in phase-d work.
+- sprint: closed T-phase-d-canonical ex5 — STORE_OBSERVE_RESULTS node in pe_chain, grep findings→FACTUAL memory
+- sprint: closed T-response-truncation — output_trainer prefix stripping fix, bad habit deleted from DB
+- sprint: closed T-goal-queue-consumer — already done, tools+habit+tests all exist
+- sprint: closed T-refractory-period — already done, basal_ganglia.py + test_refractory.py
+- sprint: closed T-homeostatic-setpoints — already done in milieu.py
+- sprint: closed T-predictive-coding — already done, D279 implemented
+- done: T-IGOR-DOCNODES-006 — freshness signal on docs_entries (content_hash + last_modified)
+- done: T-deadend-ack-filter — already implemented in main.py; _is_bare_ack() + _BARE_ACK_PATTERNS; tests in test_deadend_ack_filter.py
+- done: T-reading-completion-status — already implemented (book_learner READING_<hash> nodes, commit e580b4fc); status corrected
+- sprint: started T-programming-engrams-layer4
+- sprint: closed T-programming-engrams-layer4 — 5 layer4 TEMPLATE nodes + pe_run_bash + 133 tests
+- sprint: closed T-github-issue-field — github_issue field in cc_queue schema, set-github-issue command
+- sprint: closed T-closed-tickets-blob — cmd_done prepends to closed_tickets.txt
+- sprint: closed T-daily-slate-reset — context-load creates today slate if missing
+- sprint: closed T-daily-github-discussion — day-close creates new GH Discussion per day, slateclose updated
+- sprint: closed T-github-issues-sync — push-queue in github_sync.py, 35 issues created
+- fix: Igor queue loop — 2 bugs in ops.py (worker filter + run_pe_chain direct call)
+**Next session**: Next: T-igor-as-programmer — ticket PROC_PLAN + PROC_FILTER + PROC_PROBE habits + T-igor-skills-update; Igor needs restart to pick up queue fix
+**In-flight**: About to ticket and begin PROC_PLAN/PROC_FILTER/PROC_PROBE + skills update for Igor self-coding arc
+
+## Session 2026-04-02a
+**Theme**: T-twm-goal-slot + T-goal-close-habit + T-twm-relevance-decay
+**Next session**: Next: T-multi-twm (READING_STEW/FACIA contaminate goal signal window — blocks reliable cascade), T-llm-tool-dispatch (tier.2 generates intent text not tool call JSON — blocks Igor self-coding), observe Igor on next ticket
+**In-flight**: NONE — T-deadend-ack-filter verified in main.py, cascade end-to-end confirmed, all commits pushed
+
 ## Session 2026-04-01h
 **Theme**: Engram layer3 stdlib: T-layer3-parse-goal + T-layer3-situate + engram_language.md D298 update
 **Next session**: 1. T-programming-engrams layer 4 sketch. 2. Commit all layer 3 seeds + tests. 3. Seed layer 3 templates to live DB.
