@@ -17,3 +17,4 @@ change_request*.txt
 warm_context*.json
 benchmarks/results/
 ebook_candidates.md
+*.py2bak
