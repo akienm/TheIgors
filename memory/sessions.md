@@ -1,3 +1,71 @@
+## Session 2026-04-04b
+**Theme**: Sprint P1/P2 tickets — warm_context, main-loop exception, health endpoint, etc.
+**Key changes**:
+- sprint: started T-predictive-coding-revisit
+- sprint: closed T-predictive-coding-revisit — escalation topic extraction bug fixed, D279 review complete
+- sprint: closed T-basket-fork-sharing — already implemented, just needed ticket close
+- sprint: closed T-self-training-metrics — self_training_stats() + build_report section + /api/metrics exposure
+- sprint: closed T-containerize — Dockerfile + compose + deploy/igor-docker.sh (D235)
+- sprint: closed T-ebook-master-index — 3960 entries indexed across 4 trees
+- sprint: closed T-kindle-drm-pipeline — DeDRM Python 3 port done, pipeline verified
+- sprint: closed T-readings-ingest — 56 design sessions queued in reading_list
+- sprint: closed T-kindle-programming-books + T-read-making-money — 4 books queued in reading_list
+**Next session**: Next: review L-size tickets with Akien (T-neuroscience-engrams, T-igor-as-programmer, T-case-study-lessons-learned); Igor self-edit queue for remaining P2/P3 tickets
+**In-flight**: NONE
+
+## Session 2026-04-04a
+**Theme**: Commit T-situate-memory-lookup + sprint T-observe-pattern-expand / T-costs-log / T-escalation-stats
+**Key changes**:
+- sprint: started T-observe-pattern-expand
+- sprint: closed T-observe-pattern-expand — _CODE_EXPANSION + synonym expansion, 1683 tests pass
+- done: deep-audit — top finding: spreading activation disabled (cortex.py:1688, 1 line fix); affect loop missing; 10 panels synthesized
+- done: deep-audit Panel 11 — SRE: no outer try-except main loop, warm_context stale on crash, daemon threads unsupervised
+- ticketed: 20 deep-audit findings — T-bg-inhibition-timing, T-management-phrase-word-boundary, T-interpretive-edges-cascade, T-procedural-shared-cache, T-behavior-milieu-loop, T-main-loop-exception, T-warm-context-post-turn, T-cc-call-into-igor, T-restart-rate-limit, T-health-endpoint, T-daemon-supervisor-polling, T-goal-continuation-gate, T-self-test-wire, T-stochastic-habit-noise, T-connection-pool-resize, T-context-load-token-trim, T-learning-retrieval-signal, T-surprise-reward-enable, T-memory-tsvector-index, T-oscillatory-timing-tiers, T-milieu-source-aware-salience
+- sprint: started T-warm-context-post-turn
+- sprint: closed T-warm-context-post-turn — warm context saved post-turn, 1683 tests pass
+- sprint: started T-main-loop-exception
+- sprint: closed T-main-loop-exception — per-iteration crash guard, 1683 tests pass
+- sprint: started T-management-phrase-word-boundary
+- sprint: closed T-management-phrase-word-boundary — whole-word + refractory, 1684 tests pass
+- sprint: started T-interpretive-edges-cascade
+- sprint: closed T-interpretive-edges-cascade — CASCADE migrations m027-m033, 1684 tests pass
+- sprint: started T-restart-rate-limit
+- sprint: closed T-restart-rate-limit — crash loop detection in igor bash, 1684 tests pass
+- sprint: started T-connection-pool-resize
+- sprint: closed T-connection-pool-resize — pool 1→3/10→20, 1684 pass
+- sprint: started T-daemon-supervisor-polling
+- sprint: closed T-daemon-supervisor-polling — active watchdog, 1684 tests pass
+- sprint: started T-bg-inhibition-timing
+- sprint: closed T-bg-inhibition-timing — BG lateral inhibition now fires at score-time
+- sprint: started T-health-endpoint
+- sprint: closed T-health-endpoint — /health + /metrics liveness probes
+- sprint: started T-goal-continuation-gate
+- sprint: closed T-goal-continuation-gate — D259 gate + claim cap
+- sprint: started T-procedural-shared-cache
+- sprint: closed T-procedural-shared-cache — 30s TTL shared PROCEDURAL scan cache
+- sprint: started T-cc-call-into-igor
+- sprint: closed T-cc-call-into-igor — CC crash handler moved into Python
+- sprint: started T-memory-tsvector-index
+- sprint: closed T-memory-tsvector-index — GIN indexes + tsvector FACTUAL search
+- sprint: started T-learning-retrieval-signal
+- sprint: closed T-learning-retrieval-signal — retrieval success → WG reinforce
+- sprint: started T-behavior-milieu-loop
+- sprint: closed T-behavior-milieu-loop — action outcome → milieu affect feedback
+- sprint: started T-self-test-wire
+- sprint: closed T-self-test-wire — graph-native self-test + SelfTestSource daemon
+- sprint: started T-stochastic-habit-noise
+- sprint: closed T-stochastic-habit-noise — epsilon-greedy noise in BG scoring, gated by IGOR_HABIT_NOISE_ENABLED
+- sprint: closed T-context-load-token-trim — context-load now uses tail-10 (recent decisions at bottom)
+- sprint: closed T-surprise-reward-enable — IGOR_SURPRISE_REWARD_ENABLED now defaults true, INFO log for measurement
+- sprint: closed T-costs-log — costs.log appended per inference call, query_costs_log tool registered
+- sprint: closed T-escalation-stats — was already implemented, closed queue entry
+- sprint: closed T-gh-auth-check — commit skill + PROC_GIT_AUTH_CHECK habit + check_gh_auth tool
+- sprint: closed T-oscillatory-timing-tiers — hierarchical timing tiers fast/medium/slow in push_sources
+- sprint: closed T-milieu-source-aware-salience — milieu_scale() helper in BasePushSource, wired into MemorySurfacer+HeartbeatSource
+- sprint: closed T-ticket-skill — /ticket quick-capture skill written
+**Next session**: Next: T-self-training-metrics (dashboard), Training tickets (T-ebook-master-index, T-kindle-drm-pipeline), or T-basket-fork-sharing if Cognition
+**In-flight**: NONE — T-ticket-skill closed cleanly
+
 ## Session 2026-04-03b
 **Theme**: Training: T-read-making-money — seed Igor voice + identity memories from Making Money
 **Decisions**: D307
@@ -17,8 +85,8 @@
 - done: T-post-channel-utility — _post_to_channel extracted to channel_post.py
 - done: T-or-model-auto-update + T-nightly-memory-count — both tools + habits seeded, 1670 tests pass
 - audit: 1670 pass, 5 dead code_refs ticketed (T-register-pe-habits), log rotation ticketed (T-log-rotation)
-**Next session**: 1. Review tonight's audit findings. 2. T-tree-traversal-review (use audit + hot_nodes/tail_heat data). 3. T-igor-as-programmer planning discussion (sprint+commit habits as matrix programs).
-**In-flight**: NONE — all tickets closed cleanly.
+**Next session**: 1. Commit T-situate-memory-lookup (git broken this session — code on disk). 2. Sprint T-observe-pattern-expand + T-costs-log + T-escalation-stats. 3. Run /audit.
+**In-flight**: T-situate-memory-lookup: _situate_from_memory() written + tests, awaiting commit — git returning exit 128 all session for unknown reason.
 
 ## Session 2026-04-03a
 **Theme**: T-igor-as-programmer: PROC_PLAN + PROC_FILTER + PROC_PROBE habits + skills-update
