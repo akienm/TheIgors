@@ -117,6 +117,28 @@ while true; do
     # Refresh debug flag path in case IGOR_INSTANCE_ID changed after .env re-read.
     DEBUG_SESSION_FLAG="$RUNTIME_ROOT/$IGOR_INSTANCE_ID/debug_session.flag"
 
+    # T-restart-rate-limit: halt if 3+ restarts in 60s (crash loop detection).
+    # Appends current epoch second, prunes entries older than 60s, counts recent.
+    _restart_ts_file="$RUNTIME_ROOT/$IGOR_INSTANCE_ID/restart_timestamps.txt"
+    _now_sec=$(date +%s)
+    _cutoff=$((_now_sec - 60))
+    echo "$_now_sec" >> "$_restart_ts_file"
+    _recent=$(awk -v c="$_cutoff" '$1 >= c' "$_restart_ts_file" 2>/dev/null | wc -l | tr -d ' ')
+    awk -v c="$_cutoff" '$1 >= c' "$_restart_ts_file" > "${_restart_ts_file}.tmp" 2>/dev/null \
+        && mv "${_restart_ts_file}.tmp" "$_restart_ts_file"
+    if [ "${_recent:-0}" -ge 4 ]; then
+        {
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "CRITICAL: Igor crash loop — ${_recent} restarts in 60s"
+            echo "Time: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            echo "Instance: $IGOR_INSTANCE_ID"
+            echo "Halting restart loop. Manual intervention required."
+            echo ""
+        } >> "$ALERTS_FILE"
+        echo "[igor] CRITICAL: crash loop (${_recent} restarts in 60s). Halting. Check $ALERTS_FILE." >&2
+        exit 1
+    fi
+
     # Kill any stale igor.main processes left over from a prior crash.
     # pgrep returns PIDs of all matching processes; exclude current shell's children
     # by comparing against $$. fuser frees the web port if something else holds it.
