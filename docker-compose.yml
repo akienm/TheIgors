@@ -1,0 +1,101 @@
+# docker-compose.yml — Igor AI Agent stack (D235)
+#
+# Services:
+#   igor     — Igor agent (Python 3.12)
+#   postgres — PostgreSQL 16 (persistent DB)
+#   ollama   — Ollama local inference (sibling container)
+#
+# Usage:
+#   cp ~/.TheIgors/igor_wild_0001/.env .env.igor   # copy instance .env
+#   docker compose up -d
+#
+# Runtime data: the host's ~/.TheIgors is mounted at /data inside the container.
+# DB data: persisted in a named Docker volume (postgres_data).
+# Ollama models: persisted in a named Docker volume (ollama_data).
+
+services:
+
+  # ── Igor agent ──────────────────────────────────────────────────────────────
+  igor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: igor:latest
+    container_name: igor_wild_0001
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env.igor               # host copy of ~/.TheIgors/igor_wild_0001/.env
+    environment:
+      IGOR_RUNTIME_ROOT: /data
+      IGOR_INSTANCE_ID: igor_wild_0001
+      # DB points to sibling postgres service (overrides .env.igor if set there)
+      IGOR_HOME_DB_URL: postgresql://igor:${POSTGRES_PASSWORD:-choose_a_password}@postgres:5432/igor_wild_0001
+    volumes:
+      # Runtime data: warm context, logs, inbox, etc.
+      - ${IGOR_RUNTIME_ROOT:-~/.TheIgors}:/data
+      # Source repo (live-reload for development; remove for production)
+      - ./wild_igor:/app/wild_igor:ro
+    ports:
+      - "${IGOR_WEB_PORT:-8080}:8080"
+    # Chrome shm (D235: browser_use needs ≥2g shared memory to avoid tab crashes)
+    shm_size: "2g"
+    networks:
+      - igor_net
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 5
+
+  # ── PostgreSQL ───────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: igor_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: igor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-choose_a_password}
+      POSTGRES_DB: igor_wild_0001
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - igor_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U igor -d igor_wild_0001"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Ollama ───────────────────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: igor_ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - igor_net
+    # Uncomment to expose Ollama outside the stack (e.g. for swarm nodes):
+    # ports:
+    #   - "11434:11434"
+    # GPU passthrough (NVIDIA):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  postgres_data:
+  ollama_data:
+
+networks:
+  igor_net:
+    driver: bridge
