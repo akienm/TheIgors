@@ -9,7 +9,21 @@ One commit = run tests → audit → stage → commit → pull → push. Never p
 
 ---
 
-## Step 0 — Sync docs DB if any .dsb files are staged
+## Step 0a — Check gh auth token (T-gh-auth-check)
+
+```bash
+gh auth status 2>&1
+```
+
+If output contains "not logged in", "Token invalid", "401", or "authentication":
+**STOP** — gh token is expired. Tell Akien to run `gh auth login` before proceeding.
+This prevents git push from silently prompting for a password that fails with 2FA.
+
+Non-blocking if `gh` is not installed.
+
+---
+
+## Step 0b — Sync docs DB if any .dsb files are staged
 
 ```bash
 git diff --cached --name-only | grep -q '\.dsb$' && \
