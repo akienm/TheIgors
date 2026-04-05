@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-04-04
+DOC|decisions_log|v1|updated=2026-04-05
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -556,3 +556,6 @@ D307|oscillatory-timing-tiers|implemented|Push sources declare TIMING_TIER (fast
 D308|milieu-aware-salience|implemented|BasePushSource.milieu_scale(sal,urg): high arousal (>0.3) suppresses background salience; low arousal (<-0.2) boosts exploratory surfacing; urgency not scaled (criticality not mood)
 D309|costs-log-append-only|implemented|costs.log at ~/.TheIgors/logs/costs.log: append-only chronological record per inference call (ts|provider|model|tier|cost_usd|tokens_in|tokens_out|caller); query_costs_log(window_days) for daily/weekly totals
 D310|bg-noise-gate|implemented|IGOR_HABIT_NOISE_ENABLED (default off): epsilon-greedy Gaussian noise ±0.05 at 8% prob per habit per BG scoring turn — prevents winner-take-all lock-in; IGOR_SURPRISE_REWARD_ENABLED default flipped to true
+D311|forkif-basket-semantics|decided|FORKIF creates new empty basket; emit lines in source node before FORKIF write INTO child basket (selective transfer). BRANCHIF keeps existing basket intact. Enables clean REPLAN loops: fork fresh basket, emit ticket_id+attempt_history, discard failed-attempt state.
+D311|forkif-basket-semantics|revised|FORKIF keeps shared-basket (T-basket-fork-sharing preserved). New opcode SPAWNIF: creates empty basket for child cursor; emit lines before SPAWNIF seed child basket selectively. BRANCHIF unchanged. FORKIF=composition/sub-skills; SPAWNIF=clean-restart with carry; BRANCHIF=redirect.
+D312|goal-continuation-autonomy|implemented|Removed D259 human-activity gate from run_goal_continuation(); PE chain uses Ollama only — no OR spend. PROC_QUEUE_DRAIN adopts worker=igor tickets autonomously; PROC_CODING_SPRINT fires when GOAL_READY in TWM; full loop runs without human presence.
