@@ -1286,7 +1286,7 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 
 ---
 
-### Session 2026-04-04d — Thread continuity, habit inhibition, swarm shutdown, audit fixes
+### Session 2026-04-04d — Thread continuity, deferred self-tasks, skill engrams, predictive modeling
 
 **Gaps closed:**
 
@@ -1299,6 +1299,14 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **G-AUDIT-IMPORT1 (closed)**: Three tools (`git_auth_check`, `thread_anchor`, `inhibition_seeder`) were implemented and registered in their own files but never added to `tools/__init__.py` — the file that triggers all registrations at import. All three were dead code from Igor's perspective. Fix: post-audit import additions.
 
 - **G-TOOL-LEAK1 (closed)**: Raw tool results (`[run_bash result: {...}]`, `[check_process] NOT_RUNNING|...`) were reaching the user-facing channel. Fix: `_is_raw_tool_leak()` filter at web_server send gate in main.py.
+
+- **G-DEFERRED-CONTEXT1 (closed)**: Igor was single-pass — if he diagnosed a context gap mid-turn, he couldn't fetch the data and re-enter the same turn. Fix: T-igor-deferred-self-tasks — `DEFERRED_TASK|type|payload` lines emitted in reply, stripped before user sees them, dispatched as background jobs, results land in TWM before next turn. Types: memory_search, twm_read, ring_read, tool_call, note. Format in system_prompt.py Layer 1b permanently.
+
+- **G-SKILL-AS-CODE1 (closed)**: Skills were English prose only — Igor understood them as intent but couldn't execute them structurally. Filter skill was manual prompt pattern, not a runnable node. Fix: T-skill-to-engram-filter (filter skill → SKILL_FILTER_ENTRY engram + PROC_INVOKE_FILTER habit; run_filter tool registered) + T-skill-to-engram-generalise (skill_importer.py: bash blocks → MCPCALL run_bash, /skill-refs → FORKIF, hard rules + prose → data fields; import_all_skills() seeded all 21 skills as SKILL_{NAME}_ENTRY Memory nodes).
+
+- **G-PREDICTION-REWARD1 (closed)**: Deferred prediction notes (DEFERRED_TASK|note|prediction:...) had no comparison mechanism — Igor emitted predictions into the void with no feedback loop. Fix: T-predictive-self-modeling — `evaluate_deferred_predictions()` scans TWM for deferred_prediction vs deferred_self_task pairs, Jaccard word-token overlap (threshold 0.15), MATCH fires `milieu.ingest_resolution_reward(score*2.0 capped 0.8)` + PREDICTION_MATCH ring, MISMATCH fires PREDICTION_MISMATCH ring → NE surprise path. Called from `_announce_completed_jobs` in main.py.
+
+- **G-PG-CURSOR1 (closed)**: `read_thread_anchor()` crashed with `_PGConnWrapper has no attribute 'cursor'`. Root cause: `_PGConnWrapper` IS the cursor layer — exposes `.execute()` and `.fetchall()` directly. Code called `.cursor()` (psycopg2 pattern) instead of directly calling execute. Fix: T-thread-anchor-pg-conn-fix — one-line change in thread_anchor.py.
 
 **New gaps (open):**
 

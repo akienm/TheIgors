@@ -3,7 +3,12 @@
 **Key changes**:
 - sprint: closed T-thread-to-fallthrough — thread anchor write in main.py + read in base._build_session_context()
 - sprint: fixed 5 tickets — T-close-task-tool, T-inhibition-habit-seeder, T-stop-swarm-engram, epic-polish, DAEMON_DEAD boot-check false positive
-**Next session**: Next: review design for T-igor-as-programmer (L) — Igor runs full dev cycle as habit programs. Also T-neuroscience-engrams, T-case-study-lessons-learned need Akien review. Budget: moving to $100/mo plan.
+- sprint: closed T-igor-deferred-self-tasks — deferred self-task pipeline + 21 tests
+- sprint: closed T-skill-to-engram-filter — filter skill as runnable engram, 30 tests
+- sprint: closed T-skill-to-engram-generalise — generic skill importer, 21 skills seeded, 32 tests
+- sprint: closed T-thread-anchor-pg-conn-fix — one-line _PGConnWrapper cursor fix
+- sprint: closed T-predictive-self-modeling — prediction→reward loop, 19 tests
+**Next session**: Design review: T-igor-as-programmer (L — Igor runs full dev cycle as habit programs). Also T-neuroscience-engrams, T-case-study-lessons-learned (both L, need Akien review). Budget: moving to $100/mo plan.
 **In-flight**: NONE
 
 ## Session 2026-04-04c

@@ -1,4 +1,4 @@
-DOC|gap_analysis|v1|updated=2026-03-29c
+DOC|gap_analysis|v1|updated=2026-04-04d
 META|purpose=open gaps + why open + what triggers closing|load=before self-edit or architecture change
 META|see_also=decisions_log.dsb (settled decisions), architecture_root.dsb
 
@@ -599,4 +599,24 @@ G-AUDIT-IMPORT1|three-tools-missing-from-init|closed
 G-TOOL-LEAK1|raw-tool-results-reaching-channel|closed
   was=[run_bash result: {...}] and [check_process] NOT_RUNNING|... formats reaching user channel
   fix=_is_raw_tool_leak() filter at main.py channel send gate; suppressed with INFO log
+  closed=2026-04-04d
+
+G-PG-CURSOR1|pgconnwrapper-cursor-method-missing|closed
+  was=read_thread_anchor() crashed: _PGConnWrapper has no attribute 'cursor' — wrong psycopg2 pattern
+  fix=_PGConnWrapper IS the cursor; call .execute()/.fetchall() directly; T-thread-anchor-pg-conn-fix
+  closed=2026-04-04d
+
+G-DEFERRED-CONTEXT1|igor-single-pass-no-context-prefetch|closed
+  was=Igor diagnosed context gaps mid-turn but couldn't fetch data and re-enter same turn
+  fix=DEFERRED_TASK|type|payload lines in reply → stripped from output → background jobs → TWM before next turn; T-igor-deferred-self-tasks
+  closed=2026-04-04d
+
+G-SKILL-AS-CODE1|skills-prose-only-not-runnable-engrams|closed
+  was=skills were English intent only; no structural execution path; filter was manual prompt pattern
+  fix=skill_importer.py: bash→MCPCALL, /refs→FORKIF, rules→data fields; 21 skills seeded as SKILL_*_ENTRY nodes; T-skill-to-engram-generalise
+  closed=2026-04-04d
+
+G-PREDICTION-REWARD1|prediction-notes-no-comparison-loop|closed
+  was=DEFERRED_TASK|note|prediction:... emitted into void; no feedback; no reward signal for accuracy
+  fix=evaluate_deferred_predictions(): Jaccard overlap (threshold=0.15); MATCH→milieu reward; MISMATCH→NE surprise ring; T-predictive-self-modeling
   closed=2026-04-04d
