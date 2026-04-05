@@ -8,7 +8,10 @@
 - sprint: closed T-skill-to-engram-generalise — generic skill importer, 21 skills seeded, 32 tests
 - sprint: closed T-thread-anchor-pg-conn-fix — one-line _PGConnWrapper cursor fix
 - sprint: closed T-predictive-self-modeling — prediction→reward loop, 19 tests
-**Next session**: Design review: T-igor-as-programmer (L — Igor runs full dev cycle as habit programs). Also T-neuroscience-engrams, T-case-study-lessons-learned (both L, need Akien review). Budget: moving to $100/mo plan.
+- sprint: closed T-memory-search-tool + T-find-tool-fuzzy — sync memory lookup + fuzzy tool discovery in memory_query.py
+- sprint: closed T-memory-full-text — raise narrative truncation 500→2000 in consolidation paths
+- fix: T-slow-query-narrative-tsvector — m037 GIN index on narrative tsvector, 204ms→0.16ms
+**Next session**: Design review: T-igor-as-programmer (L), T-neuroscience-engrams (L), T-case-study-lessons-learned (L). Budget: 00/mo plan switch this weekend.
 **In-flight**: NONE
 
 ## Session 2026-04-04c

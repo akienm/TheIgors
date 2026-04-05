@@ -620,3 +620,23 @@ G-PREDICTION-REWARD1|prediction-notes-no-comparison-loop|closed
   was=DEFERRED_TASK|note|prediction:... emitted into void; no feedback; no reward signal for accuracy
   fix=evaluate_deferred_predictions(): Jaccard overlap (threshold=0.15); MATCH→milieu reward; MISMATCH→NE surprise ring; T-predictive-self-modeling
   closed=2026-04-04d
+
+G-SYNC-TOOL1|no-sync-in-turn-memory-search|closed
+  was=Igor had no synchronous tool to search memories; only DEFERRED_TASK path (costs extra turn)
+  fix=memory_search(query,limit=5) registered in memory_query.py; calls cortex.search() directly; T-memory-search-tool
+  closed=2026-04-05a
+
+G-TOOL-NAME1|igor-hallucinated-wrong-tool-names|closed
+  was=Igor called search_memory (wrong); tool is memory_search; no approximate-name resolution existed
+  fix=find_tool(query,limit=5) in memory_query.py; keyword overlap + underscore-splitting against names+descriptions; T-find-tool-fuzzy
+  closed=2026-04-05a
+
+G-MEM-TRUNC1|consolidation-narrative-truncated-at-500|closed
+  was=TWM promotion stored content[:500]; extraction LLM saw m.narrative[:200] — long insights cut mid-sentence
+  fix=raised to content[:2000] in narrative_engine.py; m.narrative[:400] in consolidation.py; T-memory-full-text
+  closed=2026-04-05a
+
+G-SLOW-QUERY1|tsvector-gin-index-on-wrong-column|closed
+  was=factual-kw-supplement ran to_tsvector on every FACTUAL row (174ms); m034 GIN was on payload not narrative
+  fix=m037_memories_narrative_tsvector_gin: GIN on to_tsvector('english',narrative); 204ms→0.16ms; T-slow-query-narrative-tsvector
+  closed=2026-04-05a

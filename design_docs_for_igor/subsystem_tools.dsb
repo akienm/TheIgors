@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-04-04d
+DOC|subsystem_tools|v1|updated=2026-04-05a
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -101,4 +101,5 @@ OUTPUT_TRAINING|tools/output_trainer.py; run_output_training_pass() — scans cl
 DEFERRED_SELF_TASK|tools/deferred_self_task.py; parse_deferred_tasks(text)→list[dict]; strip_deferred_tasks(text)→text; dispatch_deferred_task(task,cortex,job_manager,completions_queue)→job_id; push_deferred_result_to_twm(cortex,job_id,title,result)→source=deferred_prediction|deferred_self_task; evaluate_deferred_predictions(cortex)→Jaccard comparison, milieu reward on MATCH, PREDICTION_MISMATCH ring on MISMATCH; T-igor-deferred-self-tasks + T-predictive-self-modeling; DEFERRED_TASK|type|payload format in system_prompt.py Layer 1b; types: memory_search,twm_read,ring_read,tool_call,note
 SKILL_FILTER|tools/skill_filter.py; run_filter(plan_text)→"FILTER RESULT: PASS|FAIL\n<checks>"; checks: inertia, tests, forensic_logging, scope, rollback; PROC_INVOKE_FILTER habit; SKILL_FILTER_ENTRY engram node; T-skill-to-engram-filter
 SKILL_IMPORTER|tools/skill_importer.py; import_skill(skill_name,skills_dir?)→upserts SKILL_{NAME}_ENTRY Memory node; _parse_frontmatter/_split_steps/_extract_bash_blocks/_extract_skill_refs/_extract_hard_rules/_build_payload; payload.run_cell: MCPCALL+FORKIF+ENDIF; import_all_skills()→all 21 skills; T-skill-to-engram-generalise
+MEMORY_QUERY|tools/memory_query.py; memory_search(query,limit=5)→sync cortex.search() callable in-turn (no deferred task needed); find_tool(query,limit=5)→keyword overlap with underscore-splitting against tool names+descriptions, resolves approximate names (e.g. "search memory"→memory_search); also: list_facia_memories(), get_tool_registry_report(filter_text); T-memory-search-tool + T-find-tool-fuzzy 2026-04-05a
 DECISIONS|D030,D204

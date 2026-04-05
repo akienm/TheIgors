@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-03-30
+DOC|subsystem_memory|v1|updated=2026-04-05a
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py,tools/memory_sync.py,tools/trail_inspector.py
 
@@ -47,7 +47,7 @@ KEY_METHODS|
   memory.payload|D260: optional dict carrying engram program cells + data fields; cell named by triggers.values(); NARRATIVE=embedding source; data fields=constants this node brings; executor touches only cell fields
   memory.embedding_text|D260: property; returns payload.NARRATIVE if present, else narrative; canonical embedding source for engram nodes
   cortex._habit_cache|#260: Optional[list]; populated on first get_habits(); invalidated by store() when is_habit=True; session-lifetime cache; G-DB-PROXY1: metadata ? 'trigger' crashes (db_proxy blanket ?→%s hits jsonb operator); must use jsonb_exists(metadata,'trigger') instead
-  cortex._migrations table|#261: created in _init_db(); meaning_to_me_layer_tag marker prevents meaning_to_me UPDATE running every restart (was 80ms LIKE scan per boot)
+  cortex._migrations table|#261: created in _init_db(); meaning_to_me_layer_tag marker prevents meaning_to_me UPDATE running every restart (was 80ms LIKE scan per boot); m037_memories_narrative_tsvector_gin added 2026-04-05a: GIN on to_tsvector('english',narrative); fixes 204ms→0.16ms factual-kw-supplement queries (T-slow-query-narrative-tsvector)
   cortex.list_set/list_get/list_remove/list_all|D095: lists table; cross-type enumeration; PRIMARY KEY(list_name,item_key,instance_id); instance_id=""=global; idx_lists_name index; seeded: Registry:Tags, lists.projects
   G-MEM1|D091: MemoryStore epic — consolidate cache/_MEM_COLS_NO_EMBED/boot scans/migration flags into MemoryStore data layer; Cortex = reasoning layer; mirrors db_proxy/inference_gateway split; #262
   db_proxy.get_metrics()|latency p50/p95/p99, slow count, error count

@@ -1313,3 +1313,23 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - None.
 
 *Updated: 2026-04-04 by Claude Code.*
+
+---
+
+### Session 2026-04-05a — Memory search tools, narrative limits, slow query fix
+
+**Gaps closed:**
+
+- **G-SYNC-TOOL1 (closed)**: Igor had no synchronous in-turn way to search his own memories. The only path was `DEFERRED_TASK|memory_search|<query>` which costs an extra turn and returns nothing until next invocation. Fix: T-memory-search-tool — registered `memory_search(query, limit=5)` tool in `memory_query.py` calling `cortex.search()` directly. Result available immediately in the same turn.
+
+- **G-TOOL-NAME1 (closed)**: Igor hallucinated wrong tool names (called `search_memory`, tool is `memory_search`). No mechanism existed to resolve approximate names. Fix: T-find-tool-fuzzy — registered `find_tool(query, limit=5)` in `memory_query.py` — keyword overlap with underscore-splitting against all tool names+descriptions; `find_tool("search memory")` → `memory_search`. Underscore split is critical: `test_alpha_tool` tokenises as ["test","alpha","tool"] not one token.
+
+- **G-MEM-TRUNC1 (closed)**: TWM promotion in `_deep_consolidation_pass` step 1 stored `content[:500]` — long channel messages (MSG| entries, insights) were truncated mid-sentence. `consolidation.py` fed only `m.narrative[:200]` per cluster member to the extraction LLM, losing context. Fix: T-memory-full-text — raised TWM promotion limit to `content[:2000]`, extraction snippet to `m.narrative[:400]`. No schema change needed (narrative is TEXT).
+
+- **G-SLOW-QUERY1 (closed)**: `cortex.search()` factual-kw-supplement ran `to_tsvector('english', narrative) @@ plainto_tsquery(...)` at 174ms per call — Postgres evaluated tsvector on every FACTUAL row (~18k rows) because the GIN index (`m034`) was on `payload`, not `narrative`. Fix: T-slow-query-narrative-tsvector — added `m037_memories_narrative_tsvector_gin` migration (`CREATE INDEX ON memories USING GIN (to_tsvector('english', narrative))`). Applied to live DB. Result: 204ms → 0.16ms.
+
+**New gaps (open):**
+
+- None.
+
+*Updated: 2026-04-05 by Claude Code.*
