@@ -1,3 +1,21 @@
+## Session 2026-04-04d
+**Theme**: Theme: T-thread-to-fallthrough design and sprint
+**Key changes**:
+- sprint: closed T-thread-to-fallthrough — thread anchor write in main.py + read in base._build_session_context()
+- sprint: fixed 5 tickets — T-close-task-tool, T-inhibition-habit-seeder, T-stop-swarm-engram, epic-polish, DAEMON_DEAD boot-check false positive
+**Next session**: Next: review design for T-igor-as-programmer (L) — Igor runs full dev cycle as habit programs. Also T-neuroscience-engrams, T-case-study-lessons-learned need Akien review. Budget: moving to $100/mo plan.
+**In-flight**: NONE
+
+## Session 2026-04-04c
+**Theme**: Fixit: git auth blocker, thread-to-fallthrough architecture
+**Key changes**:
+- sprint: started T-git-auth-blocker
+- sprint: closed T-git-auth-blocker — auth hiccup resolved, code committed
+- sprint: closed T-commit-situate-memory — already committed, no action
+- sprint: closed T-git-auth-triage-habit — already implemented, habit seeded
+**Next session**: Next: plan and sprint T-thread-to-fallthrough (L-size, needs Akien review). Queue drained of S/M tickets.
+**In-flight**: NONE
+
 ## Session 2026-04-04b
 **Theme**: Sprint P1/P2 tickets — warm_context, main-loop exception, health endpoint, etc.
 **Key changes**:

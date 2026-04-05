@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-04-04b
+DOC|subsystem_tools|v1|updated=2026-04-04d
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -13,8 +13,8 @@ REGISTRY|
   class=Tool(name,description,parameters,fn)|execute(**kwargs)→str
   to_anthropic_schema()|to_openai_schema()|to_text_description()
   registry.execute(name,kwargs)|returns error string on unknown tool (never raises)
-  load=tools/__init__.py imports all modules; hot_reload.py added 2026-03-13; stale_task_reaper added 2026-03-29c (was missing — PROC_STALE_TASK_REAPER dead code_ref fixed)
-  tool_count=185 (2026-03-29c)
+  load=tools/__init__.py imports all modules; hot_reload.py added 2026-03-13; stale_task_reaper added 2026-03-29c; git_auth_check+thread_anchor+inhibition_seeder added 2026-04-04d (were missing — found by audit dead code_ref check)
+  tool_count=218 (2026-04-04d)
 
 KEY_TOOLS|
   self_edit|patch_source_file(preferred),edit_source_file|gate=IGOR_SELF_EDIT_ENABLED|auto-commit+push
@@ -90,7 +90,12 @@ KNOWN_FAILURES|F007(schema-type-None),F012(stale-CIFS)
 // browser discovery fixed 2026-03-14e: task= → task_description=; json.loads(result); _ensure_virtual_display() in browser.py; pyvirtualdisplay in venv
 // browser fully working 2026-03-14g: upgraded to 0.12.2; gpt-4o-mini LLM; Gemini navigation confirmed
 // G-BRW1 open: CC bridge fires PROC_GREETING for action requests at tier.2; workaround=call learn_about() directly from venv
-CLUSTER_SSH|tools/cluster_ssh.py; ssh_exec(machine,command)+cluster_status()+ssh_exec_all(windows_cmd,linux_cmd)+update_swarm(); D204
+CLUSTER_SSH|tools/cluster_ssh.py; ssh_exec(machine,command)+cluster_status()+ssh_exec_all(windows_cmd,linux_cmd)+update_swarm()+stop_swarm(); D204
+  stop_swarm=drops exit.flag on all online remote machines via SSH, then local; PROC_STOP_SWARM habit seeded (trigger=stop swarm|shut down all instances|swarm stop); exit.flag→code 0 exit, bash wrapper does NOT restart
+GIT_AUTH_CHECK|tools/git_auth_check.py; check_gh_auth()→runs 'gh auth status', returns OK or warning+remediation; PROC_GIT_AUTH_CHECK habit triggers on git push patterns; T-gh-auth-check; note: was missing from __init__.py until 2026-04-04d audit fix
+THREAD_ANCHOR|tools/thread_anchor.py; write_thread_anchor(cortex,user_input,response_text,intent,turn_n)→EPISODIC memory with metadata.thread_anchor=True; read_thread_anchor(cortex,limit=3)→chronological narrative block; T-thread-to-fallthrough; called in main.py post-turn; read in base._build_session_context() first-before everything else
+INHIBITION_SEEDER|tools/inhibition_seeder.py; run_inhibition_seed_pass()→seeds twm_ttl_seconds on 10 PROC_ habits (300s-3600s); enables BG refractory suppression to prevent rapid re-fire; seeded habits: PROC_GOAL_CONTINUATION,PROC_BOREDOM_TRIGGER,PROC_SELF_TRAINING,PROC_STALE_TASK_REAPER,PROC_GIT_AUTH_CHECK,PROC_MEMORY_COUNT_SNAPSHOT,PROC_DISK_USAGE_CHECK,PROC_QUEUE_DRAIN,PROC_CHUNK_INSPECTOR,PROC_FLUSH_HABIT_CACHE
+CLOSE_TASK|tools/ops.py; close_task_by_name(text)→strips close-phrases, Phase1 exact substring in EPISODIC+GOAL, Phase2 cortex.search() fallback, marks status=closed+closed_at+closed_by; PROC_CLOSE_TASK habit wired
 SELF_TRAINING|tools/self_trainer.py; run_self_training_pass() — scans interaction.YYYYMMDD.log, extracts knowledge gaps from cloud turns (cost>threshold, input>MIN_LEN), deposits FACTUAL memories; habit PROC_SELF_TRAINING fires every 30min via SchedulerSource; T-self-training-loop
 OUTPUT_TRAINING|tools/output_trainer.py; run_output_training_pass() — scans cloud turns (short input 10-80 chars, response<200 chars), seeds RESPONSE habits (tier.1 no-inference); dedup=TRIGGER_OVERLAP_DEDUP(3) tokens; habit PROC_OUTPUT_TRAINING fires every 45min; T-output-trainer 2026-03-26e
 DECISIONS|D030,D204

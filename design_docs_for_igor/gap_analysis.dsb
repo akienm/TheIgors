@@ -575,3 +575,28 @@ G-ENGRAM-CURSOR1|engram-cursor-traversal-not-wired|open
   was=BRANCHIF/FORKIF return next_node/spawned in ExecutionResult; main.py logs to ring_memory but does not load+execute next node
   needs=cursor loop in main.py or separate cursor_runner; design choice: inline vs. daemon cursor executor
   opened=2026-03-30 during D260/D261 implementation
+
+G-THREAD-PERSIST1|thread-continuity-across-context-trim|closed
+  was=G-THREAD-BUFFER1 TWM injection lost on context trim; anaphoric reference worked turn-to-turn but not across compact boundaries
+  fix=T-thread-to-fallthrough: write_thread_anchor() EPISODIC post-turn; read_thread_anchor() first in _build_session_context(); recency-queried not semantic; orientation before goal before ring
+  closed=2026-04-04d
+
+G-HABIT-INHIBITION1|proc-habits-missing-twm-ttl|closed
+  was=10 PROC_ habits lacked twm_ttl_seconds; BG refractory existed but never applied; rapid re-fire possible
+  fix=T-inhibition-habit-seeder: inhibition_seeder.py seeds 300s-3600s TTLs on 10 habits
+  closed=2026-04-04d
+
+G-DAEMON-ONESHOT1|boot-check-daemon-dead-false-positive|closed
+  was=boot-check thread completed in ~5s; supervisor poll logged DAEMON_DEAD non-critical (false alarm)
+  fix=one_shot=True param on DaemonSupervisor.register(); poll loop skips death alert for one-shot threads
+  closed=2026-04-04d
+
+G-AUDIT-IMPORT1|three-tools-missing-from-init|closed
+  was=git_auth_check+thread_anchor+inhibition_seeder implemented but not in tools/__init__.py → dead code
+  fix=added all three to __init__.py imports; found by habit-health audit check
+  closed=2026-04-04d
+
+G-TOOL-LEAK1|raw-tool-results-reaching-channel|closed
+  was=[run_bash result: {...}] and [check_process] NOT_RUNNING|... formats reaching user channel
+  fix=_is_raw_tool_leak() filter at main.py channel send gate; suppressed with INFO log
+  closed=2026-04-04d

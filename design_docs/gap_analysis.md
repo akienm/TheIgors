@@ -1283,3 +1283,25 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **G-ENGRAM-CURSOR1**: Engram BRANCHIF/FORKIF cursors are logged to ring_memory but not actually traversed — next_node/spawned are returned in ExecutionResult but the dispatcher in main.py doesn't follow them. Full cursor execution (loading next node, re-entering execute_node) is not yet wired. Design needed: cursor loop in main.py vs. separate cursor_runner.
 
 *Updated: 2026-03-30 by Claude Code.*
+
+---
+
+### Session 2026-04-04d — Thread continuity, habit inhibition, swarm shutdown, audit fixes
+
+**Gaps closed:**
+
+- **G-THREAD-PERSIST1 (closed)**: G-THREAD-BUFFER1 (closed 2026-03-30b) added TWM turn injection, but this was lost on context trim. New gap: thread state didn't survive context window pruning — anaphoric reference worked turn-to-turn but not across compact/trim boundaries. Fix: T-thread-to-fallthrough — `write_thread_anchor()` deposits EPISODIC memory (metadata.thread_anchor=True) post-turn; `read_thread_anchor()` queries by recency (not semantic similarity) and injects chronological block as FIRST entry in `base._build_session_context()`. Orientation before goal before urgency before ring — continuity survives any trim.
+
+- **G-HABIT-INHIBITION1 (closed)**: 10 PROC_ habits (PROC_GOAL_CONTINUATION, PROC_BOREDOM_TRIGGER, PROC_SELF_TRAINING, PROC_STALE_TASK_REAPER, etc.) lacked `twm_ttl_seconds` — BG refractory mechanism existed but was never applied to these habits, allowing rapid re-fire. Fix: T-inhibition-habit-seeder — `inhibition_seeder.py` seeds appropriate TTLs (300s-3600s) into all 10 habits.
+
+- **G-DAEMON-ONESHOT1 (closed)**: `boot_check` daemon thread completed normally in ~5s and triggered `DAEMON_DEAD non-critical thread boot-check died` in the supervisor poll loop. Root cause: no concept of "one-shot" threads that naturally exit after task completion. Fix: `one_shot=True` parameter on `DaemonSupervisor.register()` — poll loop silently skips death alerts for one-shot threads.
+
+- **G-AUDIT-IMPORT1 (closed)**: Three tools (`git_auth_check`, `thread_anchor`, `inhibition_seeder`) were implemented and registered in their own files but never added to `tools/__init__.py` — the file that triggers all registrations at import. All three were dead code from Igor's perspective. Fix: post-audit import additions.
+
+- **G-TOOL-LEAK1 (closed)**: Raw tool results (`[run_bash result: {...}]`, `[check_process] NOT_RUNNING|...`) were reaching the user-facing channel. Fix: `_is_raw_tool_leak()` filter at web_server send gate in main.py.
+
+**New gaps (open):**
+
+- None.
+
+*Updated: 2026-04-04 by Claude Code.*

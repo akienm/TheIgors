@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-04-04b
+DOC|subsystem_cognition|v1|updated=2026-04-04d
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,cognition/emit_channels.py,cognition/node_executor.py,tools/traversal_context.py,tools/os_primitives.py
 
@@ -156,6 +156,19 @@ EMIT_CHANNELS|cognition/emit_channels.py|added=2026-03-30|D260
   channels=basket(write trail state) | emotional_milieu(valence/arousal/dominance; supports "+0.1" delta) | cognitive_milieu(TWM push via _cortex in basket) | console(stdout debug) | web(POST /api/emit) | discord(stub)
   registry=singleton EmitChannelRegistry; get_registry() lazy-init; all 6 registered at boot
   basket_channel=bidirectional; closes the loop — EMITIF can write back to the trail basket
+
+DAEMON_SUPERVISOR|cognition/daemon_supervisor.py|added=2026-03-22|updated=2026-04-04d
+  purpose=central registry for all Igor daemon threads; surfaces to /audit and get_daemon_report
+  register(name,thread,health_fn=None,one_shot=False)|call after thread.start(); one_shot=True→natural exit is expected, no DAEMON_DEAD alert (use for boot-check, warmup, etc.)
+  status()|list of dicts: name,alive,uptime_s,healthy,one_shot
+  start_polling(restart_flag_path,poll_interval=5s,critical_names)|watchdog thread; critical death→writes restart.flag; non-critical→WARNING log only; one_shot deaths silently skipped
+  critical=ne-worker,consolidation-worker (default); death→restart.flag→bash wrapper relaunches
+  boot_check=registered one_shot=True (completes in ~5s; was generating false DAEMON_DEAD until 2026-04-04d fix)
+
+MAIN_PY_FEATURES|main.py|updated=2026-04-04d
+  bare_ack_patterns=extended 2026-04-04d: copy that,sounds good,absolutely,alright,right,yep,yup,indeed,certainly,of course,i see,affirmative (suppresses NE cycle on trivial acks)
+  raw_tool_leak_filter=_is_raw_tool_leak(text) checks two patterns: [tool_name result: {/[] ...] and [tool_name] STATUS|... formats; suppressed at channel send gate (never reaches user channel)
+  thread_anchor_write=post-turn in run() after ring write (if not is_impulse block); calls write_thread_anchor(cortex,user_input,response_text,intent,turn_n); T-thread-to-fallthrough
 
 NODE_EXECUTOR|cognition/node_executor.py|added=2026-03-30|D260/D261
   purpose=walk one payload cell from a Memory node; called when cognition cursor lands on engram node
