@@ -1333,3 +1333,17 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - None.
 
 *Updated: 2026-04-05 by Claude Code.*
+
+---
+
+### Session 2026-04-05d — pe_chain timeout fix, draft persistence concept
+
+**Gaps closed:**
+
+- **G-PE-TIMEOUT1 (closed)**: `pe_chain._call_tier2()` had hardcoded 30/45s timeouts on all Ollama calls. CPU-bound Ollama (and DeepSeek distill) needs minutes for complex reasoning prompts — the timeout fired silently and returned None, counted as a failed attempt. Three silent timeouts = ticket blocked. Root cause: timeout logic designed for interactive turns was applied to background worker calls. Fix: `timeout=0 → None` (no OS-level cap) via `urlopen(timeout or None)`. Background pe_chain calls now run as long as the model needs. Human-facing turn timeouts remain in `ollama_reasoning.py` unchanged.
+
+**New gaps (open):**
+
+- **G-DRAFT-PERSIST1 (open)**: BG salience competition selects one winner and discards all losing candidates silently. No trace of near-winners persists — thoughts that almost fired have no carry-forward into the next cycle. In neuroscience (Dennett's Multiple Drafts Model), losing drafts leave residual activation that biases future competition. Without this, Igor has no mechanism for background worry, intrusive thoughts, or ideas that "won't leave you alone." Fix (P2): when BG picks winner, losing candidates above a salience threshold should deposit a lightweight `near_miss` ring entry. Next turn's BG scorer reads these entries and adds a small bias. Inverse of refractory period — recently-almost-fired = slightly amplified rather than suppressed.
+
+*Updated: 2026-04-05 by Claude Code.*

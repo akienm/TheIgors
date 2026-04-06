@@ -1,3 +1,38 @@
+## Session 2026-04-05d
+**Theme**: Theme: Trinity model research, draft persistence concept, pe_chain timeout fix
+**Key changes**:
+- pe_chain: removed _call_tier2 timeout caps — background calls now unbounded (no human waiting)
+- research: Trinity-Large-Thinking on OpenRouter — agentic model candidate at $0.90/M
+- design: draft persistence concept — losing BG candidates should leave near_miss trace for next-turn salience boost (P2)
+**In-flight**: NONE
+
+## Session 2026-04-05c
+**Theme**: Theme: T-self-trainer-ollama, T-scope-guard-proc, continue Igor autonomous loop
+**Key changes**:
+- T-self-trainer-ollama: Ollama (tier.2) turns now visible to self_trainer via OLLAMA_TIERS frozenset
+- T-cc-send-foreground: D313 — author==claude-code blocks background routing in main.py
+- T-scope-guard-proc: scope_guard.py + pe_chain SCOPE_GUARD step; HIGH inertia writes escalate; 16 tests
+- T-job-result-lost: _announce_completed_jobs uses post_to_channel() + log.warning on failure
+- T-after-action-capture: after_action_reviewer.py + PROC_AFTER_ACTION + 9 tests; fixed test_scope_guard.py sys.modules pollution
+- T-replan-cooldown: _evict_goal_ready_twm() in pe_chain — stops infinite re-fire after SCOPE_GUARD block or claim-abort
+- bash alias registered in runner.py — T-bash-tool-alias was closed without the actual registration
+- sprint: closed T-spawnif-new-opcode — SPAWNIF opcode + dispatch loop + 8 tests, committed ec14033b + D314 fix 5318c01e
+- sprint: closed T-cloud-escape-plugs — seeded 3 cloud escape plugs (book-project fix + GREET_AKIEN + CC_INFO_ACK)
+- sprint: closed T-autonomous-coding-loop — PROC_CODING_SPRINT gets schedule_interval_sec=300 + code_ref; run_coding_sprint GOAL_READY guard; full self-motivating loop without CC nudge
+**Next session**: Next: (1) make tools class-based inheriting IgorBase, (2) add init_task/log_task to IgorBase, (3) migrate _flog → self.log_task. Then T-pe-coding-model, T-model-config-review for Igor worker queue.
+**In-flight**: Tools class-based first — IgorBase.init_task/log_task not started, _flog still in place
+
+## Session 2026-04-05b
+**Theme**: Theme: Igor autonomous loop — D259 gate removed, PE chain guards, SCOPE_GUARD design, after-action capture
+**Key changes**:
+- T-pe-claim-abort + T-pe-worker-gate: PE chain aborts on non-pending/wrong-worker tickets
+- T-goal-continuation-d259-fix: D259 gate removed, Igor now adopts+works worker=igor tickets autonomously on Ollama
+- D311 SPAWNIF opcode designed (revised from FORKIF change — backward compat preserved), D312 recorded
+- Design session with Igor: SCOPE_GUARD tier table, op_delta, ring scope_log, T-scope-guard-proc + T-cc-send-foreground + T-job-result-lost + T-spawnif-new-opcode ticketed
+- After-action capture insight: generalizes beyond design sessions — high-salience conversations with knowledgeable agents; T-after-action-capture + T-self-trainer-ollama ticketed
+**Next session**: Next: T-self-trainer-ollama (S, fix Ollama turns invisible to self_trainer); T-scope-guard-proc (M, seed PROC_SCOPE_GUARD with tier table); T-cc-send-foreground (S, fix background routing for cc_send); design T-after-action-capture with Igor
+**In-flight**: NONE
+
 ## Session 2026-04-04d
 **Theme**: Theme: T-thread-to-fallthrough design and sprint
 **Key changes**:
@@ -11,7 +46,7 @@
 - sprint: closed T-memory-search-tool + T-find-tool-fuzzy — sync memory lookup + fuzzy tool discovery in memory_query.py
 - sprint: closed T-memory-full-text — raise narrative truncation 500→2000 in consolidation paths
 - fix: T-slow-query-narrative-tsvector — m037 GIN index on narrative tsvector, 204ms→0.16ms
-**Next session**: Design review: T-igor-as-programmer (L), T-neuroscience-engrams (L), T-case-study-lessons-learned (L). Budget: 00/mo plan switch this weekend.
+**Next session**: Slow query batch 2 from log; design review T-igor-as-programmer (L) + T-neuroscience-engrams (L)
 **In-flight**: NONE
 
 ## Session 2026-04-04c

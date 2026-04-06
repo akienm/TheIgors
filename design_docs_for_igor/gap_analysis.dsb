@@ -640,3 +640,13 @@ G-SLOW-QUERY1|tsvector-gin-index-on-wrong-column|closed
   was=factual-kw-supplement ran to_tsvector on every FACTUAL row (174ms); m034 GIN was on payload not narrative
   fix=m037_memories_narrative_tsvector_gin: GIN on to_tsvector('english',narrative); 204ms→0.16ms; T-slow-query-narrative-tsvector
   closed=2026-04-05a
+
+G-PE-TIMEOUT1|pe-chain-background-timeout|closed
+  was=_call_tier2 had 30/45s hardcoded timeouts; CPU Ollama/DeepSeek needs minutes; silent None return = failed attempt; 3 failures = ticket blocked
+  fix=timeout=0→None via urlopen(timeout or None); background calls unbounded; human-turn timeouts in ollama_reasoner.py unchanged
+  closed=2026-04-05d
+
+G-DRAFT-PERSIST1|bg-losing-candidates-no-trace|open
+  desc=BG winner selected, all losers discarded silently; no near-miss residual carries forward; no mechanism for background worry or ideas that won't leave
+  fix=P2: near_miss ring entry for losing candidates above salience threshold; next-turn BG scorer reads and adds small bias; inverse of refractory period
+  opened=2026-04-05d
