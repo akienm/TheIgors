@@ -2,7 +2,7 @@
 name: audit
 description: Automated code + system audit for TheIgors. MANDATORY part of day-close — never skip. Runs tests, file placement, code smells, registry coherence, inertia check, thread hygiene, log sizes, OR burn rate, DB schema, dead code, duplication, habit health, TWM coverage, dependency hygiene, credential scan, and simplification review. Fix small issues now, ticket anything bigger.
 model: haiku
-model_exception: Step 16 (simplification review) requires Sonnet — escalate that step inline.
+model_exception: Step 17 (simplification review) requires Sonnet — escalate that step inline.
 ---
 
 # Audit — Automated Health Check
@@ -357,7 +357,26 @@ Hardcoded credentials → must move to `.env`.
 
 ---
 
-## Step 16 — Simplification review
+## Step 16 — POC / TODO scan
+
+Scan for partial implementations missing follow-up tickets:
+
+```bash
+cd ~/TheIgors && grep -rn "# POC:\|# TODO:\|# LIMITATION:\|# HACK:" wild_igor/ tools/ claudecode/ --include="*.py" | grep -v __pycache__ | head -30
+```
+
+For each hit: verify there's a matching ticket in cc_queue. If not, flag it.
+
+Also scan for code that handles only the simple case without flagging the gap — common pattern:
+- A function that processes `item` but not `list[item]`
+- A parser that handles format A but silently drops format B
+- A loop that breaks after first match when it should collect all
+
+Add unflagged POCs to findings report. Ticket any that could cause wasted effort.
+
+---
+
+## Step 17 — Simplification review
 
 For each file modified since the last audit, ask:
 - Is there more complexity here than the problem requires?
@@ -375,9 +394,9 @@ This step requires judgment — it cannot be fully automated.
 
 ---
 
-## Step 17 — Evaluate findings + fix
+## Step 18 — Evaluate findings + fix
 
-For each finding across Steps 1–16:
+For each finding across Steps 1–17:
 - **Small fix** (missing log, silent except, typo, dead import): fix now
 - **Medium/large** (architecture issue, missing test, inertia violation, duplication worth abstracting): ticket it
 
@@ -418,5 +437,5 @@ Ticketed:   <list>
 - Never delete files during audit — candidates list only, discuss with Akien
 - Never fix medium/large issues inline — ticket them
 - Never skip Step 1 (tests) — a failing test blocks everything else
-- Simplification review (Step 16) requires judgment — do not skip it by saying "no changes found"
+- Simplification review (Step 17) requires judgment — do not skip it by saying "no changes found"
 - Run /commit after fixes before continuing day-close
