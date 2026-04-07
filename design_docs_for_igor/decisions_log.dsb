@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-04-06
+DOC|decisions_log|v1|updated=2026-04-07
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,planned,implemented-poc,implemented-seeds,defined
@@ -564,3 +564,4 @@ D314|pe-claim-in-progress|implemented|pe_claim proceeds if ticket already in_pro
 D315|tools-class-based-igorbase|proposed|Tools must become class-based inheriting IgorBase before logging refactor; IgorBase gets init_task/log_task for task-specific file logs; _flog eliminated
 D316|progressive-autonomy|decided|Cloud as scaffold: route each task class to optimal LLM; track per-category cloud escape rate as primary progress metric toward local capability
 D317|igor-as-claude-code|decided|4-phase transition: Igor does S→M→L tickets; Sonnet reserved for audit/review/design-gate only. Enablers: escalation signal, multi-file PE, skill engrams runnable, inertia check internalized
+D318|instance-id-normalize|decided|All references to igor_wild_0001 normalized to Igor-wild-0001 everywhere — filesystem, PG database (ALTER DATABASE), seed scripts, shell scripts, docs, tests, Docker, Windows user accounts. 13th and final fix. ssh_check tool added. Part of productization.
