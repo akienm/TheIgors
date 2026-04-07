@@ -39,7 +39,7 @@ REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "wild_igor"))
 
-env_path = Path.home() / ".TheIgors" / "igor_wild_0001" / ".env"
+env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
 if env_path.exists():
     for line in env_path.read_text().splitlines():
         line = line.strip()
@@ -175,7 +175,7 @@ def _fetch_candidates(cortex: Cortex, book_filter: str, batch: int) -> list:
     db_path = Path(
         os.environ.get(
             "IGOR_DB_PATH",
-            str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"),
+            str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
         )
     )
     conn = sqlite3.connect(str(db_path))
@@ -291,7 +291,7 @@ def _integrate_node(
 
             db_path = Path(os.environ.get("IGOR_DB_PATH", ""))
             if not db_path or not db_path.exists():
-                db_path = Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+                db_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
             with sqlite3.connect(str(db_path)) as c:
                 exists = c.execute(
                     "SELECT 1 FROM interpretive_edges WHERE from_id=? AND to_id=? LIMIT 1",
@@ -331,7 +331,7 @@ def run(args) -> None:
     db_path = Path(
         os.environ.get(
             "IGOR_DB_PATH",
-            str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"),
+            str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
         )
     )
     cortex = Cortex(db_path)

@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "wild_igor"))
 
 # Allow override via IGOR_DB_URL (Postgres) or IGOR_DB_PATH (SQLite)
 os.environ.setdefault(
-    "IGOR_DB_PATH", str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db")
+    "IGOR_DB_PATH", str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db")
 )
 
 from igor.memory.models import Memory, MemoryType

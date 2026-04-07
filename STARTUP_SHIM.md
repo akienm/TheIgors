@@ -69,7 +69,7 @@ touch ~/.TheIgors/pause.wait
 rm ~/.TheIgors/pause.wait
 
 # Force savestate on restart
-touch ~/.TheIgors/igor_wild_0001/force_savestate.flag
+touch ~/.TheIgors/Igor-wild-0001/force_savestate.flag
 kill -USR1 <igor-pid>  # Signal Igor to exit, triggering restart
 ```
 
@@ -107,8 +107,8 @@ OLLAMA_LOCAL_MODEL="llama3.2:1b"
 # OPTIONAL: Remote database
 IGOR_SWARM_DB_URL="postgresql://..."
 
-# OPTIONAL: Instance ID (default: igor_wild_0001)
-IGOR_INSTANCE_ID="igor_wild_0001"
+# OPTIONAL: Instance ID (default: Igor-wild-0001)
+IGOR_INSTANCE_ID="Igor-wild-0001"
 ```
 
 ## First Run

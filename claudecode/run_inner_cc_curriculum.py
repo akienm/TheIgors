@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 os.environ.setdefault("IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors/igor_wild_0001/wild-0001.db"))
+    str(Path.home() / ".TheIgors/Igor-wild-0001/wild-0001.db"))
 
 from igor.memory.cortex import Cortex
 from igor.tools.inner_cc import CURRICULUM, call_inner_cc

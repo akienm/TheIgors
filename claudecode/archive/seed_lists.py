@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from wild_igor.igor.memory.cortex import Cortex
 
-DB_PATH = Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+DB_PATH = Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 
 REGISTRY_TAGS = [
     ("project", "a long-lived initiative with its own memory/habit graph"),

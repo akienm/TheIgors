@@ -16,8 +16,8 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && cd .. && pwd)"
-ENV_FILE="/home/akien/.TheIgors/igor_wild_0001/.env"
-LOG_FILE="/home/akien/.TheIgors/igor_wild_0001/logs/igor_rescue.log"
+ENV_FILE="/home/akien/.TheIgors/Igor-wild-0001/.env"
+LOG_FILE="/home/akien/.TheIgors/Igor-wild-0001/logs/igor_rescue.log"
 IGOR_BIN="$REPO_DIR/bin/igor"
 VENV_PYTHON="$REPO_DIR/venv/bin/python"
 IGOR_TALK="$REPO_DIR/claudecode/igor_talk.py"

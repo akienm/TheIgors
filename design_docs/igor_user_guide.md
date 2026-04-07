@@ -15,18 +15,18 @@ For the lab directory map, see `design_docs/lab_map.md`.
 1. Clone the repo: `git clone https://github.com/akienm/TheIgors ~/TheIgors`
 2. Create venv: `python3 -m venv ~/TheIgors/venv && pip install -r ~/TheIgors/wild_igor/requirements.txt`
 3. Symlink launcher: `ln -s ~/TheIgors/igor ~/bin/igor`
-4. Run `igor` — first-start wizard creates `~/.TheIgors/igor_wild_0001/.env`
+4. Run `igor` — first-start wizard creates `~/.TheIgors/Igor-wild-0001/.env`
 5. Edit `.env` to add `OPENROUTER_API_KEY` and `OLLAMA_HOST`
 6. Run `igor` again — Igor starts
 
 ### Databases
 
-Igor uses **PostgreSQL** (not SQLite). The DB is at `localhost/igor_wild_0001`.
+Igor uses **PostgreSQL** (not SQLite). The DB is at `localhost/Igor-wild-0001`.
 The DB is pre-created; Igor's migration system applies schema on first boot.
 
 ```bash
 # Check DB is live
-psql -U igor -d igor_wild_0001 -c "SELECT count(*) FROM memories;"
+psql -U igor -d Igor-wild-0001 -c "SELECT count(*) FROM memories;"
 
 # Never delete wild-0001.db — it's the live runtime DB
 # Never use sqlite3 on Igor's data — always psql or psycopg2
@@ -37,7 +37,7 @@ psql -U igor -d igor_wild_0001 -c "SELECT count(*) FROM memories;"
 ## Launching Igor
 
 ```bash
-igor                          # Start instance igor_wild_0001 (default)
+igor                          # Start instance Igor-wild-0001 (default)
 igor --id igor_wild_0002      # Start a different instance
 
 # Keep terminal open after crash (KDE):
@@ -223,7 +223,7 @@ Operator scripts for seeding, maintenance, and session management.
 ### Session Management
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 
 # Start a session record
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py start "2026-03-26a" "Theme: one line"
@@ -257,7 +257,7 @@ python3 ~/TheIgors/claudecode/cc_queue.py done <task-id> "what was built"
 ### Seeding Habits (one-time scripts)
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 
 # Seed a specific habit (safe to re-run — all upsert on conflict)
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/seed_self_training_habit.py
@@ -298,12 +298,12 @@ python3 ~/TheIgors/claudecode/cc_deposit.py
 
 ```bash
 # Via psql — list RESPONSE habits (tier.1 no-inference serving)
-psql -U igor -d igor_wild_0001 -c \
+psql -U igor -d Igor-wild-0001 -c \
   "SELECT id, metadata->>'trigger', metadata->>'response_template' \
    FROM memories WHERE metadata->>'habit_type' = 'response' LIMIT 20;"
 
 # Via psql — list cognitive habits (scheduled)
-psql -U igor -d igor_wild_0001 -c \
+psql -U igor -d Igor-wild-0001 -c \
   "SELECT id, metadata->>'code_ref', metadata->>'schedule_interval_sec' \
    FROM memories WHERE metadata->>'habit_type' = 'cognitive';"
 
@@ -336,8 +336,8 @@ These can be toggled without a code change — just edit `.env` and `/restart`:
 
 ### Igor won't start
 1. Check venv: `source ~/TheIgors/venv/bin/activate && python -c "import igor"`
-2. Check `.env` exists: `ls ~/.TheIgors/igor_wild_0001/.env`
-3. Check Postgres: `psql -U igor -d igor_wild_0001 -c "SELECT 1;"`
+2. Check `.env` exists: `ls ~/.TheIgors/Igor-wild-0001/.env`
+3. Check Postgres: `psql -U igor -d Igor-wild-0001 -c "SELECT 1;"`
 4. Check Ollama: `curl http://localhost:11434/api/tags`
 5. Check errors log: `tail -30 ~/.TheIgors/logs/errors.log`
 
@@ -366,7 +366,7 @@ fuser -k 8080/tcp
 tail -30 ~/.TheIgors/logs/db_queries.log
 
 # Check Postgres connections
-psql -U igor -d igor_wild_0001 -c "SELECT count(*) FROM pg_stat_activity WHERE datname='igor_wild_0001';"
+psql -U igor -d Igor-wild-0001 -c "SELECT count(*) FROM pg_stat_activity WHERE datname='Igor-wild-0001';"
 ```
 
 ---

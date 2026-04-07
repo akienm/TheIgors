@@ -22,7 +22,7 @@ import sqlite3
 from pathlib import Path
 from datetime import date
 
-DB = Path.home() / ".TheIgors/igor_wild_0001/wild-0001.db"
+DB = Path.home() / ".TheIgors/Igor-wild-0001/wild-0001.db"
 LOGS = Path.home() / ".TheIgors/logs"
 TODAY = date.today().strftime("%Y%m%d")
 

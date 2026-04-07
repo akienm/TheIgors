@@ -5,7 +5,7 @@ Creates a scheduled cognitive habit that fires run_stale_task_reaper()
 every 45 minutes to auto-shelve stale TASK_SET memories.
 
 Run once:
-  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \
+  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \
     python3 claudecode/seed_stale_task_reaper.py
 
 Safe to re-run — upserts on conflict.
@@ -17,7 +17,7 @@ from datetime import datetime
 
 DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 
 HABIT = {

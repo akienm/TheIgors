@@ -12,7 +12,7 @@ DESIGN_POINTS|
   DP6|CIFS stale handle: _local_copy() copies to /tmp before read; transparent to caller
   DP7|cloud_ok per-chunk (D071): book_learner._should_use_local() reads ~/.TheIgors/cloud_ok_override.json each chunk; mode can change mid-book without restart; --local flag still forces local
   DP8|deposition vs encoding (D170): READ_* nodes from raw extraction are deposition only; encoding requires the 5-step integration pipeline (embed+link+spine+interp+arousal)
-  DP9|drain runner path fix (D181): cron was using IGOR_INSTANCE_ID=Igor-wild-0001 (wrong case) → empty queue for weeks; fixed to igor_wild_0001; 146 items now draining
+  DP9|drain runner path fix (D181): cron was using IGOR_INSTANCE_ID=Igor-wild-0001 (wrong case) → empty queue for weeks; fixed to Igor-wild-0001; 146 items now draining
 
 READING_INTEGRATION_PIPELINE|
   purpose=second-pass integration after book_learner deposits READ_* nodes

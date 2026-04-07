@@ -3,7 +3,7 @@
 ## Critical: Database
 **All data is in PostgreSQL. SQLite is retired (D224).** Always set:
 ```
-export IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+export IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 ```
 Never query `wild-0001.db` directly. Never use `IGOR_DB_PATH`.
 

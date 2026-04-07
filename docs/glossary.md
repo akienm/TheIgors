@@ -133,8 +133,8 @@ Terms specific to this project. Standard software/AI terms are not defined here.
 | Name | Path |
 |---|---|
 | Source | `~/TheIgors/wild_igor/igor/` |
-| Live DB | `~/.TheIgors/igor_wild_0001/wild-0001.db` |
-| Config | `~/.TheIgors/igor_wild_0001/.env` |
+| Live DB | `~/.TheIgors/Igor-wild-0001/wild-0001.db` |
+| Config | `~/.TheIgors/Igor-wild-0001/.env` |
 | Logs | `~/.TheIgors/logs/` |
 | Word graph | `~/.TheIgors/word_graph.db` |
 | Igor's soul | `~/.TheIgors/SOUL.md` |

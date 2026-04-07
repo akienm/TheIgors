@@ -212,7 +212,7 @@ Named moments of architectural clarity — when disparate patterns unified into 
   7. Arbiter alert (human approval)
 
 - **API Accounts**: Two separate (CC=Anthropic direct; Igor=OpenRouter) prevents rate contention
-- **Instance Data**: `~/.TheIgors/igor_wild_0001/` (jobs, arbiter, context, logs, inbox/outbox)
+- **Instance Data**: `~/.TheIgors/Igor-wild-0001/` (jobs, arbiter, context, logs, inbox/outbox)
 
 ### Engram Language (D259-D300)
 - Layer 1 (execute): EMITIF, BRANCHIF, FORKIF, ENDIF

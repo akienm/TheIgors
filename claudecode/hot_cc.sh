@@ -18,7 +18,7 @@ if [ -z "${REAL_ANTHROPIC_API_KEY:-}" ]; then
 fi
 export ANTHROPIC_API_KEY="$REAL_ANTHROPIC_API_KEY"
 
-SESSION_FILE="$HOME/.TheIgors/igor_wild_0001/cc_session_id"
+SESSION_FILE="$HOME/.TheIgors/Igor-wild-0001/cc_session_id"
 SESSION_MAX_AGE=86400   # 24 hours in seconds
 REPO="$HOME/TheIgors"
 INIT_PROMPT_FILE="$REPO/claudecode/hot_cc_init.md"

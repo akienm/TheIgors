@@ -24,7 +24,7 @@ Main loop checks at every idle cycle:
 
 Instance dir paths:
 - **Linux**: `/home/akien/.TheIgors/Igor-wild-0001/`
-- **Windows (igor_wild_0001 user)**: `C:\Users\igor_wild_0001\.TheIgors\Igor-wild-0001\`
+- **Windows (Igor-wild-0001 user)**: `C:\Users\Igor-wild-0001\.TheIgors\Igor-wild-0001\`
 
 ### Linux wrapper (`~/bin/igor` bash script)
 Does **NOT** do `git pull` automatically. Just restarts Igor on exit code 42.  

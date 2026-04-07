@@ -10,7 +10,7 @@
 ~/TheIgors/            ← source code (in git)
 ~/.TheIgors/           ← all runtime data (NOT in git)
   local/               ← machine-global (machines.json, word_graph.db, milieu_global.json)
-  igor_wild_0001/      ← this instance
+  Igor-wild-0001/      ← this instance
     wild-0001.db       ← live SQLite DB (THE memory graph)
     .env               ← secrets and feature flags
     logs/              ← forensic logs (newest-at-top)

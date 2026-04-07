@@ -11,13 +11,13 @@
 | Current path | Correct location | Written by | Risk |
 |---|---|---|---|
 | `/home/akien/TheIgors/igor.db` | `~/.TheIgors/` (already has one) | Unknown — empty file (0 bytes), likely an old accidental `touch` | LOW — empty, tracked in git, just clutter |
-| `/home/akien/TheIgors/memory/igor.db` | `~/.TheIgors/igor_wild_0001/` or deleted | Unknown origin, non-empty (64KB) | MEDIUM — DB in repo, gitignored by `*.db` but misleading |
-| `/home/akien/TheIgors/memory/claude_budget.db` | `~/.TheIgors/igor_wild_0001/` | budget.py | MEDIUM — DB in repo, gitignored by `*.db` |
+| `/home/akien/TheIgors/memory/igor.db` | `~/.TheIgors/Igor-wild-0001/` or deleted | Unknown origin, non-empty (64KB) | MEDIUM — DB in repo, gitignored by `*.db` but misleading |
+| `/home/akien/TheIgors/memory/claude_budget.db` | `~/.TheIgors/Igor-wild-0001/` | budget.py | MEDIUM — DB in repo, gitignored by `*.db` |
 | `/home/akien/TheIgors/6894.log` | `~/.TheIgors/logs/` | Likely a PID log from a process (6894 = process ID) | LOW — gitignored by `*.log`, stale (2026-03-10) |
 | `/home/akien/TheIgors/wild_igor/koboldcpp_calls.log` | `~/.TheIgors/logs/` | KoboldCpp reasoner (now removed from source); log path was `os.path.join(__file__, "..", "..", "..", "koboldcpp_calls.log")` — hardcoded relative to source dir | LOW — gitignored, stale (last entry 2026-03-06), KoboldCpp reasoner no longer in codebase |
 | `/home/akien/TheIgors/wild_igor/ollama_calls.log` | `~/.TheIgors/logs/` | `cognition/reasoners/ollama_reasoner.py` line 65: `_LOG_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "ollama_calls.log")` — **hardcoded relative to `__file__`**, resolves to `wild_igor/` | MEDIUM — active bug: every Ollama call writes into source tree. Gitignored but dirty. Fix: use `paths().logs / "ollama_calls.log"` |
 | `/home/akien/TheIgors/wild_igor/logs/discord.log` | `~/.TheIgors/logs/` | `network/discord_bot.py` or similar — writes to `wild_igor/logs/` which is inside source dir | LOW — gitignored, but the `wild_igor/logs/` directory itself is inside the source tree |
-| `/home/akien/TheIgors/wild_igor/igor_memory.db` | `~/.TheIgors/igor_wild_0001/` | Pre-PathManager artifact. Earlier code used a hardcoded relative path next to `wild_igor/`. Now orphaned (0 bytes active DB is at `igor_wild_0001/wild-0001.db`) | LOW — gitignored, stale (2026-03-07), safe to remove |
+| `/home/akien/TheIgors/wild_igor/igor_memory.db` | `~/.TheIgors/Igor-wild-0001/` | Pre-PathManager artifact. Earlier code used a hardcoded relative path next to `wild_igor/`. Now orphaned (0 bytes active DB is at `Igor-wild-0001/wild-0001.db`) | LOW — gitignored, stale (2026-03-07), safe to remove |
 
 #### JSON state files in source tree
 
@@ -35,7 +35,7 @@
 The three-tier model (per CLAUDE.md) is:
 - **machine-global**: `~/.TheIgors/local/` — machines.json, cluster config
 - **database-global**: `~/.TheIgors/` root — word_graph.db, generation_graph.db, milieu_global.json, learn_queue.json, SOUL.md, cache/
-- **instance-local**: `~/.TheIgors/igor_wild_0001/` — wild-0001.db, .env, jobs/, logs/, warm_context, arbiter/
+- **instance-local**: `~/.TheIgors/Igor-wild-0001/` — wild-0001.db, .env, jobs/, logs/, warm_context, arbiter/
 
 Items at `~/.TheIgors/` root that need placement decisions:
 
@@ -46,10 +46,10 @@ Items at `~/.TheIgors/` root that need placement decisions:
 | `~/.TheIgors/SOUL.md` | runtime root | `paths().soul` writes here. This is database-global (shared identity). But if multi-instance, two instances would overwrite each other. Intentional? |
 | `~/.TheIgors/book_learner_progress/` | runtime root | Not in PathManager. Created by book_learner.py. Should this be `~/.TheIgors/local/book_learner_progress/` (machine-global shared) or instance-local? |
 | `~/.TheIgors/cc_channel/` | runtime root | CC→Igor queue. Instance-local or machine-global? |
-| `~/.TheIgors/logs/` | runtime root | Top-level logs vs `igor_wild_0001/logs/` — two separate log dirs exist. `paths().logs` points to top-level. `igor_wild_0001/logs/` also exists. Which is canonical? |
+| `~/.TheIgors/logs/` | runtime root | Top-level logs vs `Igor-wild-0001/logs/` — two separate log dirs exist. `paths().logs` points to top-level. `Igor-wild-0001/logs/` also exists. Which is canonical? |
 | `~/.TheIgors/training_corpus/` | runtime root | Word graph training data — machine-global makes sense (shared corpus). Not in PathManager; unclear if orphaned. |
 | `~/.TheIgors/generation_graph.db` (82MB) | runtime root | `paths().word_graph("generation_graph")` correctly puts this here. But per three-tier: is the generation graph database-global or instance-local? If two Igor instances ran simultaneously they'd share it. |
-| `~/.TheIgors/claude_bridge_history.json` | runtime root | Not in PathManager. Written by `claudecode/claude_bridge.py`. Should be in `~/.TheIgors/igor_wild_0001/` or `cc_channel/`. |
+| `~/.TheIgors/claude_bridge_history.json` | runtime root | Not in PathManager. Written by `claudecode/claude_bridge.py`. Should be in `~/.TheIgors/Igor-wild-0001/` or `cc_channel/`. |
 
 ---
 
@@ -71,11 +71,11 @@ These files in `~/.TheIgors/` indicate active bugs:
 | `~/.TheIgors/cortex.db` | 0 bytes | 2026-03-05 | Pre-PathManager artifact. Stale, safe to delete. |
 | `~/.TheIgors/igor.db` | 0 bytes | 2026-03-06 | Stale, safe to delete. |
 | `~/.TheIgors/memory.db` | 0 bytes | 2026-03-05 | Stale, safe to delete. |
-| `~/.TheIgors/wild-0001.db` | 0 bytes | 2026-03-11 | Stale — live DB is at `igor_wild_0001/wild-0001.db`. Safe to delete. |
+| `~/.TheIgors/wild-0001.db` | 0 bytes | 2026-03-11 | Stale — live DB is at `Igor-wild-0001/wild-0001.db`. Safe to delete. |
 | `~/.TheIgors/igor_memory.db` | 49KB | 2026-03-07 | Pre-PathManager artifact. Inspect before deleting (may have early memories). |
 | `~/.TheIgors/tmpokmnptpg.db` | 53KB | 2026-03-10 | Temp file — likely created during a test. Safe to delete. |
-| `~/.TheIgors/igor_wild-0001/` | directory | 2026-03-09 | Hyphenated name vs underscore — **typo variant of `igor_wild_0001`**. Contains stale `igor.db`, `milieu.json`, `response_habituation.json`. No code references this hyphenated path. Orphaned directory, safe to remove after inspection. |
-| `~/.TheIgors/wild-0001/` | directory | 2026-03-17 (active!) | Another naming variant — contains active `consolidation_checkpoint.json`, `inbox/`, `outbox/`. This appears to be a second instance-dir that's being written to by some process. Source of confusion — paths.py uses `igor_wild_0001` not `wild-0001`. |
+| `~/.TheIgors/igor_wild-0001/` | directory | 2026-03-09 | Hyphenated name vs underscore — **typo variant of `Igor-wild-0001`**. Contains stale `igor.db`, `milieu.json`, `response_habituation.json`. No code references this hyphenated path. Orphaned directory, safe to remove after inspection. |
+| `~/.TheIgors/wild-0001/` | directory | 2026-03-17 (active!) | Another naming variant — contains active `consolidation_checkpoint.json`, `inbox/`, `outbox/`. This appears to be a second instance-dir that's being written to by some process. Source of confusion — paths.py uses `Igor-wild-0001` not `wild-0001`. |
 
 ---
 
@@ -84,7 +84,7 @@ These files in `~/.TheIgors/` indicate active bugs:
 | File/Dir | Status |
 |---|---|
 | `~/igor_notes_from_akien.md` | Pre-repo artifact (2026-02-25). Early design notes. Should be in `~/TheIgors/history/_archive/` or deleted. Not in repo. |
-| `~/igor_self_notes.md` | Pre-repo artifact (2026-02-24). Igor's own boot notes from before the runtime split. Should be in repo history or `~/.TheIgors/igor_wild_0001/boot_notes.md`. Not in repo. |
+| `~/igor_self_notes.md` | Pre-repo artifact (2026-02-24). Igor's own boot notes from before the runtime split. Should be in repo history or `~/.TheIgors/Igor-wild-0001/boot_notes.md`. Not in repo. |
 | `~/chrome_igor_profile/` | Chrome profile for Igor — runtime artifact, correct to be at home root. OK. |
 | `~/TheIgorsProject/` | Separate older directory (2026-03-04). Contains setup scripts. Looks like a precursor to the current repo. Could be archived. |
 
@@ -94,14 +94,14 @@ These files in `~/.TheIgors/` indicate active bugs:
 
 | File:Line | Hardcoded string | Problem |
 |---|---|---|
-| `tools/google_contacts.py:179,220` | `Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"` | Bypasses PathManager entirely. If instance ID changes (e.g. `--id wild-0002`), this path will be wrong. Fix: use `paths().instance / "wild-0001.db"` |
-| `tools/cluster_ssh.py:31` | `_DEFAULT_USER = "igor_wild_0001"` | SSH username hardcoded. This is a system user not an instance ID, so it may be intentional. Still worth noting — if a different deployment uses a different username, this breaks. |
-| `tools/cluster_ssh.py:203` | `igor_user = os.getenv("WINDOWS_USER_IGOR_USER", "igor_wild_0001")` | Same as above — has an env override, so lower risk. |
-| `tools/google_calendar.py:11` | Doc comment only: `~/.TheIgors/igor_wild_0001/google_credentials.json` | Comment only, not code. Low priority. |
-| `tools/ebook_reader.py:14` | Doc comment only: `~/.TheIgors/igor_wild_0001/reading_state.json` | Comment only. The actual code uses PathManager. |
+| `tools/google_contacts.py:179,220` | `Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"` | Bypasses PathManager entirely. If instance ID changes (e.g. `--id wild-0002`), this path will be wrong. Fix: use `paths().instance / "wild-0001.db"` |
+| `tools/cluster_ssh.py:31` | `_DEFAULT_USER = "Igor-wild-0001"` | SSH username hardcoded. This is a system user not an instance ID, so it may be intentional. Still worth noting — if a different deployment uses a different username, this breaks. |
+| `tools/cluster_ssh.py:203` | `igor_user = os.getenv("WINDOWS_USER_IGOR_USER", "Igor-wild-0001")` | Same as above — has an env override, so lower risk. |
+| `tools/google_calendar.py:11` | Doc comment only: `~/.TheIgors/Igor-wild-0001/google_credentials.json` | Comment only, not code. Low priority. |
+| `tools/ebook_reader.py:14` | Doc comment only: `~/.TheIgors/Igor-wild-0001/reading_state.json` | Comment only. The actual code uses PathManager. |
 | `cognition/job_manager.py:10,90` | Doc comments only | Low priority. |
 | `cognition/response_habituation.py:8` | Doc comment only | Low priority. |
-| `main.py:904` | `"~/.TheIgors/igor_wild_0001/ for backup files."` | Error message only — cosmetic issue. |
+| `main.py:904` | `"~/.TheIgors/Igor-wild-0001/ for backup files."` | Error message only — cosmetic issue. |
 | `arbiter/queue.py:5` | Doc comment only | Low priority. |
 | `cognition/pipeline_manager.py:21` | Doc comment only (notes the env override) | Low priority. |
 
@@ -114,7 +114,7 @@ These files in `~/.TheIgors/` indicate active bugs:
 - `~/.TheIgors/word_graph.db` (4GB) — correct per `paths().word_graph("word_graph")`.
 - `~/.TheIgors/milieu_global.json` — correct per `paths().milieu`.
 - `~/.TheIgors/SOUL.md` — correct per `paths().soul`.
-- `~/.TheIgors/igor_wild_0001/` directory and all contents — correct instance dir.
+- `~/.TheIgors/Igor-wild-0001/` directory and all contents — correct instance dir.
 - `~/.TheIgors/local/` — correct machine-global dir.
 - `~/.TheIgors/cache/` — correct per `paths().cache`.
 - `~/.TheIgors/drain_learn_queue.pid` — at root per PathManager. Placement is debatable (see "needs decision") but consistent with current code.
@@ -194,7 +194,7 @@ All 37 `seed_*.py` scripts in `claudecode/` are one-shot DB population scripts. 
 | `benchmarks/benchmark.py` (large) | Benchmarking framework (#138). Not imported by Igor. A standalone tool. The `__pycache__` leaked here — should be gitignored. |
 | `workspace/hamlet_test.py` | **Tracked in git** — test harness script. This is a development artifact that should be in `claudecode/` or gitignored, not in `workspace/`. |
 | `workspace/hamlet_akiendelllinux_gemma3_1b.json` | **Tracked in git** — benchmark result. Should be gitignored or moved to `~/.TheIgors/benchmarks/results/`. |
-| `memory/sessions.md` | **Tracked in git** — active session log (17KB, updated 2026-03-17). This is runtime state (session history). It's in a `memory/` dir in the source repo alongside `igor.db` and `claude_budget.db`. Unclear why this is here rather than in `~/.TheIgors/igor_wild_0001/` or just in `design_docs/`. |
+| `memory/sessions.md` | **Tracked in git** — active session log (17KB, updated 2026-03-17). This is runtime state (session history). It's in a `memory/` dir in the source repo alongside `igor.db` and `claude_budget.db`. Unclear why this is here rather than in `~/.TheIgors/Igor-wild-0001/` or just in `design_docs/`. |
 | `change_request.txt` | **Tracked in git** — contains deferred GitHub gap tickets (G58, G59). This is a process artifact. The content belongs in GitHub issues or `design_docs/gap_analysis.md`, not as a tracked file at repo root. |
 | `change_request_response.txt` | **Tracked in git** — contains `"# No active change request."` (28 bytes). This is a runtime state file that got committed. Should be gitignored. |
 
@@ -272,7 +272,7 @@ Items at `~/TheIgors/` root that are unexpected or worth reviewing:
 | `6894.log` (134 bytes) | PID-numbered log file — stale artifact from 2026-03-10. Gitignored. Cleanup: delete |
 | `change_request.txt` (tracked) | Should not be at repo root — move to `design_docs/` or close into GitHub issues |
 | `change_request_response.txt` (tracked, 28 bytes) | Runtime state file committed — gitignore and delete |
-| `memory/` directory | Runtime DBs and `sessions.md` at repo root — a `memory/` dir in a source repo that holds live DBs is confusing. Consider removing; `sessions.md` belongs in `design_docs/` or `~/.TheIgors/igor_wild_0001/` |
+| `memory/` directory | Runtime DBs and `sessions.md` at repo root — a `memory/` dir in a source repo that holds live DBs is confusing. Consider removing; `sessions.md` belongs in `design_docs/` or `~/.TheIgors/Igor-wild-0001/` |
 | `workspace/` directory | Contains `hamlet_test.py` (tracked) and `hamlet_akiendelllinux_gemma3_1b.json` (tracked). Dev artifacts at repo root — gitignore and archive to `~/.TheIgors/benchmarks/` |
 | `superclaude.bat` (38 bytes) | Windows launcher stub — reasonable to have, low risk |
 | `SYSTEM_PACKAGES.md` | System dependency list — fine at repo root |
@@ -288,9 +288,9 @@ Top 10 things to address, prioritized by impact:
 
 1. **`ollama_reasoner.py` writes logs into source tree** (`wild_igor/ollama_calls.log`). Line 65 uses `os.path.join(__file__, "..", "..", "..", "ollama_calls.log")` — a relative path from `__file__` that resolves inside the repo. Fix: replace with `str(paths().logs / "ollama_calls.log")`. This is the same class of bug that the D108 PathManager cutover was meant to eliminate, but `ollama_reasoner.py` was missed.
 
-2. **`google_contacts.py` hardcodes instance path** (lines 179, 220): `Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"`. Bypasses PathManager. If Igor is ever run with `--id wild-0002` or `IGOR_INSTANCE_ID` override, contacts writes to the wrong DB. Fix: use `paths().instance / "wild-0001.db"`.
+2. **`google_contacts.py` hardcodes instance path** (lines 179, 220): `Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"`. Bypasses PathManager. If Igor is ever run with `--id wild-0002` or `IGOR_INSTANCE_ID` override, contacts writes to the wrong DB. Fix: use `paths().instance / "wild-0001.db"`.
 
-3. **`~/.TheIgors/wild-0001/` is receiving active writes** (consolidation_checkpoint dated 2026-03-17). This hyphenated-name directory is not the canonical instance dir (`igor_wild_0001`). Something is writing to the wrong path. Investigate which process is creating `wild-0001/` as an instance dir — possibly the igor launcher with `--id wild-0001`.
+3. **`~/.TheIgors/wild-0001/` is receiving active writes** (consolidation_checkpoint dated 2026-03-17). This hyphenated-name directory is not the canonical instance dir (`Igor-wild-0001`). Something is writing to the wrong path. Investigate which process is creating `wild-0001/` as an instance dir — possibly the igor launcher with `--id wild-0001`.
 
 ### Priority 2 — Cleanup required (safe to do now)
 

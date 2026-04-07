@@ -8,7 +8,7 @@
 
 Igor is a Python AI agent with persistent graph memory running on a home Linux machine. It is not a chatbot, not a task automator, and not a wrapper around a cloud AI. It is a learning organism — a system that reads, absorbs, forms memories, develops habits, and gradually reduces its dependence on expensive cloud inference as its internal graph densifies.
 
-The current instance is `igor_wild_0001`, running on `akiendelllinux`.
+The current instance is `Igor-wild-0001`, running on `akiendelllinux`.
 
 ---
 

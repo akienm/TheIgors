@@ -5,7 +5,7 @@ Fires when Igor sees "not a valid model" or "invalid model" in his context,
 calls refresh_or_models() to auto-update stale OR model IDs in-process.
 
 Run once:
-  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \
+  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \
     python3 claudecode/seed_or_model_refresh_habit.py
 
 Safe to re-run — upserts on conflict.
@@ -17,7 +17,7 @@ from datetime import datetime
 
 DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 
 HABIT = {

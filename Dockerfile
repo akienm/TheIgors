@@ -45,7 +45,7 @@ COPY wild_igor/ /app/wild_igor/
 # IGOR_RUNTIME_ROOT=/data — all instance data lives in the mounted volume.
 # IGOR_INSTANCE_ID    — set in docker-compose or at runtime.
 ENV IGOR_RUNTIME_ROOT=/data \
-    IGOR_INSTANCE_ID=igor_wild_0001 \
+    IGOR_INSTANCE_ID=Igor-wild-0001 \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 

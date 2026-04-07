@@ -15,7 +15,7 @@ REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 
 import os
-env_path = Path.home() / ".TheIgors" / "igor_wild_0001" / ".env"
+env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
 if env_path.exists():
     for line in env_path.read_text().splitlines():
         line = line.strip()
@@ -28,7 +28,7 @@ from wild_igor.igor.memory.models import Memory, MemoryType
 
 DB_PATH = Path(os.environ.get(
     "IGOR_DB_PATH",
-    Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+    Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 ))
 
 cortex = Cortex(DB_PATH)
@@ -40,8 +40,8 @@ MEMORIES = [
             "When reasoning about my own codebase — reading source files, planning edits, "
             "understanding architecture, or debugging my own code — delegate to the hot CC "
             "session via ~/TheIgors/claudecode/hot_cc.sh rather than using an OpenRouter turn. "
-            "Write a brief to ~/.TheIgors/igor_wild_0001/workspace/cc_task.md, then call "
-            "run_bash(command='~/TheIgors/claudecode/hot_cc.sh \"$(cat ~/.TheIgors/igor_wild_0001/workspace/cc_task.md)\"'). "
+            "Write a brief to ~/.TheIgors/Igor-wild-0001/workspace/cc_task.md, then call "
+            "run_bash(command='~/TheIgors/claudecode/hot_cc.sh \"$(cat ~/.TheIgors/Igor-wild-0001/workspace/cc_task.md)\"'). "
             "hot_cc.sh maintains a warm session with codebase context and deposits graph nodes "
             "on every answer — each escalation trains the graph so future turns stay local. "
             "Exception: use inner_cc() for quick single-question lookups that don't need live source."

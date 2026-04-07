@@ -32,11 +32,11 @@ done
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUNTIME_ROOT="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
-INSTANCE_ID="${IGOR_INSTANCE_ID:-igor_wild_0001}"
+INSTANCE_ID="${IGOR_INSTANCE_ID:-Igor-wild-0001}"
 INSTANCE_DIR="$RUNTIME_ROOT/$INSTANCE_ID"
 
 # Auto-detect .env: the runtime dir may use a different case than INSTANCE_ID
-# (e.g. Igor-wild-0001 vs igor_wild_0001 — see CLAUDE.md instance dir note)
+# (e.g. Igor-wild-0001 vs Igor-wild-0001 — see CLAUDE.md instance dir note)
 ENV_FILE="$INSTANCE_DIR/.env"
 if [[ ! -f "$ENV_FILE" ]]; then
     # Scan for any .env under RUNTIME_ROOT
@@ -125,7 +125,7 @@ else
             echo ""
             yellow "  First-time setup — please provide:"
             [[ -z "${ANTHROPIC_API_KEY:-}" ]] && read -r -p "  ANTHROPIC_API_KEY: " ANTHROPIC_API_KEY && export ANTHROPIC_API_KEY
-            [[ -z "${IGOR_HOME_DB_URL:-}" ]]  && read -r -p "  IGOR_HOME_DB_URL (e.g. postgresql://igor:pw@localhost/igor_wild_0001): " IGOR_HOME_DB_URL && export IGOR_HOME_DB_URL
+            [[ -z "${IGOR_HOME_DB_URL:-}" ]]  && read -r -p "  IGOR_HOME_DB_URL (e.g. postgresql://igor:pw@localhost/Igor-wild-0001): " IGOR_HOME_DB_URL && export IGOR_HOME_DB_URL
         fi
         bash "$INSTALL_SCRIPT"
     fi

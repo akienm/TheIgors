@@ -15,7 +15,7 @@ REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 
 import os
-env_path = Path.home() / ".TheIgors" / "igor_wild_0001" / ".env"
+env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
 if env_path.exists():
     for line in env_path.read_text().splitlines():
         line = line.strip()
@@ -28,7 +28,7 @@ from wild_igor.igor.memory.models import Memory, MemoryType
 
 DB_PATH = Path(os.environ.get(
     "IGOR_DB_PATH",
-    Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+    Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 ))
 
 cortex = Cortex(DB_PATH)

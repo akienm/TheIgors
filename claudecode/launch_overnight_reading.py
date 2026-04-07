@@ -14,7 +14,7 @@ REPO        = Path(__file__).parent.parent
 VENV_PY     = REPO / "venv" / "bin" / "python"
 BOOK_LEARNER = REPO / "claudecode" / "book_learner.py"
 LOG_DIR     = Path.home() / ".TheIgors" / "logs"
-DB_PATH     = Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+DB_PATH     = Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 
 BOOKS = [
     ("On Intelligence (Hawkins)",         ["--calibre-id", "1959",  "--run"]),

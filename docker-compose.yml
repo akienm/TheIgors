@@ -6,7 +6,7 @@
 #   ollama   — Ollama local inference (sibling container)
 #
 # Usage:
-#   cp ~/.TheIgors/igor_wild_0001/.env .env.igor   # copy instance .env
+#   cp ~/.TheIgors/Igor-wild-0001/.env .env.igor   # copy instance .env
 #   docker compose up -d
 #
 # Runtime data: the host's ~/.TheIgors is mounted at /data inside the container.
@@ -21,18 +21,18 @@ services:
       context: .
       dockerfile: Dockerfile
     image: igor:latest
-    container_name: igor_wild_0001
+    container_name: Igor-wild-0001
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
-      - .env.igor               # host copy of ~/.TheIgors/igor_wild_0001/.env
+      - .env.igor               # host copy of ~/.TheIgors/Igor-wild-0001/.env
     environment:
       IGOR_RUNTIME_ROOT: /data
-      IGOR_INSTANCE_ID: igor_wild_0001
+      IGOR_INSTANCE_ID: Igor-wild-0001
       # DB points to sibling postgres service (overrides .env.igor if set there)
-      IGOR_HOME_DB_URL: postgresql://igor:${POSTGRES_PASSWORD:-choose_a_password}@postgres:5432/igor_wild_0001
+      IGOR_HOME_DB_URL: postgresql://igor:${POSTGRES_PASSWORD:-choose_a_password}@postgres:5432/Igor-wild-0001
     volumes:
       # Runtime data: warm context, logs, inbox, etc.
       - ${IGOR_RUNTIME_ROOT:-~/.TheIgors}:/data
@@ -59,13 +59,13 @@ services:
     environment:
       POSTGRES_USER: igor
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-choose_a_password}
-      POSTGRES_DB: igor_wild_0001
+      POSTGRES_DB: Igor-wild-0001
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - igor_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U igor -d igor_wild_0001"]
+      test: ["CMD-SHELL", "pg_isready -U igor -d Igor-wild-0001"]
       interval: 10s
       timeout: 5s
       retries: 5

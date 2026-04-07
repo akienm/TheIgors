@@ -20,7 +20,7 @@ fi
 # ─ Setup wizard ──────────────────────────────────────────────────────────────
 
 run_setup_wizard() {
-    local instance_dir="${IGOR_HOME}/igor_wild_0001"
+    local instance_dir="${IGOR_HOME}/Igor-wild-0001"
     local env_file="${instance_dir}/.env"
 
     echo "╔════════════════════════════════════════════════════════════════════════════════╗"
@@ -68,8 +68,8 @@ KOBOLDCPP_PORT="5001"
 # OPTIONAL: Database URL (defaults to local sqlite)
 IGOR_SWARM_DB_URL=""
 
-# OPTIONAL: Instance ID (defaults to igor_wild_0001)
-IGOR_INSTANCE_ID="igor_wild_0001"
+# OPTIONAL: Instance ID (defaults to Igor-wild-0001)
+IGOR_INSTANCE_ID="Igor-wild-0001"
 ENVEOF
 
         echo "✓ Template created"
@@ -87,7 +87,7 @@ ENVEOF
 # ─ Require config ────────────────────────────────────────────────────────────
 
 require_api_key() {
-    local env_file="${IGOR_HOME}/igor_wild_0001/.env"
+    local env_file="${IGOR_HOME}/Igor-wild-0001/.env"
 
     # Source .env if it exists
     if [[ -f "$env_file" ]]; then

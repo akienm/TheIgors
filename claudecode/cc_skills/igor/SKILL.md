@@ -235,7 +235,7 @@ curl -s -X POST http://localhost:8080/api/cc_send \
 1. `memory_ops.log` — look for WRITE FAILED or exception
 2. Check `IGOR_DB_PATH` env is set and DB exists
 3. Check disk space: `df -h ~/.TheIgors/`
-4. Check DB integrity: `sqlite3 ~/.TheIgors/igor_wild_0001/wild-0001.db "PRAGMA integrity_check;"`
+4. Check DB integrity: `sqlite3 ~/.TheIgors/Igor-wild-0001/wild-0001.db "PRAGMA integrity_check;"`
 
 ### "book_learner seems stuck"
 1. `book_learner.log` — last entry timestamp
@@ -256,11 +256,11 @@ curl -s -X POST http://localhost:8080/api/cc_send \
 | Thing | Path |
 |---|---|
 | Source | `~/TheIgors/wild_igor/igor/` |
-| Runtime | `~/.TheIgors/igor_wild_0001/` |
-| DB | `~/.TheIgors/igor_wild_0001/wild-0001.db` |
-| .env | `~/.TheIgors/igor_wild_0001/.env` |
+| Runtime | `~/.TheIgors/Igor-wild-0001/` |
+| DB | `~/.TheIgors/Igor-wild-0001/wild-0001.db` |
+| .env | `~/.TheIgors/Igor-wild-0001/.env` |
 | Logs | `~/.TheIgors/logs/` |
-| Jobs | `~/.TheIgors/igor_wild_0001/jobs/` |
+| Jobs | `~/.TheIgors/Igor-wild-0001/jobs/` |
 | Learn queue | `~/.TheIgors/learn_queue.json` |
 | Word graph | `~/.TheIgors/word_graph.db` |
 | Milieu | `~/.TheIgors/milieu_global.json` |
@@ -345,7 +345,7 @@ Check for it: `ls design_docs_for_igor/research/`
 
 - Never edit `brainstem/` contents without Akien review
 - Never `--no-verify` or force-push main
-- Never delete `~/.TheIgors/igor_wild_0001/wild-0001.db`
+- Never delete `~/.TheIgors/Igor-wild-0001/wild-0001.db`
 - Never edit `.env` without noting what changed and why
 - Never store credentials in memory — use CREDENTIAL_REF pattern
 - Don't hot-reload HIGH-inertia files — discuss first

@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault("IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"))
+    str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"))
 
 from wild_igor.igor.cognition.word_graph import WordGraph, default_cache_path
 from wild_igor.igor.cognition import training_corpus as tc

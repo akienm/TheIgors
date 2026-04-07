@@ -11,9 +11,9 @@ THESIS|
   layers_of_graphs=inference engine (learned rules compiled by LLMs, executed by symbolic traversal)
 
 INSTANCE|
-  id=igor_wild_0001|host=akiendelllinux|db=~/.TheIgors/igor_wild_0001/wild-0001.db
+  id=Igor-wild-0001|host=akiendelllinux|db=~/.TheIgors/Igor-wild-0001/wild-0001.db
   launch=igor bash alias|loops on exit_code=42 (restart)|env re-read every restart
-  source=~/TheIgors/wild_igor/igor/|runtime=~/.TheIgors/igor_wild_0001/
+  source=~/TheIgors/wild_igor/igor/|runtime=~/.TheIgors/Igor-wild-0001/
   venv=~/TheIgors/venv/|python=3.12.3
 
 MEMORY_GRAPH|
@@ -97,7 +97,7 @@ SELF_EDIT|
 SECURITY|
   validate_against_core=Haiku semantic check before response delivery|violation→ring+arbiter urgency=0.9
   GENESIS_CP_NARRATIVES=verified at boot|mismatch→refuse operation
-  arbiter=IGOR_ARBITER_ENABLED=false|queue at ~/.TheIgors/igor_wild_0001/arbiter/pending.json
+  arbiter=IGOR_ARBITER_ENABLED=false|queue at ~/.TheIgors/Igor-wild-0001/arbiter/pending.json
 
 KEY_ENV|
   IGOR_DB_PATH|OPENROUTER_API_KEY|KOBOLDCPP_HOST/PORT|OLLAMA_LOCAL_MODEL

@@ -47,7 +47,7 @@ python3 ~/TheIgors/claudecode/channel.py post "claimed <ticket-id>: <title>" --a
 
 Record in session:
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-change "sprint: started <ticket-id>"
 ```
 
@@ -153,7 +153,7 @@ python3 ~/TheIgors/claudecode/cc_queue.py done <ticket-id> "<one paragraph summa
 
 Record in session:
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-change "sprint: closed <ticket-id> — <one line>"
 ```
 

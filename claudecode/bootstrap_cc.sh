@@ -54,7 +54,7 @@ fi
 SETTINGS_LOCAL="$REPO_ROOT/.claude/settings.local.json"
 
 # Prompt for DB URL if not in env
-DB_URL="${IGOR_HOME_DB_URL:-postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001}"
+DB_URL="${IGOR_HOME_DB_URL:-postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001}"
 CC_SEND="${CC_SEND_URL:-http://localhost:8080/api/cc_send}"
 
 cat > "$SETTINGS_LOCAL" << EOF

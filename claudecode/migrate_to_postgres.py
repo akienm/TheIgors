@@ -11,7 +11,7 @@ Splits Igor's data into HOME (global truth) and LOCAL (box-scoped) Postgres DBs.
   LOCAL (IGOR_LOCAL_DB_URL): ring_memory, twm_observations.
 
 Usage:
-    # Required env vars (or in ~/.TheIgors/igor_wild_0001/.env):
+    # Required env vars (or in ~/.TheIgors/Igor-wild-0001/.env):
     #   IGOR_DB_PATH          — source SQLite (main memory DB)
     #   IGOR_HOME_DB_URL      — Postgres DSN for home channel
     #   IGOR_LOCAL_DB_URL     — Postgres DSN for local channel
@@ -40,7 +40,7 @@ def _load_env():
     env_path = (
         Path.home()
         / ".TheIgors"
-        / os.getenv("IGOR_INSTANCE_ID", "igor_wild_0001")
+        / os.getenv("IGOR_INSTANCE_ID", "Igor-wild-0001")
         / ".env"
     )
     if env_path.exists():

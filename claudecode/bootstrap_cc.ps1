@@ -51,7 +51,7 @@ if (Test-Path $SeedDir) {
 }
 
 # DB URL and CC send URL (override via env vars if needed)
-$DbUrl = if ($env:IGOR_HOME_DB_URL) { $env:IGOR_HOME_DB_URL } else { "postgresql://igor:choose_a_password@localhost/igor_wild_0001" }
+$DbUrl = if ($env:IGOR_HOME_DB_URL) { $env:IGOR_HOME_DB_URL } else { "postgresql://igor:choose_a_password@localhost/Igor-wild-0001" }
 $CcSend = if ($env:CC_SEND_URL) { $env:CC_SEND_URL } else { "http://localhost:8080/api/cc_send" }
 
 # Write settings.local.json

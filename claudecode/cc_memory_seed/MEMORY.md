@@ -185,9 +185,9 @@ Akien's full name is **Akien Maciain**.
 Igor is a Python AI agent with persistent SQLite memory.
 - Repo: https://github.com/akienm/TheIgors
 - Main agent code: `wild_igor/igor/`
-- DB: `~/.TheIgors/igor_wild_0001/wild-0001.db` (`IGOR_DB_PATH` env var)
-- Budget DB: `~/.TheIgors/igor_wild_0001/claude_budget.db`
-- .env: `~/.TheIgors/igor_wild_0001/.env` (never committed; gitignored)
+- DB: `~/.TheIgors/Igor-wild-0001/wild-0001.db` (`IGOR_DB_PATH` env var)
+- Budget DB: `~/.TheIgors/Igor-wild-0001/claude_budget.db`
+- .env: `~/.TheIgors/Igor-wild-0001/.env` (never committed; gitignored)
 - venv: `/home/akien/TheIgors/venv/` (Python 3.12.3)
 - Launch: `igor` bash alias (loops on exit code 42 = restart); .env re-read on every restart
 - **Source/runtime split**: `~/TheIgors/` = source code; `~/.TheIgors/` = all runtime/instance data
@@ -222,7 +222,7 @@ Igor is a Python AI agent with persistent SQLite memory.
 - **Web UI**: `igor/web/server.py` (Starlette/uvicorn, port IGOR_WEB_PORT=8080); CC→Igor bridge: `POST /api/cc_send {"content":"..."}`
 - **Main loop**: stdin checked FIRST; _drain_network → background → _drain_action_impulses
 - **Forensic logs**: `cognition/forensic_logger.py` → `~/.TheIgors/logs/` (reasoning_calls, ne_runs, self_edit, tool_calls, memory_ops, metrics, reading_progress); logs prepend (newest at TOP)
-- **Arbiter**: `arbiter/queue.py` — `IGOR_ARBITER_ENABLED=false` (disabled); file-backed JSON at `~/.TheIgors/igor_wild_0001/arbiter/pending.json`
+- **Arbiter**: `arbiter/queue.py` — `IGOR_ARBITER_ENABLED=false` (disabled); file-backed JSON at `~/.TheIgors/Igor-wild-0001/arbiter/pending.json`
 
 ## Models
 - tier.3: `gpt-4o-mini`; tier.3.5: `claude-haiku-4.5`; tier.4: `claude-sonnet-4-6`; tier.5: inhibited

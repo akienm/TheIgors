@@ -54,7 +54,7 @@ sys.path.insert(0, str(REPO))
 
 os.environ.setdefault(
     "IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"),
+    str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
 
 from wild_igor.igor.tools.template_tools import instantiate_template

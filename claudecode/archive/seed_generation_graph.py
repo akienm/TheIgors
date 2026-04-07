@@ -28,7 +28,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-DATA_DIR = Path.home() / ".TheIgors" / "igor_wild_0001"
+DATA_DIR = Path.home() / ".TheIgors" / "Igor-wild-0001"
 DB_PATH = DATA_DIR / "wild-0001.db"
 LOG_DIR = Path.home() / ".TheIgors" / "logs"
 OUTPUT_PATH = Path.home() / ".TheIgors" / "generation_graph.json"

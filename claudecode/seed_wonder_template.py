@@ -8,7 +8,7 @@ to TWM, falls through to LLM for synthesis).
 
 Usage:
     cd ~/TheIgors && source venv/bin/activate
-    IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \
+    IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \
         python claudecode/seed_wonder_template.py
 
 After seeding, verify with:
@@ -28,7 +28,7 @@ from wild_igor.igor.memory.cortex import Cortex
 
 DB_PATH = Path(
     os.environ.get(
-        "IGOR_DB_PATH", os.path.expanduser("~/.TheIgors/igor_wild_0001/wild-0001.db")
+        "IGOR_DB_PATH", os.path.expanduser("~/.TheIgors/Igor-wild-0001/wild-0001.db")
     )
 )
 

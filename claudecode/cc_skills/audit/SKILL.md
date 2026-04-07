@@ -71,8 +71,8 @@ For each finding: is there a log call in the except block? If not → add one no
 ```bash
 cd ~/TheIgors && source venv/bin/activate && python3 - << 'EOF'
 import sys, os
-os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001")
-os.environ.setdefault("IGOR_DB_PATH", os.path.expanduser("~/.TheIgors/igor_wild_0001/wild-0001.db"))
+os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001")
+os.environ.setdefault("IGOR_DB_PATH", os.path.expanduser("~/.TheIgors/Igor-wild-0001/wild-0001.db"))
 sys.path.insert(0, ".")
 from wild_igor.igor.tools.registry import registry
 import wild_igor.igor.tools  # noqa
@@ -125,7 +125,7 @@ Any file > 10MB → rotate or truncate.
 cd ~/TheIgors && source venv/bin/activate && python3 - << 'EOF'
 import os, sys
 sys.path.insert(0, ".")
-os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001")
+os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001")
 from wild_igor.igor.tools.budget import _tool_balance_trajectory
 print(_tool_balance_trajectory(window_hours=48))
 EOF
@@ -140,7 +140,7 @@ EOF
 ```bash
 cd ~/TheIgors && source venv/bin/activate && python3 - << 'EOF'
 import os
-os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001")
+os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001")
 import psycopg2
 conn = psycopg2.connect(os.environ["IGOR_HOME_DB_URL"])
 cur = conn.cursor()
@@ -237,8 +237,8 @@ Check against registry, NOT source text (string-search produces false positives)
 cd ~/TheIgors && source venv/bin/activate && python3 - << 'EOF'
 import os, sys, json
 sys.path.insert(0, ".")
-os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001")
-os.environ.setdefault("IGOR_DB_PATH", os.path.expanduser("~/.TheIgors/igor_wild_0001/wild-0001.db"))
+os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001")
+os.environ.setdefault("IGOR_DB_PATH", os.path.expanduser("~/.TheIgors/Igor-wild-0001/wild-0001.db"))
 
 from wild_igor.igor.tools.registry import registry
 import wild_igor.igor.tools  # loads all tools
@@ -348,7 +348,7 @@ cd ~/TheIgors && grep -rn \
     -e "choose_a_password" \
     -e "api_key\s*=\s*['\"][a-zA-Z0-9_-]\{20,\}" \
     -e "password\s*=\s*['\"][^'\"]\{8,\}" \
-    -e "igor_wild_0001" \
+    -e "Igor-wild-0001" \
     --include="*.py" wild_igor/igor/ 2>/dev/null | grep -v "__pycache__" | grep -v "test_" | grep -v "\.pyc"
 ```
 

@@ -19,14 +19,14 @@ Full 17-step automated audit completed. No critical failures. Several medium/lar
 **Finding**: Stale files at `~/.TheIgors/` root from older code version
 - `~/.TheIgors/learn_queue.json` (Mar 19 08:30) — STALE
 - `~/.TheIgors/drain_learn_queue.pid` — STALE
-- **Current code**: paths.py correctly writes to instance directory (`~/.TheIgors/igor_wild_0001/`)
+- **Current code**: paths.py correctly writes to instance directory (`~/.TheIgors/Igor-wild-0001/`)
 - **Instance files exist**: CORRECT locations have been in use since Mar 20
 
 **Action**: Delete stale duplicates (low risk, superseded)
 
 **Instance path clutter**: Multiple instance folders at root indicate past refactoring chaos
 - `Igor-wild-0001/` (capitalized)
-- `igor_wild_0001/` (correct, active)
+- `Igor-wild-0001/` (correct, active)
 - `igor_wild-0001` (old dash variant)
 - `igor_Igor_wild_0001` (malformed)
 
@@ -140,7 +140,7 @@ Examples:
 ---
 
 ### Credentials / Hardcoded Paths — OK ✅
-**Finding**: `igor_wild_0001` appears 10 times in source
+**Finding**: `Igor-wild-0001` appears 10 times in source
 - All in comments, docstrings, or config defaults
 - Instance ID set via env var; default is correct
 - ✓ No hardcoded passwords in source

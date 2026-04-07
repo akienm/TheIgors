@@ -13,7 +13,7 @@ code_ref: pe_chain:pe_implement
 
 Usage:
     cd ~/TheIgors && source venv/bin/activate
-    IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \\
+    IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \\
         python claudecode/seed_layer4_patch_file.py
 
 Safe to re-run — upserts on conflict.
@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 
 TEMPLATE_ID = "tpl-layer4-patch-file"

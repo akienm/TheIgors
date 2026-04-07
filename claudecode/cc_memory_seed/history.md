@@ -40,7 +40,7 @@ Commits: b351f28 (pass.1) · 34ece42 (WO4 urgent) · 9421b7e (pass.2) · 69ef2ef
 ## Known Issues (2026-02-28, mostly stale)
 - ollama_calls.log showed gemma3:270M on old instance; should resolve on clean restart.
 - Local claude_budget.db has $14.80 in historical Anthropic direct spend; legacy noise. Real OR balance: $19.95.
-- Real DB is at wild_igor/data/wild-0001.db. ~/.TheIgors/igor_wild_0001/wild-0001.db and wild_igor/memory/wild-0001.db are empty stubs.
+- Real DB is at wild_igor/data/wild-0001.db. ~/.TheIgors/Igor-wild-0001/wild-0001.db and wild_igor/memory/wild-0001.db are empty stubs.
 - CONFLUENCE_EMAIL must be set to Akien's Atlassian email (not theigorsigor@gmail.com).
 - Credential scrubbing gap (issue #19): FIXED 2026-03-01 via scrub.py.
 

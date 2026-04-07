@@ -1068,7 +1068,7 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 - **D178 — habit-audit-pipeline ~~CLOSED~~**: Archived 995 habits (991 zero-activation BL_*, 3 pipeline suppressors, 2 dead-trigger). 124 active habits remain. PROC_DIRECTION_AWARE wired as context_inject/heartbeat_check; PROC_RESP_COMPLEX changed to context_inject.
 - **D179 — reading-experiment-roadmap ~~defined~~**: 8-experiment roadmap: experiments 1-5 done; experiment 6 (bulk reading, 146 items) running; 7=swarm, 8=capacity.
 - **D180 — pipeline-arch-resolved ~~CLOSED~~**: T-pipeline-arch resolved without code changes: preparse always skipped (IGOR_SKIP_PREPARSE_ON_CONFIDENT), OR contention phantom, drain runner path bug was the real blocker.
-- **D181 — paths-default-fix ~~CLOSED~~**: `paths.py` default instance_id corrected Igor-wild-0001 → igor_wild_0001. Root path case bug affecting drain runner and internal path resolution.
+- **D181 — paths-default-fix ~~CLOSED~~**: `paths.py` default instance_id corrected Igor-wild-0001 → Igor-wild-0001. Root path case bug affecting drain runner and internal path resolution.
 - **D182 — scribe-pattern-retired ~~CLOSED~~**: Scribe worker pattern retired. Day-close is now manual-only. 15 pending scribe tasks cancelled. Savestate skill no longer auto-generates scribe queue items.
 
 **New gaps / tickets:**
@@ -1172,7 +1172,7 @@ Result: Igor boots clean on Windows — CP·6 ID·14 67 memories, INTEGRITY_CHEC
 
 **Gaps closed:**
 
-- **G-BUDGET-PATH1 ~~CLOSED~~**: `budget.py` derived its DB path from `IGOR_DB_PATH` env var (fallback `"memory/igor.db"` relative). D224 removed `IGOR_DB_PATH` from `.env`; fallback wrote `wild_igor/memory/claude_budget.db` into the source tree. Fixed: `_db_path()` now uses `paths().instance / "claude_budget.db"` → `~/.TheIgors/igor_wild_0001/claude_budget.db`.
+- **G-BUDGET-PATH1 ~~CLOSED~~**: `budget.py` derived its DB path from `IGOR_DB_PATH` env var (fallback `"memory/igor.db"` relative). D224 removed `IGOR_DB_PATH` from `.env`; fallback wrote `wild_igor/memory/claude_budget.db` into the source tree. Fixed: `_db_path()` now uses `paths().instance / "claude_budget.db"` → `~/.TheIgors/Igor-wild-0001/claude_budget.db`.
 
 **New gaps (open):**
 

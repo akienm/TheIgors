@@ -48,7 +48,7 @@ REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "wild_igor"))
 
-env_path = Path.home() / ".TheIgors" / "igor_wild_0001" / ".env"
+env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
 if env_path.exists():
     for line in env_path.read_text().splitlines():
         line = line.strip()
@@ -93,12 +93,12 @@ from igor.tools.ebook_reader import open_book, read_chunk
 
 DB_PATH = Path(
     os.environ.get(
-        "IGOR_DB_PATH", Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+        "IGOR_DB_PATH", Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
     )
 )
 IGOR_HOME_DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 PROGRESS_DIR = Path.home() / ".TheIgors" / "book_learner_progress"
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"

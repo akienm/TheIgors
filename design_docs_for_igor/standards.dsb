@@ -42,7 +42,7 @@ RULE_NEW_TOOL_CHECKLIST|
 
 RULE_DB|
   engine=PostgreSQL only — never sqlite3
-  url=read from IGOR_HOME_DB_URL env var; default postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+  url=read from IGOR_HOME_DB_URL env var; default postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
   jsonb_operator=use jsonb_exists(metadata,'key') not metadata ? 'key' — db_proxy breaks ?
   metadata_serial=json.dumps(dict) always — str(dict) produces Python True/False/None not JSON
   conflict_qualify=ON CONFLICT DO UPDATE SET activation_count = memories.activation_count + 1

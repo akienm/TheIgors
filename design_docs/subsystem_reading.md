@@ -36,7 +36,7 @@ Tool: `integrate_reading(book, batch=200)`. The 5-step pipeline also runs inline
 
 **Experiment roadmap** (D179): 8 experiments defined. Experiments 1–5 done (pipeline built and validated). Experiment 6 (bulk reading, 146 items) running. Experiments 7–8 (swarm, capacity) follow.
 
-**Drain runner path fix** (D181): cron was using `IGOR_INSTANCE_ID=Igor-wild-0001` (wrong case) — was reading empty queue for weeks. Fixed to `igor_wild_0001`. 146 items now draining.
+**Drain runner path fix** (D181): cron was using `IGOR_INSTANCE_ID=Igor-wild-0001` (wrong case) — was reading empty queue for weeks. Fixed to `Igor-wild-0001`. 146 items now draining.
 
 ---
 

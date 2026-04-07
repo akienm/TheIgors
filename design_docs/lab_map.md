@@ -11,7 +11,7 @@ everything under `~/.TheIgors/` is **runtime data** that never gets committed.
 
 ```
 ~/.TheIgors/
-├── igor_wild_0001/         # Primary instance (akiendelllinux)
+├── Igor-wild-0001/         # Primary instance (akiendelllinux)
 ├── local/                  # Machine-local shared data (multi-box)
 ├── akien/                  # Akien's personal files synced to instances
 ├── cc_channel/             # Claude Code ↔ Igor coordination substrate
@@ -23,10 +23,10 @@ everything under `~/.TheIgors/` is **runtime data** that never gets committed.
 
 ---
 
-## Instance Directory: `igor_wild_0001/`
+## Instance Directory: `Igor-wild-0001/`
 
 ```
-igor_wild_0001/
+Igor-wild-0001/
 ├── .env                    # ALL secrets + config (never committed)
 ├── wild-0001.db            # Live PostgreSQL-backed DB (DO NOT DELETE)
 ├── claude_budget.db        # Per-session CC cost tracking (SQLite)

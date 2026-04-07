@@ -27,7 +27,7 @@ DISCORD|
   queues=NetworkMessage to incoming queue
 
 PATHS|
-  inbox=~/.TheIgors/igor_wild_0001/inbox/|InboxWatcher detects new files every 5s|salience=0.9
-  outbox=~/.TheIgors/igor_wild_0001/outbox/|Igor writes files here for download
+  inbox=~/.TheIgors/Igor-wild-0001/inbox/|InboxWatcher detects new files every 5s|salience=0.9
+  outbox=~/.TheIgors/Igor-wild-0001/outbox/|Igor writes files here for download
 
 KNOWN_FAILURES|F008(web-no-response),F011(web-no-response-general)

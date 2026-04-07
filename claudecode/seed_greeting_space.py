@@ -31,7 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault(
     "IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"),
+    str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
 
 from wild_igor.igor.memory.models import Memory, MemoryType
@@ -40,7 +40,7 @@ from wild_igor.igor.memory.cortex import Cortex
 DRY_RUN = "--dry-run" in sys.argv
 
 db_path = Path(os.environ["IGOR_DB_PATH"])
-cortex = Cortex(db_path, instance_id="igor_wild_0001")
+cortex = Cortex(db_path, instance_id="Igor-wild-0001")
 
 habits = [
     # ── Root anchor ───────────────────────────────────────────────────────────

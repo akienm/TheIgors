@@ -6,18 +6,18 @@
 #
 # Prereqs set as environment variables before running:
 #   ANTHROPIC_API_KEY   — passed through to .env
-#   IGOR_HOME_DB_URL    — postgresql://igor:PASSWORD@10.0.0.229/igor_wild_0001
-#   IGOR_INSTANCE_ID    — e.g. igor_wild_0001 (default) or igor_wild_reader_0001
+#   IGOR_HOME_DB_URL    — postgresql://igor:PASSWORD@10.0.0.229/Igor-wild-0001
+#   IGOR_INSTANCE_ID    — e.g. Igor-wild-0001 (default) or igor_wild_reader_0001
 #   OPENROUTER_API_KEY  — optional but needed for cloud inference
 #
-# On the DB host (akiendelllinux): IGOR_INSTANCE_ID=igor_wild_0001
+# On the DB host (akiendelllinux): IGOR_INSTANCE_ID=Igor-wild-0001
 # On reader nodes:                 IGOR_INSTANCE_ID=igor_wild_reader_XXXX
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUNTIME_ROOT="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
-INSTANCE_ID="${IGOR_INSTANCE_ID:-igor_wild_0001}"
+INSTANCE_ID="${IGOR_INSTANCE_ID:-Igor-wild-0001}"
 INSTANCE_DIR="$RUNTIME_ROOT/$INSTANCE_ID"
 VENV_DIR="$REPO_ROOT/venv"
 

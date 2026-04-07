@@ -4,7 +4,7 @@
 # Usage:
 #   deploy/igor-docker.sh [up|down|logs|rebuild|pull-model <model>]
 #
-# Requires: docker (with compose plugin), git, ~/.TheIgors/igor_wild_0001/.env
+# Requires: docker (with compose plugin), git, ~/.TheIgors/Igor-wild-0001/.env
 #
 # First run:
 #   1. Install Docker: https://docs.docker.com/engine/install/
@@ -15,7 +15,7 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUNTIME_ROOT="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
-INSTANCE_ID="${IGOR_INSTANCE_ID:-igor_wild_0001}"
+INSTANCE_ID="${IGOR_INSTANCE_ID:-Igor-wild-0001}"
 ENV_SRC="$RUNTIME_ROOT/$INSTANCE_ID/.env"
 ENV_DST="$REPO_ROOT/.env.igor"
 

@@ -5,7 +5,7 @@ Usage:
     python3 claudecode/migrate_sqlite_to_postgres.py
 
 Reads IGOR_DB_PATH (SQLite source) and IGOR_DB_URL (Postgres target) from the
-environment (or from the .env file at ~/.TheIgors/igor_wild_0001/.env).
+environment (or from the .env file at ~/.TheIgors/Igor-wild-0001/.env).
 
 What it does:
 1.  Enables pg_trgm extension (for future trigram indexes)
@@ -36,7 +36,7 @@ def _load_env():
     env_path = (
         Path.home()
         / ".TheIgors"
-        / os.getenv("IGOR_INSTANCE_ID", "igor_wild_0001")
+        / os.getenv("IGOR_INSTANCE_ID", "Igor-wild-0001")
         / ".env"
     )
     if env_path.exists():
@@ -510,7 +510,7 @@ def main():
         print("Migration complete. All counts match.")
         print()
         print("Next steps:")
-        print("  1. Confirm IGOR_DB_URL is set in ~/.TheIgors/igor_wild_0001/.env")
+        print("  1. Confirm IGOR_DB_URL is set in ~/.TheIgors/Igor-wild-0001/.env")
         print("  2. Start Igor — make_db_proxy() will auto-select Postgres")
         print("  3. Send a test message via CC bridge to confirm DB connectivity")
     else:

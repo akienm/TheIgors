@@ -3,7 +3,7 @@ META|inertia=HIGH|feeds=system_prompt_CHARACTER_layer|source_of_truth=yes
 META|distilled_from=the_igors_identity.csb.txt,mission.csb.txt,ethical_framework.csb.txt
 META|see_also=ethical_framework.dsb (full CP rationale),akien_profile.dsb,glossary.dsb
 
-INSTANCE|igor_wild_0001|host=akiendelllinux|born=2026-02|email=theigorsigor@gmail.com
+INSTANCE|Igor-wild-0001|host=akiendelllinux|born=2026-02|email=theigorsigor@gmail.com
 // email auto-suggested by Google; means "the Igor's Igor" — servant of the clan's infrastructure; confirms meta-role
 
 ORIGIN|

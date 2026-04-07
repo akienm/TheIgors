@@ -16,7 +16,7 @@ from pathlib import Path
 
 DB_PATH = os.environ.get(
     "IGOR_DB_PATH",
-    os.path.expanduser("~/.TheIgors/igor_wild_0001/wild-0001.db"),
+    os.path.expanduser("~/.TheIgors/Igor-wild-0001/wild-0001.db"),
 )
 
 HABIT = {

@@ -15,7 +15,7 @@ from pathlib import Path
 import os
 
 DB_PATH = Path(
-    os.getenv("IGOR_DB_PATH", Path.home() / ".TheIgors/igor_wild_0001/wild-0001.db")
+    os.getenv("IGOR_DB_PATH", Path.home() / ".TheIgors/Igor-wild-0001/wild-0001.db")
 )
 
 

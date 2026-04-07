@@ -94,9 +94,9 @@ KEY_CONCEPTS|
   blob|large content stored in memory|has_blob=True|expand_blob_memories() appends on relevance≥0.5
 
 PATHS|
-  igor_db|~/.TheIgors/igor_wild_0001/wild-0001.db
-  budget_db|~/.TheIgors/igor_wild_0001/claude_budget.db
-  env_file|~/.TheIgors/igor_wild_0001/.env
+  igor_db|~/.TheIgors/Igor-wild-0001/wild-0001.db
+  budget_db|~/.TheIgors/Igor-wild-0001/claude_budget.db
+  env_file|~/.TheIgors/Igor-wild-0001/.env
   word_graph_db|~/.TheIgors/word_graph.db
   logs|~/.TheIgors/logs/
   source|~/TheIgors/wild_igor/igor/

@@ -5,8 +5,8 @@
 Igor is a Python AI agent with persistent SQLite memory, running on akiendelllinux.
 - Repo: https://github.com/akienm/TheIgors
 - Main agent code: `wild_igor/igor/`
-- DB: `~/.TheIgors/igor_wild_0001/wild-0001.db` (runtime, not in repo)
-- .env: `~/.TheIgors/igor_wild_0001/.env` (never committed)
+- DB: `~/.TheIgors/Igor-wild-0001/wild-0001.db` (runtime, not in repo)
+- .env: `~/.TheIgors/Igor-wild-0001/.env` (never committed)
 - venv: `/home/akien/TheIgors/venv/` (Python 3.12)
 - Launch: `igor` bash alias (loops on exit code 42 = restart); visible terminal: `DISPLAY=:0 konsole -e bash -c "igor" &` (add `; exec bash` to keep terminal open after crash)
 - Source/runtime split: `~/TheIgors/` = source; `~/.TheIgors/` = all runtime data
@@ -41,14 +41,14 @@ Igor is a Python AI agent with persistent SQLite memory, running on akiendelllin
 
 ### Instance data location
 <!-- last-updated: 2026-03-13a -->
-All runtime instance data lives in `~/.TheIgors/igor_wild_0001/`:
+All runtime instance data lives in `~/.TheIgors/Igor-wild-0001/`:
 - `jobs/` — background job state
 - `arbiter/` — pending arbiter queue
 - `warm_context.*.json` — session context
 - `logs/` — forensic logs
 - `inbox/`, `outbox/`, `workspace/` — instance working dirs
 
-### Key env vars (in `~/.TheIgors/igor_wild_0001/.env`)
+### Key env vars (in `~/.TheIgors/Igor-wild-0001/.env`)
 <!-- last-updated: 2026-03-13a -->
 - `IGOR_DB_PATH` — path to live SQLite DB
 - `OPENROUTER_API_KEY` — primary cloud inference
@@ -112,7 +112,7 @@ When `/compact` runs (manually or automatically), preserve:
 <!-- last-updated: 2026-03-13a -->
 - Move or rename `brainstem/` contents without Akien review
 - Store credentials in memory (use `.env` + CREDENTIAL_REF memory pattern — see #71)
-- Delete `~/.TheIgors/igor_wild_0001/wild-0001.db` — that's the live DB
+- Delete `~/.TheIgors/Igor-wild-0001/wild-0001.db` — that's the live DB
 - Edit `.env` without noting what changed and why
 
 ## Known Broken / Do Not Touch

@@ -420,11 +420,11 @@
 **In-flight**: NONE
 
 ## Session 2026-03-28b
-**Theme**: Theme: instance dir double-prefix bug fix + igor_wild_0001 stale dir audit
+**Theme**: Theme: instance dir double-prefix bug fix + Igor-wild-0001 stale dir audit
 **Decisions**: D255, D256, D257
 **Key changes**:
 - done: main.py double-prefix bug — _instance_dir(), _export_portable_identity(), response_habituation all constructed igor_{instance_id} instead of using paths().instance; when IGOR_INSTANCE_ID=Igor-wild-0001 this created igor_Igor_wild_0001 dir; fix: use _paths().instance directly (847e2a35)
-- done: conftest.py — patches PathManager.inbox to temp dir; prevents pytest from creating stray igor_wild_0001/ on every run (63eb6e88). Audit: 516 passed, no new issues.
+- done: conftest.py — patches PathManager.inbox to temp dir; prevents pytest from creating stray Igor-wild-0001/ on every run (63eb6e88). Audit: 516 passed, no new issues.
 - decided: D255 facia=thread, D256 timestamp node IDs + node registry, D257 tree as traversal index; ring memory confirmed as the term; facia memory term coined; feed_reading_list dedup fix live (10e36356)
 **Next session**: Next session: Slate 0 DB tickets (T-db-lemmatize, T-db-wg-replace-cooccur). Gmail app password akiendell (low priority noise).
 **In-flight**: NONE
@@ -434,7 +434,7 @@
 **Key changes**:
 - done: SSH auth root cause — Windows admin users need C:\ProgramData\ssh\administrators_authorized_keys not ~/.ssh/authorized_keys; fixed on akiendell + yoga9i via sftp with LF-only file
 - done: Windows update stash/pull/pop — igor_loop.ps1 + start_igor_windows.ps1 local mods blocked git pull --rebase; fixed _WINDOWS_UPDATE_CMD in cluster_ssh.py
-- done: restart.flag scan fixed — SSH user (igor_wild_0001) != Igor runtime user (akien); updated to scan C:\Users\*\.TheIgors\* instead of $env:USERPROFILE
+- done: restart.flag scan fixed — SSH user (Igor-wild-0001) != Igor runtime user (akien); updated to scan C:\Users\*\.TheIgors\* instead of $env:USERPROFILE
 - done: igor_loop.ps1 renamed to igor.ps1 — canonical Windows launch command with restart loop; start_igor_windows.ps1 was one-shot (no loop), causing restart.flag exits to drop to PS prompt
 - done: swarm update end-to-end green — all 4 boxes (akiendell 14 instances, yogai7 6, yoga9i 5, akiendelllinux local) pulling and flagging
 **Next session**: Next: 1. Gmail app password on akiendell (low priority — just noise). 2. cluster_router 'no local machine' warnings from igor_wild_windows_0001 — may self-resolve once Windows Igor settles. 3. Find 24 training chapters when ready.
@@ -936,7 +936,7 @@
 ## Session 2026-03-20f
 **Theme**: Theme: paths default fix + inference gateway discovery
 **Key changes**:
-- fixed paths.py default: Igor-wild-0001 → igor_wild_0001 (root path case bug)
+- fixed paths.py default: Igor-wild-0001 → Igor-wild-0001 (root path case bug)
 - removed drain_learn_queue cron entry — Igor handles internally via learner.py tools
 - discovered inference_gateway.py + cluster_router.py already exist — inference proxy is built
 **Next session**: Next: read inference_gateway.py + cluster_router.py — understand what's built, what's missing (performance testing habits?). Then preparse removal.
@@ -955,7 +955,7 @@
 - closed T-trails-infra: trails_through_node, trail_gradient, hot_paths in cortex; inspect_trail + trail_hot_paths tools registered and live-tested
 - workstep: plan approved for T-habit-audit-pipeline
 - closed T-habit-audit-pipeline: D103/D104 audit done — 995 habits archived, 124 remain active
-- fixed drain runner cron: IGOR_INSTANCE_ID=igor_wild_0001 — was reading Igor-wild-0001 (wrong case), seeing empty queue for weeks. 146 items now draining.
+- fixed drain runner cron: IGOR_INSTANCE_ID=Igor-wild-0001 — was reading Igor-wild-0001 (wrong case), seeing empty queue for weeks. 146 items now draining.
 **Next session**: 1. Close T-pipeline-arch (D180). 2. Create T-gap-logging (M) + T-ne-redesign (L, deferred). 3. T-swarm-update design. 4. Monitor experiment 6 — check drain runner progress + book_learner node deposition quality.
 **In-flight**: Experiment 6 bulk reading is running. 146 training corpus items draining via fixed cron. All cognition prep complete.
 
@@ -1149,7 +1149,7 @@
 **Decisions**: none new (audit completion)
 **Key changes**:
 - P4: 40 seed_*.py archived to claudecode/archive/; seed_resource_gate_habits marked DO_NOT_RERUN; archive/README.md created
-- P5: paths.py learn_queue+drain_pid moved to paths().instance (was runtime root — race condition); drain_learn_queue.py hardcoded paths replaced with PathManager; existing learn_queue.json migrated to igor_wild_0001/
+- P5: paths.py learn_queue+drain_pid moved to paths().instance (was runtime root — race condition); drain_learn_queue.py hardcoded paths replaced with PathManager; existing learn_queue.json migrated to Igor-wild-0001/
 - DSB/CSB architecture clarified: .md files = human-readable source maintained by Claude; .dsb/.csb = compressed token-efficient form for Claude/Igor; DB = eventual runtime home; Claude maintains .md, Igor will eventually take over; update cadence = lazy not per-session
 **Next session**: new concept chunk from Akien (pending)
 **In-flight**: NONE

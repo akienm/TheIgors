@@ -5,7 +5,7 @@ Creates a scheduled cognitive habit that fires run_self_training_pass()
 every 30 minutes via SchedulerSource.
 
 Run once after deploying self_trainer.py:
-  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \
+  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \
     python3 claudecode/seed_self_training_habit.py
 
 Safe to re-run — upserts on conflict.
@@ -19,7 +19,7 @@ from datetime import datetime
 
 DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 
 HABIT = {

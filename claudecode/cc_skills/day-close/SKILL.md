@@ -76,7 +76,7 @@ If any code was changed: commit before proceeding to docs.
 ## Step 5 — Read today's session record
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py show 1
 ```
 
@@ -100,7 +100,7 @@ Non-fatal — if gh CLI is unavailable or rate-limited, skip and continue.
 ## Step 7 — Sync docs DB + render sessions.md
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 
 # Sync all DSB files to Postgres
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/docs_sync.py sync

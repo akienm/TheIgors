@@ -6,7 +6,7 @@ Seeds PROC_APPROVE_CHANGE — fires on approval → git commit → done.
 Seeds PROC_CHECK_IGOR_QUEUE — lets Igor discover worker=igor tickets.
 
 Run once after deploying:
-  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \
+  IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \
     python3 claudecode/seed_work_ticket_habits.py
 
 Safe to re-run — upserts on conflict.
@@ -21,11 +21,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault(
     "IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"),
+    str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
 DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 os.environ["IGOR_HOME_DB_URL"] = DB_URL
 

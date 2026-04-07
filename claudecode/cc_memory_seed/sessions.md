@@ -767,7 +767,7 @@ ring captured "Habit executed."; after /exit+restart Igor couldn't reconstruct t
 - D088 fully implemented: superclaude failover (Anthropic→OR at $10 threshold) + check_claude_balance browser tool
 - All cortex slow-query fixes done: #259 (boot SELECT*), #260 (habit cache), #261 (migration guard)
 - CLAUDE.md: environment split note added (priority 0 — prevent OR/Anthropic confusion)
-- Claude designer notebook created: ~/.TheIgors/igor_wild_0001/chats/claude/notebook.db
+- Claude designer notebook created: ~/.TheIgors/Igor-wild-0001/chats/claude/notebook.db
 - Priority order established: 0=confusion prevention, 1=cost, 2=cognition, 3=performance, 4=cleanup, 5=productization
 - D092 designed + approved: db_proxy universal gateway — all DBs through proxy, W2 index lifecycle
 **Next session**: Implement D092 (W1+W2); then #250 NE episodic-to-semantic merge; #256 Tailscale

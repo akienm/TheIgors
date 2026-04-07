@@ -33,7 +33,7 @@ Categorize each ticket:
 Write the final done/active state to today's dated file:
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/slate_manager.py render
 ```
 

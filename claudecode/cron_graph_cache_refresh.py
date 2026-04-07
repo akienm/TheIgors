@@ -27,7 +27,7 @@ def _load_env():
     env_path = (
         Path.home()
         / ".TheIgors"
-        / os.getenv("IGOR_INSTANCE_ID", "igor_wild_0001")
+        / os.getenv("IGOR_INSTANCE_ID", "Igor-wild-0001")
         / ".env"
     )
     if env_path.exists():

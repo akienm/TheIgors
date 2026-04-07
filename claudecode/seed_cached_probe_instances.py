@@ -14,7 +14,7 @@ Migration targets (T-cached-probe):
 
 Usage:
     cd ~/TheIgors && source venv/bin/activate
-    IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001 \\
+    IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \\
         python claudecode/seed_cached_probe_instances.py
 
 Verify:
@@ -29,11 +29,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 os.environ.setdefault(
     "IGOR_DB_PATH",
-    str(Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"),
+    str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
 DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 if DB_URL:
     os.environ["IGOR_HOME_DB_URL"] = DB_URL
@@ -42,7 +42,7 @@ from wild_igor.igor.memory.models import Memory, MemoryType
 from wild_igor.igor.memory.cortex import Cortex
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
-cortex = Cortex(DB_PATH, instance_id="igor_wild_0001")
+cortex = Cortex(DB_PATH, instance_id="Igor-wild-0001")
 
 # ── CACHED_PROBE instance definitions ────────────────────────────────────────
 # Each entry: (check_id, surface_id, probe_name, source_fn, trigger_phrase,

@@ -48,7 +48,7 @@ from starlette.routing import Route
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 REPO = Path(__file__).parent.parent
-INSTANCE_DIR = Path.home() / ".TheIgors" / "igor_wild_0001"
+INSTANCE_DIR = Path.home() / ".TheIgors" / "Igor-wild-0001"
 HISTORY_FILE = Path.home() / ".TheIgors" / "claude_bridge_history.json"
 LOG_DIR = Path.home() / ".TheIgors" / "logs"
 LOG_FILE = LOG_DIR / "claude_bridge.log"
@@ -56,7 +56,7 @@ GAP_ANALYSIS = REPO / "design_docs" / "gap_analysis.md"
 CLAUDE_MD = REPO / "CLAUDE.md"
 IGOR_HOME_DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001",
+    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
 
 # ── Config ─────────────────────────────────────────────────────────────────────

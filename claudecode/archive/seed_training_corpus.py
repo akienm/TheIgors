@@ -24,7 +24,7 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "wild_igor"))
 
 # Load .env before importing igor modules
-env_path = Path.home() / ".TheIgors" / "igor_wild_0001" / ".env"
+env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
 if env_path.exists():
     for line in env_path.read_text().splitlines():
         line = line.strip()

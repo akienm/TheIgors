@@ -25,7 +25,7 @@ Identify the type(s) of conclusion:
 For each Dxxx decided:
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/decision_manager.py add Dxxx "short-name" "status" "one-line description"
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-decision Dxxx
 ```
@@ -56,7 +56,7 @@ python3 ~/TheIgors/claudecode/cc_queue.py update <ticket-id> "updated descriptio
 
 Accumulate in session record:
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-change "decided: <what was planned>"
 ```
 
@@ -65,7 +65,7 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-cha
 ## Step 4 — If work was completed: record key change
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 python3 ~/TheIgors/claudecode/cc_queue.py done <task-id> "what was built + test status"
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py append-change "done: <what was built>"
 ```

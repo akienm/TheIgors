@@ -11,7 +11,7 @@ from pathlib import Path
 REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 
-env_path = Path.home() / ".TheIgors" / "igor_wild_0001" / ".env"
+env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
 if env_path.exists():
     for line in env_path.read_text().splitlines():
         line = line.strip()
@@ -24,7 +24,7 @@ from wild_igor.igor.memory.models import Memory, MemoryType
 
 DB_PATH = Path(os.environ.get(
     "IGOR_DB_PATH",
-    Path.home() / ".TheIgors" / "igor_wild_0001" / "wild-0001.db"
+    Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 ))
 cortex = Cortex(DB_PATH)
 
@@ -76,7 +76,7 @@ MEMORIES = [
             "Igor's calendar is tied to theigorsigor@gmail.com (Google Calendar + Tasks). "
             "Notifications arrive as email — Igor reads them via IMAP like any other email, "
             "no polling needed. The Calendar API is only used for creating/managing events (write side). "
-            "OAuth2 credentials at ~/.TheIgors/igor_wild_0001/google_credentials.json. "
+            "OAuth2 credentials at ~/.TheIgors/Igor-wild-0001/google_credentials.json. "
             "Employer calendars use separate credentials — providing them constitutes consent. "
             "Calendar reminder emails are episodic attention units: bounded, self-contained, "
             "handled and closed like any actionable email."

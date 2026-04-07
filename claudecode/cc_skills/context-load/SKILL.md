@@ -38,7 +38,7 @@ if [ ! -f "$SLATE" ]; then
 ## Tools
 Skills: /sprint /deep-audit /decided /commit /savestate /fixit /context-load /day-close /audit /probe /notethat /slateclose /readigor
 MCP: mcp__igor__memory_get(id) · mcp__igor__cc_send(text) · mcp__igor__channel_read(limit=N)
-DB: psql postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB: psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 Design docs: ~/TheIgors/design_docs_for_igor/ or mcp__igor__memory_get('D304')
 Epics: Claude · Cognition · Training · Operations · Database · Swarm · Productization
 EOF
@@ -77,7 +77,7 @@ See what other sessions have posted recently. Who is working on what.
 ## Step 4 — Read session last-change (if session active)
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py show 1
 ```
 
@@ -136,7 +136,7 @@ Ready.
 
 Check if a session is already in progress (e.g. prior tab or crash recovery):
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 python3 ~/TheIgors/claudecode/session_manager.py current
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/claudecode/session_manager.py show 1
 ```
