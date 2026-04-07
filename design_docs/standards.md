@@ -76,6 +76,28 @@ log_memory_op(
 - Dated logs (turn_trace, pipeline_trace, inference_io) rotate daily: `name.YYYYMMDD.log`
 - One log file per concern — do not multiplex unrelated events into the same file
 
+### Timing instrumentation
+
+Use `get_timer` from `logging_setup.py` (or `self.log.get_timer()` from any IgorBase subclass)
+to emit structured elapsed-time log lines without building your own t0/elapsed boilerplate:
+
+```python
+# Module-level tool (not a class)
+from ..logging_setup import get_timer
+timer = get_timer(log, "pe_chain.hypothesize", ticket=ticket_id)
+result = call_llm(prompt)
+timer.stop(tokens=len(result), model=model_id)
+# → logs: name=pe_chain.hypothesize started=20260406... elapsed=3.142 ticket=T-foo tokens=412 model=...
+
+# IgorBase subclass
+timer = self.log.get_timer("read_ticket", ticket=ticket_id)
+desc = read_ticket(ticket_id)
+timer.stop(desc_len=len(desc))
+```
+
+`timer.stop()` returns elapsed seconds if you need it for further logic. The structured format
+(space-separated `key=value` pairs) is machine-parseable and grep-friendly.
+
 ### bash scripts
 
 Bash scripts use `logcmd`/`logecho`/`timestamp()` from akientools `logger_for_bash`:

@@ -1,6 +1,6 @@
 DOC|architecture_root|v1|updated=2026-03-13
 META|inertia=MEDIUM|purpose=system orientation + subsystem index|load=every session
-META|see_also=glossary.dsb,igor_identity_master.dsb,decisions_log.dsb
+META|see_also=glossary.dsb,igor_identity_master.dsb,decisions_log.dsb,standards.dsb
 META|subsystem_detail=subsystem_*.dsb files
 
 THESIS|

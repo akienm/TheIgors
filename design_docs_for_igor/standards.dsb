@@ -1,0 +1,65 @@
+DOC|standards|v1|updated=2026-04-06
+META|purpose=authoritative coding standards; read before writing any new module or modifying existing one
+META|audience=Igor + Claude Code; when in doubt this wins over personal preference
+META|see_also=dev_process.dsb,inertia_registry.dsb
+META|source=design_docs/standards.md (human-readable version with code examples)
+
+RULE_NO_SILENT_EXCEPTIONS|
+  rule=every except block must log or re-raise — never swallow silently
+  wrong=except Exception: pass
+  wrong=except Exception as e: return None
+  right=log.error("[module ERROR] %s", e) then return "[module ERROR] {e}"
+  right=log_error(kind="TOOL_FAIL", detail=str(e), source="tools/module") then return error string
+  background_threads=must catch all exceptions; unhandled exception kills thread silently
+  enforcement=audit step catches bare_except + silent_except patterns
+
+RULE_NO_BARE_EXCEPT|
+  rule=always except Exception as e — never bare except:
+  why=bare except catches KeyboardInterrupt + SystemExit; masks real errors
+
+RULE_LOGGING|
+  all_logging=via logging.getLogger(__name__) for module-level; self.log for IgorBase subclasses
+  timer=self.log.get_timer(name, level=DEBUG, **ctx); timer.stop(**result) — one structured line
+  timer_format=name=X started=YYYYMMDDHHMMSSuuuuuu elapsed=X.XXXXXX key=val...
+  no_print=never use print() in production paths; use logging
+  log_dir=~/.TheIgors/logs/ — never write logs into ~/TheIgors/ source tree
+  forensic_logger=use log_error()/log_tool_call() for boundary crossings and state changes
+
+RULE_TOOL_SIGNATURE|
+  catch_all=every tool function must accept **_ — habit dispatch passes extra keys
+  wrong=def my_tool(param: str) — raises TypeError on habit dispatch
+  right=def my_tool(param: str, **_) — safe for habit auto-dispatch
+  single_arg_dispatch=code_ref habits auto-dispatch only for 1-required-arg tools
+
+RULE_NEW_TOOL_CHECKLIST|
+  1=write function in tools/your_module.py
+  2=register with registry.register(Tool(...))
+  3=add your_module to tools/__init__.py imports — missing import = silent no-op
+  4=add log_tool_call() at exit point
+  5=add log_error() in every except block
+  6=write test in tests/test_your_module.py
+  7=if habit needed: write seed_your_module.py and run it
+
+RULE_DB|
+  engine=PostgreSQL only — never sqlite3
+  url=read from IGOR_HOME_DB_URL env var; default postgresql://igor:choose_a_password@127.0.0.1/igor_wild_0001
+  jsonb_operator=use jsonb_exists(metadata,'key') not metadata ? 'key' — db_proxy breaks ?
+  metadata_serial=json.dumps(dict) always — str(dict) produces Python True/False/None not JSON
+  conflict_qualify=ON CONFLICT DO UPDATE SET activation_count = memories.activation_count + 1
+
+RULE_INERTIA|
+  HIGH=brainstem/,memory/models.py,cognition/reasoners/base.py — Akien sign-off required
+  MEDIUM=cognition/,memory/cortex.py,anthropic.py,main.py — discuss before editing
+  LOW=tools/,dashboard/,thalamus.py,cognition/word_graph.py — freely improvable; read first
+  self_edit=LOW=Igor can self-edit; MEDIUM=post plan+wait; HIGH=escalate to CC always
+
+RULE_TESTING|
+  live_db=tests run against real Postgres — no mocks for DB layer
+  skip_not_mock=if no live DB use pytest.mark.skipif not mock
+  naming=tests/test_<module_name>.py
+  all_pass=all tests must pass before commit; never --no-verify a failing suite
+
+RULE_COMMIT|
+  full_cycle=commit = add + commit + pull --rebase + push; never partial
+  no_force=never force-push main; never --no-verify
+  no_secrets=never stage .env, *.db, ~/.TheIgors/ files
