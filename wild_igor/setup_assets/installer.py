@@ -598,9 +598,11 @@ def _log_crash(
             f"User: {os.environ.get('USER', os.environ.get('USERNAME', 'unknown'))}\n"
         )
         if traceback_tail:
-            f.write("\nLast stderr lines:\n")
+            f.write("\nLast output lines:\n")
             for line in traceback_tail.splitlines()[-20:]:
                 f.write(f"  {line}\n")
+        else:
+            f.write("\n(no output captured — check if exception went to an uncaptured stream)\n")
         f.write("\n")
 
 
@@ -711,13 +713,14 @@ def restart_loop(instance_dir: Path, igor_args: list[str]) -> None:
             cmd,
             cwd=str(_WILD_DIR),
             env=os.environ.copy(),
-            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,  # merge stderr into stdout
             text=True,
         )
 
-        # Stream stderr live while collecting for crash diagnosis
-        assert proc.stderr is not None
-        for line in proc.stderr:
+        # Stream output live while collecting for crash diagnosis
+        assert proc.stdout is not None
+        for line in proc.stdout:
             sys.stderr.write(line)
             crash_log_lines.append(line)
         proc.wait()

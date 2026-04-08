@@ -24,4 +24,16 @@ if (-not (Test-Path $venvPython)) {
 }
 
 $env:PYTHONUTF8 = '1'
+
+# If Claude Code is our parent process, set debug_session.flag so the
+# auto-fixer doesn't try to launch a second CC instance on crash.
+$instanceDir = "$env:USERPROFILE\.TheIgors\igor_wild_windows_0001"
+if ($env:CLAUDE_CODE -or (Get-Process -Name "claude" -ErrorAction SilentlyContinue)) {
+    $flag = "$instanceDir\debug_session.flag"
+    if (-not (Test-Path $flag)) {
+        New-Item -ItemType File -Path $flag -Force | Out-Null
+        Write-Host "[igor] CC session detected - debug_session.flag set (auto-fixer suppressed)." -ForegroundColor DarkGray
+    }
+}
+
 & $venvPython $installer @args
