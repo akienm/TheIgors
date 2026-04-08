@@ -1,10 +1,85 @@
+## Session 2026-04-07d
+**Theme**: Theme: day-close catchup + next priorities from 07c
+**In-flight**: NONE
+
+## Session 2026-04-07c
+**Theme**: Theme: T-llm-class-routing + monitor Igor PE chain
+**Decisions**: D319, D320, D321, D322, D323, D324, D325
+**Key changes**:
+- decided: D319-D325 config file split + installer refactor; T-installer-cfg-split L ticket created
+- decided: migration filters in installer.py rather than one-time script; T-installer-cfg-split updated
+- decided: T-installer-cfg-split → 3 M tickets (stage1/2/3); D319-D325 plan approved
+- done: T-installer-stage1 — setup_assets scaffolding, cfg templates, 2 installer bugs fixed, 6 test regressions fixed
+- done: T-installer-stage2 — installer.py + migration 001 + lean launchers
+- done: T-installer-stage3 — env_sync.py cfg-file load + migration 002
+- decided: north star goal statement captured in igor_identity_master.dsb + memory
+**Next session**: Next session: 1) T-llm-class-routing (Igor retry, preflight now fixed); 2) T-skill-engram-sprint (verify /sprint runnable as engram); 3) day-close from this session if not done
+**In-flight**: NONE
+
+## Session 2026-04-07b
+**Theme**: D318 rename + T-pe-multi-file + audit POC scan
+**Next session**: Next session: monitor Igor on reset tickets; verify multi-file PE chain works e2e; commit audit+memory updates
+**In-flight**: NONE
+
+## Session 2026-04-07a
+**Theme**: Theme: Igor restart verification + next sprint
+**Key changes**:
+- done: T-cluster-ssh-windows — _ssh_run_machine OS-aware wrapper, ollama_list/pull/set_powershell_default tools, PS7 set as SSH default on all 3 Windows boxes
+**Next session**: Next session: verify Igor stability on renamed DB; check for any remaining igor_wild_0001 ghosts in runtime data; continue productization work
+**In-flight**: NONE
+
+## Session 2026-04-06c
+**Theme**: Theme: PE chain hallucination fix + greeting suppression
+**Key changes**:
+- done: T-inhibit-mid-conv-greeting — fixed PROC_GREET_AKIEN trigger, seeded PROC_SUPPRESS_MID_CONV_GREETING
+- done: T-pe-temperature — split temp 0.2/0.7 by phase; done: T-pe-hypothesize-prompt — think/function_calls stripping + prompt hardening; done: T-dashboard-active-ticket — active ticket in Section 3; done: T-crash-recovery-cc — already implemented D273; done: T-inhibit-mid-conv-greeting — PROC_GREET_AKIEN trigger fixed + suppressor
+- done: T-igor-inertia-check — scope_guard MEDIUM inertia CC warning
+- done: T-cloud-escape-rate-metric — cloud escape rate by category, FACTUAL deposit
+- done: T-search-trace-console — cortex.search() trace to console via env var gate
+- done: T-reading-measure-baseline — graph density measurement tool, On Intelligence baseline established
+- done: T-facia-template-provenance — template_source + standards_ref stamped on expanded nodes
+- done: T-model-config-review — machines DB updated: all 3 nodes now have qwen2.5:7b default + DeepSeek batch
+- done: T-hypothesize-standards-injection + fixed 3 Igor thalamus.py corruptions (syntax error, stub replaced, intent routing broken)
+- done: T-pull-qwen-coder — pulls started, SSH key + Windows ollama path fixed in paths.py + cluster_ssh.py
+**Next session**: Next: L tickets need plan approval (T-igor-as-programmer, T-neuroscience-engrams, T-case-study-lessons-learned). Igor restart needed to pick up greeting habit fix + coding standards nodes. Verify yogai7/yoga9i model pulls completed.
+**In-flight**: NONE
+
+## Session 2026-04-06b
+**Theme**: Resume: Igor restart, T-fix-reading-status-query next
+**Decisions**: D316, D317
+**Key changes**:
+- decided: D316 progressive autonomy — strategic LLM routing by task class, cloud escape rate as primary metric. Ticketed: T-cloud-escape-rate-metric, T-llm-class-routing, T-log-timer (prereq for reading measurement arc)
+- decided: D317 Igor-as-Claude-Code transition path. Ticketed: T-igor-escalation-signal, T-pe-multi-file, T-skill-engram-sprint, T-igor-inertia-check
+- ticketed: T-proc-cc-direction — habit for receiving strategic direction from CC; matrix gap in D316/D317
+- done: T-proc-cc-direction — receive_cc_direction tool + PROC_RECEIVE_CC_DIRECTION habit. Deposits FACTUAL (identity_weight=0.9) + TWM 6h + channel ack. Closes D316/D317 matrix gap.
+- done: T-log-timer — TimerHandle/get_timer in logging_setup.py. Prereq for T-reading-measure-baseline unblocked.
+- done: cluster_ssh.py broken Igor-generated duplicates removed — cortex.tool() NameError was breaking entire test suite (0 passing). 1868 tests restored.
+- done: get_timer on _EmergencySafeLogger — self.log.get_timer() from any IgorBase subclass. standards.dsb created + linked from architecture_root. Coding standards nodes seeded to graph (CODING_STANDARDS_ROOT + 6 rules).
+- ticketed: T-pe-temperature, T-pe-hypothesize-prompt, T-inhibit-mid-conv-greeting, T-crash-recovery-cc, T-search-trace-console, T-pull-qwen-coder, T-dashboard-active-ticket. Haiku hallucination root-caused (tier.3.5 simulates tool calls in text). Hallucination fix path: temperature 0.2 + prompt hardening.
+**Next session**: Next: T-pe-temperature + T-pe-hypothesize-prompt (fix Haiku hallucination in PE chain), T-inhibit-mid-conv-greeting, T-igor-escalation-signal. Igor working T-crash-recovery-cc now.
+**In-flight**: NONE
+
+## Session 2026-04-06a
+**Theme**: Seed cloud escape plugs to resolve Igor loop
+**Key changes**:
+- sprint: started T-001
+- sprint: closed T-001 — cloud-escape plugs seeded
+- T-logging-base-class: _flog → log.info() across 10 files, logging_setup.py auto-registers per-tool file handlers
+- sprint: closed T-logging-base-class — _flog eliminated, per-tool log handlers live
+- T-pull-deepseek-yogai7 created: SSH yogai7, pull DeepSeek (akiendell already has it)
+- sprint: started T-cc-tool-bypass
+- sprint: closed T-cc-tool-bypass — CC: dispatch gate live, tests green
+**Next session**: Next: T-swarm-model-sync (seed nightly SSH-pull habit), T-pull-deepseek-yogai7 (pull DeepSeek on yogai7), T-model-config-review (machines DB); monitor T-pe-coding-model pe_chain completion (Ollama PLAN step)
+**In-flight**: NONE — T-cc-tool-bypass completed cleanly, T-pe-coding-model in_progress waiting on Ollama inference
+
 ## Session 2026-04-05d
 **Theme**: Theme: Trinity model research, draft persistence concept, pe_chain timeout fix
 **Key changes**:
 - pe_chain: removed _call_tier2 timeout caps — background calls now unbounded (no human waiting)
 - research: Trinity-Large-Thinking on OpenRouter — agentic model candidate at $0.90/M
 - design: draft persistence concept — losing BG candidates should leave near_miss trace for next-turn salience boost (P2)
-**In-flight**: NONE
+**Next session**: Next: restart Igor to pick up pe_chain timeout fix; T-logging-base-class (tools→IgorBase class-based)
+**In-flight**: NONE — pe_chain fix committed, Igor tickets reset to pending
 
 ## Session 2026-04-05c
 **Theme**: Theme: T-self-trainer-ollama, T-scope-guard-proc, continue Igor autonomous loop
@@ -420,11 +495,11 @@
 **In-flight**: NONE
 
 ## Session 2026-03-28b
-**Theme**: Theme: instance dir double-prefix bug fix + Igor-wild-0001 stale dir audit
+**Theme**: Theme: instance dir double-prefix bug fix + igor_wild_0001 stale dir audit
 **Decisions**: D255, D256, D257
 **Key changes**:
 - done: main.py double-prefix bug — _instance_dir(), _export_portable_identity(), response_habituation all constructed igor_{instance_id} instead of using paths().instance; when IGOR_INSTANCE_ID=Igor-wild-0001 this created igor_Igor_wild_0001 dir; fix: use _paths().instance directly (847e2a35)
-- done: conftest.py — patches PathManager.inbox to temp dir; prevents pytest from creating stray Igor-wild-0001/ on every run (63eb6e88). Audit: 516 passed, no new issues.
+- done: conftest.py — patches PathManager.inbox to temp dir; prevents pytest from creating stray igor_wild_0001/ on every run (63eb6e88). Audit: 516 passed, no new issues.
 - decided: D255 facia=thread, D256 timestamp node IDs + node registry, D257 tree as traversal index; ring memory confirmed as the term; facia memory term coined; feed_reading_list dedup fix live (10e36356)
 **Next session**: Next session: Slate 0 DB tickets (T-db-lemmatize, T-db-wg-replace-cooccur). Gmail app password akiendell (low priority noise).
 **In-flight**: NONE
@@ -434,7 +509,7 @@
 **Key changes**:
 - done: SSH auth root cause — Windows admin users need C:\ProgramData\ssh\administrators_authorized_keys not ~/.ssh/authorized_keys; fixed on akiendell + yoga9i via sftp with LF-only file
 - done: Windows update stash/pull/pop — igor_loop.ps1 + start_igor_windows.ps1 local mods blocked git pull --rebase; fixed _WINDOWS_UPDATE_CMD in cluster_ssh.py
-- done: restart.flag scan fixed — SSH user (Igor-wild-0001) != Igor runtime user (akien); updated to scan C:\Users\*\.TheIgors\* instead of $env:USERPROFILE
+- done: restart.flag scan fixed — SSH user (igor_wild_0001) != Igor runtime user (akien); updated to scan C:\Users\*\.TheIgors\* instead of $env:USERPROFILE
 - done: igor_loop.ps1 renamed to igor.ps1 — canonical Windows launch command with restart loop; start_igor_windows.ps1 was one-shot (no loop), causing restart.flag exits to drop to PS prompt
 - done: swarm update end-to-end green — all 4 boxes (akiendell 14 instances, yogai7 6, yoga9i 5, akiendelllinux local) pulling and flagging
 **Next session**: Next: 1. Gmail app password on akiendell (low priority — just noise). 2. cluster_router 'no local machine' warnings from igor_wild_windows_0001 — may self-resolve once Windows Igor settles. 3. Find 24 training chapters when ready.
@@ -936,7 +1011,7 @@
 ## Session 2026-03-20f
 **Theme**: Theme: paths default fix + inference gateway discovery
 **Key changes**:
-- fixed paths.py default: Igor-wild-0001 → Igor-wild-0001 (root path case bug)
+- fixed paths.py default: Igor-wild-0001 → igor_wild_0001 (root path case bug)
 - removed drain_learn_queue cron entry — Igor handles internally via learner.py tools
 - discovered inference_gateway.py + cluster_router.py already exist — inference proxy is built
 **Next session**: Next: read inference_gateway.py + cluster_router.py — understand what's built, what's missing (performance testing habits?). Then preparse removal.
@@ -955,7 +1030,7 @@
 - closed T-trails-infra: trails_through_node, trail_gradient, hot_paths in cortex; inspect_trail + trail_hot_paths tools registered and live-tested
 - workstep: plan approved for T-habit-audit-pipeline
 - closed T-habit-audit-pipeline: D103/D104 audit done — 995 habits archived, 124 remain active
-- fixed drain runner cron: IGOR_INSTANCE_ID=Igor-wild-0001 — was reading Igor-wild-0001 (wrong case), seeing empty queue for weeks. 146 items now draining.
+- fixed drain runner cron: IGOR_INSTANCE_ID=igor_wild_0001 — was reading Igor-wild-0001 (wrong case), seeing empty queue for weeks. 146 items now draining.
 **Next session**: 1. Close T-pipeline-arch (D180). 2. Create T-gap-logging (M) + T-ne-redesign (L, deferred). 3. T-swarm-update design. 4. Monitor experiment 6 — check drain runner progress + book_learner node deposition quality.
 **In-flight**: Experiment 6 bulk reading is running. 146 training corpus items draining via fixed cron. All cognition prep complete.
 
@@ -1149,7 +1224,7 @@
 **Decisions**: none new (audit completion)
 **Key changes**:
 - P4: 40 seed_*.py archived to claudecode/archive/; seed_resource_gate_habits marked DO_NOT_RERUN; archive/README.md created
-- P5: paths.py learn_queue+drain_pid moved to paths().instance (was runtime root — race condition); drain_learn_queue.py hardcoded paths replaced with PathManager; existing learn_queue.json migrated to Igor-wild-0001/
+- P5: paths.py learn_queue+drain_pid moved to paths().instance (was runtime root — race condition); drain_learn_queue.py hardcoded paths replaced with PathManager; existing learn_queue.json migrated to igor_wild_0001/
 - DSB/CSB architecture clarified: .md files = human-readable source maintained by Claude; .dsb/.csb = compressed token-efficient form for Claude/Igor; DB = eventual runtime home; Claude maintains .md, Igor will eventually take over; update cadence = lazy not per-session
 **Next session**: new concept chunk from Akien (pending)
 **In-flight**: NONE

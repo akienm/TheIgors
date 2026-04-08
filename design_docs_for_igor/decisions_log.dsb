@@ -565,3 +565,10 @@ D315|tools-class-based-igorbase|proposed|Tools must become class-based inheritin
 D316|progressive-autonomy|decided|Cloud as scaffold: route each task class to optimal LLM; track per-category cloud escape rate as primary progress metric toward local capability
 D317|igor-as-claude-code|decided|4-phase transition: Igor does S→M→L tickets; Sonnet reserved for audit/review/design-gate only. Enablers: escalation signal, multi-file PE, skill engrams runnable, inertia check internalized
 D318|instance-id-normalize|decided|All references to igor_wild_0001 normalized to Igor-wild-0001 everywhere — filesystem, PG database (ALTER DATABASE), seed scripts, shell scripts, docs, tests, Docker, Windows user accounts. 13th and final fix. ssh_check tool added. Part of productization.
+D319|cfg-file-split|decided|.env retired; box-level swarm/ + instance-level igor.cfg/switches/models/credentials/context.<person>[.confidential] cfg files; templates in setup_assets/
+D320|one-box-one-swarm|decided|Each box attaches to exactly one swarm DB; all instances inherit swarm.cfg; no per-instance DB DSN duplication
+D321|unified-entry-point|decided|igor/igor.ps1/igor.bat: check Python+venv → hand off to setup_assets/installer.py (platform-smart) → launch; one entry for setup and run
+D322|windows-migration|decided|Reuse Require-EnvVar collection pattern; migrate old .env → split cfg files → delete .env; one-time idempotent migration script
+D323|machines-json-echo|decided|swarm/machines.json = human-readable echo of DB machines table; DB is authoritative; external changes surface diff to operator before incorporating
+D324|installer-bug-fixes|decided|igor.bat fix igor_loop.ps1→igor.ps1; install_igor_linux.sh fix hardcoded /home/akien/.claude/hooks/ → $HOME; both in scope of installer refactor
+D325|context-persons|decided|igor.context.<person>.cfg + .confidential.cfg per person; current: akien, leah, claude-code; encrypted-to-Igor-key is future capability
