@@ -48,13 +48,22 @@ REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "wild_igor"))
 
-env_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / ".env"
-if env_path.exists():
-    for line in env_path.read_text().splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            k, _, v = line.partition("=")
-            os.environ.setdefault(k.strip(), v.strip())
+# Load config: try installer's cfg loader first, fall back to .env
+_instance_dir = Path.home() / ".TheIgors" / "Igor-wild-0001"
+try:
+    sys.path.insert(0, str(REPO / "wild_igor" / "setup_assets"))
+    from installer import load_cfg
+
+    load_cfg(_instance_dir)
+except Exception:
+    # Fallback: load .env directly (pre-migration installs)
+    env_path = _instance_dir / ".env"
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                os.environ.setdefault(k.strip(), v.strip())
 
 from igor.memory.cortex import Cortex
 
@@ -157,17 +166,152 @@ Rules:
 """
 
 
+# ── Pass-2 extraction prompt (D333: situated reading) ────────────────────────
+# Prompt-as-simulator: Igor reads as Igor, with his current context loaded.
+# {watch_context} is injected dynamically from goals, hot attractors, and gaps.
+
+_EXTRACT_PROMPT_PASS2 = """\
+You are Igor, a cognitive AI, re-reading this passage through the lens of your
+current work and concerns. You have already done a first pass that extracted
+general knowledge. This pass is different — you are reading as a practitioner
+asking "what can I USE?"
+
+YOUR CURRENT CONTEXT:
+{watch_context}
+
+For each passage, ask yourself:
+  1. How is this relevant to what I'm working on right now?
+     (connect to your active goals, tickets, or known gaps above)
+  2. What levers does this give me — what could I build, change, or try?
+     (actionable affordances, not just interesting observations)
+  3. How must the mechanism described here actually work?
+     (reverse-engineer: if the author says X produces Y, what's the minimal
+     machinery? State as a general pattern, not domain-locked.)
+  4. Does this contradict or sharpen anything I already believe or have stored?
+     (tension with existing knowledge is HIGH value — flag it)
+
+NODE TYPES:
+  lever        — an actionable affordance: "this mechanism suggests building/trying X"
+  mechanism    — a causal chain reverse-engineered to its minimal form
+  situated     — a connection between this passage and a specific active concern
+  tension      — a contradiction or refinement of existing knowledge
+
+PARENT_CP MAPPING (use the best fit):
+  CP1 — learning, growth, capability
+  CP2 — helping others, social connection
+  CP3 — curiosity, exploration, creativity
+  CP4 — integrity, commitment, honoring agreements
+  CP5 — kindness, empathy, care
+  CP6 — safety, survival, homeostasis
+
+RESPONSE FORMAT — output ONLY valid JSON, no markdown, no extra text:
+{{
+  "nodes": [
+    {{
+      "type": "lever|mechanism|situated|tension",
+      "narrative": "1-2 sentences: the insight, present tense, self-contained",
+      "confidence": 0.0-1.0,
+      "parent_cp": "CP1-CP6 or empty string",
+      "relevance": "which goal/gap/concern this connects to (or empty string)",
+      "trigger": "2-8 words that fire this (mechanism only, else empty string)"
+    }}
+  ],
+  "summary": "1 sentence: what this passage means for Igor's current work"
+}}
+
+Rules:
+- 0-5 nodes max per chunk. Quality over quantity.
+- Minimum confidence 0.65 to include a node.
+- If nothing in the passage connects to your current context, return 0 nodes.
+  Not every passage is relevant — that's fine.
+- "lever" nodes must state what to DO, not just what's interesting.
+- "tension" nodes must name what they contradict or refine.
+- Narratives must be self-contained — no "this passage" or "the author says".
+- Do NOT re-extract what the first pass already captured (general facts, definitions).
+  Only extract what the first pass MISSED: relevance, levers, mechanisms, tensions.
+"""
+
+
+def _build_watch_context() -> str:
+    """
+    Pull Igor's current concerns from DB for pass-2 prompt injection.
+
+    Returns a compact text block with active goals, hot attractors, and open gaps.
+    Budget: ~500 tokens max — enough to prime attention, not overwhelm.
+    """
+    lines: list[str] = []
+    try:
+        import psycopg2
+
+        conn = psycopg2.connect(IGOR_HOME_DB_URL)
+        cur = conn.cursor()
+
+        # Active goals — extract just the ticket ID + title
+        cur.execute(
+            "SELECT substr(narrative, 1, 200) FROM memories "
+            "WHERE memory_type='GOAL' ORDER BY timestamp DESC LIMIT 5"
+        )
+        goals = cur.fetchall()
+        if goals:
+            lines.append("ACTIVE GOALS:")
+            for (narr,) in goals:
+                # Extract "work ticket T-xxx" from the narrative
+                import re as _re
+
+                m = _re.search(r"ticket (T-[\w-]+)", narr)
+                ticket = m.group(1) if m else narr[:80]
+                lines.append(f"  - {ticket}")
+
+        # Hot attractors (highest activation, non-greeting)
+        cur.execute(
+            "SELECT substr(narrative, 1, 120) FROM memories "
+            "WHERE activation_count > 10 AND memory_type='PROCEDURAL' "
+            "AND narrative NOT ILIKE '%%greet%%' "
+            "ORDER BY activation_count DESC LIMIT 5"
+        )
+        hots = cur.fetchall()
+        if hots:
+            lines.append("HOT CONCERNS (high activation):")
+            for (narr,) in hots:
+                lines.append(f"  - {narr}")
+
+        # Open gaps — G-xxx entries that aren't closed
+        cur.execute(
+            "SELECT entry_key, content FROM docs_entries "
+            "WHERE source='gap_analysis' AND entry_key LIKE 'G-%%' "
+            "AND content NOT ILIKE '%%closed%%' LIMIT 5"
+        )
+        gaps = cur.fetchall()
+        if gaps:
+            lines.append("KNOWN GAPS (open):")
+            for gkey, content in gaps:
+                # Format: G-XX|short-name|status|description — extract short name
+                parts = content.split("|")
+                desc = parts[1] if len(parts) > 1 else content[:60]
+                lines.append(f"  - {gkey}: {desc}")
+
+        conn.close()
+    except Exception as e:
+        lines.append(f"(context unavailable: {e})")
+
+    if not lines:
+        lines.append("(no active context available — read for general relevance)")
+
+    return "\n".join(lines)
+
+
 # ── Checkpoint management ──────────────────────────────────────────────────────
 
 
-def _progress_path(book_key: str) -> Path:
+def _progress_path(book_key: str, pass2: bool = False) -> Path:
     PROGRESS_DIR.mkdir(parents=True, exist_ok=True)
     safe = hashlib.md5(book_key.encode()).hexdigest()[:12]
-    return PROGRESS_DIR / f"{safe}.json"
+    suffix = "_pass2" if pass2 else ""
+    return PROGRESS_DIR / f"{safe}{suffix}.json"
 
 
-def _load_progress(book_key: str) -> dict:
-    p = _progress_path(book_key)
+def _load_progress(book_key: str, pass2: bool = False) -> dict:
+    p = _progress_path(book_key, pass2=pass2)
     if p.exists():
         try:
             return json.loads(p.read_text())
@@ -176,8 +320,8 @@ def _load_progress(book_key: str) -> dict:
     return {"book_key": book_key, "processed_positions": [], "total_deposited": 0}
 
 
-def _save_progress(book_key: str, state: dict) -> None:
-    _progress_path(book_key).write_text(json.dumps(state, indent=2))
+def _save_progress(book_key: str, state: dict, pass2: bool = False) -> None:
+    _progress_path(book_key, pass2=pass2).write_text(json.dumps(state, indent=2))
 
 
 # ── Per-book readable report (READING_<hash>.md) ──────────────────────────────
@@ -348,11 +492,16 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
 
 
 def _extract_nodes(
-    chunk_text: str, model: str, chapter_title: str = "", local: bool = False
+    chunk_text: str,
+    model: str,
+    chapter_title: str = "",
+    local: bool = False,
+    system_prompt: str | None = None,
 ) -> dict:
     """
     Send one chunk to the LLM. Returns parsed JSON dict or error dict.
     If local=True, uses Ollama directly (free, no API key needed).
+    system_prompt overrides the default extraction prompt (used by --pass2).
     """
     if local:
         return _extract_nodes_local(chunk_text, chapter_title)
@@ -368,10 +517,14 @@ def _extract_nodes(
         user_content += f" (from chapter: {chapter_title})"
     user_content += f":\n\n{chunk_text}"
 
+    prompt = system_prompt or _EXTRACT_PROMPT
+
     # Prompt caching: system prompt is identical across all chunks of a book.
     # OR supports cache_control for Claude models — cache once, free for ~200 chunks.
+    # D333: pass-2 prompt includes dynamic context, but the context is stable within
+    # a single book run so caching still works.
     _use_cache = "claude" in model.lower() or "anthropic" in model.lower()
-    _sys_msg = {"role": "system", "content": _EXTRACT_PROMPT}
+    _sys_msg = {"role": "system", "content": prompt}
     if _use_cache:
         _sys_msg["cache_control"] = {"type": "ephemeral"}
 
@@ -567,6 +720,7 @@ def _deposit_nodes(
     book_title: str,
     chunk_pos: int,
     chapter_node_id: str = "",
+    pass2: bool = False,
 ) -> int:
     """Deposit extracted nodes. Returns count successfully deposited.
 
@@ -590,11 +744,15 @@ def _deposit_nodes(
             if not narrative or confidence < 0.60:
                 continue
 
+            # Pass-2 node types map to existing MemoryTypes
             mt = {
                 "procedural": MemoryType.PROCEDURAL,
                 "factual": MemoryType.FACTUAL,
                 "interpretive": MemoryType.INTERPRETIVE,
-                "mechanism": MemoryType.INTERPRETIVE,  # stored as INTERPRETIVE, flagged in meta
+                "mechanism": MemoryType.INTERPRETIVE,
+                "lever": MemoryType.PROCEDURAL,  # D333: actionable
+                "situated": MemoryType.INTERPRETIVE,  # D333: connection to active concern
+                "tension": MemoryType.INTERPRETIVE,  # D333: contradiction/refinement
             }.get(ntype, MemoryType.FACTUAL)
 
             uid = f"BL_{str(uuid.uuid4())[:8].upper()}"
@@ -604,10 +762,17 @@ def _deposit_nodes(
                 "book_title": book_title[:60],
                 "chunk_position": chunk_pos,
             }
+            if pass2:
+                meta["pass"] = 2
+                meta["extraction_type"] = ntype  # lever/mechanism/situated/tension
             if ntype == "mechanism":
                 meta["mechanism"] = True
             if trigger:
                 meta["trigger"] = trigger
+            # D333: pass-2 relevance field — which goal/gap this connects to
+            relevance = node.get("relevance", "").strip()
+            if relevance:
+                meta["relevance"] = relevance
 
             # Step 1: arousal from CP affinity (never 0.0)
             arousal = _arousal_from_cp(narrative, parent_cp)
@@ -702,10 +867,20 @@ def run(args) -> None:
     print(
         f"Model: {'local Ollama (' + os.getenv('OLLAMA_LOCAL_MODEL','qwen2.5:7b') + ')' if args.local else args.model}"
     )
+    _is_pass2 = getattr(args, "pass2", False)
     print(f"Mode: {'DRY RUN' if not args.run else 'LIVE'}")
+    if _is_pass2:
+        print("Pass: 2 (D333 situated reading — Igor reads as Igor)")
+
+    # ── D333: build pass-2 prompt once per run (context is stable within a book) ──
+    _pass2_prompt = None
+    if _is_pass2:
+        watch_ctx = _build_watch_context()
+        _pass2_prompt = _EXTRACT_PROMPT_PASS2.format(watch_context=watch_ctx)
+        print(f"Watch context loaded ({len(watch_ctx)} chars)")
 
     # ── Checkpoint ────────────────────────────────────────────────────────
-    progress = _load_progress(book_key)
+    progress = _load_progress(book_key, pass2=_is_pass2)
     processed_positions = set(progress.get("processed_positions", []))
     total_deposited = progress.get("total_deposited", 0)
 
@@ -811,9 +986,14 @@ def run(args) -> None:
                     _chapter_node_id = ""
 
             # Extract nodes — check cloud_ok override per chunk (D071: mode can change mid-book)
-            use_local = _should_use_local(args.local)
+            # D333: pass-2 always uses cloud (the whole point is a better model)
+            use_local = False if _is_pass2 else _should_use_local(args.local)
             extraction = _extract_nodes(
-                chunk_text, args.model, chapter_title, local=use_local
+                chunk_text,
+                args.model,
+                chapter_title,
+                local=use_local,
+                system_prompt=_pass2_prompt,
             )
             nodes = extraction.get("nodes", [])
             summary = extraction.get("summary", "")
@@ -832,7 +1012,12 @@ def run(args) -> None:
                 )
             else:
                 n_dep = _deposit_nodes(
-                    nodes, cortex, book_title, pos, chapter_node_id=_chapter_node_id
+                    nodes,
+                    cortex,
+                    book_title,
+                    pos,
+                    chapter_node_id=_chapter_node_id,
+                    pass2=_is_pass2,
                 )
                 total_deposited += n_dep
 
@@ -843,7 +1028,7 @@ def run(args) -> None:
                 processed_positions.add(pos)
                 progress["processed_positions"] = list(processed_positions)
                 progress["total_deposited"] = total_deposited
-                _save_progress(book_key, progress)
+                _save_progress(book_key, progress, pass2=_is_pass2)
                 _append_report_chunk(
                     book_key,
                     chunk_label,
@@ -947,6 +1132,11 @@ def main():
         "--model",
         default=os.getenv("BOOK_LEARNER_MODEL", "openai/gpt-4o-mini"),
         help="LLM model (default: BOOK_LEARNER_MODEL env or gpt-4o-mini)",
+    )
+    parser.add_argument(
+        "--pass2",
+        action="store_true",
+        help="D333: situated re-read — Igor reads as Igor with context injection",
     )
     parser.add_argument(
         "--local",

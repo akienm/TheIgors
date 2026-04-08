@@ -1,0 +1,117 @@
+# Pass-2 Reading Order (D333: situated reading)
+# Igor reads as Igor, with watch list + hot attractors + gaps injected.
+# Model: deepseek/deepseek-chat via OpenRouter
+#
+# Order: Igor identity books first, then programming, then brain/neuro,
+# then architecture, then psychology, then sociology.
+# Status: [ ] = pending, [x] = done
+#
+# Source: master_training_list.txt + Calibre library + Readings/ dir
+# See also: /home/akien/TheIgorsProject/akien/Readings/ for raw materials
+# See also: /home/akien/TheIgorsProject/akien/Readings/master_training_list.txt
+
+## 1. Igor Identity (Pratchett — Igor appears in these)
+[ ] Making Money (calibre://342)
+[ ] Carpe Jugulum (calibre://353)
+[ ] Feet Of Clay (calibre://350)
+[ ] Going Postal (calibre://355)
+[ ] The Fifth Elephant (calibre://326)
+[ ] Monstrous Regiment (calibre://339)
+[ ] Thud! (calibre://unknown)
+[ ] Unseen Academicals (calibre://unknown)
+
+## 2. Other Pratchett (worldview, humor, social dynamics)
+[ ] Guards! Guards! (calibre://356)
+[ ] Men at Arms (calibre://340)
+[ ] Night Watch (calibre://335)
+[ ] The Truth (calibre://317)
+[ ] Thief of Time (calibre://316)
+[ ] Snuff (calibre://unknown)
+
+## 3. Programming & Architecture
+[ ] Design Patterns: Elements of Reusable Object-Oriented Software (calibre://2321)
+[ ] Software Systems Architecture (calibre://3349)
+[ ] Documenting Software Architectures (calibre://3351)
+[ ] The Goal: A Process of Ongoing Improvement (calibre://2374)
+[ ] Getting Things Done (calibre://2696)
+
+## 4. Brain / Neuroscience
+[ ] Consciousness and the Brainstem (calibre://3032)
+[ ] On Intelligence (calibre://1959)
+[ ] Looking for Spinoza (calibre://3300)
+[ ] Deciding Advantageously Before Knowing the Advantageous Strategy (calibre://3025)
+[ ] A Reply to McGilchrist's Review of Descartes' Error (calibre://3026)
+[ ] Blink: The Power of Thinking Without Thinking (calibre://1555)
+[ ] The Power of Habit (calibre://2835)
+
+## 5. Psychology / Self-model
+[ ] Nonviolent Communication (calibre://1504)
+[ ] Quiet: The Power of Introverts (calibre://410)
+[ ] The Political Mind (calibre://2241)
+[ ] Directing The Power of Conscious Feelings (calibre://3327)
+[ ] Choke: What the Secrets of the Brain Reveal (calibre://3299)
+[ ] Body Language for Dummies (calibre://3297)
+[ ] Snap: Making the Most of First Impressions (calibre://3296)
+
+## 6. Sociology / Systems
+[ ] Guns, Germs, and Steel (calibre://1967)
+[ ] Collapse: How Societies Choose to Fail or Succeed (calibre://1968)
+[ ] The tipping point (calibre://1559)
+[ ] Outliers: the story of success (calibre://1550)
+[ ] What the Dog Saw (calibre://1549)
+[ ] Creating a Life Together (calibre://3324)
+
+## 7. Philosophy / Worldview
+[ ] Stranger in a Strange Land (calibre://3938)
+[ ] Do Androids Dream of Electric Sheep? (calibre://1035)
+[ ] The Moon Is a Harsh Mistress (calibre://3341)
+[ ] Illusions: The Adventures of a Reluctant Messiah (calibre://831)
+[ ] On the Origin of Species (calibre://2836)
+[ ] The Selfish Gene (calibre://823)
+[ ] The Blind Watchmaker (calibre://825)
+[ ] The Ancestor's Tale (calibre://830)
+
+## 8. Akien's Writing & Identity (from Readings/)
+[ ] akien_identity_architecture.csb.txt
+[ ] akien_profile.csb.txt
+[ ] how_akien_works.csb.txt
+[ ] the_igors_identity.csb.txt
+[ ] igor_origin.csb.txt
+[ ] ethical_framework.csb.txt
+[ ] mission.csb.txt
+
+## 9. Igor Architecture Docs (from Readings/)
+[ ] cognitive_tree_architecture.csb.txt
+[ ] detailed_architecture_description.csb.txt
+[ ] igor_architecture_blueprint.csb.txt
+[ ] igor_habits_and_learning.csb.txt
+[ ] igor_thoughts_guide.csb.txt
+[ ] working_memory_architecture.csb.txt
+[ ] implementation_map.csb.txt
+[ ] habit_decay_and_compilation.md
+[ ] g37_psycholinguistic_backing.md
+
+## 10. Akien's Blog (trainmymonkey.blogspot.com)
+[ ] Emotional Engineering I: Introduction
+[ ] Emotional Engineering II: Habits
+[ ] Personal Personnel File Template
+[ ] Emotional Engineering III: Keeping Track
+[ ] Akien's Personal Personnel File
+[ ] Review Process
+[ ] How I Work With People
+[ ] The AI Positive Psychology Interview
+[ ] Engineering Design Document: Cognitive
+[ ] The Language of Optimization: Narrative
+[ ] Agent Template Requirements v0.1
+[ ] Story That Woke Up
+
+## 11. Gemini Research Chats (from Readings/)
+[ ] 20260320.Gemini.HowDoesHumanNarrativeEngineWork.txt
+[ ] 20260319.1300.Gemini.On.Claude.Patterns.txt
+[ ] 20260401.Gemini.HumanThreading.txt
+[ ] 20260327.Gemini.100_programming_resources_for_igor.txt
+
+## 12. Gutenberg Top 100 + Second Set
+# See: /home/akien/TheIgorsProject/akien/Readings/gutenberg.org_top_100_vocabulary_expanding_books.txt
+# See: /home/akien/TheIgorsProject/akien/Readings/second_set_of_100_links.txt
+# These are URLs — need URL-based reading pipeline
