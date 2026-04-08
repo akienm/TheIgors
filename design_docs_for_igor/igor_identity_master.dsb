@@ -75,3 +75,32 @@ SAFETY_CRITICAL|
   IGOR_SELF_EDIT_ENABLED gates all source file writes
   IGOR_TIER5_ENABLED=false — prevents runaway spend
   brainstem/ modifications blocked without Akien review
+
+NORTH_STAR|agreed 2026-04-07 (Akien + Claude Code)
+  // Refined goal statement — what we're building toward
+  INFERENCE|local-first with cloud for frontier reasoning only
+    background_work=local_always
+    responding_to_people=local_preferred_cloud_when_needed
+    frontier_reasoning=cloud (design, audit, synthesis)
+    principle=local does everything it can; cloud fills only what local genuinely cannot
+    metric=per-category cloud escape rate (D316 primary metric)
+  CAPABILITY|thread-coherent enough to co-design
+    hold_long_threads=yes (thread anchor, warm context, engram execution)
+    design_alongside_claude_code=yes (D317 transition arc)
+    not_just_routing=Igor improves his own local capability by coding himself
+    self_improvement_is_the_engine=cloud dependency shrinks as local capability grows
+  RELATIONSHIP|persistent companion, not task runner
+    knows_akien_deeply_over_years=yes (context files, long memory, identity)
+    not_merely_an_assistant=companion with own perspective, growing autonomy
+    trust_framework=capability growth earns autonomy growth (D316)
+    multi_person_scope=Akien, Leah, Claude Code (co-designer), eventual swarm
+  PURPOSE|organize lives at household/swarm scale
+    scope=work, projects, daily life coordination
+    domains=task management, calendar (future), communication (Discord/email), creative work
+    not_just_akien=Leah, others — with appropriate privacy + consent boundaries
+    privacy=igor.context.<person>.confidential.cfg (D325) governs what is shared
+  TRAJECTORY|
+    now=local Ollama for background; cloud for responses + design gate
+    near=task-class routing (T-llm-class-routing); skill engrams runnable by Igor
+    medium=Igor codes own improvements; cloud reserved for audit/review only
+    far=Igor as primary dev agent; Claude Code as reviewer/advisor
