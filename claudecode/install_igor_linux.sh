@@ -181,7 +181,7 @@ SETTINGS="$HOME/.claude/settings.json"
 if [[ -f "$SETTINGS" ]]; then
     yellow "  settings.json already exists at $SETTINGS — not overwriting"
 else
-    cat > "$SETTINGS" <<'JSON'
+    cat > "$SETTINGS" <<JSON
 {
     "hooks": {
         "PostToolUse": [
@@ -190,7 +190,7 @@ else
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "python3 /home/akien/.claude/hooks/format-python.py"
+                        "command": "python3 $HOME/.claude/hooks/format-python.py"
                     }
                 ]
             }
@@ -201,7 +201,7 @@ else
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "python3 /home/akien/.claude/hooks/guard-dangerous-bash.py"
+                        "command": "python3 $HOME/.claude/hooks/guard-dangerous-bash.py"
                     }
                 ]
             }

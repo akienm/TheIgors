@@ -1,0 +1,15 @@
+# igor.models.cfg — LLM routing and model name configuration (D319).
+# Location: ~/.TheIgors/${IGOR_INSTANCE_ID}/igor.models.cfg
+# Safe to share; contains model names only, no API keys.
+
+# ── Local inference (Ollama) ──────────────────────────────────────────────────
+OLLAMA_LOCAL_MODEL=qwen2.5:7b
+IGOR_NE_LOCAL_MODEL=qwen2.5:7b
+IGOR_WINNOW_LOCAL_MODEL=qwen2.5:7b
+
+# ── Cloud inference (OpenRouter) ──────────────────────────────────────────────
+# Tier ladder (D234): tier.2 Ollama → tier.3 cheap → tier.3.5 haiku → tier.4 sonnet
+OPENROUTER_WINNOW_MODEL=qwen/qwen2.5-7b-instruct
+OPENROUTER_CHEAP_MODEL=openai/gpt-4o-mini
+OPENROUTER_DEFAULT_MODEL=anthropic/claude-haiku-4.5
+OPENROUTER_INTERACTIVE_MODEL=anthropic/claude-sonnet-4.6

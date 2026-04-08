@@ -1,0 +1,7 @@
+# igor.cfg — instance identity (D319).
+# Location: ~/.TheIgors/${IGOR_INSTANCE_ID}/igor.cfg
+# Safe to share; does not contain credentials or secrets.
+
+IGOR_INSTANCE_ID=${IGOR_INSTANCE_ID}
+IGOR_RUNTIME_ROOT=${IGOR_RUNTIME_ROOT}
+IGOR_WEB_PORT=${IGOR_WEB_PORT}

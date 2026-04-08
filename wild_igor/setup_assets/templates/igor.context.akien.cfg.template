@@ -1,0 +1,13 @@
+# igor.context.akien.cfg — non-confidential context about Akien (D319/D325).
+# Location: ~/.TheIgors/${IGOR_INSTANCE_ID}/igor.context.akien.cfg
+# Gitignored (privacy). Igor reads this to personalise interactions.
+# For sensitive context, use igor.context.akien.confidential.cfg (also gitignored).
+
+# Akien's preferred name.
+CONTEXT_AKIEN_NAME=Akien
+
+# Role / hat being worn in this Igor session.
+CONTEXT_AKIEN_ROLE=
+
+# Current focus (optional; updated per session).
+CONTEXT_AKIEN_FOCUS=

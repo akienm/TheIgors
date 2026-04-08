@@ -1,0 +1,11 @@
+# swarm.cfg — box-level config shared by all Igor instances on this machine (D319/D320).
+# One swarm.cfg per box; all instances inherit these values.
+# Location: ~/.TheIgors/swarm/swarm.cfg
+# NOT committed to git — contains DB DSN.
+
+# PostgreSQL connection string for the home swarm database.
+# Format: postgresql://user:password@host/dbname
+IGOR_HOME_DB_URL=${IGOR_HOME_DB_URL}
+
+# Human-readable swarm identifier (optional).
+SWARM_ID=${SWARM_ID}

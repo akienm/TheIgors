@@ -18,3 +18,7 @@ warm_context*.json
 benchmarks/results/
 ebook_candidates.md
 *.py2bak
+
+# D319 — cfg files with secrets (never commit)
+*.credentials.cfg
+*.confidential.cfg
