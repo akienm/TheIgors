@@ -233,7 +233,49 @@ def _bootstrap_cfg_templates(instance_dir: Path) -> None:
 
 # ── Migration runner ──────────────────────────────────────────────────────────
 
-_MIGRATIONS = [migration_001]  # extend as new migrations are added
+
+def migration_002(instance_dir: Path) -> None:
+    """
+    Retire .env by renaming it to .env.backup-pre-d319 (D319, T-installer-stage3).
+
+    Guards: only runs after 001.done exists AND all expected cfg files are non-empty.
+    Soft delete — the backup is retained for at least one session.
+    """
+    env_file = instance_dir / ".env"
+    if not env_file.exists():
+        log.info("migration_002: no .env to retire — skipping")
+        return
+
+    # Verify all expected instance cfg files are present and non-empty
+    required = [
+        instance_dir / "igor.cfg",
+        instance_dir / "igor.switches.cfg",
+        instance_dir / "igor.models.cfg",
+        instance_dir / "igor.credentials.cfg",
+    ]
+    missing = [p for p in required if not p.exists() or p.stat().st_size < 10]
+    if missing:
+        log.warning(
+            f"migration_002: skipping — missing/empty cfg files: "
+            f"{[p.name for p in missing]}"
+        )
+        return
+
+    # Check swarm.cfg is present and contains IGOR_HOME_DB_URL
+    swarm_cfg = _SWARM_DIR / "swarm.cfg"
+    if not swarm_cfg.exists() or "IGOR_HOME_DB_URL" not in swarm_cfg.read_text():
+        log.warning(
+            "migration_002: skipping — swarm.cfg missing or lacks IGOR_HOME_DB_URL"
+        )
+        return
+
+    # Soft delete
+    backup = env_file.with_name(".env.backup-pre-d319")
+    env_file.rename(backup)
+    log.info(f"migration_002: .env renamed to {backup}")
+
+
+_MIGRATIONS = [migration_001, migration_002]  # extend as new migrations are added
 
 
 def run_migrations(instance_dir: Path) -> None:
