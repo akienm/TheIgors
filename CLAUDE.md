@@ -12,6 +12,10 @@ Igor is a Python AI agent with persistent SQLite memory, running on akiendelllin
 - Source/runtime split: `~/TheIgors/` = source; `~/.TheIgors/` = all runtime data
 - **Environment split (CRITICAL)**: Claude Code always runs with the REAL Anthropic key (`REAL_ANTHROPIC_API_KEY`). Igor's `.env` sets OR routing (`ANTHROPIC_BASE_URL=openrouter`, `ANTHROPIC_API_KEY=OR key`) — this does NOT affect Claude Code. `superclaude` and `cc.sh` handle the key swap. Never read Igor's `.env` and assume it reflects the Claude Code environment.
 
+## First Session?
+If skills and MCP aren't working, read `.claude/bootstrap.md` for setup verification.
+Migration 003 (runs on first `igor` / `igor.ps1` launch) installs CC integration automatically.
+
 ## Developer Conventions
 <!-- last-updated: 2026-03-15c -->
 

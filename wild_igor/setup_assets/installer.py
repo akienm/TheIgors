@@ -11,9 +11,11 @@ Responsibilities (in order):
 Migration sentinels: ~/.TheIgors/swarm/migrations/NNN.done
   001.done — .env distributed to split cfg files (D319)
   002.done — .env renamed to .env.backup-pre-d319 (T-installer-stage3)
+  003.done — Claude Code bootstrap: MCP config, skill symlinks, memory seeds
 
 Usage:
   python installer.py [--id INSTANCE_ID] [--help]
+  python installer.py --uninstall-cc  # remove CC skill symlinks + MCP config
 """
 
 from __future__ import annotations
@@ -279,7 +281,228 @@ def migration_002(instance_dir: Path) -> None:
     log.info(f"migration_002: .env renamed to {backup}")
 
 
-_MIGRATIONS = [migration_001, migration_002]  # extend as new migrations are added
+# ── Migration 003: Claude Code bootstrap ────────────────────────────────────
+
+
+def _cc_project_key(repo_root: Path) -> str:
+    """Compute the CC project key the same way Claude Code does."""
+    # CC uses the absolute path with separators replaced by dashes
+    raw = str(repo_root).replace("\\", "-").replace("/", "-")
+    # On Linux paths start with / so raw already starts with -
+    # On Windows we strip the colon: C:\foo → -C-foo
+    raw = raw.replace(":", "")
+    if not raw.startswith("-"):
+        raw = "-" + raw
+    return raw
+
+
+def _cc_memory_dir(repo_root: Path) -> Path:
+    """Return the CC project memory directory for this repo."""
+    key = _cc_project_key(repo_root)
+    if platform.system() == "Windows":
+        appdata = os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))
+        return Path(appdata) / "Claude" / "projects" / key / "memory"
+    return Path.home() / ".claude" / "projects" / key / "memory"
+
+
+def _cc_skills_dir() -> Path:
+    """Return the user-level CC skills directory."""
+    if platform.system() == "Windows":
+        appdata = os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming"))
+        return Path(appdata) / "Claude" / "skills"
+    return Path.home() / ".claude" / "skills"
+
+
+def _merge_mcp_into_settings_local(settings_path: Path, mcp_entry: dict) -> None:
+    """Add igor MCP server to settings.local.json, preserving existing content."""
+    import json
+
+    config: dict = {}
+    if settings_path.exists():
+        try:
+            config = json.loads(settings_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, ValueError):
+            log.warning("migration_003: settings.local.json malformed — rewriting")
+            config = {}
+
+    mcp = config.setdefault("mcpServers", {})
+    if "igor" in mcp:
+        log.info("migration_003: mcpServers.igor already in settings.local.json")
+        return
+
+    mcp["igor"] = mcp_entry
+    settings_path.parent.mkdir(parents=True, exist_ok=True)
+    settings_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+    log.info(f"migration_003: added mcpServers.igor to {settings_path}")
+
+
+def migration_003(instance_dir: Path) -> None:
+    """
+    Bootstrap Claude Code workflow: MCP config, skill symlinks, memory seeds.
+
+    1. Merge igor MCP server into .claude/settings.local.json (non-destructive)
+    2. Symlink skills from claudecode/cc_skills/ → ~/.claude/skills/ (idempotent)
+    3. Seed project memory from claudecode/cc_memory_seed/ (don't overwrite)
+    """
+    repo_root = _REPO_ROOT
+    skills_src = repo_root / "claudecode" / "cc_skills"
+    seed_dir = repo_root / "claudecode" / "cc_memory_seed"
+
+    # ── 1. MCP config ──
+    if platform.system() == "Windows":
+        python_path = str(repo_root / "venv" / "Scripts" / "python.exe")
+    else:
+        python_path = str(repo_root / "venv" / "bin" / "python")
+
+    mcp_script = str(repo_root / "claudecode" / "igor_mcp.py")
+    db_url = os.environ.get(
+        "IGOR_HOME_DB_URL",
+        f"postgresql://igor:choose_a_password@127.0.0.1/{instance_dir.name}",
+    )
+    web_port = os.environ.get("IGOR_WEB_PORT", "8080")
+    cc_send = os.environ.get("CC_SEND_URL", f"http://localhost:{web_port}/api/cc_send")
+
+    settings_local = repo_root / ".claude" / "settings.local.json"
+    _merge_mcp_into_settings_local(
+        settings_local,
+        {
+            "command": python_path,
+            "args": [mcp_script],
+            "env": {
+                "IGOR_HOME_DB_URL": db_url,
+                "CC_SEND_URL": cc_send,
+            },
+        },
+    )
+
+    # ── 2. Skill symlinks ──
+    skills_dest = _cc_skills_dir()
+    skills_dest.mkdir(parents=True, exist_ok=True)
+    linked = 0
+    skipped = 0
+
+    if skills_src.exists():
+        for skill_dir in sorted(skills_src.iterdir()):
+            if not skill_dir.is_dir():
+                continue
+            dest = skills_dest / skill_dir.name
+            if dest.exists():
+                # Already present (symlink or real dir) — don't touch
+                skipped += 1
+                continue
+            try:
+                dest.symlink_to(skill_dir.resolve())
+                linked += 1
+            except OSError as exc:
+                # Windows without developer mode can't symlink — fall back to copy
+                log.warning(
+                    f"migration_003: symlink failed for {skill_dir.name}, "
+                    f"copying instead — {exc}"
+                )
+                import shutil
+
+                shutil.copytree(skill_dir, dest)
+                linked += 1
+
+    log.info(f"migration_003: skills linked={linked} skipped={skipped}")
+
+    # ── 3. Memory seeds ──
+    memory_dir = _cc_memory_dir(repo_root)
+    seeded = 0
+    mem_skipped = 0
+
+    if seed_dir.exists():
+        memory_dir.mkdir(parents=True, exist_ok=True)
+        for f in sorted(seed_dir.glob("*.md")):
+            dest = memory_dir / f.name
+            if dest.exists():
+                mem_skipped += 1
+                continue
+            import shutil
+
+            shutil.copy2(f, dest)
+            seeded += 1
+
+    log.info(
+        f"migration_003: memory seeded={seeded} skipped={mem_skipped} "
+        f"→ {memory_dir}"
+    )
+
+
+# ── Uninstall CC ─────────────────────────────────────────────────────────────
+
+
+def uninstall_cc() -> None:
+    """
+    Remove Claude Code skill symlinks installed by migration_003.
+
+    Does NOT remove:
+    - Memory seeds (user may have edited them)
+    - settings.local.json (may contain user permissions)
+    - CLAUDE.md or .claude/bootstrap.md (repo files, managed by git)
+    """
+    skills_dir = _cc_skills_dir()
+    skills_src = _REPO_ROOT / "claudecode" / "cc_skills"
+
+    if not skills_src.exists():
+        log.info("uninstall_cc: no cc_skills source dir — nothing to do")
+        return
+
+    removed = 0
+    for skill_dir in sorted(skills_src.iterdir()):
+        if not skill_dir.is_dir():
+            continue
+        dest = skills_dir / skill_dir.name
+        if not dest.exists():
+            continue
+        # Only remove if it's a symlink pointing to our source
+        if dest.is_symlink():
+            target = dest.resolve()
+            if target == skill_dir.resolve():
+                dest.unlink()
+                removed += 1
+                log.info(f"uninstall_cc: removed symlink {dest}")
+            else:
+                log.info(
+                    f"uninstall_cc: skipping {dest.name} — symlink points "
+                    f"elsewhere ({target})"
+                )
+        else:
+            # It's a real directory — check if it matches our skill (copied, not linked)
+            skill_md = dest / "SKILL.md"
+            src_md = skill_dir / "SKILL.md"
+            if skill_md.exists() and src_md.exists():
+                import shutil
+
+                shutil.rmtree(dest)
+                removed += 1
+                log.info(f"uninstall_cc: removed copied skill dir {dest}")
+            else:
+                log.info(f"uninstall_cc: skipping {dest.name} — doesn't look like ours")
+
+    print(f"[uninstall-cc] Removed {removed} skill(s) from {skills_dir}")
+
+    # Optionally remove igor MCP entry from settings.local.json
+    settings_local = _REPO_ROOT / ".claude" / "settings.local.json"
+    if settings_local.exists():
+        import json
+
+        try:
+            config = json.loads(settings_local.read_text(encoding="utf-8"))
+            mcp = config.get("mcpServers", {})
+            if "igor" in mcp:
+                del mcp["igor"]
+                settings_local.write_text(
+                    json.dumps(config, indent=2) + "\n", encoding="utf-8"
+                )
+                print("[uninstall-cc] Removed igor MCP entry from settings.local.json")
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    print("[uninstall-cc] Done. Memory seeds preserved (user data).")
+
+
+_MIGRATIONS = [migration_001, migration_002, migration_003]
 
 
 def run_migrations(instance_dir: Path) -> None:
@@ -579,8 +802,17 @@ def main(argv: list[str] | None = None) -> None:
         metavar="INSTANCE_ID",
         help="Igor instance ID (default: IGOR_INSTANCE_ID env or Igor-wild-0001)",
     )
+    parser.add_argument(
+        "--uninstall-cc",
+        action="store_true",
+        help="Remove Claude Code skill symlinks and MCP config installed by migration 003",
+    )
     # Pass-through args to igor.main
     args, igor_args = parser.parse_known_args(argv)
+
+    if args.uninstall_cc:
+        uninstall_cc()
+        return
 
     instance_dir = _locate_instance_dir(args.id)
     log.info(f"Instance: {args.id} at {instance_dir}")

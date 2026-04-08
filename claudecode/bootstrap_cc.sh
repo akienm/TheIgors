@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# bootstrap_cc.sh — Bring Claude Code to life for TheIgors on Linux
-# Run from repo root: bash claudecode/bootstrap_cc.sh
+# bootstrap_cc.sh — CC setup for TheIgors (Linux/macOS)
 #
-# What this does:
-#   1. Seeds CC memory files for this project
-#   2. Writes .claude/settings.local.json with correct MCP paths
+# This is now a convenience wrapper around migration_003 in installer.py.
+# Running `igor` or `igor.ps1` applies migration_003 automatically.
+# Use this script only if you want to set up CC without starting Igor.
 #
 # Prerequisites: venv must exist (python3 -m venv venv && venv/bin/pip install -r requirements.txt)
 
@@ -12,67 +11,33 @@ set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VENV="$REPO_ROOT/venv"
 PYTHON="$VENV/bin/python"
-MCP_SCRIPT="$REPO_ROOT/claudecode/igor_mcp.py"
-SEED_DIR="$REPO_ROOT/claudecode/cc_memory_seed"
+INSTALLER="$REPO_ROOT/wild_igor/setup_assets/installer.py"
 
 echo "=== TheIgors CC Bootstrap (Linux) ==="
-echo "Repo: $REPO_ROOT"
 
 # Check venv
 if [ ! -f "$PYTHON" ]; then
     echo "ERROR: venv not found at $VENV"
-    echo "Run: python3 -m venv venv && venv/bin/pip install -r requirements.txt"
+    echo "Run: python3 -m venv venv && venv/bin/pip install -r wild_igor/requirements.txt"
     exit 1
 fi
 
-# Compute CC project memory path
-# CC uses the project path with slashes replaced by dashes
-PROJECT_KEY=$(echo "$REPO_ROOT" | sed 's|/|-|g')
-MEMORY_DIR="$HOME/.claude/projects/$PROJECT_KEY/memory"
-mkdir -p "$MEMORY_DIR"
+# Run only migration_003 via the installer's migration system.
+# We import and call migration_003 directly to avoid starting the restart loop.
+"$PYTHON" -c "
+import sys, os
+sys.path.insert(0, '$REPO_ROOT/wild_igor/setup_assets')
+os.environ.setdefault('IGOR_HOME_DB_URL', 'postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001')
+import logging
+logging.basicConfig(format='[bootstrap] %(levelname)s %(message)s', level=logging.INFO, stream=sys.stderr)
+from installer import migration_003, _RUNTIME_ROOT
+from pathlib import Path
+instance_id = os.environ.get('IGOR_INSTANCE_ID', 'Igor-wild-0001')
+instance_dir = _RUNTIME_ROOT / instance_id
+instance_dir.mkdir(parents=True, exist_ok=True)
+migration_003(instance_dir)
+"
 
-# Seed memory files (don't overwrite existing — local changes take precedence)
-if [ -d "$SEED_DIR" ]; then
-    seeded=0
-    skipped=0
-    for f in "$SEED_DIR"/*.md; do
-        fname=$(basename "$f")
-        dest="$MEMORY_DIR/$fname"
-        if [ ! -f "$dest" ]; then
-            cp "$f" "$dest"
-            seeded=$((seeded + 1))
-        else
-            skipped=$((skipped + 1))
-        fi
-    done
-    echo "Memory: seeded=$seeded skipped=$skipped (existing files not overwritten)"
-else
-    echo "WARNING: memory seed dir not found at $SEED_DIR"
-fi
-
-# Write settings.local.json
-SETTINGS_LOCAL="$REPO_ROOT/.claude/settings.local.json"
-
-# Prompt for DB URL if not in env
-DB_URL="${IGOR_HOME_DB_URL:-postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001}"
-CC_SEND="${CC_SEND_URL:-http://localhost:8080/api/cc_send}"
-
-cat > "$SETTINGS_LOCAL" << EOF
-{
-  "mcpServers": {
-    "igor": {
-      "command": "$PYTHON",
-      "args": ["$MCP_SCRIPT"],
-      "env": {
-        "IGOR_HOME_DB_URL": "$DB_URL",
-        "CC_SEND_URL": "$CC_SEND"
-      }
-    }
-  }
-}
-EOF
-
-echo "Written: $SETTINGS_LOCAL"
 echo ""
 echo "=== Bootstrap complete ==="
 echo "Restart Claude Code to load MCP tools."
