@@ -1,198 +1,30 @@
 #!/usr/bin/env bash
-# igor — launcher script for Wild Igor (D232)
+# igor — minimal launcher (D321).
 # Lives at repo root: TheIgors/igor
 # Symlink: ~/bin/igor -> /home/akien/TheIgors/igor
 #
 # Usage:
-#   igor                  # start (runs first-start wizard if no .env found)
+#   igor                  # start Igor (setup + migrate + run)
 #   igor --id wild-0002   # start with a specific instance ID
 #   igor --help           # show help
+#
+# This script's only job: find Python + ensure venv exists, then hand off
+# to wild_igor/setup_assets/installer.py (platform-smart Python).
+# All restart logic, migration, and crash recovery live in installer.py.
+
+set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-WILD_DIR="$REPO_DIR/wild_igor"
 VENV_DIR="$REPO_DIR/venv"
-VENV_PYTHON="$VENV_DIR/bin/python"
-IGOR_HOME="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
-ALERTS_FILE="$IGOR_HOME/alerts.txt"
+INSTALLER="$REPO_DIR/wild_igor/setup_assets/installer.py"
+REQUIREMENTS="$REPO_DIR/wild_igor/requirements.txt"
 
-# Sanity checks
-if [ ! -d "$WILD_DIR" ]; then
-    echo "[igor] ERROR: wild_igor directory not found at $WILD_DIR" >&2
-    exit 1
+if [ ! -d "$VENV_DIR" ]; then
+    echo "[igor] Bootstrapping venv (first run)..."
+    python3 -m venv "$VENV_DIR"
+    "$VENV_DIR/bin/pip" install --upgrade pip -q
+    "$VENV_DIR/bin/pip" install -r "$REQUIREMENTS" -q
+    echo "[igor] venv ready."
 fi
 
-if [ ! -f "$VENV_PYTHON" ]; then
-    echo "[igor] ERROR: venv python not found at $VENV_PYTHON" >&2
-    echo "[igor] Run: python3 -m venv $VENV_DIR && pip install -r $WILD_DIR/requirements.txt" >&2
-    exit 1
-fi
-
-# Locate .env — check IGOR_INSTANCE_ID or default instance dir
-RUNTIME_ROOT="${IGOR_RUNTIME_ROOT:-$HOME/.TheIgors}"
-INSTANCE_ID="${IGOR_INSTANCE_ID:-Igor-wild-0001}"
-ENV_FILE="$RUNTIME_ROOT/$INSTANCE_ID/.env"
-
-if [ ! -f "$ENV_FILE" ]; then
-    # Try to find any existing instance .env
-    FOUND=$(find "$RUNTIME_ROOT" -maxdepth 2 -name ".env" 2>/dev/null | head -1)
-    if [ -n "$FOUND" ]; then
-        ENV_FILE="$FOUND"
-        echo "[igor] Using existing instance: $ENV_FILE"
-    else
-        # First-start: run the wizard
-        echo "[igor] No instance found — running first-start wizard..."
-        # Activate venv first so wizard can import igor.paths
-        source "$VENV_DIR/bin/activate"
-        WIZARD_OUT=$("$VENV_PYTHON" -m igor.first_start 2>&1)
-        WIZARD_EXIT=$?
-        if [ $WIZARD_EXIT -ne 0 ]; then
-            echo "$WIZARD_OUT" >&2
-            exit 1
-        fi
-        # Extract the env file path from wizard output
-        ENV_FILE=$(echo "$WIZARD_OUT" | grep '^IGOR_ENV_FILE=' | cut -d= -f2-)
-        # Print wizard output (minus the machine-readable line)
-        echo "$WIZARD_OUT" | grep -v '^IGOR_ENV_FILE='
-        if [ -z "$ENV_FILE" ] || [ ! -f "$ENV_FILE" ]; then
-            echo "[igor] ERROR: wizard did not produce a valid .env" >&2
-            exit 1
-        fi
-        echo "[igor] Instance created. Edit $ENV_FILE to add API keys, then re-run igor."
-        exit 0
-    fi
-fi
-
-# Activate venv
-source "$VENV_DIR/bin/activate"
-
-# Change to wild_igor dir so relative paths work
-cd "$WILD_DIR"
-
-# Default instance ID if --id not specified
-IGOR_ARGS=("$@")
-if [[ ! " $* " =~ " --id " ]]; then
-    IGOR_ARGS=("--id" "Igor-wild-0001" "$@")
-fi
-
-# Trap function for crash logging
-log_igor_crash() {
-    local exit_code=$1
-    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-    mkdir -p "$IGOR_HOME"
-
-    {
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "CRASH: Igor (exit code: $exit_code)"
-        echo "Time: $timestamp"
-        echo "Instance: ${IGOR_INSTANCE_ID:-Igor-wild-0001}"
-        echo "Hostname: $(hostname)"
-        echo "User: $(whoami)"
-
-        # Include last 20 lines of log if available
-        if [[ -f "$IGOR_HOME/${IGOR_INSTANCE_ID:-Igor-wild-0001}/logs/main.log" ]]; then
-            echo ""
-            echo "Last 20 log lines:"
-            tail -20 "$IGOR_HOME/${IGOR_INSTANCE_ID:-Igor-wild-0001}/logs/main.log" | sed 's/^/  /'
-        fi
-        echo ""
-    } >> "$ALERTS_FILE"
-}
-
-# Debug session flag: written by /context-load, deleted by /savestate.
-# When present, crash auto-fixer is suppressed (Claude Code session is already on it).
-DEBUG_SESSION_FLAG="$RUNTIME_ROOT/${IGOR_INSTANCE_ID:-Igor-wild-0001}/debug_session.flag"
-
-# Restart loop: exit code 42 means "please restart"
-# .env is re-read on every restart so env changes take effect immediately.
-while true; do
-    # Re-pin ENV_FILE from IGOR_INSTANCE_ID (may have been updated by a prior .env read)
-    _candidate="$RUNTIME_ROOT/${IGOR_INSTANCE_ID:-Igor-wild-0001}/.env"
-    [ -f "$_candidate" ] && ENV_FILE="$_candidate"
-    set -a; source "$ENV_FILE"; set +a
-    # Pin IGOR_INSTANCE_ID to the canonical dir name — overrides any stale .env value.
-    # This is the authoritative source: the dir that contains the .env IS the instance.
-    export IGOR_INSTANCE_ID=$(basename "$(dirname "$ENV_FILE")")
-
-    # Refresh debug flag path in case IGOR_INSTANCE_ID changed after .env re-read.
-    DEBUG_SESSION_FLAG="$RUNTIME_ROOT/$IGOR_INSTANCE_ID/debug_session.flag"
-
-    # T-restart-rate-limit: halt if 3+ restarts in 60s (crash loop detection).
-    # Appends current epoch second, prunes entries older than 60s, counts recent.
-    _restart_ts_file="$RUNTIME_ROOT/$IGOR_INSTANCE_ID/restart_timestamps.txt"
-    _now_sec=$(date +%s)
-    _cutoff=$((_now_sec - 60))
-    echo "$_now_sec" >> "$_restart_ts_file"
-    _recent=$(awk -v c="$_cutoff" '$1 >= c' "$_restart_ts_file" 2>/dev/null | wc -l | tr -d ' ')
-    awk -v c="$_cutoff" '$1 >= c' "$_restart_ts_file" > "${_restart_ts_file}.tmp" 2>/dev/null \
-        && mv "${_restart_ts_file}.tmp" "$_restart_ts_file"
-    if [ "${_recent:-0}" -ge 4 ]; then
-        {
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "CRITICAL: Igor crash loop — ${_recent} restarts in 60s"
-            echo "Time: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-            echo "Instance: $IGOR_INSTANCE_ID"
-            echo "Halting restart loop. Manual intervention required."
-            echo ""
-        } >> "$ALERTS_FILE"
-        echo "[igor] CRITICAL: crash loop (${_recent} restarts in 60s). Halting. Check $ALERTS_FILE." >&2
-        exit 1
-    fi
-
-    # Kill any stale igor.main processes left over from a prior crash.
-    # pgrep returns PIDs of all matching processes; exclude current shell's children
-    # by comparing against $$. fuser frees the web port if something else holds it.
-    _stale=$(pgrep -f "igor\.main" 2>/dev/null | grep -v "^$$\$")
-    if [ -n "$_stale" ]; then
-        echo "[igor] Cleaning up stale processes: $_stale"
-        kill $_stale 2>/dev/null
-        sleep 1
-        # Force-kill anything that didn't exit cleanly
-        kill -9 $_stale 2>/dev/null || true
-    fi
-    _web_port="${IGOR_WEB_PORT:-8080}"
-    fuser -k "${_web_port}/tcp" 2>/dev/null || true
-
-    if [ -e "$REPO_DIR/pause.wait" ]; then
-        echo "Waiting for $REPO_DIR/pause.wait to clear."
-        while [ -e "$REPO_DIR/pause.wait" ]; do
-            sleep 1
-        done
-    fi
-
-    # Capture stderr to a temp file for crash diagnosis while still showing it live.
-    _crash_log=$(mktemp /tmp/igor-crash-XXXXXX.log)
-    python -m igor.main "${IGOR_ARGS[@]}" 2> >(tee -a "$_crash_log" >&2)
-    EXIT_CODE=$?
-
-    if [ $EXIT_CODE -eq 42 ]; then
-        rm -f "$_crash_log"
-        echo "[igor] Restarting (re-reading .env)..."
-    elif [ $EXIT_CODE -eq 0 ] || [ $EXIT_CODE -eq 130 ] || [ $EXIT_CODE -eq 143 ]; then
-        # Clean exit: 0=quit, 130=SIGINT (Ctrl-C), 143=SIGTERM
-        rm -f "$_crash_log"
-        break
-    else
-        # Unexpected crash
-        log_igor_crash "$EXIT_CODE"
-        if [ -f "$DEBUG_SESSION_FLAG" ]; then
-            echo "[igor] Debug session active — not launching auto-fixer. Exiting."
-            rm -f "$_crash_log"
-            break
-        fi
-        echo "[igor] Crash detected (exit $EXIT_CODE). Launching Claude auto-fixer..."
-        _traceback=$(tail -80 "$_crash_log")
-        rm -f "$_crash_log"
-        claude --dangerously-skip-permissions -p "Igor crashed with exit code $EXIT_CODE.
-
-Traceback (last 80 lines of stderr):
-$_traceback
-
-Task: diagnose the root cause, fix the code in ~/TheIgors/wild_igor/, run tests
-(cd ~/TheIgors && source venv/bin/activate && python -m pytest tests/ -x -q),
-commit the fix, then exit cleanly. Do not restart Igor — the startup script will
-restart it after you exit."
-        echo "[igor] Auto-fixer exited. Restarting Igor..."
-        # Continue the loop — Igor restarts with the fix applied.
-    fi
-done
+exec "$VENV_DIR/bin/python" "$INSTALLER" "$@"

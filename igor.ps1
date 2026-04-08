@@ -1,60 +1,27 @@
-# igor.ps1 — Igor launcher with git-pull-and-restart loop (Windows)
+# igor.ps1 — minimal Igor launcher (D321, Windows).
 # Equivalent to the Linux `igor` bash wrapper.
 # Signed by sign_igor_script.ps1 — do not edit without re-signing.
 #
 # Usage:
 #   .\igor.ps1                     # start with default instance
-#   igor                                # if igor.bat is in PATH
+#   igor                           # if igor.bat is in PATH
+#
+# This script's only job: find Python + ensure venv exists, then hand off
+# to wild_igor\setup_assets\installer.py (platform-smart Python).
+# All restart logic, migration, and crash recovery live in installer.py.
 
-$repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$repoRoot   = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$venvPython = "$repoRoot\venv\Scripts\python.exe"
+$installer  = "$repoRoot\wild_igor\setup_assets\installer.py"
+$requirements = "$repoRoot\wild_igor\requirements.txt"
 
-# ── Discover instance ───────────────────────────────────────────────────────
-$runtimeRoot = if ($env:IGOR_RUNTIME_ROOT) { $env:IGOR_RUNTIME_ROOT } else { "$env:USERPROFILE\.TheIgors" }
-$instanceId  = if ($env:IGOR_INSTANCE_ID)  { $env:IGOR_INSTANCE_ID }  else {
-    $found = Get-ChildItem "$runtimeRoot" -Recurse -Filter ".env" -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($found) { $found.Directory.Name } else { "igor_wild_windows_0001" }
-}
-
-$envFile    = "$runtimeRoot\$instanceId\.env"
-$venvPython = "$runtimeRoot\venv\Scripts\python.exe"
-
-if (-not (Test-Path $envFile)) {
-    Write-Error ".env not found at $envFile — run the bootstrap first."
-    exit 1
-}
 if (-not (Test-Path $venvPython)) {
-    Write-Error "venv not found at $venvPython — run the bootstrap first."
-    exit 1
+    Write-Host "[igor] Bootstrapping venv (first run)..." -ForegroundColor Cyan
+    python -m venv "$repoRoot\venv"
+    & "$repoRoot\venv\Scripts\pip.exe" install --upgrade pip -q
+    & "$repoRoot\venv\Scripts\pip.exe" install -r $requirements -q
+    Write-Host "[igor] venv ready." -ForegroundColor Green
 }
 
-# ── Restart loop ────────────────────────────────────────────────────────────
-# Exit code 42 = restart requested (mirrors Linux igor bash wrapper).
-# Any other code = clean stop.
-$exitCode = 0
-do {
-    # Pull latest code before each run
-    Write-Host "[igor] git pull..." -ForegroundColor DarkCyan
-    git -C $repoRoot pull --ff-only 2>&1
-
-    # Load .env for this run (re-read on every restart so changes take effect)
-    Get-Content $envFile | ForEach-Object {
-        if ($_ -match '^\s*([^#=][^=]*)=(.*)$') {
-            $k = $matches[1].Trim()
-            $v = $matches[2].Trim().Trim('"').Trim("'")
-            [System.Environment]::SetEnvironmentVariable($k, $v, 'Process')
-        }
-    }
-
-    Write-Host "[igor] Starting Igor ($instanceId)..." -ForegroundColor Cyan
-    Set-Location "$repoRoot\wild_igor"
-    $env:PYTHONUTF8 = '1'
-    $env:PYTHONIOENCODING = 'utf-8'
-    & $venvPython -m igor.main
-    $exitCode = $LASTEXITCODE
-
-    if ($exitCode -eq 42) {
-        Write-Host "[igor] Restarting (re-reading .env + pulling latest)..." -ForegroundColor Cyan
-    } else {
-        Write-Host "[igor] Igor exited (code $exitCode)." -ForegroundColor Yellow
-    }
-} while ($exitCode -eq 42)
+$env:PYTHONUTF8 = '1'
+& $venvPython $installer @args
