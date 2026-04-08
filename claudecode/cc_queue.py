@@ -48,8 +48,9 @@ STATUS_ORDER = {
     "pending": 0,
     "in_progress": 1,
     "needs_review": 2,
-    "blocked": 3,
-    "done": 4,
+    "awaiting_approval": 3,
+    "blocked": 4,
+    "done": 5,
 }
 
 
@@ -102,6 +103,7 @@ def _format_task_line(t: dict) -> str:
         "pending": "⬜",
         "in_progress": "🔵",
         "needs_review": "🟡",
+        "awaiting_approval": "🟠",
         "blocked": "🔴",
         "done": "✅",
     }
@@ -218,6 +220,62 @@ def cmd_block(args):
     _save(tasks)
     _log({"action": "blocked", "id": args[0], "title": t["title"], "reason": args[1]})
     print(f"Blocked {args[0]}: {args[1]}")
+
+
+def cmd_propose(args):
+    """D331: Igor proposes a design change for approval. Sets status=awaiting_approval."""
+    if len(args) < 2:
+        print("Usage: propose <id> <proposal text>")
+        sys.exit(1)
+    tasks = _load()
+    t = _find(tasks, args[0])
+    if not t:
+        print(f"Task {args[0]} not found.")
+        sys.exit(1)
+    proposal = " ".join(args[1:])
+    t["status"] = "awaiting_approval"
+    t["proposal"] = proposal
+    t["proposed_at"] = _now()
+    _save(tasks)
+    _log(
+        {
+            "action": "propose",
+            "id": args[0],
+            "title": t["title"],
+            "proposal": proposal[:200],
+        }
+    )
+    print(f"Proposed {args[0]}: {proposal[:120]}")
+    print(f"Status: awaiting_approval — CC will review on next context-load")
+
+
+def cmd_approve(args):
+    """D331: Approve a pending proposal. Resets ticket to pending with approved plan."""
+    if not args:
+        print("Usage: approve <id> [approval notes]")
+        sys.exit(1)
+    tasks = _load()
+    t = _find(tasks, args[0])
+    if not t:
+        print(f"Task {args[0]} not found.")
+        sys.exit(1)
+    if t["status"] != "awaiting_approval":
+        print(f"Task {args[0]} is {t['status']}, not awaiting_approval.")
+        sys.exit(1)
+    notes = " ".join(args[1:]) if len(args) > 1 else ""
+    t["status"] = "pending"
+    t["approved_plan"] = t.get("proposal", "")
+    t["approval_notes"] = notes
+    t["approved_at"] = _now()
+    t["blocked_at"] = None  # Clear any prior block
+    _save(tasks)
+    _log(
+        {"action": "approve", "id": args[0], "title": t["title"], "notes": notes[:200]}
+    )
+    print(f"Approved {args[0]}: {t['title']}")
+    if notes:
+        print(f"Notes: {notes}")
+    print("Status: pending — Igor will pick it up on next queue drain")
 
 
 def cmd_log(args):
@@ -481,6 +539,8 @@ COMMANDS = {
     "claim": cmd_claim,
     "done": cmd_done,
     "block": cmd_block,
+    "propose": cmd_propose,
+    "approve": cmd_approve,
     "log": cmd_log,
     "add": cmd_add,
     "flush_decision": cmd_flush_decision,

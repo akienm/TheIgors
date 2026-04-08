@@ -86,7 +86,15 @@ Scan the `key_changes` field only — skip the rest. One line tells you where th
 
 ---
 
-## Step 4.5 — Stale ticket check
+## Step 4.5 — Pending approvals + stale ticket check
+
+D331: Surface Igor's design proposals that need CC approval:
+
+```bash
+python3 ~/TheIgors/claudecode/cc_queue.py list 2>/dev/null | grep "🟠"
+```
+
+If any 🟠 awaiting_approval tickets appear: **review the proposal immediately.** Igor is parked waiting for design approval. Run `cc_queue.py show <id>` to see the proposal, then `cc_queue.py approve <id> [notes]` or discuss with Akien.
 
 Flag in_progress tickets not mentioned in today's slate (DB vs slate drift):
 
