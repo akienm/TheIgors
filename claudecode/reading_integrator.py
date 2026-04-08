@@ -169,42 +169,57 @@ def _fetch_candidates(cortex: Cortex, book_filter: str, batch: int) -> list:
     """
     Return reading/book_learner memories that are missing embeddings.
     book_filter: book_title substring to match (empty = all).
+    Uses cortex DB connection (Postgres-aware via db_proxy).
     """
-    import sqlite3
+    try:
+        with cortex._db() as conn:
+            rows = conn.execute(
+                """
+                SELECT m.id, m.narrative, m.memory_type, m.parent_id, m.metadata,
+                       m.arousal, m.confidence, m.source
+                FROM memories m
+                LEFT JOIN memory_embeddings me ON me.memory_id = m.id
+                WHERE m.source IN ('reading', 'book_learner')
+                  AND me.memory_id IS NULL
+                LIMIT ?
+                """,
+                (batch,),
+            ).fetchall()
+    except Exception as e:
+        logger.warning(f"_fetch_candidates query failed: {e}")
+        return []
 
-    db_path = Path(
-        os.environ.get(
-            "IGOR_DB_PATH",
-            str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
-        )
-    )
-    conn = sqlite3.connect(str(db_path))
-    conn.row_factory = sqlite3.Row
-
-    rows = conn.execute(
-        """
-        SELECT m.id, m.narrative, m.memory_type, m.parent_id, m.metadata,
-               m.arousal, m.confidence, m.source
-        FROM memories m
-        LEFT JOIN memory_embeddings me ON me.memory_id = m.id
-        WHERE m.source IN ('reading', 'book_learner')
-          AND me.memory_id IS NULL
-        LIMIT ?
-        """,
-        (batch,),
-    ).fetchall()
-    conn.close()
+    # Convert rows to dicts for uniform access
+    col_names = [
+        "id",
+        "narrative",
+        "memory_type",
+        "parent_id",
+        "metadata",
+        "arousal",
+        "confidence",
+        "source",
+    ]
+    dict_rows = []
+    for r in rows:
+        if hasattr(r, "keys"):
+            dict_rows.append(dict(r))
+        else:
+            dict_rows.append(dict(zip(col_names, r)))
 
     if book_filter:
         out = []
         bf = book_filter.lower()
-        for r in rows:
-            meta = json.loads(r["metadata"]) if r["metadata"] else {}
+        for r in dict_rows:
+            meta_raw = r.get("metadata")
+            meta = (
+                json.loads(meta_raw) if isinstance(meta_raw, str) else (meta_raw or {})
+            )
             title = (meta.get("book_title") or meta.get("book") or "").lower()
             if bf in title:
                 out.append(r)
         return out
-    return list(rows)
+    return dict_rows
 
 
 # ── Per-node integration ──────────────────────────────────────────────────────
@@ -287,12 +302,7 @@ def _integrate_node(
     try:
         best_cp, _ = _best_cp(mem.narrative)
         if best_cp and not dry_run:
-            import sqlite3
-
-            db_path = Path(os.environ.get("IGOR_DB_PATH", ""))
-            if not db_path or not db_path.exists():
-                db_path = Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
-            with sqlite3.connect(str(db_path)) as c:
+            with cortex._db() as c:
                 exists = c.execute(
                     "SELECT 1 FROM interpretive_edges WHERE from_id=? AND to_id=? LIMIT 1",
                     (best_cp, mem.id),
