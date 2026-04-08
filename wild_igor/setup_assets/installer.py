@@ -187,10 +187,13 @@ def migration_001(instance_dir: Path) -> None:
         cfg_name = _classify_key(key)
         buckets.setdefault(cfg_name, {})[key] = value
 
+    # Derive swarm_dir from instance_dir so tests are automatically isolated
+    swarm_dir = instance_dir.parent / "swarm"
+
     # Write each bucket
     for cfg_name, entries in buckets.items():
         if cfg_name == "swarm.cfg":
-            dest = _SWARM_DIR / cfg_name
+            dest = swarm_dir / cfg_name
         else:
             dest = instance_dir / cfg_name
         log.info(f"migration_001: writing {len(entries)} keys → {dest}")
@@ -211,10 +214,11 @@ def migration_001(instance_dir: Path) -> None:
 
 def _bootstrap_cfg_templates(instance_dir: Path) -> None:
     """Expand any template files not yet present in instance_dir or swarm/."""
+    swarm_dir = instance_dir.parent / "swarm"
     instance_id = instance_dir.name
     subs = {
         "IGOR_INSTANCE_ID": instance_id,
-        "IGOR_RUNTIME_ROOT": str(_RUNTIME_ROOT),
+        "IGOR_RUNTIME_ROOT": str(instance_dir.parent),
         "IGOR_HOME_DB_URL": "",
         "SWARM_ID": "",
         "IGOR_WEB_PORT": "8080",
@@ -225,7 +229,7 @@ def _bootstrap_cfg_templates(instance_dir: Path) -> None:
     for tmpl_path in _TEMPLATES_DIR.glob("*.template"):
         stem = tmpl_path.stem  # e.g. "swarm.cfg"
         if stem == "swarm.cfg":
-            dest = _SWARM_DIR / stem
+            dest = swarm_dir / stem
         else:
             dest = instance_dir / stem
         _expand_template(tmpl_path, dest, subs)
@@ -262,7 +266,7 @@ def migration_002(instance_dir: Path) -> None:
         return
 
     # Check swarm.cfg is present and contains IGOR_HOME_DB_URL
-    swarm_cfg = _SWARM_DIR / "swarm.cfg"
+    swarm_cfg = instance_dir.parent / "swarm" / "swarm.cfg"
     if not swarm_cfg.exists() or "IGOR_HOME_DB_URL" not in swarm_cfg.read_text():
         log.warning(
             "migration_002: skipping — swarm.cfg missing or lacks IGOR_HOME_DB_URL"
@@ -280,9 +284,10 @@ _MIGRATIONS = [migration_001, migration_002]  # extend as new migrations are add
 
 def run_migrations(instance_dir: Path) -> None:
     """Apply all pending migrations in numeric order."""
-    _MIGRATIONS_DIR.mkdir(parents=True, exist_ok=True)
+    migrations_dir = instance_dir.parent / "swarm" / "migrations"
+    migrations_dir.mkdir(parents=True, exist_ok=True)
     for idx, fn in enumerate(_MIGRATIONS, start=1):
-        sentinel = _MIGRATIONS_DIR / f"{idx:03d}.done"
+        sentinel = migrations_dir / f"{idx:03d}.done"
         if sentinel.exists():
             log.debug(f"migration {idx:03d}: already applied — skipping")
             continue
