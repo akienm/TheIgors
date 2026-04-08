@@ -450,9 +450,12 @@ def cmd_reset(args):
     prev = t["status"]
     t["status"] = "pending"
     t["claimed_at"] = None
+    t["blocked_at"] = (
+        None  # Clear block so adopt_top_queue_ticket will pick it up again
+    )
     _save(tasks)
     _log({"action": "reset", "id": args[0], "prev_status": prev})
-    print(f"Reset {args[0]}: {prev} → pending")
+    print(f"Reset {args[0]}: {prev} → pending (blocked_at cleared)")
 
 
 def cmd_reset_stale(args):
