@@ -34,13 +34,6 @@ if [ ! -f "$SLATE" ]; then
 ## Active
 
 ## Done today
-
-## Tools
-Skills: /sprint /deep-audit /decided /commit /savestate /fixit /context-load /day-close /audit /probe /notethat /slateclose /readigor
-MCP: mcp__igor__memory_get(id) · mcp__igor__cc_send(text) · mcp__igor__channel_read(limit=N)
-DB: psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-Design docs: ~/TheIgors/design_docs_for_igor/ or mcp__igor__memory_get('D304')
-Epics: Claude · Cognition · Training · Operations · Database · Swarm · Productization
 EOF
   echo "Created fresh slate: $SLATE"
 fi
@@ -50,17 +43,25 @@ cat "$SLATE"
 The slate tells you:
 - Active tickets (what's open now)
 - Done today (already closed this day)
-- Tools block: skills, MCP, DB, design_docs pointers, epics
+
+Tools reference (static — not repeated in slates):
+- Skills: /sprint /deep-audit /decided /commit /savestate /fixit /context-load /day-close /audit /probe /notethat /slateclose /readigor
+- MCP: mcp__igor__memory_get(id) · mcp__igor__cc_send(text) · mcp__igor__channel_read(limit=N)
+- DB: psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
+- Design docs: ~/TheIgors/design_docs_for_igor/ or mcp__igor__memory_get('D304')
+- Epics: Claude · Cognition · Training · Operations · Database · Swarm · Productization
 
 ---
 
 ## Step 2 — Read decisions hot window (last 10)
 
 ```bash
-tail -10 ~/TheIgors/design_docs_for_igor/decisions_log.dsb
+tail -10 ~/TheIgors/design_docs_for_igor/decisions_log.dsb | sed 's/|/ — /g; s/^ *//'
 ```
 
 Recent decisions are appended at the BOTTOM. `tail -10` gives the 10 most recent decisions — the actual hot window. Skip the foundational D001-D030 block (already stable, derivable from CLAUDE.md).
+
+D330 note: pipe-delimited DSB renders to prose via sed. Prose is 7% more token-efficient and produces better LLM responses than pipe-delimited format.
 
 ---
 
