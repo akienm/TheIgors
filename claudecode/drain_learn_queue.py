@@ -122,21 +122,33 @@ _IGOR_HOME_DB_URL = os.environ.get(
 )
 
 
-def _set_reading_list_in_progress(calibre_id: int) -> None:
-    """G-RL3: mark reading_list entry in_progress when drain launches it."""
+def _set_reading_list_in_progress(calibre_id: int) -> bool:
+    """G-RL3: atomically claim reading_list entry when drain launches it.
+
+    Returns True if this instance won the claim, False if another instance
+    already claimed it (status was already 'in_progress').
+    """
     try:
         import psycopg2
 
         conn = psycopg2.connect(_IGOR_HOME_DB_URL)
         conn.autocommit = True
-        conn.cursor().execute(
+        cur = conn.cursor()
+        cur.execute(
             "UPDATE reading_list SET status='in_progress', started_at=NOW()"
-            " WHERE source=%s AND status='queued'",
+            " WHERE source=%s AND status IN ('queued', 'pending')",
             (f"calibre://{calibre_id}",),
         )
+        claimed = cur.rowcount > 0
         conn.close()
+        if not claimed:
+            _log(
+                f"reading_list: calibre://{calibre_id} already claimed by another instance"
+            )
+        return claimed
     except Exception as e:
         _log(f"reading_list update failed: {e}")
+        return True  # on error, proceed anyway (don't block reads)
 
 
 def _acquire_lock() -> "io.FileIO | None":
@@ -286,9 +298,14 @@ def _launch(entry: dict) -> bool:
     try:
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         log_file = open(LOG_DIR / "book_learner.log", "a")
-        subprocess.Popen(cmd, stdout=log_file, stderr=log_file, start_new_session=True)
+        # Atomically claim before launching — if another instance got it, skip
         if calibre_id_for_status is not None:
-            _set_reading_list_in_progress(calibre_id_for_status)
+            if not _set_reading_list_in_progress(calibre_id_for_status):
+                _log(
+                    f"SKIP calibre://{calibre_id_for_status} — claimed by another instance"
+                )
+                return False
+        subprocess.Popen(cmd, stdout=log_file, stderr=log_file, start_new_session=True)
         return True
     except Exception as e:
         _log(f"LAUNCH ERROR: {e}")
