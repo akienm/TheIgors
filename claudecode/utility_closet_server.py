@@ -31,7 +31,7 @@ Lifecycle:
   - Launchers (superclaude, igor) start this if not running
   - Second instance detects running/stalled via PID + health check
 
-Port: IGOR_WEB_PORT env var, default 8080.
+Port: IGOR_UC_PORT env var, default 8080.
 """
 
 import asyncio
@@ -775,7 +775,7 @@ def check_running() -> dict | None:
         return None
 
     # Process exists — check health
-    port = int(os.environ.get("IGOR_WEB_PORT", "8080"))
+    port = int(os.environ.get("IGOR_UC_PORT", "8080"))
     try:
         import urllib.request
 
@@ -815,7 +815,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Utility Closet Server (D335)")
     parser.add_argument(
-        "--port", type=int, default=int(os.environ.get("IGOR_WEB_PORT", "8080"))
+        "--port", type=int, default=int(os.environ.get("IGOR_UC_PORT", "8080"))
     )
     parser.add_argument(
         "--check", action="store_true", help="Check if running, exit 0 if healthy"
