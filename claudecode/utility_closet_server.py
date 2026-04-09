@@ -888,7 +888,7 @@ def main():
     # When SSL is active, also serve plain HTTP on port+1 for LAN access
     # without cert warnings (same pattern as Igor's server.py)
     if ssl_cert and ssl_key:
-        http_port = int(os.environ.get("IGOR_UC_HTTP_PORT", str(args.port + 1)))
+        http_port = int(os.environ.get("IGOR_UC_HTTP_PORT", "8082"))
         log.info("SSL active — also serving plain HTTP on port %d", http_port)
 
         def _run_http():
