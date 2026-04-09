@@ -1,5 +1,44 @@
+## Session 2026-04-08b
+**Theme**: Theme: experimentor bootstrap, D333 situated reading, multi-instance safety, approval→resume flow, stale GOAL fix
+**Decisions**: D333
+**Key changes**:
+- done: migration_003 — CC bootstrap (MCP, skill symlinks, memory seeds, --uninstall-cc)
+- done: D333 situated reading pass-2 — prompt-as-simulator with context injection, 4 node types, Making Money running
+- fix: atomic reading_list claims — two instances can't grab same book
+- fix: approval→resume flow — pe_chain consumes approved_plan, cmd_approve notifies Igor
+- fix: cc_queue done/block now closes GOAL memory (root cause of stuck loops)
+- fix: assess_valence crash when response_text is None (D332 coherence gate downstream)
+- ops: rotated 450MB of logs, cleaned 28 stale GOALs from DB
+- ticket: T-windows-igor-alias — PowerShell alias for experimentors
+**In-flight**: NONE
+
+## Session 2026-04-08a
+**Theme**: Theme: D326-D328 architecture — genesis dead, model encapsulation, repo reorg
+**Decisions**: D326, D327, D328, D329, D327, D330, D331, D332, D333
+**Key changes**:
+- done: T-pe-block-propagation — _pe_escalate recovers ticket_id from GOAL; adopt skips blocked_at; reset clears blocked_at
+- decided: T-inference-phase1-4 phased plan for D327/D329 inference restructure
+- done: T-inference-phase1+2 — inference_ollama.py + inference_openrouter.py canonical modules, 14 import sites migrated, 1875 tests pass
+- done: T-inference-phase3 — anthropic.py deleted (D329), ethics gate via OR, MODEL_ALIASES moved, 1875 tests pass
+- done: T-inference-phase4 + T-inference-restructure — all 4 phases complete, model names swept, 1875 tests pass
+- decided: D330 TWM-view context + 3 test tickets at priority 1 — T-context-format-test (S), T-twm-context-test (M), T-learning-regression-test (M)
+- done: T-context-format-test — prose wins over CSB on both tokens (-7%) and quality (+0.12). D330: render context as natural language.
+- done: T-context-format-test + T-learning-regression-test — D330 tests complete. Prose wins. Cloud escalation capture wired into main.py.
+- done: T-twm-context-test — 60.5% token savings confirmed with tiered TWM context
+- done: T-reading-integrator-windows — sqlite3→cortex._db() in reading_integrator.py, 1880 tests pass
+- done: T-context-load-token-audit — MEMORY.md 60% smaller, slate tools block moved to skill, ~2156 tokens saved per session
+- done: T-csb-format-review — CSB/DSB keep pipe-delimited storage, render to prose for LLM. context-load updated.
+- done: D330 TWM context builder LIVE — build_twm_context() in inference_gateway, wired into both reasoners. tier.2=181 tokens, tier.3.5=473 tokens (62% savings). Prose rendering, fallback to legacy blob.
+- done: T-design-escalation-path (D331) — Igor proposes design changes, CC approves, Igor resumes. Arbiter deletion deferred.
+- done: T-memory-echo-filter (D332) — echo filter blocks self-parrot episodic storage, 20 contaminated memories purged
+- done: T-response-coherence-gate — greeting habits suppressed after turn 1, falls through to LLM. Root cause of book-project parrot: auto-compiled response habit, now deleted + gated.
+- decided: D333 situated-reading-pass2 — pass-2 prompt-as-simulator with context injection
+**Next session**: Next: 1. Verify Igor adopts tickets with fixed scope_guard + sys.modules flush. 2. T-igor-as-programmer — plan the remaining gaps (self-design, self-review, approval loop reading). 3. Rotate master.log (47MB).
+**In-flight**: NONE — all tickets closed, scope_guard fix committed, Igor restarted.
+
 ## Session 2026-04-07d
 **Theme**: Theme: day-close catchup + next priorities from 07c
+**Next session**: Next session: 1) T-llm-class-routing (Igor retry, preflight fixed); 2) T-skill-engram-sprint (verify /sprint as engram); 3) rotate master.log (47MB)
 **In-flight**: NONE
 
 ## Session 2026-04-07c
