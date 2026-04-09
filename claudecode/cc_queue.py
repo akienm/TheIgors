@@ -275,7 +275,28 @@ def cmd_approve(args):
     print(f"Approved {args[0]}: {t['title']}")
     if notes:
         print(f"Notes: {notes}")
-    print("Status: pending — Igor will pick it up on next queue drain")
+
+    # D333: notify Igor so he re-adopts without waiting 30min PROC_QUEUE_DRAIN
+    try:
+        import urllib.request
+
+        cc_send_url = os.environ.get("CC_SEND_URL", "http://localhost:8080/api/cc_send")
+        msg = (
+            f"[APPROVED] {args[0]} approved by CC. "
+            f"adopt top ticket. {f'Notes: {notes[:100]}' if notes else ''}"
+        )
+        req = urllib.request.Request(
+            cc_send_url,
+            data=json.dumps({"content": msg}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=5)
+        print("Notified Igor via cc_send")
+    except Exception as e:
+        print(f"Igor notification failed (non-fatal): {e}")
+
+    print("Status: pending — Igor notified, will adopt on next turn")
 
 
 def cmd_log(args):
