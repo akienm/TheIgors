@@ -28,6 +28,7 @@ import asyncio
 import json
 import os
 import re
+import subprocess
 import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -318,6 +319,27 @@ async def list_tools() -> list[types.Tool]:
                 "required": [],
             },
         ),
+        types.Tool(
+            name="request_compaction",
+            description=(
+                "Inject /compact command into the Claude Code tmux session. "
+                "Compaction trims conversation context and preserves session state. "
+                "Called by /savestate skill to trigger compaction automatically."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "preserve_instructions": {
+                        "type": "string",
+                        "description": (
+                            "Preserve string to pass to /compact. "
+                            "Format: 'preserve: session=YYYY-MM-DDx done: X. next: Y. in-flight: Z.'"
+                        ),
+                    },
+                },
+                "required": ["preserve_instructions"],
+            },
+        ),
     ]
 
 
@@ -366,6 +388,8 @@ def _dispatch(name: str, args: dict) -> str:
         return _channel_read(
             args.get("limit", 20), args.get("since_id"), args.get("author")
         )
+    elif name == "request_compaction":
+        return _request_compaction(args.get("preserve_instructions", ""))
     else:
         return f"Unknown tool: {name}"
 
@@ -792,6 +816,30 @@ def _channel_read(limit: int, since_id: int | None, author: str | None) -> str:
         content = (r["content"] or "").strip()
         lines.append(f"[id={r['id']} {ts}] {r['author']}: {content}")
     return "\n".join(lines)
+
+
+# ── request_compaction ────────────────────────────────────────────────────
+
+
+def _request_compaction(preserve_instructions: str) -> str:
+    session = os.environ.get("CLAUDE_TMUX_SESSION", "claude-main")
+    escaped = preserve_instructions.replace("'", "'\\''")
+    cmd = f"/compact {escaped}"
+    try:
+        subprocess.run(
+            ["tmux", "send-keys", "-t", session, cmd, "Enter"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        return f"Compaction queued for session '{session}'"
+    except subprocess.TimeoutExpired:
+        return f"ERROR: tmux timeout (session '{session}' not responsive)"
+    except subprocess.CalledProcessError as e:
+        return f"ERROR: tmux error: {e.stderr or e.stdout or str(e)}"
+    except FileNotFoundError:
+        return "ERROR: tmux not found — install tmux to use compaction"
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
