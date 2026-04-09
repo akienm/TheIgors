@@ -1,4 +1,4 @@
-DOC|subsystem_reading|v1|updated=2026-03-20g
+DOC|subsystem_reading|v1|updated=2026-04-08b
 META|inertia=LOW|parent=architecture_root.dsb
 META|files=tools/ebook_reader.py,tools/training.py,tools/reading_integration.py,tools/learner.py,cognition/word_graph.py,claudecode/book_learner.py
 META|purpose=book reading → graph training → realtime discussion
@@ -13,6 +13,8 @@ DESIGN_POINTS|
   DP7|cloud_ok per-chunk (D071): book_learner._should_use_local() reads ~/.TheIgors/cloud_ok_override.json each chunk; mode can change mid-book without restart; --local flag still forces local
   DP8|deposition vs encoding (D170): READ_* nodes from raw extraction are deposition only; encoding requires the 5-step integration pipeline (embed+link+spine+interp+arousal)
   DP9|drain runner path fix (D181): cron was using IGOR_INSTANCE_ID=Igor-wild-0001 (wrong case) → empty queue for weeks; fixed to Igor-wild-0001; 146 items now draining
+  DP10|D333 situated-reading pass-2: book_learner --pass2 uses _EXTRACT_PROMPT_PASS2 with dynamic context injection (watch-list goals, hot attractors, open gaps) + practitioner questions (relevance/levers/mechanisms/contradictions). Result: 1,078 situated nodes vs 4 generic nodes per book (270× improvement). Nodes tagged with metadata[pass]=2, extraction_type, relevance.
+  DP11|multi-instance reading safety: feed_reading_list() uses atomic UPDATE...RETURNING claim-and-fetch in single DB transaction; prevents race where two instances both SELECT same pending book before claiming. Applies to all multi-instance Igor deployments.
 
 READING_INTEGRATION_PIPELINE|
   purpose=second-pass integration after book_learner deposits READ_* nodes
