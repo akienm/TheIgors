@@ -84,12 +84,13 @@ ENVEOF
     return 1
 }
 
-# ─ Require config ────────────────────────────────────────────────────────────
+# ─ Load config ──────────────────────────────────────────────────────────────
 
 require_api_key() {
+    # Load .env if it exists (sources ANTHROPIC_API_KEY and other env vars).
+    # Always succeeds — Claude Code will validate API key at startup.
     local env_file="${IGOR_HOME}/Igor-wild-0001/.env"
 
-    # Source .env if it exists
     if [[ -f "$env_file" ]]; then
         set -a
         # shellcheck disable=SC1090
@@ -97,24 +98,13 @@ require_api_key() {
         set +a
     fi
 
-    if [[ -z "${ANTHROPIC_API_KEY:-}" ]]; then
-        return 1
-    fi
-
     return 0
 }
 
 # ─ Main ──────────────────────────────────────────────────────────────────────
 
-# Check if we need to run the setup wizard
-if ! require_api_key; then
-    echo "No ANTHROPIC_API_KEY found."
-    echo ""
-
-    if ! run_setup_wizard; then
-        exit 1
-    fi
-fi
+# Load .env (sets ANTHROPIC_API_KEY and other env vars if available)
+require_api_key
 
 # Ensure tmux session exists for auto-compaction (T-cc-compact-mcp)
 CLAUDE_TMUX_SESSION="${CLAUDE_TMUX_SESSION:-claude-main}"
