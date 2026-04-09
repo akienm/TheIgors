@@ -362,6 +362,89 @@ async def _api_sessions(request: Request):
     return JSONResponse({"sessions": sessions})
 
 
+# ── HTML dashboard + metrics pages ────────────────────────────────────────────
+
+_DASHBOARD_HTML = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Agentic Utility Closet</title>
+<style>
+  body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 2rem; }
+  h1 { color: #7ec8e3; margin-bottom: 1rem; font-size: 1.2rem; }
+  .card { background: #2a2a3e; border: 1px solid #444; padding: 1rem; margin: 0.5rem 0;
+          border-radius: 4px; }
+  .card h2 { color: #90ee90; font-size: 1rem; margin-bottom: 0.5rem; }
+  .stat { display: inline-block; margin-right: 1.5rem; }
+  .stat .label { color: #888; font-size: 0.85rem; }
+  .stat .value { color: #e0e0e0; font-size: 1.1rem; font-weight: bold; }
+  .agent { border-left: 3px solid #4caf50; padding-left: 0.8rem; margin: 0.5rem 0; }
+  .agent.none { border-color: #555; color: #888; }
+  a { color: #7ec8e3; }
+  #data { white-space: pre-wrap; }
+</style></head><body>
+<h1>Agentic Utility Closet — Dashboard</h1>
+<div id="platform" class="card"><h2>Platform</h2><div id="plat-stats">loading...</div></div>
+<div id="agents" class="card"><h2>Attached Agents</h2><div id="agent-list">loading...</div></div>
+<div id="agent-data" class="card"><h2>Agent Data</h2><div id="data">loading...</div></div>
+<p style="margin-top:1rem;font-size:0.8rem;color:#555"><a href="/">Chat</a> | <a href="/dashboard">Dashboard</a> | <a href="/metrics">Metrics</a></p>
+<script>
+async function refresh() {
+  try {
+    const h = await (await fetch('/health')).json();
+    document.getElementById('plat-stats').innerHTML =
+      '<span class="stat"><span class="label">uptime</span> <span class="value">' + Math.round(h.uptime_s) + 's</span></span>' +
+      '<span class="stat"><span class="label">ws clients</span> <span class="value">' + h.ws_clients + '</span></span>' +
+      '<span class="stat"><span class="label">threads</span> <span class="value">' + h.active_threads + '</span></span>' +
+      '<span class="stat"><span class="label">pid</span> <span class="value">' + h.pid + '</span></span>';
+    const aa = h.attached_agents || [];
+    document.getElementById('agent-list').innerHTML = aa.length
+      ? aa.map(a => '<div class="agent">' + a + '</div>').join('')
+      : '<div class="agent none">No agents attached</div>';
+  } catch(e) { document.getElementById('plat-stats').textContent = 'Error: ' + e; }
+  try {
+    const d = await (await fetch('/api/dashboard')).json();
+    document.getElementById('data').textContent = JSON.stringify(d, null, 2);
+  } catch(e) {}
+}
+refresh(); setInterval(refresh, 3000);
+</script></body></html>"""
+
+
+_METRICS_HTML = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metrics — Agentic Utility Closet</title>
+<style>
+  body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 2rem; }
+  h1 { color: #7ec8e3; margin-bottom: 1rem; font-size: 1.2rem; }
+  pre { background: #2a2a3e; border: 1px solid #444; padding: 1rem; border-radius: 4px;
+        overflow-x: auto; font-size: 0.9rem; }
+  a { color: #7ec8e3; }
+</style></head><body>
+<h1>Agentic Utility Closet — Metrics</h1>
+<pre id="data">loading...</pre>
+<p style="margin-top:1rem;font-size:0.8rem;color:#555"><a href="/">Chat</a> | <a href="/dashboard">Dashboard</a> | <a href="/metrics">Metrics</a></p>
+<script>
+async function refresh() {
+  try {
+    const m = await (await fetch('/api/metrics')).json();
+    document.getElementById('data').textContent = JSON.stringify(m, null, 2);
+  } catch(e) { document.getElementById('data').textContent = 'Error: ' + e; }
+}
+refresh(); setInterval(refresh, 5000);
+</script></body></html>"""
+
+
+async def _page_dashboard(request: Request):
+    """GET /dashboard — HTML dashboard page."""
+    return HTMLResponse(_DASHBOARD_HTML)
+
+
+async def _page_metrics(request: Request):
+    """GET /metrics-page — HTML metrics page (distinct from JSON /metrics)."""
+    return HTMLResponse(_METRICS_HTML)
+
+
 # ── Agent registration ───────────────────────────────────────────────────────
 
 
@@ -628,6 +711,9 @@ def _make_app() -> Starlette:
         Route("/api/metrics", _api_metrics),
         Route("/api/dashboard", _api_dashboard),
         Route("/api/sessions", _api_sessions),
+        # HTML pages
+        Route("/dashboard", _page_dashboard),
+        Route("/metrics-page", _page_metrics),
         # Agent management
         Route("/api/agents/register", _api_agent_register, methods=["POST"]),
         Route("/api/agents/deregister", _api_agent_deregister, methods=["POST"]),
@@ -814,7 +900,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Igor</title>
+  <title>Agentic Utility Closet</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: monospace; background: #1a1a2e; color: #e0e0e0;
@@ -956,7 +1042,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     <button onclick="changeFontSize(1)" title="Increase font size" style="padding:0.2rem 0.5rem;font-size:0.85rem;">A+</button>
   </div>
   <div id="input-row">
-    <textarea id="input" placeholder="Message..." autocomplete="off" rows="4"></textarea>
+    <textarea id="input" placeholder="Message the channel..." autocomplete="off" rows="4"></textarea>
     <button onclick="sendMsg()">Send</button>
     <button onclick="document.getElementById('file-input').click()">clip</button>
     <input id="file-input" type="file" style="display:none" onchange="uploadFile(this)">
@@ -977,6 +1063,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     const surpriseFeed  = document.getElementById('surprise-feed');
     const surpriseTable = document.getElementById('surprise-table');
     let ws, dragDepth = 0, ringOpen = false, surpriseOpen = false;
+    const _knownAgents = new Set();  // populated by platform_status / agent_status
     const _urlSession = new URLSearchParams(location.search).get('session') || 'shared';
     let currentSession = _urlSession;
     const sessionMsgs = {'shared': []};
@@ -1025,8 +1112,8 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     function _renderSession(sid) {
       chat.innerHTML = '';
       (sessionMsgs[sid] || []).forEach(m => {
-        const cls = m.author === 'igor' ? 'igor' : m.author === 'claude-code' ? 'cc' : 'user';
-        const label = m.author === 'igor' ? 'Igor' : m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
+        const cls = m.author === 'claude-code' ? 'cc' : _knownAgents.has(m.author) ? 'igor' : 'user';
+        const label = m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
         addMsg(cls, label, m.content);
       });
     }
@@ -1173,7 +1260,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
       ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
       ws.onopen  = () => {
         setLed(true); _retryDelay = 2000;
-        if (!_connectedOnce) { addMsg('system', '', 'Connected.'); _connectedOnce = true; }
+        if (!_connectedOnce) { addMsg('system', '', 'Connected to Agentic Utility Closet.'); _connectedOnce = true; }
         else { addMsg('system', '', 'Reconnected.'); }
         _disconnectedMsgShown = false;
         const _cookieName = _loadName();
@@ -1210,11 +1297,14 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
         else if (m.type === 'activity')
           updateStatus(m);
         else if (m.type === 'agent_status') {
+          if (m.status === 'attached') _knownAgents.add(m.agent_id);
+          else _knownAgents.delete(m.agent_id);
           agentStatus.textContent = m.agent_id + ': ' + m.status;
           agentStatus.className = m.status === 'attached' ? 'attached' : '';
           addMsg('system', '', m.agent_id + ' ' + m.status);
         } else if (m.type === 'platform_status') {
           const aa = m.attached_agents || [];
+          _knownAgents.clear(); aa.forEach(a => _knownAgents.add(a));
           agentStatus.textContent = aa.length ? aa.join(', ') : 'no agent';
           agentStatus.className = aa.length ? 'attached' : '';
         } else if (m.type === 'platform_shutdown') {
@@ -1267,23 +1357,24 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
       try {
         const r = await fetch('/api/dashboard');
         const d = await r.json();
-        if (d.status === 'no agent attached') {
-          dash.innerHTML = '<span>No agent attached</span>';
-          return;
-        }
-        const parts = [];
-        if (d.agent) parts.push('[' + d.agent + ']');
-        if (d.memory_count    !== undefined) parts.push('mem:' + d.memory_count);
-        if (d.session_cost    !== undefined) parts.push('cost:$' + Number(d.session_cost).toFixed(4));
-        if (d.last_valence    !== undefined) parts.push('val:' + (d.last_valence >= 0 ? '+' : '') + Number(d.last_valence).toFixed(2));
-        if (d.last_friction   !== undefined) parts.push('f:' + Number(d.last_friction).toFixed(2));
-        if (d.arbiter_pending !== undefined && d.arbiter_pending > 0)
-          parts.push('arbiter:' + d.arbiter_pending);
-        if (d.surprise_avg !== null && d.surprise_avg !== undefined)
-          parts.push('<span id="surprise-avg">D' + Number(d.surprise_avg).toFixed(2) + '</span>');
         const toggle   = document.getElementById('ring-toggle');
         const stoggle  = document.getElementById('surprise-toggle');
-        dash.innerHTML = (parts.length ? parts.map(p => '<span>' + p + '</span>').join('') : '<span>Online</span>');
+        if (d.status === 'no agent attached') {
+          dash.innerHTML = '<span>No agent attached</span>';
+          dash.appendChild(toggle); dash.appendChild(stoggle);
+          return;
+        }
+        // Generic: show agent name + any key stats the agent pushes
+        const parts = [];
+        if (d.agent) parts.push('[' + d.agent + ']');
+        // Render all agent-pushed keys except internal ones
+        const skip = new Set(['ts', 'agent', 'ring_recent', 'surprise_recent', 'surprise_avg']);
+        for (const [k, v] of Object.entries(d)) {
+          if (skip.has(k) || v === null || v === undefined) continue;
+          if (typeof v === 'number') parts.push(k + ':' + (k.includes('cost') ? '$' + v.toFixed(4) : v));
+          else if (typeof v === 'string') parts.push(k + ':' + v);
+        }
+        dash.innerHTML = (parts.length ? parts.map(p => '<span>' + esc(p) + '</span>').join('') : '<span>Online</span>');
         dash.appendChild(toggle); dash.appendChild(stoggle);
         if (d.ring_recent) updateRing(d.ring_recent);
         if (d.surprise_recent) updateSurprise(d.surprise_recent, d.surprise_avg);
