@@ -1,12 +1,14 @@
 #!/bin/bash
-# superclaude — Claude Code launcher with fresh-install wizard (D232)
-# Checks for API key, runs setup wizard if needed, then launches Claude Code
+# superclaude — Claude Code launcher with utility closet + fresh-install wizard
+# D232: fresh-install wizard. D335: start utility closet before Claude Code.
+# Starts utility closet if not running, then launches Claude Code with all args forwarded.
 
 set -euo pipefail
 
 IGOR_HOME="${HOME}/.TheIgors"
 REPO_DIR="${HOME}/TheIgors"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV_PYTHON="${REPO_DIR}/venv/bin/python"
 
 # Try to source common functions if available
 if [[ -f "${SCRIPT_DIR}/bin/_igor_common.sh" ]]; then
@@ -101,16 +103,61 @@ require_api_key() {
     return 0
 }
 
+# ─ Utility closet (D335) ────────────────────────────────────────────────────
+
+start_utility_closet() {
+    local uc_server="${REPO_DIR}/claudecode/utility_closet_server.py"
+
+    if [[ ! -f "$uc_server" ]]; then
+        echo "Warning: utility_closet_server.py not found, skipping"
+        return 0
+    fi
+
+    if [[ ! -f "$VENV_PYTHON" ]]; then
+        echo "Warning: venv python not found at $VENV_PYTHON, skipping utility closet"
+        return 0
+    fi
+
+    # Check if already running and healthy
+    if "$VENV_PYTHON" "$uc_server" --check >/dev/null 2>&1; then
+        echo "Utility closet: running"
+        return 0
+    fi
+
+    # Not running or stalled — start it in background
+    echo "Utility closet: starting..."
+    nohup "$VENV_PYTHON" "$uc_server" >> "${IGOR_HOME}/logs/utility_closet.log" 2>&1 &
+    disown
+
+    # Wait briefly for it to come up
+    for i in 1 2 3 4 5; do
+        sleep 1
+        if "$VENV_PYTHON" "$uc_server" --check >/dev/null 2>&1; then
+            echo "Utility closet: started (pid $(cat "${IGOR_HOME}/utility_closet.pid" 2>/dev/null || echo '?'))"
+            return 0
+        fi
+    done
+
+    echo "Warning: utility closet did not start within 5s (continuing anyway)"
+    return 0
+}
+
 # ─ Main ──────────────────────────────────────────────────────────────────────
 
 # Load .env (sets ANTHROPIC_API_KEY and other env vars if available)
 require_api_key
+
+# Ensure logs directory exists
+mkdir -p "${IGOR_HOME}/logs"
+
+# Start utility closet if not already running (D335)
+start_utility_closet
 
 # Ensure tmux session exists for auto-compaction (T-cc-compact-mcp)
 CLAUDE_TMUX_SESSION="${CLAUDE_TMUX_SESSION:-claude-main}"
 tmux new-session -d -s "$CLAUDE_TMUX_SESSION" 2>/dev/null || true
 export CLAUDE_TMUX_SESSION
 
-# Launch Claude Code
+# Launch Claude Code — always bypass permissions, forward all args
 export ANTHROPIC_API_KEY
-exec claude --dangerously-skip-permissions
+exec claude --dangerously-skip-permissions "$@"
