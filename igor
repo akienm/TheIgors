@@ -27,4 +27,25 @@ if [ ! -d "$VENV_DIR" ]; then
     echo "[igor] venv ready."
 fi
 
+# D335: start utility closet if not already running
+UC_SERVER="$REPO_DIR/claudecode/utility_closet_server.py"
+IGOR_HOME="${HOME}/.TheIgors"
+if [ -f "$UC_SERVER" ]; then
+    if "$VENV_DIR/bin/python" "$UC_SERVER" --check >/dev/null 2>&1; then
+        echo "[igor] Utility closet: running"
+    else
+        echo "[igor] Utility closet: starting..."
+        mkdir -p "$IGOR_HOME/logs"
+        nohup "$VENV_DIR/bin/python" "$UC_SERVER" >> "$IGOR_HOME/logs/utility_closet.log" 2>&1 &
+        disown
+        for i in 1 2 3 4 5; do
+            sleep 1
+            if "$VENV_DIR/bin/python" "$UC_SERVER" --check >/dev/null 2>&1; then
+                echo "[igor] Utility closet: started"
+                break
+            fi
+        done
+    fi
+fi
+
 exec "$VENV_DIR/bin/python" "$INSTALLER" "$@"
