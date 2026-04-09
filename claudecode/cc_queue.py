@@ -187,6 +187,31 @@ def cmd_claim(args):
     print(f"Claimed {args[0]}: {t['title']}")
 
 
+def _close_igor_goal(ticket_id: str) -> None:
+    """Close Igor's GOAL memory for a ticket so pe_chain stops re-firing."""
+    try:
+        import psycopg2
+
+        db_url = os.environ.get(
+            "IGOR_HOME_DB_URL",
+            "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
+        )
+        conn = psycopg2.connect(db_url)
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE memories SET narrative = REPLACE(narrative, 'ACTIVE GOAL', 'CLOSED GOAL') "
+            "WHERE memory_type='GOAL' AND narrative ILIKE %s AND narrative ILIKE '%%ACTIVE GOAL%%'",
+            (f"%{ticket_id}%",),
+        )
+        closed = cur.rowcount
+        conn.close()
+        if closed:
+            print(f"Closed {closed} GOAL(s) for {ticket_id}")
+    except Exception as e:
+        print(f"GOAL close failed (non-fatal): {e}")
+
+
 def cmd_done(args):
     if len(args) < 2:
         print("Usage: done <id> <result-message>")
@@ -202,6 +227,7 @@ def cmd_done(args):
     _save(tasks)
     _log({"action": "done", "id": args[0], "title": t["title"], "result": args[1]})
     _prepend_closed_ticket(args[0], t["title"])
+    _close_igor_goal(args[0])
     print(f"Completed {args[0]}: {t['title']}")
 
 
@@ -219,6 +245,7 @@ def cmd_block(args):
     t["blocked_at"] = _now()
     _save(tasks)
     _log({"action": "blocked", "id": args[0], "title": t["title"], "reason": args[1]})
+    _close_igor_goal(args[0])
     print(f"Blocked {args[0]}: {args[1]}")
 
 
