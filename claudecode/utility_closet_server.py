@@ -885,6 +885,27 @@ def main():
     )
     server = uvicorn.Server(config)
 
+    # When SSL is active, also serve plain HTTP on port+1 for LAN access
+    # without cert warnings (same pattern as Igor's server.py)
+    if ssl_cert and ssl_key:
+        http_port = int(os.environ.get("IGOR_UC_HTTP_PORT", str(args.port + 1)))
+        log.info("SSL active — also serving plain HTTP on port %d", http_port)
+
+        def _run_http():
+            http_app = _make_app()
+            http_config = uvicorn.Config(
+                http_app,
+                host="0.0.0.0",
+                port=http_port,
+                log_level="warning",
+            )
+            http_server = uvicorn.Server(http_config)
+            asyncio.run(http_server.serve())
+
+        import threading
+
+        threading.Thread(target=_run_http, daemon=True, name="uc-http-fallback").start()
+
     try:
         asyncio.run(server.serve())
     finally:
