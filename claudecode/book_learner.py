@@ -714,6 +714,25 @@ def _ensure_chapter_node(
 # ── Node deposit ──────────────────────────────────────────────────────────────
 
 
+def _score_attractor_overlap(narrative: str, attractor_keywords: set) -> float:
+    """T-reading-lever-detection: score chunk overlap with hot attractor keywords.
+
+    Returns 0.0–1.0. Higher = more overlap with current attractor landscape.
+    Uses Jaccard-like overlap: |intersection| / min(|chunk_words|, 10).
+    Denominator capped at 10 so short high-overlap chunks score well.
+    """
+    if not attractor_keywords:
+        return 0.5  # No attractors → neutral score (don't gate)
+    words = set(narrative.lower().split())
+    # Strip very short words (articles, prepositions)
+    words = {w for w in words if len(w) >= 4}
+    if not words:
+        return 0.0
+    overlap = len(words & attractor_keywords)
+    denominator = min(len(words), 10)
+    return min(1.0, overlap / max(denominator, 1))
+
+
 def _deposit_nodes(
     nodes: list,
     cortex: Cortex,
@@ -724,14 +743,26 @@ def _deposit_nodes(
 ) -> int:
     """Deposit extracted nodes. Returns count successfully deposited.
 
-    Steps per node (T-reading-integration #295):
-      1. Compute arousal from CP affinity (never 0.0)
-      2. Set parent_id to chapter spine node
-      3. Store memory
-      4. Embed immediately (non-fatal; makes node reachable by semantic search)
-      5. Wire CP: add_child + interpretive_edge for semantic traversal
-      6. Wire chapter: add_child so chapter→node path exists
+    Steps per node (T-reading-integration #295, T-reading-lever-detection #393):
+      0. Query hot attractors once, build keyword set
+      1. Score chunk against attractors → identity_weight
+      2. Compute arousal from CP affinity (never 0.0)
+      3. Set parent_id to chapter spine node
+      4. Store memory (with identity_weight in metadata)
+      5. Embed immediately (non-fatal; makes node reachable by semantic search)
+      6. Wire CP: add_child + interpretive_edge for semantic traversal
+      7. Wire chapter: add_child so chapter→node path exists
     """
+    # T-reading-lever-detection: build attractor keyword set once per batch
+    attractor_keywords: set = set()
+    try:
+        attractors = cortex.get_attractors(limit=20)
+        for a in attractors:
+            words = a.narrative.lower().split() if a.narrative else []
+            attractor_keywords.update(w for w in words if len(w) >= 4)
+    except Exception:
+        pass  # Fail-open: no attractors = neutral scoring
+
     deposited = 0
     for node in nodes:
         try:
@@ -743,6 +774,11 @@ def _deposit_nodes(
 
             if not narrative or confidence < 0.60:
                 continue
+
+            # T-reading-lever-detection: score against hot attractors
+            attractor_score = _score_attractor_overlap(narrative, attractor_keywords)
+            if attractor_score < 0.1 and not pass2:
+                continue  # Skip very low-relevance chunks (pass2 always deposits)
 
             # Pass-2 node types map to existing MemoryTypes
             mt = {
@@ -773,6 +809,16 @@ def _deposit_nodes(
             relevance = node.get("relevance", "").strip()
             if relevance:
                 meta["relevance"] = relevance
+
+            # T-reading-lever-detection: attractor-guided identity_weight
+            # High overlap = lever node (deep deposit), low overlap = shallow
+            if attractor_score >= 0.5:
+                meta["identity_weight"] = 0.8
+                meta["lever_score"] = round(attractor_score, 3)
+            elif attractor_score >= 0.25:
+                meta["identity_weight"] = 0.5
+            else:
+                meta["identity_weight"] = 0.2
 
             # Step 1: arousal from CP affinity (never 0.0)
             arousal = _arousal_from_cp(narrative, parent_cp)
