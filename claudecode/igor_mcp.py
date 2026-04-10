@@ -340,6 +340,25 @@ async def list_tools() -> list[types.Tool]:
                 "required": ["preserve_instructions"],
             },
         ),
+        types.Tool(
+            name="audit_conversation_health",
+            description=(
+                "Run a conversation health audit over the last N hours. "
+                "Detects: bare responses, habit misfires, thread drops, "
+                "'any thoughts' prompts (user had to prompt for engagement), "
+                "intent misclassification. Returns structured findings."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "hours": {
+                        "type": "integer",
+                        "description": "Number of hours to audit (default 24)",
+                    },
+                },
+                "required": [],
+            },
+        ),
     ]
 
 
@@ -390,6 +409,8 @@ def _dispatch(name: str, args: dict) -> str:
         )
     elif name == "request_compaction":
         return _request_compaction(args.get("preserve_instructions", ""))
+    elif name == "audit_conversation_health":
+        return _audit_conversation_health(args.get("hours", 24))
     else:
         return f"Unknown tool: {name}"
 
@@ -840,6 +861,20 @@ def _request_compaction(preserve_instructions: str) -> str:
         return f"ERROR: tmux error: {e.stderr or e.stdout or str(e)}"
     except FileNotFoundError:
         return "ERROR: tmux not found — install tmux to use compaction"
+
+
+# ── audit_conversation_health ─────────────────────────────────────────────────
+
+
+def _audit_conversation_health(hours: int = 24) -> str:
+    """Run conversation health audit via the habit_health_audit tool."""
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "wild_igor"))
+    from igor.tools.habit_health_audit import audit_conversation_health, format_report
+
+    report = audit_conversation_health(hours)
+    return format_report(report)
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
