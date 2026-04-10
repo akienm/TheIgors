@@ -2,28 +2,28 @@
   "mcpServers": {
     "igor": {
       "command": "/home/akien/TheIgors/venv/bin/python",
-      "args": ["/home/akien/TheIgors/claudecode/igor_mcp.py"],
+      "args": ["/home/akien/TheIgors/lab/claudecode/igor_mcp.py"],
       "env": {
         "CC_SEND_URL": "http://localhost:8081/api/cc_send"
       }
     },
     "igor_akiendell": {
       "command": "/home/akien/TheIgors/venv/bin/python",
-      "args": ["/home/akien/TheIgors/claudecode/igor_mcp.py"],
+      "args": ["/home/akien/TheIgors/lab/claudecode/igor_mcp.py"],
       "env": {
         "CC_SEND_URL": "http://10.0.0.99:8080/api/cc_send"
       }
     },
     "igor_yoga9i": {
       "command": "/home/akien/TheIgors/venv/bin/python",
-      "args": ["/home/akien/TheIgors/claudecode/igor_mcp.py"],
+      "args": ["/home/akien/TheIgors/lab/claudecode/igor_mcp.py"],
       "env": {
         "CC_SEND_URL": "http://10.0.0.90:8080/api/cc_send"
       }
     },
     "igor_yogai7": {
       "command": "/home/akien/TheIgors/venv/bin/python",
-      "args": ["/home/akien/TheIgors/claudecode/igor_mcp.py"],
+      "args": ["/home/akien/TheIgors/lab/claudecode/igor_mcp.py"],
       "env": {
         "CC_SEND_URL": "http://10.0.0.71:8080/api/cc_send"
       }

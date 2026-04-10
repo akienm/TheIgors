@@ -22,12 +22,12 @@ Migration 003 (runs on first `igor` / `igor.ps1` launch) installs CC integration
 ### Before editing
 - Read the file first. Never overwrite blindly.
 - Check inertia level — HIGH files need strong justification.
-- Check `design_docs/` for relevant architecture decisions.
+- Check `lab/design_docs/` for relevant architecture decisions.
 
 ### Workflow discipline
-- Get plan approval before executing (full philosophy: `thoughts/working_with_claude.md`)
+- Get plan approval before executing (full philosophy: `papers/thoughts/working_with_claude.md`)
 - Test against live systems, not mocks; forensic logging everywhere
-- Two-session pattern: Designer Claude (architecture + conversation) + Worker Claude (execution); queue at `~/.TheIgors/cc_channel/queue.json`; Worker boot doc: `claudecode/WORKER_CONTEXT.md`
+- Two-session pattern: Designer Claude (architecture + conversation) + Worker Claude (execution); queue at `~/.TheIgors/cc_channel/queue.json`; Worker boot doc: `lab/claudecode/WORKER_CONTEXT.md`
 
 ### Inertia levels (self-edit resistance)
 <!-- last-updated: 2026-03-13a -->
@@ -69,13 +69,13 @@ All runtime instance data lives in `~/.TheIgors/Igor-wild-0001/`:
 
 ### Reference docs
 <!-- last-updated: 2026-03-15c -->
-- `design_docs/` — architecture, decisions log, ethical framework, mission
-- `history/` — research notes, early design conversations, archives
-- `claudecode/CONTEXT.md` — fuller onboarding context for new sessions
+- `lab/design_docs/` — architecture, decisions log, ethical framework, mission
+- `papers/history/` — research notes, early design conversations, archives
+- `lab/claudecode/CONTEXT.md` — fuller onboarding context for new sessions
 - `wild_igor/igor/memory/models.py` — Memory dataclass, MemoryType enum
 - `wild_igor/igor/cognition/` — thalamus, NE, milieu, interruptors, job_manager
-- `design_docs_for_igor/capabilities_index.dsb` — 118-tool inventory (check before asking "can Igor do X?")
-- `design_docs_for_igor/decisions_log.dsb` — all architectural decisions D001-D076
+- `lab/design_docs_for_igor/capabilities_index.dsb` — 118-tool inventory (check before asking "can Igor do X?")
+- `lab/design_docs_for_igor/decisions_log.dsb` — all architectural decisions D001-D076
 
 ### Key architecture (fast ref)
 <!-- last-updated: 2026-03-15b -->
@@ -109,7 +109,7 @@ When `/compact` runs (manually or automatically), preserve:
 - List of open gaps (Gxx) touched this session
 - Files modified this session and what changed
 - Current debugging hypothesis or in-progress task
-- Any decisions made that haven't been saved to design_docs yet
+- Any decisions made that haven't been saved to lab/design_docs yet
 - Next session priorities
 
 ### Do not
@@ -123,6 +123,6 @@ When `/compact` runs (manually or automatically), preserve:
 <!-- last-updated: 2026-03-15c -->
 Items that are intentionally deferred or known broken. Do not flag these as bugs or attempt to fix without discussion.
 
-- **`claudecode/seed_resource_gate_habits.py`**: PROC_RESOURCE_AWARENESS trigger contains "memory" — causes misfire on memory questions. Fixed in live DB only. Do not re-run seed script until trigger is updated. Track: gap_analysis.md.
+- **`lab/claudecode/seed_resource_gate_habits.py`**: PROC_RESOURCE_AWARENESS trigger contains "memory" — causes misfire on memory questions. Fixed in live DB only. Do not re-run seed script until trigger is updated. Track: gap_analysis.md.
 - **`IGOR_TIER5_ENABLED=false`**: tier.5 (Anthropic direct) intentionally inhibited to prevent runaway spend. Re-enable only when 4090 arrives or explicit decision.
 - **`IGOR_ARBITER_ENABLED=false`**: human-approval queue disabled. Re-enable when arbiter UI is built.
