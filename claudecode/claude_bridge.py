@@ -2,7 +2,7 @@
 """
 claude_bridge.py — Persistent Claude API bridge service (D105).
 
-Standalone Starlette service on port 8082.
+Standalone Starlette service on port 8085.
 Provides a persistent Claude conversation that survives Igor restarts.
 
 Endpoints:
@@ -60,7 +60,7 @@ IGOR_HOME_DB_URL = os.environ.get(
 )
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-BRIDGE_PORT = int(os.environ.get("CLAUDE_BRIDGE_PORT", "8082"))
+BRIDGE_PORT = int(os.environ.get("CLAUDE_BRIDGE_PORT", "8085"))
 MODEL = "claude-sonnet-4-6"
 AUTO_COMPACT_THRESHOLD = 40  # user+assistant message pairs trigger compact
 MAX_BG_LOG_LINES = 100

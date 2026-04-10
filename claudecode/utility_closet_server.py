@@ -775,17 +775,34 @@ def check_running() -> dict | None:
         return None
 
     # Process exists — check health
+    # Try multiple URLs: SSL may be active (main port is HTTPS), and there
+    # may be a plain HTTP fallback on a different port.
     port = int(os.environ.get("IGOR_UC_PORT", "8080"))
-    try:
-        import urllib.request
+    http_port = int(os.environ.get("IGOR_UC_HTTP_PORT", "8082"))
+    ssl_active = bool(os.environ.get("IGOR_SSL_CERT"))
+    urls = []
+    if ssl_active:
+        urls.append(f"https://localhost:{port}/health")
+    urls.append(f"http://localhost:{port}/health")
+    if ssl_active:
+        urls.append(f"http://localhost:{http_port}/health")
+    import urllib.request
+    import ssl as _ssl
 
-        req = urllib.request.Request(f"http://localhost:{port}/health", method="GET")
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            data = json.loads(resp.read())
-            if data.get("status") == "ok":
-                return data
-    except Exception as e:
-        log.debug("health check failed (pid=%d): %s", pid, e)
+    for url in urls:
+        try:
+            ctx = None
+            if url.startswith("https://"):
+                ctx = _ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = _ssl.CERT_NONE
+            req = urllib.request.Request(url, method="GET")
+            with urllib.request.urlopen(req, timeout=3, context=ctx) as resp:
+                data = json.loads(resp.read())
+                if data.get("status") == "ok":
+                    return data
+        except Exception as e:
+            log.debug("health check %s failed (pid=%d): %s", url, pid, e)
 
     # Process exists but health check failed — stalled
     log.warning("Stalled utility closet (pid=%d), killing", pid)
