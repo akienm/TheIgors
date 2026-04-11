@@ -32,7 +32,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-SESSIONS_MD = Path.home() / "TheIgors" / "memory" / "sessions.md"
+SESSIONS_MD = Path.home() / "TheIgors" / "lab" / "docs" / "sessions.md"
 CURRENT_SESSION_FILE = (
     Path(os.getenv("IGOR_RUNTIME_ROOT", Path.home() / ".TheIgors"))
     / "cc_channel"

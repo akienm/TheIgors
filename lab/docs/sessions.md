@@ -1,3 +1,61 @@
+## Session 2026-04-10c
+**Theme**: Theme: evening session
+**Decisions**: D359, D360
+**Key changes**:
+- D359: reading_extract purpose added to inference gateway — local-first with OR fallback. ebook_reader._reading_extract_worker refactored to use gateway (removed hardcoded urllib OR). model_override param for benchmark only. D360: reading_benchmark.py harness — 7 models, same chapter, comparison table. 1882 tests pass.
+- D328: repo reorg done — lab/ + papers/ + stale deletions + all path refs updated. 339 files, 1961 tests pass. Committed f1797152.
+**In-flight**: NONE
+
+## Session 2026-04-10b
+**Theme**: Theme: new day session
+**In-flight**: NONE
+
+## Session 2026-04-10a
+**Theme**: 7 graph-capability levers: attentional gating + sleep consolidation + intent gate + skill engrams + reading lever detection + WINNOW fix + trail training
+**Decisions**: D352-D358: TWM attentional gating, sleep consolidation, intent gate conversation fix, skill engram bootstrap, reading lever detection, WINNOW trigger fix, enable trail training
+**Key changes**:
+- push_sources.py (conversation constants), cortex.py (gating in twm_push + mark_conversation_active), basal_ganglia.py (intent gate G-OVN-1e), main.py (skill import on boot), reasoners/base.py (WINNOW trigger strip), sleep_consolidation.py (new), book_learner.py (attractor scoring). DB: cleaned 512 junk habits, tightened 2 triggers, seeded 21 skills + 2 trigger habits, enabled trail training.
+**Next session**: Akien reviews 123 open decisions. T-igor-modes (Awake/Background/Sleep). T-consolidation-ratio-fix (18:1). T-ring-to-binding (HIGH inertia).
+**In-flight**: NONE
+
+## Session 2026-04-09d
+**Theme**: Decisions log triage (D001-D335) + habit health audit diagnostic tool + threading failure analysis
+**Decisions**: decisions_log.dsb: 19 status fixes, 15+ dedupes, 14 D-number renumbers (D336-D351). Tickets: T-twm-attentional-gating, T-sleep-consolidation, T-habit-health-audit, T-ring-to-binding
+**Key changes**:
+- habit_health_audit.py: conversation health diagnostic (6 detection categories, 15 tests). MCP endpoint audit_conversation_health. decisions_log.dsb triage. Open decisions review file for Akien. ANALYZE on 7 stale Postgres tables.
+**Next session**: Next: (1) Akien reviews open decisions file, marks KEEP/DEAD/DEFER on 123 decisions. (2) Architecture review tickets on slate. (3) T-twm-attentional-gating design.
+**In-flight**: NONE — all work committed and pushed
+
+## Session 2026-04-09c
+**Theme**: Theme: session pickup — slate review, next priorities
+**In-flight**: NONE
+
+## Session 2026-04-09b
+**Theme**: Theme: D335 utility closet platform — extract web server, launcher wiring
+**Key changes**:
+- sprint: started T-utility-closet-server
+- sprint: started T-utility-closet-igor-client
+- sprint: closed T-utility-closet-igor-client — Igor registers/deregisters with utility closet, pushes stats, forwards messages
+- sprint: closed T-utility-closet-igor-launcher — both launchers start utility closet
+- sprint: closed T-utility-closet-web-ui — Phase 4 already in Phase 1 HTML
+- feat: Igor server.py skip-bind when utility closet is running — verified end-to-end
+- fix: Rich colors restored — installer.py pipes stdout, force_terminal=True overrides. Pre-existing bug surfaced during D335 work.
+**Next session**: Next session: 1. Slate review + reading priorities (TheIgors, Akien, CS/AI, neuroscience, architecture, history, psychology, confluence, sociology). 2. Windows superclaude.ps1 + spin up 3 Windows boxes. 3. Debug 8080 WebSocket disconnection issue.
+**In-flight**: NONE — all D335 phases closed cleanly
+
+## Session 2026-04-09a
+**Theme**: Theme: D334 unified reading tool, reading pipeline restart, reading_list cleanup, GitHub reconciliation
+**Decisions**: D334, D335
+**Key changes**:
+- done: D334 unified reading tool — one tool, two modes (fg/bg), graph-based runs, blob fetch, multi-instance safe, facia+habits seeded
+- fix: reading pipeline stall — cleaned corrupted learn_queue.json (13 trace:// entries), added hourly cron trigger
+- fix: reading_list junk — deleted 649 cloud escape entries, stopped review_turn_traces from polluting reading_list
+- ops: GitHub issue reconciliation — closed 54 done/stale issues (95→41 open)
+- ops: slate updated with full backlog (41 items organized by category)
+- fix: T-mcp-request-compaction — moved request_compaction from dead cc_mcp_server.py (hand-rolled protocol) into igor_mcp.py (real MCP SDK). Also queued T-mcp-channel-logging for MCP lifecycle logging to channel.
+**Next session**: Next: 1. Architecture review with Akien (#227 inhibitory traversal, #270 TWM workspace, #308 Hebbian bridge, #335 unified schema). 2. T-windows-igor-alias (S). 3. Validate D334 reading tool end-to-end with real book.
+**In-flight**: NONE
+
 ## Session 2026-04-08b
 **Theme**: Theme: experimentor bootstrap, D333 situated reading, multi-instance safety, approval→resume flow, stale GOAL fix
 **Decisions**: D333

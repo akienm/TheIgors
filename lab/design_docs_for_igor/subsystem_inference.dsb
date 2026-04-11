@@ -1,4 +1,4 @@
-DOC|subsystem_inference|v1|updated=2026-04-04d
+DOC|subsystem_inference|v1|updated=2026-04-10c
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/inference_gateway.py,cognition/cloud_mode.py,cognition/reasoners/
 
@@ -31,7 +31,7 @@ DAG_PURPOSES|preparse,winnow,ne,think
   ne|cloud_training→or_ne|ne_local_ok→ollama_ne[fallback→or_ne]|ne_purpose_extra:response_format=json_object
   think|always→ollama_think (no cloud fallback)
 
-BASE_REASONER|cognition/reasoners/base.py|updated=2026-04-04d
+BASE_REASONER|cognition/reasoners/base.py|updated=2026-04-10c
   _build_session_context(cortex,messages,is_interactive)|assembles the context window for LLM calls
   ordering=thread_anchors FIRST → task_sets → ring_entries (orientation before goal before urgency)
   thread_anchor_injection=read_thread_anchor(cortex,limit=3) → chronological [Thread anchors — prior turns:] block; placed before all else so context trim can't erase continuity; T-thread-to-fallthrough

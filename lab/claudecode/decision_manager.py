@@ -26,7 +26,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-DSB_FILE = Path.home() / "TheIgors" / "design_docs_for_igor" / "decisions_log.dsb"
+DSB_FILE = (
+    Path.home() / "TheIgors" / "lab" / "design_docs_for_igor" / "decisions_log.dsb"
+)
 DB_URL = os.getenv("IGOR_HOME_DB_URL") or os.getenv("IGOR_DB_URL")
 
 
