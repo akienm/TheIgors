@@ -195,19 +195,27 @@ def cmd_show(n: int = 10):
 
 
 def cmd_get(decision_id: str):
-    """Print one decision by ID."""
+    """Print one decision by ID — uses decisions table (fast), falls back to DSB."""
     decision_id = decision_id.upper()
     if DB_URL:
         try:
             with _conn() as conn:
                 with conn.cursor() as c:
                     c.execute(
-                        "SELECT content FROM docs_entries WHERE source='decisions_log' AND entry_key=%s",
+                        "SELECT id, short_name, status, description, ticket_id, github_issue, notes FROM decisions WHERE id=%s",
                         (decision_id,),
                     )
                     r = c.fetchone()
             if r:
-                print(r["content"])
+                print(f"{r['id']} — {r['short_name']}")
+                print(f"  status: {r['status']}")
+                print(f"  {r['description'][:200]}")
+                if r["ticket_id"]:
+                    print(f"  ticket: {r['ticket_id']}")
+                if r["github_issue"]:
+                    print(f"  github: #{r['github_issue']}")
+                if r["notes"]:
+                    print(f"  notes: {r['notes']}")
                 return
         except Exception:
             pass
@@ -220,6 +228,56 @@ def cmd_get(decision_id: str):
             return
     print(f"Decision {decision_id} not found")
     sys.exit(1)
+
+
+def cmd_resolve(decision_id: str, resolution: str, notes: str = ""):
+    """Resolve a decision: resolve D042 ticketed|superseded|implemented|wontfix [notes]"""
+    decision_id = decision_id.upper()
+    valid = ("ticketed", "superseded", "implemented", "wontfix")
+    if resolution not in valid:
+        print(f"Resolution must be one of: {', '.join(valid)}")
+        sys.exit(2)
+    status = f"resolved:{resolution}"
+    now = datetime.now().strftime("%Y-%m-%dT%H:%M")
+    try:
+        with _conn() as conn:
+            with conn.cursor() as c:
+                c.execute(
+                    "UPDATE decisions SET status=%s, resolved_at=%s, notes=%s WHERE id=%s",
+                    (status, now, notes or resolution, decision_id),
+                )
+                if c.rowcount == 0:
+                    print(f"Decision {decision_id} not found in DB")
+                    sys.exit(1)
+            conn.commit()
+        print(f"{decision_id} → {status}")
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def cmd_open():
+    """Show all unresolved decisions."""
+    if not DB_URL:
+        print("ERROR: IGOR_HOME_DB_URL not set", file=sys.stderr)
+        sys.exit(1)
+    with _conn() as conn:
+        with conn.cursor() as c:
+            c.execute(
+                "SELECT id, short_name, status, ticket_id, github_issue "
+                "FROM decisions WHERE status NOT LIKE 'resolved:%%' "
+                "ORDER BY id"
+            )
+            rows = c.fetchall()
+    print(f"{len(rows)} open decisions:")
+    for r in rows:
+        refs = []
+        if r["ticket_id"]:
+            refs.append(f"T={r['ticket_id']}")
+        if r["github_issue"]:
+            refs.append(f"#{r['github_issue']}")
+        ref_str = f" [{', '.join(refs)}]" if refs else ""
+        print(f"  {r['id']:6s} {r['status']:18s} {r['short_name']}{ref_str}")
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -238,8 +296,18 @@ def main():
             print("Usage: decision_manager.py get <id>")
             sys.exit(2)
         cmd_get(sys.argv[2])
+    elif cmd == "resolve":
+        if len(sys.argv) < 4:
+            print(
+                "Usage: decision_manager.py resolve <id> ticketed|superseded|implemented|wontfix [notes]"
+            )
+            sys.exit(2)
+        notes = sys.argv[4] if len(sys.argv) > 4 else ""
+        cmd_resolve(sys.argv[2], sys.argv[3], notes)
+    elif cmd == "open":
+        cmd_open()
     else:
-        print(f"Unknown command: {cmd}  (add|show|get)")
+        print(f"Unknown command: {cmd}  (add|show|get|resolve|open)")
         sys.exit(2)
 
 
