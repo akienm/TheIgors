@@ -126,6 +126,51 @@ def _ensure_dirs():
     _CHANNEL_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def _bootstrap_mkcert() -> tuple[str, str] | None:
+    """Generate a locally-trusted cert via mkcert if available.
+
+    Returns (cert_path, key_path) on success, None if mkcert isn't installed
+    or generation failed. Idempotent — reuses existing files.
+    """
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    cert_dir = Path.home() / ".TheIgors" / "certs"
+    cert_path = cert_dir / "localhost+3.pem"
+    key_path = cert_dir / "localhost+3-key.pem"
+
+    if cert_path.exists() and key_path.exists():
+        return (str(cert_path), str(key_path))
+
+    if not shutil.which("mkcert"):
+        return None
+
+    cert_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        subprocess.run(
+            [
+                "mkcert",
+                "-cert-file",
+                str(cert_path),
+                "-key-file",
+                str(key_path),
+                "localhost",
+                "127.0.0.1",
+                "::1",
+            ],
+            cwd=str(cert_dir),
+            check=True,
+            capture_output=True,
+            timeout=30,
+        )
+    except (subprocess.SubprocessError, OSError) as e:
+        log.warning("mkcert generation failed: %s", e)
+        return None
+
+    return (str(cert_path), str(key_path))
+
+
 def _channel_append(author: str, content: str, msg_type: str = "message"):
     """Mirror a message to the shared JSONL channel and Postgres. Never raises."""
     try:
@@ -890,6 +935,20 @@ def main():
 
     ssl_cert = os.environ.get("IGOR_SSL_CERT", "")
     ssl_key = os.environ.get("IGOR_SSL_KEY", "")
+
+    # Bootstrap a locally-trusted cert via mkcert if none configured or files
+    # are missing. Falls back to plain HTTP if mkcert isn't installed.
+    if not (
+        ssl_cert and ssl_key and os.path.exists(ssl_cert) and os.path.exists(ssl_key)
+    ):
+        bootstrapped = _bootstrap_mkcert()
+        if bootstrapped:
+            ssl_cert, ssl_key = bootstrapped
+            log.info("mkcert bootstrap: using %s", ssl_cert)
+        else:
+            log.warning(
+                "No SSL cert configured and mkcert bootstrap unavailable — serving plain HTTP"
+            )
 
     app = _make_app()
     config = uvicorn.Config(
