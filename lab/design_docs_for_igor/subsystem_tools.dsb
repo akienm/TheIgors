@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-04-08b
+DOC|subsystem_tools|v1|updated=2026-04-11b
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
@@ -34,13 +34,13 @@ OS_PRIMITIVES|added=2026-03-22a|D204
   twm=PRIM_TWM_READ (reads active TWM sorted by salience → ctx[twm_items])
   all=habit_type=tool, trigger="", schema-runner-only (no conversational intercept)
 
-WORKER_FOREMAN|added=2026-03-21|updated=2026-03-22a
+WORKER_FOREMAN|added=2026-03-21|updated=2026-04-11a
   tools=launch_next_worker,check_worker_queue
   queue=~/.TheIgors/cc_channel/queue.json
   liveness=PID check via os.kill(pid,0) — stale in_progress auto-reset to pending
   scheduler=PROC_WORKER_FOREMAN has schedule_interval_sec=60 → SchedulerSource fires it every 60s
 
-SCHEMA_RUNNER|updated=2026-03-22a
+SCHEMA_RUNNER|updated=2026-04-11a
   builtins=prim_set,prim_branch,prim_goto,prim_emit,prim_on_error
   prim_emit=reads key/value from basket, {key} template substitution, appends to results
   prim_on_error=step-level on_error:N routing; writes ctx[__error__], jumps to step N on exception

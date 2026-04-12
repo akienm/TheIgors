@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-04-05a
+DOC|subsystem_memory|v1|updated=2026-04-11a
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py,tools/memory_sync.py,tools/trail_inspector.py
 

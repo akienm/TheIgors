@@ -1,10 +1,27 @@
+## Session 2026-04-11a
+**Theme**: Skill rewrite + decisions table + curiosity + consolidation + reading campaign
+**Key changes**:
+- done: T-skill-rewrite-v2 — 15 skills from 21, 54% reduction
+- done: decisions table in Postgres + resolve/open commands
+- done: T-remove-sqlite-twm — make_local_proxy uses Postgres
+- done: T-boredom-curiosity-wiring — boredom→curiosity motivational loop
+- done: T-consolidation-ratio-fix — batch 200, qwen 7b, 30min interval
+- done: response_text None crash fix + coherence gate LLM fallthrough
+- done: T-console-visibility + T-slow-query-indexes (400ms→6ms)
+- done: reading model switched to qwen/qwen-2.5-7b-instruct (/bin/bash.16/book)
+- done: master reading list compiled — 1000 items loaded to DB
+- done: 10 GH issues closed, 26 missing GH issues added to cc_queue
+**Next session**: Next: verify curiosity loop, T-igor-modes, monitor reading campaign
+**In-flight**: In-flight: Igor restarted with all fixes. 1000-item reading queue. Curiosity wired but unverified.
+
 ## Session 2026-04-10c
 **Theme**: Theme: evening session
 **Decisions**: D359, D360
 **Key changes**:
 - D359: reading_extract purpose added to inference gateway — local-first with OR fallback. ebook_reader._reading_extract_worker refactored to use gateway (removed hardcoded urllib OR). model_override param for benchmark only. D360: reading_benchmark.py harness — 7 models, same chapter, comparison table. 1882 tests pass.
 - D328: repo reorg done — lab/ + papers/ + stale deletions + all path refs updated. 339 files, 1961 tests pass. Committed f1797152.
-**In-flight**: NONE
+**Next session**: Next: (1) T-context-load-review — directory tree + source map + drift prevention. (2) D360 benchmark results — analyze overnight run. (3) Broader lab/claudecode path ref sweep.
+**In-flight**: D360 benchmark running overnight — Going Postal ch4, 7 models via gateway. Pass 1 done (10 nodes), pass 2 timed out (1b too slow). Passes 3-7 queued.
 
 ## Session 2026-04-10b
 **Theme**: Theme: new day session
