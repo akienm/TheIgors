@@ -4,7 +4,7 @@
       "command": "/home/akien/TheIgors/venv/bin/python",
       "args": ["/home/akien/TheIgors/lab/claudecode/igor_mcp.py"],
       "env": {
-        "CC_SEND_URL": "http://localhost:8081/api/cc_send"
+        "CC_SEND_URL": "http://localhost:8080/api/cc_send"
       }
     },
     "igor_akiendell": {

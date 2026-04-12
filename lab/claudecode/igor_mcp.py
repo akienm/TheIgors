@@ -239,11 +239,35 @@ async def list_tools() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="channel_send",
+            description=(
+                "Send a message to a named channel on the utility closet. "
+                "Defaults to 'shared' — the common channel where Igor, Claude, "
+                "and Akien converse. Use 'igor' for an Igor-only channel, "
+                "'claude' for a Claude-only channel, or any other name. "
+                "Igor processes messages with author 'claude-code' — full BG "
+                "scoring, habit matching, LLM response."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "description": "Message to send",
+                    },
+                    "channel": {
+                        "type": "string",
+                        "description": "Target channel name (default 'shared')",
+                    },
+                },
+                "required": ["content"],
+            },
+        ),
+        types.Tool(
             name="cc_send",
             description=(
-                "Inject a message into Igor's reasoning pipeline via the CC bridge. "
-                "Igor will process it as a 'claude-code' author message — full BG scoring, "
-                "habit matching, LLM response. Use for reading POC tests and diagnostics."
+                "DEPRECATED: use channel_send instead. Kept as an alias for "
+                "backward compatibility. Sends to the 'shared' channel."
             ),
             inputSchema={
                 "type": "object",
@@ -296,13 +320,20 @@ async def list_tools() -> list[types.Tool]:
         types.Tool(
             name="channel_read",
             description=(
-                "Read recent messages from the shared CC↔Igor channel. "
-                "Use after cc_send to read Igor's response. "
-                "Pass since_id to get only messages newer than a known message ID."
+                "Read recent messages from a named channel on the utility closet. "
+                "Defaults to the 'shared' channel (CC + Igor + Akien + agents). "
+                "Use after channel_send to read Igor's response. Pass since_id "
+                "to get only messages newer than a known message ID. "
+                "NOTE: channel filtering requires a schema upgrade — for now "
+                "all channels share one stream, filter by author if needed."
             ),
             inputSchema={
                 "type": "object",
                 "properties": {
+                    "channel": {
+                        "type": "string",
+                        "description": "Channel name to read from (default 'shared')",
+                    },
                     "limit": {
                         "type": "integer",
                         "description": "Max messages to return (default 20)",
@@ -395,8 +426,11 @@ def _dispatch(name: str, args: dict) -> str:
         return _hot_nodes(args.get("limit", 10), args.get("since_hours", 2))
     elif name == "turn_trace_recent":
         return _turn_trace_recent(args.get("limit", 5), args.get("since_minutes"))
+    elif name == "channel_send":
+        return _channel_send(args["content"], args.get("channel", "shared"))
     elif name == "cc_send":
-        return _cc_send(args["content"])
+        # Deprecated alias — always uses the 'shared' channel
+        return _channel_send(args["content"], "shared")
     elif name == "wg_neighbors":
         return _wg_neighbors(
             args["word"], args.get("limit", 20), args.get("min_score", 0.1)
@@ -405,7 +439,10 @@ def _dispatch(name: str, args: dict) -> str:
         return _habit_list(args.get("query"), args.get("limit", 30))
     elif name == "channel_read":
         return _channel_read(
-            args.get("limit", 20), args.get("since_id"), args.get("author")
+            args.get("limit", 20),
+            args.get("since_id"),
+            args.get("author"),
+            args.get("channel", "shared"),
         )
     elif name == "request_compaction":
         return _request_compaction(args.get("preserve_instructions", ""))
@@ -732,11 +769,16 @@ def _turn_trace_recent(limit: int, since_minutes: int | None) -> str:
     return "\n".join(lines)
 
 
-# ── cc_send ───────────────────────────────────────────────────────────────────
+# ── channel_send ──────────────────────────────────────────────────────────────
 
 
-def _cc_send(content: str) -> str:
-    payload = json.dumps({"content": content}).encode()
+def _channel_send(content: str, channel: str = "shared") -> str:
+    """Send a message to a named channel via the utility closet HTTP endpoint.
+
+    T-mcp-channel-rename: session_id is carried through to UC so the message
+    appears on the named channel (WebSocket subscribers see it routed).
+    """
+    payload = json.dumps({"content": content, "session_id": channel}).encode()
     req = urllib.request.Request(
         CC_SEND_URL,
         data=payload,
@@ -751,9 +793,9 @@ def _cc_send(content: str) -> str:
     try:
         with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
             resp = json.loads(r.read())
-            return f"Sent. Igor response: {resp}"
+            return f"Sent to '{channel}'. Response: {resp}"
     except Exception as e:
-        return f"cc_send failed: {e}"
+        return f"channel_send failed: {e}"
 
 
 # ── wg_neighbors ──────────────────────────────────────────────────────────────
@@ -812,7 +854,21 @@ def _habit_list(query: str | None, limit: int) -> str:
 # ── channel_read ───────────────────────────────────────────────────────────────
 
 
-def _channel_read(limit: int, since_id: int | None, author: str | None) -> str:
+def _channel_read(
+    limit: int,
+    since_id: int | None,
+    author: str | None,
+    channel: str = "shared",
+) -> str:
+    """Read messages from the shared channel store.
+
+    T-mcp-channel-rename: accepts a channel param for future per-channel
+    filtering. Currently channel_messages has no channel column — all
+    messages share one stream. See T-channel-messages-schema for the
+    upgrade that adds real channel filtering.
+    """
+    # channel param currently unused — see T-channel-messages-schema
+    _ = channel
     params: list = []
     where_parts = []
     if since_id is not None:
