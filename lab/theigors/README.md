@@ -1,0 +1,38 @@
+# Memory Palace
+
+Auto-synced from `memory_palace` table. Do not edit by hand — changes will be overwritten on next sync.
+
+## Tree
+
+- [theigors/ — TheIgors Project](theigors.md)
+  - [akien/ — Akien](theigors/akien.md)
+    - [interaction-style/ — Interaction Style](theigors/akien/interaction-style.md)
+    - [mission/ — Akien's Mission](theigors/akien/mission.md)
+  - [claude/ — Claude Code](theigors/claude.md)
+    - [mcp/ — MCP Tools](theigors/claude/mcp.md)
+    - [references/ — External References](theigors/claude/references.md)
+    - [scripts/ — Lab Scripts](theigors/claude/scripts.md)
+    - [skills/ — Skills](theigors/claude/skills.md)
+  - [history/ — Project History](theigors/history.md)
+  - [igor/ — Igor Agent](theigors/igor.md)
+    - [cognition/ — Cognition Pipeline](theigors/igor/cognition.md)
+    - [inertia/ — Code Inertia Levels](theigors/igor/inertia.md)
+    - [interruptors/ — Interruptors](theigors/igor/interruptors.md)
+    - [memory/ — Memory System](theigors/igor/memory.md)
+    - [operations/ — Operations](theigors/igor/operations.md)
+    - [tools/ — Tool Registry](theigors/igor/tools.md)
+    - [training/ — Training & Reading](theigors/igor/training.md)
+  - [notes/ — Project Notes](theigors/notes.md)
+    - [active-epics/ — Active Epics](theigors/notes/active-epics.md)
+    - [north-star/ — North Star](theigors/notes/north-star.md)
+    - [trust-framework/ — Igor Trust Framework](theigors/notes/trust-framework.md)
+  - [rules/ — Behavioral Rules](theigors/rules.md)
+    - [budget/ — Budget Discipline](theigors/rules/budget.md)
+    - [coding/ — Coding Conventions](theigors/rules/coding.md)
+    - [collaboration/ — Collaboration Style](theigors/rules/collaboration.md)
+    - [commits/ — Commit Discipline](theigors/rules/commits.md)
+    - [database/ — Database Rules](theigors/rules/database.md)
+    - [igor-constraints/ — Igor Execution Constraints](theigors/rules/igor-constraints.md)
+    - [igor-ops/ — Igor Operations](theigors/rules/igor-ops.md)
+    - [memory-discipline/ — Memory Discipline](theigors/rules/memory-discipline.md)
+  - [slates/ — Daily Slates](theigors/slates.md)
