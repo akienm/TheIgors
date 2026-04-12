@@ -1,128 +1,118 @@
 # TheIgors — Claude Code Working Conventions
 
-## What This Project Is
-<!-- last-updated: 2026-03-13a -->
-Igor is a Python AI agent with persistent SQLite memory, running on akiendelllinux.
-- Repo: https://github.com/akienm/TheIgors
-- Main agent code: `wild_igor/igor/`
-- DB: `~/.TheIgors/Igor-wild-0001/wild-0001.db` (runtime, not in repo)
-- .env: `~/.TheIgors/Igor-wild-0001/.env` (never committed)
-- venv: `/home/akien/TheIgors/venv/` (Python 3.12)
-- Launch: `igor` bash alias (loops on exit code 42 = restart); visible terminal: `DISPLAY=:0 konsole -e bash -c "igor" &` (add `; exec bash` to keep terminal open after crash)
-- Source/runtime split: `~/TheIgors/` = source; `~/.TheIgors/` = all runtime data
-- **Environment split (CRITICAL)**: Claude Code always runs with the REAL Anthropic key (`REAL_ANTHROPIC_API_KEY`). Igor's `.env` sets OR routing (`ANTHROPIC_BASE_URL=openrouter`, `ANTHROPIC_API_KEY=OR key`) — this does NOT affect Claude Code. `superclaude` and `cc.sh` handle the key swap. Never read Igor's `.env` and assume it reflects the Claude Code environment.
-
-## First Session?
-If skills and MCP aren't working, read `.claude/bootstrap.md` for setup verification.
-Migration 003 (runs on first `igor` / `igor.ps1` launch) installs CC integration automatically.
-
-## Developer Conventions
-<!-- last-updated: 2026-03-15c -->
+## Rules (read these first)
 
 ### Before editing
-- Read the file first. Never overwrite blindly.
-- Check inertia level — HIGH files need strong justification.
-- Check `lab/design_docs/` for relevant architecture decisions.
+- **Read the file first.** Never overwrite blindly.
+- **Check inertia level.** HIGH needs strong justification, MEDIUM discuss first, LOW freely improvable.
+  - **HIGH (0.90+):** `brainstem/`, `memory/models.py`, `cognition/reasoners/base.py`
+  - **MEDIUM:** `cognition/`, `memory/cortex.py`, `main.py`
+  - **LOW:** `tools/`, `dashboard/`, `word_graph.py`
 
-### Workflow discipline
-- Get plan approval before executing (full philosophy: `papers/thoughts/working_with_claude.md`)
-- Test against live systems, not mocks; forensic logging everywhere
-- Two-session pattern: Designer Claude (architecture + conversation) + Worker Claude (execution); queue at `~/.TheIgors/cc_channel/queue.json`; Worker boot doc: `lab/claudecode/WORKER_CONTEXT.md`
-
-### Inertia levels (self-edit resistance)
-<!-- last-updated: 2026-03-13a -->
-| Level | Files | Convention |
-|---|---|---|
-| HIGH (0.90+) | `brainstem/`, `memory/models.py`, `cognition/reasoners/base.py` | Discuss with Akien; never edit casually |
-| MEDIUM | `cognition/`, `memory/cortex.py`, `anthropic.py`, `main.py` | Discuss before editing |
-| LOW | `tools/`, `dashboard/`, `thalamus.py`, `cognition/word_graph.py` | Freely improvable |
-
-### Commit policy
-<!-- last-updated: 2026-03-13a -->
-- Claude Code edits do NOT auto-commit — commit manually at logical checkpoints.
-- Igor's own self-edits DO auto-commit+push via `self_edit.py`.
+### Commits
+- Commit = full cycle: `add + commit + pull + push`. Never partial.
+- Autonomous commit rights: tests pass + no secrets = commit without asking.
 - Never `--no-verify` or force-push main.
+- Never stage `.env`, `*.db`, or `~/.TheIgors/` runtime paths.
 
-### Instance data location
-<!-- last-updated: 2026-03-13a -->
-All runtime instance data lives in `~/.TheIgors/Igor-wild-0001/`:
-- `jobs/` — background job state
-- `arbiter/` — pending arbiter queue
-- `warm_context.*.json` — session context
-- `logs/` — forensic logs
-- `inbox/`, `outbox/`, `workspace/` — instance working dirs
+### Memory discipline
+- **Verify before trusting memory.** Don't trust "X was removed" claims from prior sessions — grep the code.
+- Check Igor boot timestamp before claiming code is stale (Akien restarts frequently).
+- Never grep for Igor process — use `mcp__igor__channel_read` or the dashboard.
 
-### Key env vars (in `~/.TheIgors/Igor-wild-0001/.env`)
-<!-- last-updated: 2026-03-13a -->
-- `IGOR_DB_PATH` — path to live SQLite DB
-- `OPENROUTER_API_KEY` — primary cloud inference
-- `OLLAMA_HOST` / `OLLAMA_LOCAL_MODEL` — local inference (Ollama; default: localhost:11434, llama3.2:1b)
-- `IGOR_SELF_EDIT_ENABLED` — gates source file writes
-- `IGOR_TIER5_ENABLED` — gates Anthropic direct spend (default false)
-- `IGOR_ARBITER_ENABLED` — human-approval queue (default false — disabled)
-- `IGOR_CALL_COST_WARN_USD` — per-call cost cap (default 2.00)
-- `IGOR_MAX_TURNS` — max agentic tool turns per call (default 8)
-- `IGOR_RESEARCH_MODE` — allow bulk external reads (default false)
-- `OPENROUTER_CHEAP_MODEL` — tier.3 model (gpt-4o-mini)
-- `OPENROUTER_DEFAULT_MODEL` — tier.3.5 model (haiku)
-- `OPENROUTER_INTERACTIVE_MODEL` — tier.4 model (sonnet)
+### Database
+- **NO SQLITE ANYWHERE** — everything Postgres.
+- `db_proxy` does blanket `?→%s` translation — use `jsonb_exists(metadata, 'key')` not `metadata ? 'key'`.
+- All DB access through `db_proxy`, never raw psycopg2 in tools.
 
-### Reference docs
-<!-- last-updated: 2026-03-15c -->
-- `lab/design_docs/` — architecture, decisions log, ethical framework, mission
-- `papers/history/` — research notes, early design conversations, archives
-- `lab/claudecode/CONTEXT.md` — fuller onboarding context for new sessions
-- `wild_igor/igor/memory/models.py` — Memory dataclass, MemoryType enum
-- `wild_igor/igor/cognition/` — thalamus, NE, milieu, interruptors, job_manager
-- `lab/design_docs_for_igor/capabilities_index.dsb` — 118-tool inventory (check before asking "can Igor do X?")
-- `lab/design_docs_for_igor/decisions_log.dsb` — all architectural decisions D001-D076
+### Igor constraints
+- Igor NEVER calls Anthropic direct (tier 5 inhibited).
+- Never bypass Igor's systems (gateway, router, logging) — build missing capabilities into Igor's stack.
+- New tools must be added to `wild_igor/igor/tools/__init__.py`.
+- Instance dir: `~/.TheIgors/Igor-wild-0001/` (capital I).
+- Igor runs ONLY on `akiendelllinux`. `akienyoga9i` and `akienyogai7` are Ollama-only.
 
-### Key architecture (fast ref)
-<!-- last-updated: 2026-03-15b -->
-- **Word graph**: `cognition/word_graph.py` — SQLite-backed two-tier; words + bigram chunks; same weights for parsing (habit scoring) and generation (predict_next).
-- **CC→Igor bridge**: `POST http://localhost:8080/api/cc_send` with `{"content": "..."}` — injects as author "claude-code"
-- **Tier ladder (D234)**: tier.1 habit/graph → tier.2 Ollama (primary, always first) → tier.3 OR cheap (luxury — quality path only) → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic direct (inhibited) → tier.6 arbiter alert. OR fires only when: Ollama failed + user turn + medium/high complexity + budget ok. Background calls never escalate to OR.
-- **Habit types**: threshold | action | workflow | delegation | reactive | response | question | context_inject | cognitive | tool | passive_capture
-- **Intent gate (D074)**: threshold/workflow/delegation/reactive habits skip when parsed_intent is question-like
+### Budget
+- **Never recommend spending tiers or budget limits.** Present numbers, let Akien decide.
+- CC is flat-rate Pro Max. Igor's OR spend is the meter — minimize that, not CC usage.
 
-### Skill model routing (cost discipline)
-<!-- last-updated: 2026-03-31 -->
-Skills with `model: haiku` in their frontmatter must be spawned via `Agent(model="haiku", subagent_type="general-purpose", prompt="...")` instead of executed inline with the `Skill` tool. This routes mechanical work to Haiku 4.5 (~10× cheaper than Sonnet 4.6).
-
-| Model | Skills | Rationale |
-|---|---|---|
-| **Haiku 4.5** | `/filter`, `/audit` (steps 1–15), `/fixit` (ticket+filter phases), `/slateclose`, `/readigor`, `/slate` (steps 1–4) | Pattern-matching, checklist execution, mechanical reads |
-| **Sonnet 4.6** | `/sprint`, `/review`, `/savestate`, `/decided` (design synthesis), `/audit` step 16, `/slate` step 5 | Architecture, design reasoning, synthesis |
-
-**How to invoke a Haiku skill**: pass the full skill content + arguments as the Agent prompt. The Agent tool's `model: "haiku"` parameter selects the model. Return results to the user as normal.
-
-**Exception**: if a Haiku skill step requires design judgment mid-execution (e.g. audit step 16 "simplification review"), escalate that step to inline Sonnet reasoning rather than delegating blindly.
-
-### End-of-session savestate (REQUIRED)
-<!-- last-updated: 2026-03-15c -->
-Run `/savestate`. It's not optional — skipping means the next session starts blind. Full checklist: `.claude/skills/savestate/SKILL.md`
-Savestate now includes **Step 0: current hypothesis** — one sentence about what was in-flight and why.
-
-### Compact Instructions
-<!-- last-updated: 2026-03-13a -->
-When `/compact` runs (manually or automatically), preserve:
-- List of open gaps (Gxx) touched this session
-- Files modified this session and what changed
-- Current debugging hypothesis or in-progress task
-- Any decisions made that haven't been saved to lab/design_docs yet
-- Next session priorities
+### Collaboration
+- Keep going — never offer stopping as an option.
+- Background work has no timeout — only human turns need timeouts.
+- HIGH-inertia edits stay with CC. Igor handles everything else.
+- Flag POC code for follow-up tickets.
+- Proactive best-practice suggestions welcomed.
+- Autonomous sprint mode when Akien says "keep going" or "not in here today".
 
 ### Do not
-<!-- last-updated: 2026-03-13a -->
-- Move or rename `brainstem/` contents without Akien review
-- Store credentials in memory (use `.env` + CREDENTIAL_REF memory pattern — see #71)
-- Delete `~/.TheIgors/Igor-wild-0001/wild-0001.db` — that's the live DB
-- Edit `.env` without noting what changed and why
+- Move or rename `brainstem/` contents without Akien review.
+- Delete `~/.TheIgors/Igor-wild-0001/wild-0001.db` — that's the live DB.
+- Edit `.env` without noting what changed and why.
 
-## Known Broken / Do Not Touch
-<!-- last-updated: 2026-03-15c -->
-Items that are intentionally deferred or known broken. Do not flag these as bugs or attempt to fix without discussion.
+---
 
-- **`lab/claudecode/seed_resource_gate_habits.py`**: PROC_RESOURCE_AWARENESS trigger contains "memory" — causes misfire on memory questions. Fixed in live DB only. Do not re-run seed script until trigger is updated. Track: gap_analysis.md.
-- **`IGOR_TIER5_ENABLED=false`**: tier.5 (Anthropic direct) intentionally inhibited to prevent runaway spend. Re-enable only when 4090 arrives or explicit decision.
-- **`IGOR_ARBITER_ENABLED=false`**: human-approval queue disabled. Re-enable when arbiter UI is built.
+## What this project is
+
+**Igor is a graph matrix reasoning engine.** A Python AI agent with persistent Postgres memory, local-first inference, progressive autonomy. The goal is a self-improving companion that shrinks cloud dependency as local cognition grows — eventually self-programming.
+
+- **Repo:** https://github.com/akienm/TheIgors
+- **Code:** `wild_igor/igor/`
+- **DB:** `Igor-wild-0001` (Postgres)
+- **Runtime:** `~/.TheIgors/Igor-wild-0001/`
+- **Launch:** `igor` (bash alias, loops on exit 42)
+- **Environment split (CRITICAL):** CC runs with `REAL_ANTHROPIC_API_KEY`. Igor's `.env` sets OR routing — does NOT affect CC. `superclaude`/`cc.sh` handle the key swap. Never read Igor's `.env` and assume it reflects CC's environment.
+
+---
+
+## Tools available to CC
+
+### Skills (`~/.claude/skills/`)
+`/context-load` · `/sprint` · `/commit` · `/ticket` · `/note` · `/review` · `/audit` · `/day-close` · `/savestate` · `/savestateauto` · `/fixit` · `/readigor` · `/deep-audit` · `/test-fix` · `/validate-files`
+
+### MCP tools (`mcp__igor__*`)
+- **Memory:** `memory_get`, `memory_search`, `memory_list_by_type`
+- **Channel:** `channel_read`, `cc_send`, `request_compaction`
+- **Traces:** `traces_get`, `traces_recent`, `turn_trace_recent`
+- **Graph:** `hot_nodes`, `hot_attractors`, `wg_neighbors`, `tail_heat`
+- **Habits:** `habit_list`
+- **Health:** `audit_conversation_health`
+
+Per-machine variants: `mcp__igor_akiendell__*`, `mcp__igor_yoga9i__*`, `mcp__igor_yogai7__*`.
+
+### Memory palace (`palace_read`, `palace_tree`, `palace_write`)
+Navigable tree of signposts at `theigors/*`. Query via MCP or direct psql. Everything else CC needs — rules detail, architecture map, history pointers, references — lives here.
+
+```sql
+-- Read a node:
+SELECT title, content, pointers FROM memory_palace WHERE path = 'theigors/rules/coding';
+
+-- Show the tree:
+SELECT path, title FROM memory_palace ORDER BY path;
+```
+
+Repo echo: `lab/theigors/` (auto-synced by `lab/claudecode/palace_sync.py`).
+
+### Lab scripts (`lab/claudecode/`)
+`cc_queue.py` (tickets) · `session_manager.py` (sessions) · `decision_manager.py` (decisions) · `github_sync.py` · `docs_sync.py` · `channel.py` · `palace_sync.py` · `seed_memory_palace.py`
+
+---
+
+## Skill model routing (cost discipline)
+
+Skills with `model: haiku` in frontmatter should be spawned via `Agent(model="haiku", subagent_type="general-purpose", ...)` for ~10× cost savings on mechanical work.
+
+- **Haiku 4.5:** pattern-matching, checklist execution, mechanical reads (most of `/audit`, `/readigor`)
+- **Sonnet 4.6:** architecture, design reasoning, synthesis (`/sprint`, `/review`, `/savestate`)
+
+Exception: if a Haiku skill step requires design judgment mid-execution, escalate that step to inline Sonnet reasoning.
+
+---
+
+## End-of-session savestate (REQUIRED)
+
+Run `/savestate` at session end. It's not optional — skipping means the next session starts blind.
+
+## Known broken / do not touch
+
+- **`IGOR_TIER5_ENABLED=false`** — tier.5 (Anthropic direct) intentionally inhibited. Re-enable only on explicit decision.
+- **`IGOR_ARBITER_ENABLED=false`** — human-approval queue disabled. Re-enable when arbiter UI is built.
