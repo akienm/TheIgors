@@ -1,0 +1,52 @@
+{
+  "next_sweep": [],
+  "forever": [
+    {
+      "name": "no-sqlite-imports",
+      "kind": "grep",
+      "pattern": "^import sqlite3\\|^from sqlite3",
+      "description": "CLAUDE.md hard rule: NO SQLITE ANYWHERE \u2014 everything Postgres. Catches reintroduction of sqlite3 imports. T-remove-sqlite-references is the cleanup ticket; this prevents drift.",
+      "severity": "high",
+      "added_by": "claude-code",
+      "added_at": "2026-04-14T17:31:04.420918",
+      "mode": "forever",
+      "ack_until": null
+    },
+    {
+      "name": "no-bare-except-pass",
+      "kind": "shell",
+      "pattern": "python3 lab/claudecode/audit_check_bare_except.py",
+      "description": "Bare except: pass blocks silently swallow errors. Excludes ebook_drm vendored code.",
+      "severity": "med",
+      "added_by": "claude-code",
+      "added_at": "2026-04-14T17:32:17.892076",
+      "mode": "forever",
+      "ack_until": null
+    },
+    {
+      "name": "primary-classes-must-inherit-igorbase",
+      "kind": "shell",
+      "pattern": "python3 lab/claudecode/audit_check_igorbase.py",
+      "description": "D125 enforcement: primary component classes (cognition/, memory/, tools/, network/, brainstem/) must inherit IgorBase. Exempts classes whose only bases are third-party (BaseModel, Enum, ABC, dataclass, etc.).",
+      "severity": "med",
+      "added_by": "claude-code",
+      "added_at": "2026-04-14T17:32:17.930679",
+      "mode": "forever",
+      "ack_until": null
+    }
+  ],
+  "history": [
+    {
+      "name": "test-drain",
+      "kind": "shell",
+      "pattern": "echo",
+      "description": "smoke test of next_sweep drain",
+      "severity": "low",
+      "added_by": "claude-code",
+      "added_at": "2026-04-14T17:35:57.187770",
+      "mode": "next",
+      "ack_until": null,
+      "ran_at": "2026-04-14T17:35:58.622510"
+    }
+  ]
+}
