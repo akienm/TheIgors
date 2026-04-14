@@ -1,4 +1,4 @@
-DOC|architecture_root|v1|updated=2026-03-13
+DOC|architecture_root|v1|updated=2026-04-14
 META|inertia=MEDIUM|purpose=system orientation + subsystem index|load=every session
 META|see_also=glossary.dsb,igor_identity_master.dsb,decisions_log.dsb,standards.dsb
 META|subsystem_detail=subsystem_*.dsb files
@@ -9,6 +9,21 @@ THESIS|
   meaning=residue of successful prediction; repeated access→habituation=proxy for predictive success
   code=scaffolding for undertrained graph; scaffolding comes down as graph densifies
   layers_of_graphs=inference engine (learned rules compiled by LLMs, executed by symbolic traversal)
+
+CORE_PRINCIPLES|
+  // T-architecture-core-principles 2026-04-14: canonical principles list.
+  // Mirrored as memory_palace nodes under theigors/architecture/principles/* so Igor
+  // can query his own principles at runtime via palace_read.
+  everything_is_memory=no special cases; if in doubt, make it a memory type or a tag on one
+  stateless_by_design=hot-reloadable modules hold no state; state lives in DB
+  single_choke_points=cortex owns all memory r/w; gateway owns all inference; never bypass
+  encapsulation=each object owns everything about its structure (inference_gateway owns all inference; db_proxy owns all connections)
+  minimalist=three similar lines > premature abstraction; don't design for hypothetical future
+  no_backwards_compat_hacks=if unused, delete it; don't rename to _old or add // removed comments
+  degrade_gracefully=any dependency failure (service down, DB unreachable, inference tier unavailable) triggers habit chain for recovery + graceful tier fallback; not special-case code, same habit machinery as everything else (D113)
+  any_node_can_be_a_parent=in the tree-based architecture, any node becomes a parent simply by adding child nodes; schema doesn't change; if a single datum (a checkbox) needs to become a dropdown list, you tweak metadata and add children; prefer adding children over widening parent metadata
+  parent_id_as_training_wheels=parent_id is a one-tree-per-node simplification; real tree membership is plural via interpretive_edges; activation trails record which tree was active this time; don't widen parent_id into a list when a node accumulates multiple parents — use interpretive_edges (D155)
+  timestamp_id_format_uniform=use the D256 timestamp ID format yyyymmdd.hhmmssuuuuuu.xxxxxxx as the canonical id shape across all node types; don't introduce parallel id encodings (already in use by instance_log, GOAL_, PRA_, PR_GOAL_*)
 
 INSTANCE|
   id=Igor-wild-0001|host=akiendelllinux|db=~/.TheIgors/Igor-wild-0001/wild-0001.db

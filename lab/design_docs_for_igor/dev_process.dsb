@@ -50,10 +50,4 @@ TESTING_PHILOSOPHY|
   smoke_tests=thin layer of structural tests; runs in <10s before restart
   future=self-programming epic (#206) — Igor generates + runs his own tests
 
-ARCHITECTURAL_PRINCIPLES|
-  everything_is_memory=no special cases; if in doubt, make it a memory type
-  stateless_by_design=hot-reloadable modules hold no state; state lives in DB
-  single_choke_points=cortex owns all memory r/w; gateway owns all inference; never bypass
-  encapsulation=each object owns everything about its structure (inference_gateway owns all inference; db_proxy owns all connections)
-  minimalist=three similar lines > premature abstraction; don't design for hypothetical future
-  no_backwards_compat_hacks=if unused, delete it; don't rename to _old or add // removed comments
+ARCHITECTURAL_PRINCIPLES|see architecture_root.dsb CORE_PRINCIPLES (canonical location 2026-04-14)
