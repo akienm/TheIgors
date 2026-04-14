@@ -45,7 +45,6 @@ PG_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
     "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
-TURN_TRACE_LOG = Path.home() / ".TheIgors" / "logs" / "turn_trace.20260319.log"
 CC_SEND_URL = os.environ.get("CC_SEND_URL", "http://localhost:8081/api/cc_send")
 
 server = Server("igor")
@@ -691,8 +690,10 @@ def _hot_nodes(limit: int, since_hours: float) -> str:
 
 def _turn_trace_recent(limit: int, since_minutes: int | None) -> str:
     """Parse the turn_trace JSONL log — today's file."""
-    # Find the right log file (today's date)
-    log_dir = Path.home() / ".TheIgors" / "logs"
+    # Find the right log file (today's date). Path must match paths().logs in
+    # wild_igor/igor/paths.py (~/.TheIgors/local/logs/) — moved here at some
+    # point and the MCP wrapper went stale (T-mcp-turn-trace-stale-path).
+    log_dir = Path.home() / ".TheIgors" / "local" / "logs"
     today = datetime.now().strftime("%Y%m%d")
     log_file = log_dir / f"turn_trace.{today[:4]}-{today[4:6]}-{today[6:]}.log"
     if not log_file.exists():
