@@ -1,3 +1,21 @@
+## Session 2026-04-12a
+**Theme**: Session start
+**Next session**: Sprint goals-as-PRs (Igor's architectural unification) + instance-tracking-startup (NO-MORE-CONFUSION boot record), then T-inhibitory-pattern-primitive epic
+**In-flight**: NONE — clean stop, all in-flight work shipped or filed
+
+## Session 2026-04-11b
+**Theme**: T-context-load-review: optimize save/load
+**Key changes**:
+- done: T-igor-context-subroutine — thread context compaction via local Ollama summarization
+- done: T-memory-palace-schema — Postgres table + 3 tools (palace_read/write/tree) + 7 seed nodes
+- done: T-memory-palace-populate — 32 nodes seeded, 96% byte reduction vs old memory files
+- done: T-palace-repo-sync — DB→lab/theigors/ sync script, initial 32 nodes committed
+- done: T-memory-palace-cc — CLAUDE.md slimmed, context-load rewritten, MEMORY.md → palace pointer
+- done: T-uc-web-server-refactor — UC is THE web server, Igor is a facade client, claude_bridge deleted, -1829 lines
+- done: T-mcp-channel-rename — MCP now has channel_send with channel param, port fixed to 8080
+**Next session**: Start Igor first (launcher brings up UC on 8080), then restart CC to pick up new MCP tool definitions. Next priorities: T-channel-messages-schema (small — enables real per-channel filtering) or T-igor-modes (Awake/Background/Sleep).
+**In-flight**: NONE
+
 ## Session 2026-04-11a
 **Theme**: Skill rewrite + decisions table + curiosity + consolidation + reading campaign
 **Key changes**:

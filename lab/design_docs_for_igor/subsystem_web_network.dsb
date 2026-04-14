@@ -1,4 +1,4 @@
-DOC|subsystem_web_network|v1|updated=2026-03-24n
+DOC|subsystem_web_network|v1|updated=2026-04-13
 META|inertia=LOW|parent=architecture_root.dsb
 META|files=web/server.py,network/listener.py,network/discord_bot.py
 
