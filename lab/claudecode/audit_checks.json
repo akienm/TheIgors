@@ -33,6 +33,17 @@
       "added_at": "2026-04-14T17:38:32.767763",
       "mode": "forever",
       "ack_until": null
+    },
+    {
+      "name": "no-hardcoded-instance-refs",
+      "kind": "shell",
+      "pattern": "python3 lab/claudecode/audit_check_hardcoded_instance.py",
+      "description": "T-hardcoded-instance-refs (#458): Igor runtime must not hardcode 'Igor-wild-0001' / 'choose_a_password' outside known-exempt files (paths.py, docstrings, node_id constant). Exempt list is the settled baseline from the 2026-04-15 sprint.",
+      "severity": "med",
+      "added_by": "claude-code",
+      "added_at": "2026-04-15T16:12:26.903828",
+      "mode": "forever",
+      "ack_until": null
     }
   ],
   "history": [
