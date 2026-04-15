@@ -1,3 +1,25 @@
+## Session 2026-04-14a
+**Theme**: Decisions table walk + cognition deep dive + CP-axiom reframe + 12 ticket sprints
+**Key changes**:
+- done: T-instance-tracking-startup #424 (a333366c) — instance_log table + tools
+- done: T-goals-as-persistent-relationships #422 (52dcd383) — Igor's unification
+- done: T-mcp-turn-trace-stale-path (0e943da3) — MCP path fix
+- done: T-canned-response-refractory-leak (39c7381f) — refractory on 5 doc-as-action habits
+- done: T-doc-habit-duplicates — 5 dupes deleted from DB
+- done: T-architecture-core-principles #442 (e993bd20) — 10 principles in arch_root + palace
+- done: T-audit-add-checks #446 (2d88ba09 + 4dffc4ff) — registered audit checks infrastructure
+- done: skill file deletes 82db66d3 — 21 stale .claude/skills/*.md removed
+- done: T-machines-json-phaseout #444 (26202e6a) — DB echo via machine_manager
+- done: T-decision-blob-schema (a0d224b9) — substrate→reasoning→experiment→voice contract
+- done: T-experiment-primitive-schema (64e1d472) — strategy-2 lifecycle data model
+- done: T-boredom-goal-coupling #426 (0852279a) — first 'act on internal state' circuit
+- filed: ~30 new tickets including T-experiment-primitive (#456) L epic for strategy-2
+- walked: decisions table 28→0 actionable; framework retired
+- reframe: 6 CP patterns are the axiom layer; LLM outputs are hypotheses to test, not answers
+- tests: 2170→2267 (+97 across the day, 0 regressions)
+**Next session**: Sprint goals-as-PRs sub-tickets unblocked by today's work; diagnose Igor's pe_chain retry pattern; T-d125-igorbase-drift after Igor chain inventory; address db_proxy.py:24 sqlite cleanup with staging
+**In-flight**: NONE — clean stop, day-close ritual complete
+
 ## Session 2026-04-12a
 **Theme**: Session start
 **Next session**: Sprint goals-as-PRs (Igor's architectural unification) + instance-tracking-startup (NO-MORE-CONFUSION boot record), then T-inhibitory-pattern-primitive epic
