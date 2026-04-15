@@ -14,6 +14,7 @@ Auto-synced from `memory_palace` table. Do not edit by hand — changes will be 
       - [degrade-gracefully/ — degrade gracefully](theigors/architecture/principles/degrade-gracefully.md)
       - [encapsulation/ — encapsulation](theigors/architecture/principles/encapsulation.md)
       - [everything-is-memory/ — everything is memory](theigors/architecture/principles/everything-is-memory.md)
+      - [future-self-proud-test/ — future-self-proud test](theigors/architecture/principles/future-self-proud-test.md)
       - [minimalist/ — minimalist](theigors/architecture/principles/minimalist.md)
       - [no-backwards-compat-hacks/ — no backwards-compat hacks](theigors/architecture/principles/no-backwards-compat-hacks.md)
       - [parent-id-as-training-wheels/ — parent_id as training wheels](theigors/architecture/principles/parent-id-as-training-wheels.md)

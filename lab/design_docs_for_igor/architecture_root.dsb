@@ -1,4 +1,4 @@
-DOC|architecture_root|v1|updated=2026-04-14
+DOC|architecture_root|v1|updated=2026-04-15
 META|inertia=MEDIUM|purpose=system orientation + subsystem index|load=every session
 META|see_also=glossary.dsb,igor_identity_master.dsb,decisions_log.dsb,standards.dsb
 META|subsystem_detail=subsystem_*.dsb files
@@ -24,6 +24,7 @@ CORE_PRINCIPLES|
   any_node_can_be_a_parent=in the tree-based architecture, any node becomes a parent simply by adding child nodes; schema doesn't change; if a single datum (a checkbox) needs to become a dropdown list, you tweak metadata and add children; prefer adding children over widening parent metadata
   parent_id_as_training_wheels=parent_id is a one-tree-per-node simplification; real tree membership is plural via interpretive_edges; activation trails record which tree was active this time; don't widen parent_id into a list when a node accumulates multiple parents — use interpretive_edges (D155)
   timestamp_id_format_uniform=use the D256 timestamp ID format yyyymmdd.hhmmssuuuuuu.xxxxxxx as the canonical id shape across all node types; don't introduce parallel id encodings (already in use by instance_log, GOAL_, PRA_, PR_GOAL_*)
+  future_self_proud_test=when uncertainty paralyzes, don't compute a decision; ask "what would the version of me that stayed true to CP1-CP6 do here?" or equivalently "will my future self be proud of this?" — both framings point at the same floor (CP patterns as ground) from two directions; one says what you're made of, the other says how to use it at a decision point when nothing else is clear (Akien-Igor 2026-04-14 evening)
 
 INSTANCE|
   id=Igor-wild-0001|host=akiendelllinux|db=~/.TheIgors/Igor-wild-0001/wild-0001.db
