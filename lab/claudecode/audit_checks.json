@@ -44,6 +44,17 @@
       "added_at": "2026-04-15T16:12:26.903828",
       "mode": "forever",
       "ack_until": null
+    },
+    {
+      "name": "no-cortex-store-bypass",
+      "kind": "shell",
+      "pattern": "python3 lab/claudecode/audit_check_cortex_bypass.py",
+      "description": "T-cortex-store-bypass-audit: runtime tools/ files must not INSERT INTO memories directly; all writes go through cortex.store() per DP4 (single chokepoint). Exempts seed_*.py and memory_sync.py.",
+      "severity": "med",
+      "added_by": "claude-code",
+      "added_at": "2026-04-15T16:34:20.973133",
+      "mode": "forever",
+      "ack_until": null
     }
   ],
   "history": [
