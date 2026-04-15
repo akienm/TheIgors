@@ -900,7 +900,50 @@ def _channel_read(
 
 
 def _request_compaction(preserve_instructions: str) -> str:
-    session = os.environ.get("CLAUDE_TMUX_SESSION", "claude-main")
+    """Request a /compact of the CC tmux session.
+
+    Known limitation (T-compact-via-tmux-bug): this function is typically
+    called from WITHIN CC's response path (e.g. from /savestate). At that
+    moment CC is still streaming output, so tmux send-keys delivers
+    keystrokes that CC's TUI drops because it's busy rendering. The
+    handler reports "queued" but the compact doesn't actually run.
+
+    Short-term fix: validate the session aggressively and return loud
+    errors so mis-targeted sends don't silently pretend to work.
+
+    Real fix (follow-up T-compact-via-file-handoff): write the preserve
+    string to a well-known file; a UserPromptSubmit hook on the next CC
+    turn reads the file and triggers /compact at a moment CC is idle.
+    """
+    session = os.environ.get("CLAUDE_TMUX_SESSION")
+    if not session:
+        return (
+            "ERROR: CLAUDE_TMUX_SESSION env var not set. "
+            "Compaction target unknown — set CLAUDE_TMUX_SESSION to the "
+            "tmux session name running Claude Code."
+        )
+
+    # Verify the session exists before attempting send-keys.
+    # tmux has-session exits 0 if the session exists, non-zero otherwise.
+    try:
+        has_session = subprocess.run(
+            ["tmux", "has-session", "-t", session],
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+    except FileNotFoundError:
+        return "ERROR: tmux not found — install tmux to use compaction"
+    except subprocess.TimeoutExpired:
+        return f"ERROR: tmux has-session timeout for '{session}'"
+
+    if has_session.returncode != 0:
+        return (
+            f"ERROR: tmux session '{session}' does not exist. "
+            f"Active sessions: run `tmux list-sessions` to check. "
+            f"CLAUDE_TMUX_SESSION may be stale."
+        )
+
     escaped = preserve_instructions.replace("'", "'\\''")
     cmd = f"/compact {escaped}"
     try:
@@ -911,13 +954,19 @@ def _request_compaction(preserve_instructions: str) -> str:
             text=True,
             timeout=5,
         )
-        return f"Compaction queued for session '{session}'"
     except subprocess.TimeoutExpired:
-        return f"ERROR: tmux timeout (session '{session}' not responsive)"
+        return f"ERROR: tmux send-keys timeout (session '{session}' not responsive)"
     except subprocess.CalledProcessError as e:
-        return f"ERROR: tmux error: {e.stderr or e.stdout or str(e)}"
-    except FileNotFoundError:
-        return "ERROR: tmux not found — install tmux to use compaction"
+        return f"ERROR: tmux send-keys error: {e.stderr or e.stdout or str(e)}"
+
+    # Keys were delivered, but we cannot verify CC actually acted on them
+    # (see the known limitation docstring above). Return an honest status.
+    return (
+        f"Compaction keys sent to session '{session}'. "
+        f"WARNING: if this was called mid-response, CC's TUI may have "
+        f"dropped the input. See T-compact-via-tmux-bug and the "
+        f"T-compact-via-file-handoff follow-up for the robust fix."
+    )
 
 
 # ── audit_conversation_health ─────────────────────────────────────────────────
