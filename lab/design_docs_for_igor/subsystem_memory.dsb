@@ -1,4 +1,4 @@
-DOC|subsystem_memory|v1|updated=2026-04-14
+DOC|subsystem_memory|v1|updated=2026-04-15
 META|inertia=HIGH(models.py,cortex.py)|parent=architecture_root.dsb
 META|files=memory/models.py,memory/cortex.py,memory/db_proxy.py,memory/scrub.py,tools/memory_sync.py,tools/trail_inspector.py
 
@@ -16,6 +16,7 @@ DESIGN_POINTS|
   DP11|flush pattern (D083/D084): cc_queue.py flush_decision/flush_session POST to Igor /api/cc_notebook; each issue filing = mini savestate; decision not made until in Igor memory; DSB commit is durable backup
   DP12|episodic-to-semantic merge design (#250): occurrence_dates list in metadata; multiple occurrences of same pattern → one semantic node; frequency=semantic weight; not yet implemented; D057 dependency
   DP13|surface-habit-as-inhibition-substrate (D196): memories default to 'surface' habit because surfacing deposits a TWM candidate without acting — BG scoring, milieu gates, and arousal weighting then decide whether it fires. Cognition's job is inhibition, not generation. Direct-action habits bypass this and are wrong for general retrieval. This IS the memory definition.
+  DP14|memory-node-shape (2026-04-15, architecture_root CORE_PRINCIPLES): a memory is id + three k/v stacks (metadata, triggers, payload). NO per-memory columns. Kind-of-memory lives in metadata. Triggers point into payload cells (D260). Anything that needs to live with a memory (creation date, TTL, test_data, employer_id, scope) goes into metadata — not a new column. The wide `memories` table is a migration artifact being split into many small tables; don't reach for column schema when you mean metadata.
 
 MEMORY_TYPES|ROOT,CP,ID,RM,EPISODIC,PROCEDURAL,INTERPRETIVE,EXPERIENTIAL,FACTUAL
   // see glossary.dsb for full definitions

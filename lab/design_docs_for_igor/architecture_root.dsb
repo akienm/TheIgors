@@ -1,4 +1,4 @@
-DOC|architecture_root|v1|updated=2026-04-15
+DOC|architecture_root|v1|updated=2026-04-15b
 META|inertia=MEDIUM|purpose=system orientation + subsystem index|load=every session
 META|see_also=glossary.dsb,igor_identity_master.dsb,decisions_log.dsb,standards.dsb
 META|subsystem_detail=subsystem_*.dsb files
@@ -25,6 +25,7 @@ CORE_PRINCIPLES|
   parent_id_as_training_wheels=parent_id is a one-tree-per-node simplification; real tree membership is plural via interpretive_edges; activation trails record which tree was active this time; don't widen parent_id into a list when a node accumulates multiple parents — use interpretive_edges (D155)
   timestamp_id_format_uniform=use the D256 timestamp ID format yyyymmdd.hhmmssuuuuuu.xxxxxxx as the canonical id shape across all node types; don't introduce parallel id encodings (already in use by instance_log, GOAL_, PRA_, PR_GOAL_*)
   future_self_proud_test=when uncertainty paralyzes, don't compute a decision; ask "what would the version of me that stayed true to CP1-CP6 do here?" or equivalently "will my future self be proud of this?" — both framings point at the same floor (CP patterns as ground) from two directions; one says what you're made of, the other says how to use it at a decision point when nothing else is clear (Akien-Igor 2026-04-14 evening)
+  memory_node_shape=a memory is id + three key/value stacks (metadata, triggers, payload) — not a row of typed columns; kind-of-memory lives in metadata; triggers point into payload; payload carries data and simple engram-program code (D260); anything that needs to live with a memory (creation date, TTL, test_data, employer_id, scope) goes into metadata; don't add columns for per-memory state — the wide-table shape is a migration artifact being split into many small tables; see subsystem_memory.dsb for cortex.py method surface
 
 INSTANCE|
   id=Igor-wild-0001|host=akiendelllinux|db=~/.TheIgors/Igor-wild-0001/wild-0001.db
