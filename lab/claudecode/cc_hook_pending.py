@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 CURSOR_DIR = Path.home() / ".TheIgors"
+COMPACT_PENDING_FILE = CURSOR_DIR / "cc_compact_pending.txt"
 MAX_MESSAGES = 20  # Cap how much we inject — context budget discipline
 MAX_CONTENT_CHARS = 400  # Per-message truncation
 
@@ -111,10 +112,39 @@ def format_messages(rows: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def _check_compact_pending() -> str:
+    """T-compact-via-file-handoff: check for a pending compact request.
+
+    Returns the preserve string if a compact is pending, empty string otherwise.
+    Deletes the file after reading so it fires exactly once.
+    """
+    if not COMPACT_PENDING_FILE.exists():
+        return ""
+    try:
+        preserve = COMPACT_PENDING_FILE.read_text().strip()
+        COMPACT_PENDING_FILE.unlink(missing_ok=True)
+        return preserve
+    except Exception:
+        return ""
+
+
+def write_compact_pending(preserve: str) -> str:
+    """Write a compact request for the hook to pick up on next turn.
+
+    Called by /savestate or request_compaction. The hook reads this on
+    the next UserPromptSubmit and injects the compact instruction.
+    """
+    try:
+        CURSOR_DIR.mkdir(parents=True, exist_ok=True)
+        COMPACT_PENDING_FILE.write_text(preserve)
+        return f"Compact queued → {COMPACT_PENDING_FILE}"
+    except Exception as exc:
+        return f"ERROR writing compact file: {exc}"
+
+
 def main():
     # Minion bypass: worker CCs don't get notifications
     if os.environ.get("CLAUDE_MINION", "").lower() in ("true", "1", "yes"):
-        # Output empty response so CC doesn't append anything
         print(json.dumps({}))
         return
 
@@ -123,7 +153,10 @@ def main():
         session_id = os.environ.get("CLAUDE_SESSION_ID", "dry-run")
         rows, new_cursor = fetch_new_messages(session_id)
         text = format_messages(rows)
+        compact = _check_compact_pending()
         print(f"Would inject {len(rows)} messages, new cursor: {new_cursor}")
+        if compact:
+            print(f"COMPACT PENDING: {compact[:200]}")
         if text:
             print(text)
         return
@@ -132,26 +165,38 @@ def main():
     try:
         data = json.load(sys.stdin)
     except Exception:
-        # Malformed stdin — fail silent so CC proceeds normally
         print(json.dumps({}))
         return
 
     session_id = data.get("session_id", "unknown")
 
-    rows, new_cursor = fetch_new_messages(session_id)
-    text = format_messages(rows)
+    parts = []
 
-    if text:
+    compact_preserve = _check_compact_pending()
+    if compact_preserve:
+        parts.append(
+            "--- COMPACT REQUESTED ---\n"
+            "A /compact was requested by the prior turn but couldn't execute "
+            "mid-response. Run /compact now with this preserve string:\n\n"
+            f"{compact_preserve}\n"
+            "--- end compact request ---"
+        )
+
+    rows, new_cursor = fetch_new_messages(session_id)
+    msg_text = format_messages(rows)
+    if msg_text:
         _write_cursor(session_id, new_cursor)
+        parts.append(msg_text)
+
+    if parts:
         response = {
             "hookSpecificOutput": {
                 "hookEventName": "UserPromptSubmit",
-                "additionalContext": text,
+                "additionalContext": "\n\n".join(parts),
             }
         }
         print(json.dumps(response))
     else:
-        # Nothing new — return empty response
         print(json.dumps({}))
 
 

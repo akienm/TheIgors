@@ -896,53 +896,40 @@ def _channel_read(
 
 
 def _request_compaction(preserve_instructions: str) -> str:
-    """Request a /compact of the CC tmux session.
+    """Request a /compact of the CC session.
 
-    Known limitation (T-compact-via-tmux-bug): this function is typically
-    called from WITHIN CC's response path (e.g. from /savestate). At that
-    moment CC is still streaming output, so tmux send-keys delivers
-    keystrokes that CC's TUI drops because it's busy rendering. The
-    handler reports "queued" but the compact doesn't actually run.
+    T-compact-via-file-handoff: writes the preserve string to a file.
+    The UserPromptSubmit hook (cc_hook_pending.py) reads it on the next
+    turn and injects a compact instruction when CC is idle and ready.
 
-    Short-term fix: validate the session aggressively and return loud
-    errors so mis-targeted sends don't silently pretend to work.
-
-    Real fix (follow-up T-compact-via-file-handoff): write the preserve
-    string to a well-known file; a UserPromptSubmit hook on the next CC
-    turn reads the file and triggers /compact at a moment CC is idle.
+    Falls back to tmux send-keys if the file write fails.
     """
+    try:
+        from cc_hook_pending import write_compact_pending
+
+        result = write_compact_pending(preserve_instructions)
+        if "ERROR" not in result:
+            return f"Compact queued via file handoff. Will fire on next turn. {result}"
+    except Exception:
+        pass
+
+    # Fallback: try direct file write without the import
+    try:
+        compact_file = Path.home() / ".TheIgors" / "cc_compact_pending.txt"
+        compact_file.parent.mkdir(parents=True, exist_ok=True)
+        compact_file.write_text(preserve_instructions)
+        return f"Compact queued → {compact_file}. Will fire on next turn."
+    except Exception as exc:
+        pass
+
+    # Last resort: tmux send-keys (known to be unreliable mid-response)
     session = os.environ.get("CLAUDE_TMUX_SESSION")
     if not session:
-        return (
-            "ERROR: CLAUDE_TMUX_SESSION env var not set. "
-            "Compaction target unknown — set CLAUDE_TMUX_SESSION to the "
-            "tmux session name running Claude Code."
-        )
+        return "ERROR: compact file write failed and CLAUDE_TMUX_SESSION not set."
 
-    # Verify the session exists before attempting send-keys.
-    # tmux has-session exits 0 if the session exists, non-zero otherwise.
     try:
-        has_session = subprocess.run(
-            ["tmux", "has-session", "-t", session],
-            capture_output=True,
-            text=True,
-            timeout=3,
-        )
-    except FileNotFoundError:
-        return "ERROR: tmux not found — install tmux to use compaction"
-    except subprocess.TimeoutExpired:
-        return f"ERROR: tmux has-session timeout for '{session}'"
-
-    if has_session.returncode != 0:
-        return (
-            f"ERROR: tmux session '{session}' does not exist. "
-            f"Active sessions: run `tmux list-sessions` to check. "
-            f"CLAUDE_TMUX_SESSION may be stale."
-        )
-
-    escaped = preserve_instructions.replace("'", "'\\''")
-    cmd = f"/compact {escaped}"
-    try:
+        escaped = preserve_instructions.replace("'", "'\\''")
+        cmd = f"/compact {escaped}"
         subprocess.run(
             ["tmux", "send-keys", "-t", session, cmd, "Enter"],
             check=True,
@@ -950,19 +937,12 @@ def _request_compaction(preserve_instructions: str) -> str:
             text=True,
             timeout=5,
         )
-    except subprocess.TimeoutExpired:
-        return f"ERROR: tmux send-keys timeout (session '{session}' not responsive)"
-    except subprocess.CalledProcessError as e:
-        return f"ERROR: tmux send-keys error: {e.stderr or e.stdout or str(e)}"
-
-    # Keys were delivered, but we cannot verify CC actually acted on them
-    # (see the known limitation docstring above). Return an honest status.
-    return (
-        f"Compaction keys sent to session '{session}'. "
-        f"WARNING: if this was called mid-response, CC's TUI may have "
-        f"dropped the input. See T-compact-via-tmux-bug and the "
-        f"T-compact-via-file-handoff follow-up for the robust fix."
-    )
+        return (
+            f"Compact sent via tmux (fallback). "
+            f"WARNING: may be dropped if CC is still streaming."
+        )
+    except Exception as exc:
+        return f"ERROR: all compact methods failed. File: failed. Tmux: {exc}"
 
 
 # ── audit_conversation_health ─────────────────────────────────────────────────
