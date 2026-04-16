@@ -863,15 +863,11 @@ def _channel_read(
 ) -> str:
     """Read messages from the shared channel store.
 
-    T-mcp-channel-rename: accepts a channel param for future per-channel
-    filtering. Currently channel_messages has no channel column — all
-    messages share one stream. See T-channel-messages-schema for the
-    upgrade that adds real channel filtering.
+    T-channel-messages-schema: filters by channel column (default 'shared').
     """
-    # channel param currently unused — see T-channel-messages-schema
-    _ = channel
     params: list = []
-    where_parts = []
+    where_parts = ["channel = %s"]
+    params.append(channel)
     if since_id is not None:
         where_parts.append("id > %s")
         params.append(since_id)

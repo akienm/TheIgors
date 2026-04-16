@@ -67,12 +67,13 @@ def _append(entry: dict):
             with conn:
                 with conn.cursor() as c:
                     c.execute(
-                        "INSERT INTO channel_messages (ts, author, type, content) VALUES (%s, %s, %s, %s)",
+                        "INSERT INTO channel_messages (ts, author, type, content, channel) VALUES (%s, %s, %s, %s, %s)",
                         (
                             entry["ts"],
                             entry["author"],
                             entry.get("type", "message"),
                             entry["content"],
+                            entry.get("channel", "shared"),
                         ),
                     )
             conn.close()
