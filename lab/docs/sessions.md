@@ -1,3 +1,9 @@
+## Session 2026-04-15a
+**Theme**: Reasoning/voice split + substrate experiment cascade
+**Key changes**:
+- done: 25 tickets closed — experiment primitive (scheduler+outcome), cascade walker (6 levels, predictor, lever-interrupt, engineered-failure), reconsolidation-on-recall, reasoning workflow primitive + Workflow A, prompt split (reasoning+voice contexts), TurnPipeline conductor, LLMPeerAdvisor (#438), widen-on-miss, test-data-lifecycle, memory-node-shape principle, future-self-proud principle, hardcoded-instance-refs cleanup, privacy-sentinel filter, cortex-store-bypass audit, goal-graph cortex.store fix, compact-via-tmux-bug partial, tool-leak filter broadened. 2648 tests, 0 regressions.
+**In-flight**: NONE
+
 ## Session 2026-04-14a
 **Theme**: Decisions table walk + cognition deep dive + CP-axiom reframe + 12 ticket sprints
 **Key changes**:
