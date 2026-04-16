@@ -1,8 +1,14 @@
+## Session 2026-04-16a
+**Theme**: 27-ticket sprint
+**Next session**: Next: T-config-vars-review, day-close
+**In-flight**: In-flight: NONE
+
 ## Session 2026-04-15a
 **Theme**: Reasoning/voice split + substrate experiment cascade
 **Key changes**:
 - done: 25 tickets closed — experiment primitive (scheduler+outcome), cascade walker (6 levels, predictor, lever-interrupt, engineered-failure), reconsolidation-on-recall, reasoning workflow primitive + Workflow A, prompt split (reasoning+voice contexts), TurnPipeline conductor, LLMPeerAdvisor (#438), widen-on-miss, test-data-lifecycle, memory-node-shape principle, future-self-proud principle, hardcoded-instance-refs cleanup, privacy-sentinel filter, cortex-store-bypass audit, goal-graph cortex.store fix, compact-via-tmux-bug partial, tool-leak filter broadened. 2648 tests, 0 regressions.
-**In-flight**: NONE
+**Next session**: Next: wire TurnPipeline into main.py (Akien review), Workflows B/C/D, cascade L2/L3 concrete, T-igor-writes-character-sheet
+**In-flight**: In-flight: NONE — clean stop, day-close complete
 
 ## Session 2026-04-14a
 **Theme**: Decisions table walk + cognition deep dive + CP-axiom reframe + 12 ticket sprints

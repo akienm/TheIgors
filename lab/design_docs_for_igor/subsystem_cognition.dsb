@@ -1,4 +1,4 @@
-DOC|subsystem_cognition|v1|updated=2026-04-15
+DOC|subsystem_cognition|v1|updated=2026-04-16
 META|inertia=MEDIUM|parent=architecture_root.dsb
 META|files=cognition/thalamus.py,cognition/basal_ganglia.py,cognition/milieu.py,cognition/narrative_engine.py,cognition/backchannel.py,cognition/word_graph.py,cognition/response_habituation.py,cognition/inference_gateway.py,cognition/cluster_router.py,cognition/temporal_gradient.py,cognition/find_it.py,cognition/blob_store.py,cognition/reading_indexer.py,cognition/graph_integrator.py,cognition/self_test.py,cognition/emit_channels.py,cognition/node_executor.py,tools/traversal_context.py,tools/os_primitives.py
 
