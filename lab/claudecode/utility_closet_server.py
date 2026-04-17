@@ -46,6 +46,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+# Ensure repo root is on sys.path for lab.utility_closet imports
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -98,6 +103,44 @@ _agents: dict = (
 )  # agent_id → {registered_at, capabilities, last_stats, last_heartbeat}
 _agents_lock = threading.Lock()
 _agent_stats: dict = {}  # agent_id → last stats dict pushed by agent
+
+# ── Comms module (T-uc-comms-default-channels) ──────────────────────────────
+# Initialized in _init_comms(). Provides channel routing for all UC messaging.
+_comms = None  # set by _init_comms()
+
+
+def _init_comms():
+    """Initialize the comms module with default channels."""
+    global _comms
+    from lab.utility_closet.comms import Channel, CommsModule, Delivery, Direction
+    from lab.utility_closet.transports.memory import MemoryTransport
+
+    log_base = _RUNTIME_ROOT / "local" / "logs" / "comms"
+    _comms = CommsModule(log_base_dir=log_base)
+    _comms.set_default_transport(MemoryTransport())
+
+    # Try Postgres transport for persistence (non-fatal if unavailable)
+    try:
+        db_url = os.environ.get("IGOR_HOME_DB_URL")
+        if db_url:
+            from lab.utility_closet.transports.postgres import PostgresTransport
+
+            pg = PostgresTransport(db_url)
+            _comms.set_default_transport(pg)
+            log.info("Comms: Postgres transport active")
+    except Exception as exc:
+        log.warning("Comms: Postgres unavailable, using memory transport: %s", exc)
+
+    # Default channel: comms://shared — always on, broadcast
+    _comms.ensure_channel(
+        "comms://shared",
+        direction=Direction.READ_WRITE,
+        delivery=Delivery.PULL,
+        notify=False,  # subscribers opt in
+        retention="1y",
+    )
+    log.info("Comms: initialized with comms://shared channel")
+
 
 # ── WebSocket session management ─────────────────────────────────────────────
 
@@ -512,6 +555,13 @@ async def _api_agent_register(request: Request):
             "last_heartbeat": time.monotonic(),
         }
     log.info("Agent registered: %s (capabilities: %s)", agent_id, capabilities)
+    # T-uc-comms-default-channels: auto-create agent channel on connect
+    if _comms:
+        _comms.ensure_channel(
+            f"comms://{agent_id}",
+            notify=True,
+            retention="1y",
+        )
     _broadcast(
         json.dumps(
             {
@@ -737,10 +787,41 @@ async def _ws_endpoint(ws: WebSocket):
 # ── Starlette app factory ───────────────────────────────────────────────────
 
 
+async def _api_comms_channels(request: Request):
+    """GET /api/comms/channels — list all registered comms channels."""
+    if not _comms:
+        return JSONResponse({"channels": []})
+    channels = _comms.list_channels()
+    return JSONResponse(
+        {
+            "channels": [
+                {
+                    "address": ch.address,
+                    "direction": ch.direction.value,
+                    "delivery": ch.delivery.value,
+                    "notify": ch.notify,
+                    "retention": ch.retention,
+                    "created_at": ch.created_at,
+                    "last_active": ch.last_active,
+                }
+                for ch in channels
+            ]
+        }
+    )
+
+
+async def _api_comms_health(request: Request):
+    """GET /api/comms/health — comms module health."""
+    if not _comms:
+        return JSONResponse({"online": False, "reason": "not initialized"})
+    return JSONResponse(_comms.health())
+
+
 def _make_app() -> Starlette:
     async def on_startup():
         global _loop
         _loop = asyncio.get_running_loop()
+        _init_comms()
 
     routes = [
         Route("/", _index),
@@ -765,6 +846,9 @@ def _make_app() -> Starlette:
         Route("/api/agents/{agent_id}/stats", _api_agent_stats, methods=["POST"]),
         Route("/api/agents/{agent_id}/send", _api_agent_send, methods=["POST"]),
         Route("/api/agents/{agent_id}/poll", _api_agent_poll),
+        # Comms
+        Route("/api/comms/channels", _api_comms_channels),
+        Route("/api/comms/health", _api_comms_health),
     ]
 
     # Serve compiled Svelte assets if the UI has been built
