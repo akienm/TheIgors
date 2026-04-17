@@ -1073,8 +1073,9 @@ def main():
 
 
 # ── Fallback HTML ────────────────────────────────────────────────────────────
-# Copied from server.py — fully functional single-page chat UI.
-# TODO: Phase 4 will update this to show agent attach/detach state.
+# T-uc-channel-tabs-redesign: channel tabs + notification checkboxes.
+# Removed: dashboard, ring/surprise feeds, CC bridge pane.
+# Kept: Your Name, A-/A+, message input, chat area, drag-drop, WebSocket.
 
 _FALLBACK_HTML = r"""<!DOCTYPE html>
 <html lang="en">
@@ -1114,8 +1115,30 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
                 cursor: default; }
     #conn-led.on  { color: #4caf50; }
     #conn-led.off { color: #f44336; }
-    #agent-status { font-size: 0.75rem; color: #666; padding: 0 0.4rem; }
-    #agent-status.attached { color: #4caf50; }
+    #drop-overlay { display: none; position: fixed; inset: 0; z-index: 100;
+                    background: rgba(74,74,138,0.8); align-items: center;
+                    justify-content: center; font-size: 2rem; color: #fff;
+                    border: 4px dashed #7ec8e3; }
+    #drop-overlay.active { display: flex; }
+    /* Channel tab bar */
+    #channel-bar { display: flex; gap: 0; align-items: center; background: #0d0d22;
+                   border-bottom: 1px solid #1a1a30; padding: 0.1rem 0.4rem; overflow-x: auto;
+                   white-space: nowrap; flex-shrink: 0; }
+    .channel-tab { font-family: monospace; font-size: 0.78rem; padding: 0.2rem 0.6rem;
+                   cursor: pointer; color: #7ec8e3; border: 1px solid transparent;
+                   border-radius: 2px 2px 0 0; background: transparent; transition: color 0.2s;
+                   display: inline-flex; align-items: center; gap: 0.3rem; }
+    .channel-tab:hover  { color: #ccc; }
+    .channel-tab.active { color: #7ec8e3; border-color: #1a1a30; background: #1a1a2e;
+                          font-weight: bold; }
+    .channel-tab.has-new { color: #90ee90; }
+    .channel-tab input[type="checkbox"] { accent-color: #7ec8e3; cursor: pointer;
+                                           width: 12px; height: 12px; }
+    #new-channel-btn { font-family: monospace; font-size: 0.82rem; padding: 0.1rem 0.5rem;
+                       cursor: pointer; color: #555; background: transparent; border: none;
+                       margin-left: 0.3rem; }
+    #new-channel-btn:hover { color: #aaa; }
+    /* Controls bar */
     #name-row { display: flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.5rem 0;
                 border-top: 1px solid #333; font-size: 0.78rem; color: #888; }
     #sender-name { width: 7em; background: #1e1e30; color: #aaa; border: 1px solid #444;
@@ -1133,92 +1156,22 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
                   font-size: 0.78rem; color: #aaa; border-top: 1px solid #1a1a30;
                   min-height: 1.4em; transition: color 0.3s; }
     #status-bar.busy { color: #7ec8e3; }
-    #dashboard { padding: 0.3rem 1rem; background: #0f0f1e;
-                 font-size: 0.8rem; color: #888; border-top: 1px solid #222;
-                 display: flex; gap: 1rem; }
-    #ring-feed { max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-                 background: #080814; border-top: 1px solid #1a1a30; }
-    #ring-feed.open { max-height: 14em; overflow-y: auto; }
-    #ring-feed table { width: 100%; border-collapse: collapse; font-size: 0.73rem;
-                       font-family: monospace; color: #99a; }
-    #ring-feed td { padding: 0.15rem 0.5rem; border-bottom: 1px solid #111; vertical-align: top; }
-    #ring-feed td.cat { color: #7ec8e3; white-space: nowrap; width: 12em; }
-    #ring-toggle { cursor: pointer; user-select: none; padding: 0 0.4rem; color: #555;
-                   font-size: 0.85em; }
-    #ring-toggle:hover { color: #aaa; }
-    #surprise-feed { max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-                     background: #080814; border-top: 1px solid #1a1a30; }
-    #surprise-feed.open { max-height: 10em; overflow-y: auto; }
-    #surprise-feed table { width: 100%; border-collapse: collapse; font-size: 0.73rem;
-                           font-family: monospace; color: #99a; }
-    #surprise-feed td { padding: 0.15rem 0.5rem; border-bottom: 1px solid #111; vertical-align: top; }
-    #surprise-toggle { cursor: pointer; user-select: none; padding: 0 0.4rem; color: #555;
-                       font-size: 0.85em; }
-    #surprise-toggle:hover { color: #aaa; }
-    #surprise-avg.low  { color: #5c5; }
-    #surprise-avg.mid  { color: #cc5; }
-    #surprise-avg.high { color: #c55; }
-    #drop-overlay { display: none; position: fixed; inset: 0; z-index: 100;
-                    background: rgba(74,74,138,0.8); align-items: center;
-                    justify-content: center; font-size: 2rem; color: #fff;
-                    border: 4px dashed #7ec8e3; }
-    #drop-overlay.active { display: flex; }
-    #session-bar { display: flex; gap: 0; align-items: center; background: #0d0d22;
-                   border-bottom: 1px solid #1a1a30; padding: 0.1rem 0.4rem; overflow-x: auto;
-                   white-space: nowrap; flex-shrink: 0; }
-    .session-tab { font-family: monospace; font-size: 0.78rem; padding: 0.2rem 0.6rem;
-                   cursor: pointer; color: #888; border: 1px solid transparent;
-                   border-radius: 2px 2px 0 0; background: transparent; transition: color 0.2s; }
-    .session-tab:hover  { color: #ccc; }
-    .session-tab.active { color: #7ec8e3; border-color: #1a1a30; background: #1a1a2e; }
-    #new-session-btn { font-family: monospace; font-size: 0.82rem; padding: 0.1rem 0.5rem;
-                       cursor: pointer; color: #555; background: transparent; border: none;
-                       margin-left: 0.3rem; }
-    #new-session-btn:hover { color: #aaa; }
-    #content-area { flex: 1; display: flex; overflow: hidden; min-height: 0; }
-    #bridge-pane { width: 42%; border-left: 1px solid #2a1a40; display: flex;
-                   flex-direction: column; min-height: 0; background: #130d1e; }
-    #bridge-header { padding: 0.25rem 0.6rem; background: #0a0717;
-                     border-bottom: 1px solid #2a1a40; font-size: 0.75rem;
-                     color: #c8a0ff; flex-shrink: 0; }
-    #bridge-chat { flex: 1; overflow-y: auto; padding: 0.6rem;
-                   display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.88rem; }
-    .msg-claude .author { color: #c8a0ff; font-weight: bold; }
-    #back-row { display: flex; gap: 0.4rem; padding: 0.3rem 0.4rem;
-                border-top: 1px solid #2a1a40; flex-shrink: 0; }
-    #back-input { flex: 1; background: #180d26; color: #e0e0e0; border: 1px solid #4a2a6a;
-                  padding: 0.3rem 0.5rem; font-family: monospace; font-size: 0.85rem;
-                  resize: none; min-height: 2em; }
-    #cc-toggle { font-family: monospace; font-size: 0.78rem; color: #555;
-                 background: transparent; border: 1px solid #444;
-                 padding: 0.2rem 0.5rem; cursor: pointer; }
-    #cc-toggle.active { color: #c8a0ff; border-color: #c8a0ff; }
   </style>
 </head>
 <body>
   <div id="drop-overlay">Drop file to send</div>
-  <div id="session-bar">
-    <span class="session-tab active" data-sid="shared" onclick="switchSession('shared')">shared</span>
-    <button id="new-session-btn" onclick="newSession()" title="New session">+</button>
+  <div id="channel-bar">
+    <span class="channel-tab active" data-channel="comms://shared" onclick="switchChannel('comms://shared')">
+      Shared <input type="checkbox" title="Notify on new messages" onclick="event.stopPropagation(); toggleNotify('comms://shared', this)">
+    </span>
+    <button id="new-channel-btn" onclick="newChannel()" title="New channel">+</button>
   </div>
-  <div id="content-area">
-    <div id="chat"></div>
-    <div id="bridge-pane" style="display:none">
-      <div id="bridge-header">Claude bridge  <span id="bridge-count" style="color:#555;float:right"></span></div>
-      <div id="bridge-chat"></div>
-      <div id="back-row">
-        <textarea id="back-input" placeholder="Claude only (back channel)..." rows="2" autocomplete="off"></textarea>
-        <button onclick="sendBack()">CC</button>
-      </div>
-    </div>
-  </div>
+  <div id="chat"></div>
   <div id="status-bar">idle</div>
   <div id="name-row">
     <span id="conn-led" title="Connection status">*</span>
-    <span id="agent-status">no agent</span>
     <label for="sender-name">Your name:</label>
     <input id="sender-name" type="text" value="akien" maxlength="32" autocomplete="off">
-    <button id="cc-toggle" onclick="toggleCC()" title="Toggle Claude bridge pane">CC</button>
     <button onclick="changeFontSize(-1)" title="Decrease font size" style="padding:0.2rem 0.5rem;font-size:0.85rem;">A-</button>
     <button onclick="changeFontSize(1)" title="Increase font size" style="padding:0.2rem 0.5rem;font-size:0.85rem;">A+</button>
   </div>
@@ -1228,29 +1181,20 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     <button onclick="document.getElementById('file-input').click()">clip</button>
     <input id="file-input" type="file" style="display:none" onchange="uploadFile(this)">
   </div>
-  <div id="dashboard"><span>Connecting...</span><span id="ring-toggle" onclick="toggleRing()" title="Toggle ring feed">v ring</span><span id="surprise-toggle" onclick="toggleSurprise()" title="Toggle prediction surprise feed">v surprise</span></div>
-  <div id="ring-feed"><table id="ring-table"><tr><td colspan="2">loading...</td></tr></table></div>
-  <div id="surprise-feed"><table id="surprise-table"><tr><td>loading...</td></tr></table></div>
   <script>
     const chat       = document.getElementById('chat');
     const input      = document.getElementById('input');
     const senderName = document.getElementById('sender-name');
-    const dash       = document.getElementById('dashboard');
     const status     = document.getElementById('status-bar');
     const overlay    = document.getElementById('drop-overlay');
-    const agentStatus = document.getElementById('agent-status');
-    const ringFeed      = document.getElementById('ring-feed');
-    const ringTable     = document.getElementById('ring-table');
-    const surpriseFeed  = document.getElementById('surprise-feed');
-    const surpriseTable = document.getElementById('surprise-table');
-    let ws, dragDepth = 0, ringOpen = false, surpriseOpen = false;
-    const _knownAgents = new Set();  // populated by platform_status / agent_status
-    const _urlSession = new URLSearchParams(location.search).get('session') || 'shared';
-    let currentSession = _urlSession;
-    const sessionMsgs = {'shared': []};
-    if (_urlSession !== 'shared') sessionMsgs[_urlSession] = [];
-    const sessionBar = document.getElementById('session-bar');
+    const channelBar = document.getElementById('channel-bar');
+    let ws, dragDepth = 0;
+    const _knownAgents = new Set();
+    let currentChannel = 'comms://shared';
+    const channelMsgs = {'comms://shared': []};
+    const channelNotify = {};  // channel -> bool (notification checkbox state)
 
+    // ── Name persistence ──
     function _saveName(n) {
       localStorage.setItem('igor_sender_name', n);
       document.cookie = 'igor_user=' + encodeURIComponent(n) + '; path=/; max-age=31536000; SameSite=Lax';
@@ -1265,8 +1209,9 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     if (_savedName) senderName.value = _savedName;
     senderName.addEventListener('change', () => _saveName(senderName.value));
 
+    // ── Font size ──
     let _fontSize = parseFloat(localStorage.getItem('igor_font_size') || '0.95');
-    function _applyFontSize() { document.getElementById('chat').style.fontSize = _fontSize + 'rem'; }
+    function _applyFontSize() { chat.style.fontSize = _fontSize + 'rem'; }
     function changeFontSize(delta) {
       _fontSize = Math.min(Math.max(_fontSize + delta * 0.1, 0.6), 2.0);
       _fontSize = Math.round(_fontSize * 100) / 100;
@@ -1275,89 +1220,64 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     }
     _applyFontSize();
 
-    function _renderSessionBar() {
-      const existing = new Set([...sessionBar.querySelectorAll('.session-tab')].map(t => t.dataset.sid));
-      Object.keys(sessionMsgs).forEach(sid => {
-        if (!existing.has(sid)) {
+    // ── Channel tab bar ──
+    function _renderChannelBar() {
+      const existing = new Set([...channelBar.querySelectorAll('.channel-tab')].map(t => t.dataset.channel));
+      Object.keys(channelMsgs).forEach(ch => {
+        if (!existing.has(ch)) {
           const tab = document.createElement('span');
-          tab.className = 'session-tab'; tab.dataset.sid = sid; tab.textContent = sid;
-          tab.onclick = () => switchSession(sid);
-          sessionBar.insertBefore(tab, document.getElementById('new-session-btn'));
+          tab.className = 'channel-tab'; tab.dataset.channel = ch;
+          const label = ch.replace('comms://', '');
+          const checked = channelNotify[ch] ? 'checked' : '';
+          tab.innerHTML = label + ' <input type="checkbox" title="Notify" ' + checked +
+            ' onclick="event.stopPropagation(); toggleNotify(\'' + ch + '\', this)">';
+          tab.onclick = () => switchChannel(ch);
+          channelBar.insertBefore(tab, document.getElementById('new-channel-btn'));
         }
       });
-      sessionBar.querySelectorAll('.session-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.sid === currentSession);
+      channelBar.querySelectorAll('.channel-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.channel === currentChannel);
+        if (t.dataset.channel === currentChannel) t.classList.remove('has-new');
       });
     }
 
-    function _renderSession(sid) {
+    function _renderChannel(ch) {
       chat.innerHTML = '';
-      (sessionMsgs[sid] || []).forEach(m => {
-        const cls = m.author === 'claude-code' ? 'cc' : _knownAgents.has(m.author) ? 'igor' : 'user';
-        const label = m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
+      (channelMsgs[ch] || []).forEach(m => {
+        const cls = _knownAgents.has(m.author) ? 'igor' : m.author === 'claude-code' ? 'cc' : 'user';
+        const label = _knownAgents.has(m.author) ? m.author : m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
         addMsg(cls, label, m.content);
       });
     }
 
-    function switchSession(sid) {
-      if (!sessionMsgs[sid]) sessionMsgs[sid] = [];
-      currentSession = sid;
-      history.replaceState({}, '', sid === 'shared' ? '/' : '/?session=' + encodeURIComponent(sid));
-      _renderSessionBar(); _renderSession(sid);
+    function switchChannel(ch) {
+      if (!channelMsgs[ch]) channelMsgs[ch] = [];
+      currentChannel = ch;
+      _renderChannelBar(); _renderChannel(ch);
       if (ws && ws.readyState === 1)
-        ws.send(JSON.stringify({type: 'join_session', session_id: sid}));
+        ws.send(JSON.stringify({type: 'join_session', session_id: ch}));
     }
 
-    function newSession() {
-      const name = prompt('Session name (blank for random):');
-      if (name === null) return;
-      const sid = name.trim() || 'session-' + Date.now().toString(36);
-      switchSession(sid);
+    function newChannel() {
+      const name = prompt('Channel name (e.g. debug, notes):');
+      if (name === null || !name.trim()) return;
+      const ch = 'comms://' + name.trim().toLowerCase();
+      if (!channelMsgs[ch]) channelMsgs[ch] = [];
+      switchChannel(ch);
     }
 
-    function toggleRing() {
-      ringOpen = !ringOpen;
-      ringFeed.className = ringOpen ? 'open' : '';
-      document.getElementById('ring-toggle').textContent = (ringOpen ? '^ ' : 'v ') + 'ring';
+    function toggleNotify(ch, checkbox) {
+      channelNotify[ch] = checkbox.checked;
+      localStorage.setItem('channel_notify', JSON.stringify(channelNotify));
     }
 
-    function toggleSurprise() {
-      surpriseOpen = !surpriseOpen;
-      surpriseFeed.className = surpriseOpen ? 'open' : '';
-      document.getElementById('surprise-toggle').textContent = (surpriseOpen ? '^ ' : 'v ') + 'surprise';
-    }
+    // Load saved notification preferences
+    try {
+      const saved = JSON.parse(localStorage.getItem('channel_notify') || '{}');
+      Object.assign(channelNotify, saved);
+    } catch(e) {}
 
-    function updateSurprise(entries, avg) {
-      if (!entries || !entries.length) {
-        surpriseTable.innerHTML = '<tr><td>no surprise entries yet</td></tr>'; return;
-      }
-      surpriseTable.innerHTML = entries.map(e => {
-        const t = new Date(e.ts * 1000).toLocaleTimeString();
-        return '<tr><td>' + t + ' ' + esc(e.content) + '</td></tr>';
-      }).join('');
-      const el = document.getElementById('surprise-avg');
-      if (el && avg !== null && avg !== undefined) {
-        el.textContent = 'D' + Number(avg).toFixed(2);
-        el.className = avg < 0.2 ? 'low' : avg < 0.5 ? 'mid' : 'high';
-      }
-    }
-
-    function updateRing(entries) {
-      if (!entries || !entries.length) { ringTable.innerHTML = '<tr><td colspan="2">no ring entries</td></tr>'; return; }
-      ringTable.innerHTML = entries.map(r => {
-        const t = new Date(r.ts * 1000).toLocaleTimeString();
-        return '<tr><td class="cat">[' + esc(r.category) + '] ' + t + '</td><td>' + esc(r.content) + '</td></tr>';
-      }).join('');
-    }
-
-    function updateStatus(m) {
-      const busy = m.busy === true;
-      status.className = busy ? 'busy' : '';
-      const tier  = m.tier  ? ' [' + m.tier + ']' : '';
-      const inp = m.input ? ' -- "' + m.input + '"' : '';
-      status.textContent = (busy ? '* ' : '  ') + (m.action || (busy ? 'processing' : 'idle')) + tier + inp;
-    }
-
+    // ── Markdown ──
     function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     function parseMarkdown(raw) {
@@ -1370,44 +1290,29 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
       }
       const lines = raw.split('\n');
       const out = [];
-      let inCode = false, codeLang = '', codeLines = [];
+      let inCode = false, codeLines = [];
       let inUl = false, inOl = false;
       let paraLines = [];
-
-      function flushPara() {
-        if (!paraLines.length) return;
-        out.push('<p>' + paraLines.join('<br>') + '</p>');
-        paraLines = [];
-      }
-      function flushList() {
-        if (inUl) { out.push('</ul>'); inUl = false; }
-        if (inOl) { out.push('</ol>'); inOl = false; }
-      }
-
+      function flushPara() { if (!paraLines.length) return; out.push('<p>' + paraLines.join('<br>') + '</p>'); paraLines = []; }
+      function flushList() { if (inUl) { out.push('</ul>'); inUl = false; } if (inOl) { out.push('</ol>'); inOl = false; } }
       for (const line of lines) {
         if (line.startsWith('```')) {
-          if (inCode) {
-            out.push('<pre><code>' + esc(codeLines.join('\n')) + '</code></pre>');
-            codeLines = []; inCode = false;
-          } else {
-            flushPara(); flushList();
-            codeLang = line.slice(3).trim(); inCode = true;
-          }
+          if (inCode) { out.push('<pre><code>' + esc(codeLines.join('\n')) + '</code></pre>'); codeLines = []; inCode = false; }
+          else { flushPara(); flushList(); inCode = true; }
           continue;
         }
         if (inCode) { codeLines.push(line); continue; }
         if (!line.trim()) { flushPara(); flushList(); continue; }
         const hm = line.match(/^(#{1,3}) (.+)$/);
-        if (hm) { flushPara(); flushList(); const lv = hm[1].length; out.push('<h' + lv + '>' + fmt(esc(hm[2])) + '</h' + lv + '>'); continue; }
+        if (hm) { flushPara(); flushList(); const lv = hm[1].length; out.push('<h'+lv+'>'+fmt(esc(hm[2]))+'</h'+lv+'>'); continue; }
         if (/^---+$/.test(line)) { flushPara(); flushList(); out.push('<hr>'); continue; }
         const bq = line.match(/^> (.+)$/);
-        if (bq) { flushPara(); flushList(); out.push('<blockquote>' + fmt(esc(bq[1])) + '</blockquote>'); continue; }
+        if (bq) { flushPara(); flushList(); out.push('<blockquote>'+fmt(esc(bq[1]))+'</blockquote>'); continue; }
         const ul = line.match(/^[ \t]*[-*] (.+)$/);
-        if (ul) { flushPara(); if (!inUl) { flushList(); out.push('<ul>'); inUl = true; } out.push('<li>' + fmt(esc(ul[1])) + '</li>'); continue; }
+        if (ul) { flushPara(); if (!inUl) { flushList(); out.push('<ul>'); inUl=true; } out.push('<li>'+fmt(esc(ul[1]))+'</li>'); continue; }
         const ol = line.match(/^\d+\. (.+)$/);
-        if (ol) { flushPara(); if (!inOl) { flushList(); out.push('<ol>'); inOl = true; } out.push('<li>' + fmt(esc(ol[1])) + '</li>'); continue; }
-        flushList();
-        paraLines.push(fmt(esc(line)));
+        if (ol) { flushPara(); if (!inOl) { flushList(); out.push('<ol>'); inOl=true; } out.push('<li>'+fmt(esc(ol[1]))+'</li>'); continue; }
+        flushList(); paraLines.push(fmt(esc(line)));
       }
       flushPara(); flushList();
       if (inCode) out.push('<pre><code>' + esc(codeLines.join('\n')) + '</code></pre>');
@@ -1417,211 +1322,144 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     function addMsg(cls, author, content) {
       const d = document.createElement('div');
       d.className = 'msg msg-' + cls;
-      if (author) {
-        const s = document.createElement('span');
-        s.className = 'author'; s.textContent = author + ':'; d.appendChild(s);
-      }
+      if (author) { const s = document.createElement('span'); s.className='author'; s.textContent=author+':'; d.appendChild(s); }
       const c = document.createElement(cls === 'igor' ? 'div' : 'span');
-      if (cls === 'igor') { c.className = 'content md'; c.innerHTML = parseMarkdown(content); }
-      else { c.className = 'content'; c.textContent = content; }
-      d.appendChild(c);
-      chat.appendChild(d);
-      chat.scrollTop = chat.scrollHeight;
+      if (cls === 'igor') { c.className='content md'; c.innerHTML=parseMarkdown(content); }
+      else { c.className='content'; c.textContent=content; }
+      d.appendChild(c); chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
     }
 
+    // ── WebSocket ──
     const led = document.getElementById('conn-led');
     let _connectedOnce = false, _disconnectedMsgShown = false, _retryDelay = 2000;
-
-    function setLed(on) {
-      led.classList.toggle('on', on); led.classList.toggle('off', !on);
-      led.title = on ? 'Connected' : 'Disconnected';
-    }
+    function setLed(on) { led.classList.toggle('on',on); led.classList.toggle('off',!on); led.title = on ? 'Connected' : 'Disconnected'; }
 
     function connect() {
-      ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
-      ws.onopen  = () => {
+      ws = new WebSocket((location.protocol==='https:'?'wss://':'ws://') + location.host + '/ws');
+      ws.onopen = () => {
         setLed(true); _retryDelay = 2000;
-        if (!_connectedOnce) { addMsg('system', '', 'Connected to Agentic Utility Closet.'); _connectedOnce = true; }
-        else { addMsg('system', '', 'Reconnected.'); }
+        if (!_connectedOnce) { addMsg('system','','Connected to Agentic Utility Closet.'); _connectedOnce=true; }
+        else { addMsg('system','','Reconnected.'); }
         _disconnectedMsgShown = false;
         const _cookieName = _loadName();
-        if (_cookieName) ws.send(JSON.stringify({type: 'identify', name: _cookieName}));
-        ws.send(JSON.stringify({type: 'join_session', session_id: currentSession}));
+        if (_cookieName) ws.send(JSON.stringify({type:'identify', name:_cookieName}));
+        ws.send(JSON.stringify({type:'join_session', session_id:currentChannel}));
       };
       ws.onerror = () => { ws.close(); };
       ws.onclose = () => {
         setLed(false);
-        if (!_disconnectedMsgShown) { addMsg('system', '', 'Disconnected. Retrying...'); _disconnectedMsgShown = true; }
-        setTimeout(connect, _retryDelay);
-        _retryDelay = Math.min(_retryDelay * 2, 30000);
+        if (!_disconnectedMsgShown) { addMsg('system','','Disconnected. Retrying...'); _disconnectedMsgShown=true; }
+        setTimeout(connect, _retryDelay); _retryDelay = Math.min(_retryDelay*2, 30000);
       };
       ws.onmessage = e => {
         const m = JSON.parse(e.data);
         if (m.type === 'message') {
-          const sid = m.session_id || 'shared';
-          if (!sessionMsgs[sid]) sessionMsgs[sid] = [];
-          sessionMsgs[sid].push(m);
-          if (sessionMsgs[sid].length > 50) sessionMsgs[sid].shift();
-          _renderSessionBar();
-          if (sid === currentSession) {
-            const cls = m.author === 'igor' ? 'igor' : m.author === 'claude-code' ? 'cc' : 'user';
-            const label = m.author === 'igor' ? 'Igor' : m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
+          const ch = m.session_id || 'comms://shared';
+          if (!channelMsgs[ch]) channelMsgs[ch] = [];
+          channelMsgs[ch].push(m);
+          if (channelMsgs[ch].length > 50) channelMsgs[ch].shift();
+          _renderChannelBar();
+          if (ch === currentChannel) {
+            const cls = _knownAgents.has(m.author) ? 'igor' : m.author === 'claude-code' ? 'cc' : 'user';
+            const label = _knownAgents.has(m.author) ? m.author : m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
             addMsg(cls, label, m.content);
+          } else {
+            // Mark tab as having new messages (blue -> green)
+            const tab = channelBar.querySelector('[data-channel="'+ch+'"]');
+            if (tab) tab.classList.add('has-new');
           }
         } else if (m.type === 'session_history') {
-          const sid = m.session_id || 'shared';
-          sessionMsgs[sid] = m.messages || [];
-          _renderSessionBar();
-          if (sid === currentSession) _renderSession(sid);
+          const ch = m.session_id || 'comms://shared';
+          channelMsgs[ch] = m.messages || [];
+          _renderChannelBar();
+          if (ch === currentChannel) _renderChannel(ch);
         } else if (m.type === 'file_dropped')
-          addMsg('system', '', 'clip ' + m.filename + ' received in inbox');
-        else if (m.type === 'activity')
-          updateStatus(m);
-        else if (m.type === 'agent_status') {
-          if (m.status === 'attached') _knownAgents.add(m.agent_id);
-          else _knownAgents.delete(m.agent_id);
-          agentStatus.textContent = m.agent_id + ': ' + m.status;
-          agentStatus.className = m.status === 'attached' ? 'attached' : '';
-          addMsg('system', '', m.agent_id + ' ' + m.status);
+          addMsg('system','','clip ' + m.filename + ' received in inbox');
+        else if (m.type === 'activity') {
+          const busy = m.busy === true;
+          status.className = busy ? 'busy' : '';
+          status.textContent = (busy ? '* ' : '  ') + (m.action || (busy ? 'processing' : 'idle'));
+        } else if (m.type === 'agent_status') {
+          if (m.status === 'attached') {
+            _knownAgents.add(m.agent_id);
+            // Auto-create channel tab for new agent
+            const agentCh = 'comms://' + m.agent_id;
+            if (!channelMsgs[agentCh]) { channelMsgs[agentCh] = []; channelNotify[agentCh] = true; }
+            _renderChannelBar();
+          } else { _knownAgents.delete(m.agent_id); }
+          addMsg('system','', m.agent_id + ' ' + m.status);
         } else if (m.type === 'platform_status') {
           const aa = m.attached_agents || [];
-          _knownAgents.clear(); aa.forEach(a => _knownAgents.add(a));
-          agentStatus.textContent = aa.length ? aa.join(', ') : 'no agent';
-          agentStatus.className = aa.length ? 'attached' : '';
-        } else if (m.type === 'platform_shutdown') {
-          addMsg('system', '', 'Platform shutting down...');
+          _knownAgents.clear(); aa.forEach(a => {
+            _knownAgents.add(a);
+            const agentCh = 'comms://' + a;
+            if (!channelMsgs[agentCh]) { channelMsgs[agentCh] = []; channelNotify[agentCh] = true; }
+          });
+          _renderChannelBar();
         } else if (m.type === 'name_resolved') {
           senderName.value = m.name; _saveName(m.name);
-          addMsg('system', '', 'Name learned: ' + m.name);
         }
       };
     }
 
+    // ── Send ──
     function sendMsg() {
       const rawText = input.value.trim();
       if (!rawText || !ws || ws.readyState !== 1) return;
       const name = (senderName.value.trim() || 'akien').toLowerCase();
-      ws.send(JSON.stringify({type: 'message', content: rawText, author: name, session_id: currentSession}));
+      ws.send(JSON.stringify({type:'message', content:rawText, author:name, session_id:currentChannel}));
       input.value = '';
-      if (ccEnabled) sendToBridge(rawText, 'shared');
     }
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
     });
 
+    // ── File upload ──
     async function uploadFile(el) {
       const file = el.files[0]; if (!file) return;
       const fd = new FormData(); fd.append('file', file);
-      const r = await fetch('/api/upload', {method: 'POST', body: fd});
+      const r = await fetch('/api/upload', {method:'POST', body:fd});
       const j = await r.json();
-      addMsg('system', '', 'clip ' + j.filename + ' uploaded to inbox');
+      addMsg('system','','clip ' + j.filename + ' uploaded to inbox');
       el.value = '';
     }
 
+    // ── Drag and drop ──
     document.addEventListener('dragenter', e => {
       if (e.dataTransfer.types.includes('Files')) { dragDepth++; overlay.classList.add('active'); }
     });
     document.addEventListener('dragleave', () => {
-      if (--dragDepth <= 0) { dragDepth = 0; overlay.classList.remove('active'); }
+      if (--dragDepth <= 0) { dragDepth=0; overlay.classList.remove('active'); }
     });
     document.addEventListener('dragover', e => e.preventDefault());
     document.addEventListener('drop', async e => {
-      e.preventDefault(); dragDepth = 0; overlay.classList.remove('active');
+      e.preventDefault(); dragDepth=0; overlay.classList.remove('active');
       const file = e.dataTransfer.files[0]; if (!file) return;
       const fd = new FormData(); fd.append('file', file);
-      const r = await fetch('/api/upload', {method: 'POST', body: fd});
+      const r = await fetch('/api/upload', {method:'POST', body:fd});
       const j = await r.json();
-      addMsg('system', '', 'clip ' + j.filename + ' dropped into inbox');
+      addMsg('system','','clip ' + j.filename + ' dropped into inbox');
     });
 
-    async function pollDash() {
+    // ── Fetch channel list from comms API ──
+    async function loadChannels() {
       try {
-        const r = await fetch('/api/dashboard');
+        const r = await fetch('/api/comms/channels');
         const d = await r.json();
-        const toggle   = document.getElementById('ring-toggle');
-        const stoggle  = document.getElementById('surprise-toggle');
-        if (d.status === 'no agent attached') {
-          dash.innerHTML = '<span>No agent attached</span>';
-          dash.appendChild(toggle); dash.appendChild(stoggle);
-          return;
-        }
-        // Generic: show agent name + any key stats the agent pushes
-        const parts = [];
-        if (d.agent) parts.push('[' + d.agent + ']');
-        // Render all agent-pushed keys except internal ones
-        const skip = new Set(['ts', 'agent', 'ring_recent', 'surprise_recent', 'surprise_avg']);
-        for (const [k, v] of Object.entries(d)) {
-          if (skip.has(k) || v === null || v === undefined) continue;
-          if (typeof v === 'number') parts.push(k + ':' + (k.includes('cost') ? '$' + v.toFixed(4) : v));
-          else if (typeof v === 'string') parts.push(k + ':' + v);
-        }
-        dash.innerHTML = (parts.length ? parts.map(p => '<span>' + esc(p) + '</span>').join('') : '<span>Online</span>');
-        dash.appendChild(toggle); dash.appendChild(stoggle);
-        if (d.ring_recent) updateRing(d.ring_recent);
-        if (d.surprise_recent) updateSurprise(d.surprise_recent, d.surprise_avg);
+        (d.channels || []).forEach(ch => {
+          if (!channelMsgs[ch.address]) channelMsgs[ch.address] = [];
+          if (ch.notify && !(ch.address in channelNotify)) channelNotify[ch.address] = true;
+        });
+        _renderChannelBar();
       } catch(e) {}
     }
 
-    let ccEnabled = false;
-    function toggleCC() {
-      ccEnabled = !ccEnabled;
-      document.getElementById('bridge-pane').style.display = ccEnabled ? 'flex' : 'none';
-      document.getElementById('cc-toggle').classList.toggle('active', ccEnabled);
-    }
-
-    function addBridgeMsg(cls, author, content) {
-      const bc = document.getElementById('bridge-chat');
-      const d = document.createElement('div'); d.className = 'msg msg-' + cls;
-      if (author) { const s = document.createElement('span'); s.className = 'author'; s.textContent = author + ':'; d.appendChild(s); }
-      const c = document.createElement(cls === 'claude' ? 'div' : 'span');
-      if (cls === 'claude') { c.className = 'content md'; c.innerHTML = parseMarkdown(content); }
-      else { c.className = 'content'; c.textContent = content; }
-      d.appendChild(c); bc.appendChild(d); bc.scrollTop = bc.scrollHeight;
-    }
-
-    async function sendToBridge(message, channel) {
-      if (channel === 'shared') addBridgeMsg('user', 'you', message);
-      const thinkId = 'think-' + Date.now();
-      const bc = document.getElementById('bridge-chat');
-      const thinkEl = document.createElement('div');
-      thinkEl.id = thinkId; thinkEl.className = 'msg msg-system';
-      thinkEl.textContent = 'Claude is thinking...'; bc.appendChild(thinkEl);
-      bc.scrollTop = bc.scrollHeight;
-      try {
-        const r = await fetch('/api/bridge_chat', {
-          method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({message, channel})
-        });
-        const j = await r.json();
-        const el = document.getElementById(thinkId); if (el) el.remove();
-        if (j.reply) {
-          addBridgeMsg('claude', 'Claude', j.reply);
-          const cnt = document.getElementById('bridge-count');
-          if (cnt) cnt.textContent = j.message_count + ' msgs';
-        } else { addBridgeMsg('system', '', 'Bridge error: ' + (j.error || 'unknown')); }
-      } catch(e) {
-        const el = document.getElementById(thinkId); if (el) el.remove();
-        addBridgeMsg('system', '', 'Bridge unavailable: ' + e.message);
-      }
-    }
-
-    async function sendBack() {
-      const bi = document.getElementById('back-input');
-      const msg = bi.value.trim(); if (!msg) return; bi.value = '';
-      await sendToBridge(msg, 'back');
-    }
-
-    document.getElementById('back-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBack(); }
-    });
-
-    if (_urlSession !== 'shared') _renderSessionBar();
     connect();
-    pollDash();
-    setInterval(pollDash, 5000);
+    loadChannels();
   </script>
 </body>
-</html>"""
+</html>
+"""
 
 
 if __name__ == "__main__":
