@@ -598,6 +598,8 @@ def _deposit_completion_record(
     chunks_processed: int,
     total_deposited: int,
     status: str,  # "complete" | "partial" | "failed"
+    model_used: str = "",
+    campaign_id: str = "",
 ) -> None:
     """Deposit an EPISODIC memory node recording the reading session outcome.
 
@@ -624,7 +626,9 @@ def _deposit_completion_record(
     meta: dict = {
         "book_key": book_key,
         "book_title": book_title,
+        "source_title": book_title,
         "author": author,
+        "source_author": author,
         "total_sentences": total_sentences,
         "chunks_processed": chunks_processed,
         "total_deposited": total_deposited,
@@ -633,6 +637,10 @@ def _deposit_completion_record(
     }
     if calibre_id is not None:
         meta["calibre_id"] = calibre_id
+    if model_used:
+        meta["model_used"] = model_used
+    if campaign_id:
+        meta["campaign_id"] = campaign_id
 
     mem = Memory(
         id=node_id,
@@ -740,6 +748,9 @@ def _deposit_nodes(
     chunk_pos: int,
     chapter_node_id: str = "",
     pass2: bool = False,
+    model_used: str = "",
+    author: str = "",
+    campaign_id: str = "",
 ) -> int:
     """Deposit extracted nodes. Returns count successfully deposited.
 
@@ -796,8 +807,21 @@ def _deposit_nodes(
                 "source": "book_learner",
                 "book": book_title[:60],
                 "book_title": book_title[:60],
+                "source_title": book_title[:100],
+                "source_author": author[:80] if author else "",
                 "chunk_position": chunk_pos,
             }
+            if model_used:
+                meta["model_used"] = model_used
+                meta["inference_tier"] = (
+                    "cloud"
+                    if "claude" in model_used
+                    or "gpt" in model_used
+                    or "openrouter" in model_used
+                    else "local"
+                )
+            if campaign_id:
+                meta["campaign_id"] = campaign_id
             if pass2:
                 meta["pass"] = 2
                 meta["extraction_type"] = ntype  # lever/mechanism/situated/tension
@@ -1064,6 +1088,13 @@ def run(args) -> None:
                     pos,
                     chapter_node_id=_chapter_node_id,
                     pass2=_is_pass2,
+                    model_used=_model_label if args.run else _chunk_model_tag,
+                    author=(
+                        handle.get("author", "")
+                        if isinstance(handle, dict)
+                        else getattr(handle, "author", "")
+                    ),
+                    campaign_id=args.run if hasattr(args, "run") and args.run else "",
                 )
                 total_deposited += n_dep
 
@@ -1131,6 +1162,8 @@ def run(args) -> None:
                 chunks_processed=chunks_done,
                 total_deposited=total_deposited,
                 status=_completion_status,
+                model_used=_model_label if "_model_label" in dir() else "",
+                campaign_id=args.run if hasattr(args, "run") and args.run else "",
             )
         except Exception as _cr_e:
             print(f"[completion record] failed (non-fatal): {_cr_e}")
