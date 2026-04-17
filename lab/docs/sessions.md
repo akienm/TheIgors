@@ -1,3 +1,9 @@
+## Session 2026-04-16b
+**Theme**: Epic close sprint + system-proxy + calving fix
+**Key changes**:
+- done: 17 tickets — 4 epics closed (experiment-primitive, graph-calving, reasoning-voice-split, llm-shrinkage), system-proxy facade+migrations, pipeline voice fix, CRITICAL calving protection fix
+**In-flight**: NONE
+
 ## Session 2026-04-16a
 **Theme**: 27-ticket sprint
 **Next session**: Next: T-config-vars-review, day-close
