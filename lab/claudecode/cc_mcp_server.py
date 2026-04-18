@@ -65,7 +65,10 @@ def request_compaction(preserve_instructions: str) -> dict[str, Any]:
     Returns:
         dict with "status" and "message" keys
     """
-    session = os.getenv("CLAUDE_TMUX_SESSION", "claude-main")
+    # Prefer $TMUX_PANE (exact pane ID like %0) over session name.
+    # TMUX_PANE is set when Claude Code runs INSIDE tmux (via superclaude).
+    # Falls back to session name for backward compatibility.
+    target = os.getenv("TMUX_PANE") or os.getenv("CLAUDE_TMUX_SESSION", "claude-main")
     try:
         # Build the command to inject
         escaped = _escape_tmux_payload(preserve_instructions)
@@ -73,7 +76,7 @@ def request_compaction(preserve_instructions: str) -> dict[str, Any]:
 
         # Inject via tmux send-keys
         subprocess.run(
-            ["tmux", "send-keys", "-t", session, cmd, "Enter"],
+            ["tmux", "send-keys", "-t", target, cmd, "Enter"],
             check=True,
             capture_output=True,
             text=True,
@@ -82,12 +85,12 @@ def request_compaction(preserve_instructions: str) -> dict[str, Any]:
 
         return {
             "status": "success",
-            "message": f"Compaction queued for session '{session}'",
+            "message": f"Compaction queued for target '{target}'",
         }
     except subprocess.TimeoutExpired:
         return {
             "status": "error",
-            "message": f"tmux timeout (session '{session}' not responsive)",
+            "message": f"tmux timeout (target '{target}' not responsive)",
         }
     except subprocess.CalledProcessError as e:
         return {
