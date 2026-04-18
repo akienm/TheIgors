@@ -602,7 +602,9 @@ def _log_crash(
             for line in traceback_tail.splitlines()[-20:]:
                 f.write(f"  {line}\n")
         else:
-            f.write("\n(no output captured — check if exception went to an uncaptured stream)\n")
+            f.write(
+                "\n(no output captured — check if exception went to an uncaptured stream)\n"
+            )
         f.write("\n")
 
 
@@ -709,10 +711,15 @@ def restart_loop(instance_dir: Path, igor_args: list[str]) -> None:
         cmd = [sys.executable, "-m", "igor.main"] + igor_args
         crash_log_lines: list[str] = []
 
+        launch_env = os.environ.copy()
+        _existing_pp = launch_env.get("PYTHONPATH", "")
+        launch_env["PYTHONPATH"] = str(_REPO_ROOT) + (
+            ":" + _existing_pp if _existing_pp else ""
+        )
         proc = subprocess.Popen(
             cmd,
             cwd=str(_WILD_DIR),
-            env=os.environ.copy(),
+            env=launch_env,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,  # merge stderr into stdout
             text=True,
