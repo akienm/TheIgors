@@ -38,6 +38,19 @@ if not _DB_URL:
         "Set this env var at system level (not user level on Windows)."
     )
 
+
+def _pg_connect():
+    """Connect to Postgres with search_path set for three-schema layout."""
+    import psycopg2
+
+    conn = psycopg2.connect(_DB_URL)
+    cur = conn.cursor()
+    cur.execute("SET search_path TO instance, clan, infra, public")
+    cur.close()
+    conn.commit()
+    return conn
+
+
 # Cache TTL — reload from DB this often
 _CACHE_TTL = 60.0  # seconds
 
@@ -103,10 +116,10 @@ def _ensure_schema() -> None:
     import psycopg2
 
     try:
-        conn = psycopg2.connect(_DB_URL)
+        conn = _pg_connect()
         cur = conn.cursor()
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS machines (
+            CREATE TABLE IF NOT EXISTS infra.machines (
                 hostname        TEXT PRIMARY KEY,
                 display_name    TEXT,
                 ip              TEXT,
@@ -146,7 +159,7 @@ def _fetch_machines() -> list[MachineRecord]:
     import psycopg2
 
     try:
-        conn = psycopg2.connect(_DB_URL)
+        conn = _pg_connect()
         cur = conn.cursor()
         cur.execute("""
             SELECT hostname, display_name, ip, os, cpu, ram_gb,
@@ -241,7 +254,7 @@ def _write_override(hostname: str, until: Optional[str]) -> None:
     """Write in_use_until to machines table."""
     import psycopg2
 
-    conn = psycopg2.connect(_DB_URL)
+    conn = _pg_connect()
     cur = conn.cursor()
     cur.execute(
         "UPDATE machines SET in_use_until = %s, updated_at = to_char(NOW(), 'YYYY-MM-DD\"T\"HH24:MI:SS') WHERE hostname = %s",
@@ -300,7 +313,7 @@ def get_all_machines() -> list[MachineRecord]:
     import psycopg2
 
     try:
-        conn = psycopg2.connect(_DB_URL)
+        conn = _pg_connect()
         cur = conn.cursor()
         cur.execute("""
             SELECT hostname, display_name, ip, os, cpu, ram_gb,
@@ -572,7 +585,7 @@ def register_self(hostname: str, ip: str) -> bool:
 
     try:
         _ensure_schema()
-        conn = psycopg2.connect(_DB_URL)
+        conn = _pg_connect()
         conn.autocommit = True
         cur = conn.cursor()
         cur.execute("SELECT 1 FROM machines WHERE hostname = %s", (hostname,))
