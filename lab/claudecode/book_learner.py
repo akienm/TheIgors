@@ -488,7 +488,14 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=300) as resp:
+        # T-remove-extract-timeout (2026-04-19): no urlopen timeout.
+        # Akien's principle: 'slow on slow resources is ok, no timeouts'
+        # for training/bulk-reading workloads. The prior 300s cap was
+        # clipping qwen2.5:7b on CPU and silently returning zero-node
+        # results on every chunk. Hang safety will come from the worker
+        # pool (T-reading-worker-pool) at a higher level, not from a
+        # per-call watchdog here.
+        with urllib.request.urlopen(req) as resp:
             data = json.loads(resp.read())
         raw = data.get("message", {}).get("content", "").strip()
         parsed = json.loads(_clean_json(raw))
