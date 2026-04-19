@@ -22,3 +22,6 @@ ebook_candidates.md
 # D319 — cfg files with secrets (never commit)
 *.credentials.cfg
 *.confidential.cfg
+
+# T-cc-daily-chat-logs — local chat history, not repo content
+claude_chat_logs/
