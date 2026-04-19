@@ -31,7 +31,7 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 
-IGOR_NOTEBOOK_URL = "https://localhost:8080/api/cc_notebook"
+IGOR_FLUSH_URL = "https://localhost:8080/api/cc_send"
 
 
 def _ssl_ctx() -> ssl.SSLContext:
@@ -43,7 +43,9 @@ def _ssl_ctx() -> ssl.SSLContext:
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
-CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/lab/claudecode/closed_tickets.txt")
+CLOSED_TICKETS_PATH = os.path.expanduser(
+    "~/.TheIgors/lab/claudecode/closed_tickets.txt"
+)
 STATUS_ORDER = {
     "pending": 0,
     "in_progress": 1,
@@ -371,11 +373,14 @@ def cmd_add(args):
     print(f"Added {added} task(s).")
 
 
-def _igor_post(payload: dict) -> bool:
-    """POST JSON to Igor's cc_notebook endpoint. Returns True on success."""
-    data = json.dumps(payload).encode()
+def _igor_post(content: str, tag: str) -> bool:
+    """POST a message to UC's /api/cc_send as author 'claude-code'.
+
+    tag is a short label used for failure logging only.
+    """
+    data = json.dumps({"content": content}).encode()
     req = urllib.request.Request(
-        IGOR_NOTEBOOK_URL,
+        IGOR_FLUSH_URL,
         data=data,
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -384,38 +389,20 @@ def _igor_post(payload: dict) -> bool:
         with urllib.request.urlopen(req, timeout=5, context=_ssl_ctx()):
             return True
     except Exception as e:
-        _log(
-            {
-                "action": "flush_failed",
-                "error": str(e),
-                "payload_key": payload.get("key"),
-            }
-        )
-        print(f"  [Igor flush failed — Igor not running? {e}]")
+        _log({"action": "flush_failed", "error": str(e), "tag": tag})
+        print(f"  [Igor flush failed — UC not running? {e}]")
         return False
 
 
 def cmd_flush_decision(args):
-    """Flush a design decision to Igor's cc_notebook memory."""
+    """Post a design-decision flush to the channel (author: claude-code)."""
     if len(args) < 2:
         print("Usage: flush_decision <id> <summary>")
         sys.exit(1)
     decision_id = args[0]
     summary = " ".join(args[1:])
-    session = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    payload = {
-        "employer_id": "claude",
-        "key": decision_id,
-        "content": json.dumps(
-            {
-                "type": "decision",
-                "id": decision_id,
-                "summary": summary,
-                "session": session,
-            }
-        ),
-    }
-    if _igor_post(payload):
+    content = f"[FLUSH decision {decision_id}] {summary}"
+    if _igor_post(content, tag=decision_id):
         _log({"action": "flush_decision", "id": decision_id, "summary": summary})
         print(f"Flushed {decision_id} to Igor: {summary[:80]}")
     else:
@@ -423,25 +410,14 @@ def cmd_flush_decision(args):
 
 
 def cmd_flush_session(args):
-    """Flush a session summary blob to Igor's cc_notebook memory."""
+    """Post a session-summary flush to the channel (author: claude-code)."""
     if len(args) < 2:
         print("Usage: flush_session <session_id> <summary>")
         sys.exit(1)
     session_id = args[0]
     summary = " ".join(args[1:])
-    payload = {
-        "employer_id": "claude",
-        "key": f"session_{session_id}",
-        "content": json.dumps(
-            {
-                "type": "session_summary",
-                "session": session_id,
-                "summary": summary,
-                "ts": _now(),
-            }
-        ),
-    }
-    if _igor_post(payload):
+    content = f"[FLUSH session {session_id}] {summary}"
+    if _igor_post(content, tag=f"session_{session_id}"):
         _log({"action": "flush_session", "session": session_id})
         print(f"Flushed session {session_id} to Igor")
     else:
