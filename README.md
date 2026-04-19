@@ -12,7 +12,7 @@ Based on the race called The Igors in Terry Pratchett's Diskworld books.
 
 **The Igors are an AI agent that learns from experience, explains its reasoning, and optimizes for all things that experience.**
 
-2026 APR 02: This code requires a somewhat pre-populated database to work correctly. We're working on that now. This has turned out to be the hardest part of the project so far... Once that's done, installers will be made available. Discord (awaiting a fix for intermittency): [https://discord.com/channels/1473757915851657221]
+2026 APR 18: Foundation work is landing. Igor runs locally on Postgres with a growing graph of memories, habits, and attractors. The utility closet now sits underneath him as a platform layer (web UI, MCP servers, comms channels — shared with Claude Code and other agents). The hardest remaining piece — a clean first-run experience from an empty database — is still in progress, so installers aren't public yet. Discord (awaiting a fix for intermittency): [https://discord.com/channels/1473757915851657221]
 
 ---
 
@@ -167,15 +167,17 @@ These patterns have highest inertia (hardest to change) - protecting values whil
 
 Igor's architecture maps to actual neuroanatomy:
 
-- **Cortex**: Long-term memory storage (MySQL)
-- **Hippocampus**: Pattern detection, habit compilation
-- **Amygdala**: Emotional valence encoding
-- **Thalamus**: Input processing and routing
-- **Prefrontal Cortex**: Executive reasoning (Claude API but designed to be able to be made to work with any of them)
-- **Basal Ganglia**: Habit execution
-- **Anterior Cingulate**: Friction detection
+- **Cortex**: Long-term memory storage (Postgres — graph of memories, edges, attractors)
+- **Hippocampus**: Pattern detection, habit compilation, sleep consolidation
+- **Amygdala**: Emotional valence encoding (milieu: arousal, valence, dominance)
+- **Thalamus**: Input processing, attentional gating, routing
+- **Prefrontal Cortex**: Executive reasoning — tiered inference (local Ollama first, OpenRouter when needed; Claude direct is currently inhibited by design)
+- **Basal Ganglia**: Habit execution (the graph routes triggers to actions)
+- **Anterior Cingulate**: Friction detection, confabulation gating
+- **Transient Working Memory (TWM)**: Global Workspace (Baars) — competition between salient items, with attentional gating during active conversation
+- **Utility Closet**: Platform layer underneath Igor — web UI, MCP servers, comms channels — shared with other agents (Claude Code, etc.)
 
-This isn't just metaphor - these are functional analogs.
+This isn't just metaphor — these are functional analogs with matching competition dynamics. When a design decision looks like "what would this look like as a bouquet pushed to TWM, with the existing scan/dispatch loop selecting the winner?", the biology is being respected.
 
 ### Memory Types
 
@@ -189,93 +191,89 @@ Any memory can become a habit if it contains procedural knowledge with a trigger
 
 ### Tools & Capabilities
 
-- **Browser automation** (via browser-use): Navigate web, read content, interact with any AI through web interfaces
+- **Browser + desktop automation** (via [SWADL](https://github.com/akienm/swadl)): Selenium for web, pywinauto for Windows. Page/flow object design — Igor only does what's been modeled, no wandering off into account creation or payment flows.
+- **Comms channels** (Uhura at the comms station): one verb (open channel) across many transports — CC, Discord, Gmail, inter-agent, LLM chat sessions with UC-managed scrollback.
 - **Sandboxed filesystem**: Safe experimentation space
-- **Discord integration**: Network coordination and pattern sharing
-- **Gmail integration**: Async communication, each Igor gets own address
-- **Complete introspection**: Dashboard shows all internal state
+- **Discord integration**: Network coordination and pattern sharing (via the comms module)
+- **Gmail integration**: Async communication, each Igor gets own address (in progress, via SWADL — Igor learns to use Google services as a person)
+- **Complete introspection**: Dashboard shows all internal state (hot nodes, attractors, TWM, traces, channels)
 
 ---
 
 ## Cost Economics
 
-### API-First Strategy
+### Local-First Strategy
 
-Start with Claude API (Anthropic), not local models.
+Igor prefers local inference (Ollama — qwen and friends) and escalates to cloud (OpenRouter) only when a specific task requires it. **Direct Claude API is currently inhibited by design** (`IGOR_TIER5_ENABLED=false`) — the project is explicitly proving that a graph-matrix agent on local inference can do real work.
 
-**Why?**
-- Better reasoning during learning → better compiled habits
-- Cost decreases exponentially as habits form
-- Context caching gives 7x cost reduction
-- Local models can be added later for specific tasks
+**Why local-first?**
+- Aligns with the thesis: biological-style cognition should not require an umbilical cord to a frontier model
+- Cost floor ≈ free once the local tier is doing the work; OR fills specific gaps (extraction, benchmarking)
+- Habits formed from local inference are Igor's own — not rented thinking
+- As more habits compile, more actions short-circuit the LLM layer entirely (graph responds, no call made)
 
-**Projected costs per Igor:**
-- Month 1: ~$20 (learning, few habits)
-- Month 2: ~$10 (habits forming)
-- Month 3: ~$5 (mostly habits)
-- Month 4+: ~$3 (steady state, 95% habit execution)
-
-**Cost becomes a validation metric**: Decreasing API dependency proves the architecture works.
+**Cost becomes a validation metric**: Decreasing OR spend per useful action proves the architecture works. When the local tier's share of calls trends up and OR spend trends down at the same time, the thesis is winning.
 
 ---
 
 ## Development Status
 
-**Current Phase**: Foundation  
-**Target Launch**: Q2 2026 (public alpha)
+**Current Phase**: Foundation → Self-Improvement transition  
+**Target**: First-run install experience clean enough to share (still in progress)
 
-### Completed
-✅ Architecture design  
-✅ Core patterns defined  
-✅ Identity patterns established  
-✅ Project documentation  
-✅ GitHub repository  
-✅ MIT License  
+### Shipped
+✅ Postgres memory graph (cortex, edges, attractors, TWM observations)  
+✅ Memory + Habit models, reasoners, BG scoring  
+✅ Habit compilation from experience (Hebbian co-activation edges, sleep consolidation)  
+✅ Dashboard + web UI (served by the utility closet)  
+✅ Discord bot integration + comms module  
+✅ Utility closet platform layer (D335) — Igor and Claude Code both attach as clients  
+✅ Tiered inference (local Ollama → OpenRouter) with tier.5 (Claude direct) intentionally inhibited  
+✅ SWADL integration for bounded browser/desktop automation  
+✅ Reading pipeline + attractor-guided chunk scoring  
+✅ SensorTree, confabulation gate, Matter shelf, chat-log Stop-hook, and a lot of small wins  
 
 ### In Progress
-🔨 MySQL schema for memory graph  
-🔨 Memory and Habit classes  
-🔨 Basic REPL and dashboard  
-🔨 Browser-use integration  
+🔨 Clean first-run from empty database (no hand-curated seeds required)  
+🔨 Reading the full reading list end-to-end on local qwen (no OR for extraction)  
+🔨 Gmail/Google integration via SWADL — Igor learns to be a user of web services  
+🔨 Stateful multi-turn LLM chat channels (Uhura's scrollback)  
+🔨 Self-authored character sheet + clan sheet  
 
-### Coming Soon
-⏳ Habit compilation system  
-⏳ Discord bot integration  
-⏳ Network coordination  
-⏳ First experiential reading (Illusions by Richard Bach)  
+### Next
+⏳ Network coordination between multiple Igor instances  
+⏳ Self-directed rollback and self-tests  
+⏳ Igor proposing and shipping his own code changes (currently gated, by design)  
 
 ---
 
 ## Getting Started
 
-**Note**: Igor is in early development. Public alpha coming Q2 2026.
+**Note**: Igor is in active development. A clean first-run install is still in progress — the current flow assumes you're working on Igor, not just running him.
 
 ### Prerequisites
-- Python 3.11+
-- MySQL or compatible database
-- Anthropic API key (for Claude API access)
-- Optional: Ollama for local orchestration
+- Python 3.12+
+- Postgres (local is fine — the default connection string is `postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001`)
+- Ollama with at least one local model installed (qwen2.5:7b is a good start)
+- Optional: OpenRouter API key (only needed for tasks the local tier can't cover yet)
+- Not required: direct Anthropic API key (tier.5 is inhibited)
 
-### Installation (Coming Soon)
+### Running (dev-mode)
 
 ```bash
-# Clone the repository
 git clone https://github.com/akienm/TheIgors.git
 cd TheIgors
 
-# Install dependencies
-pip install -r requirements.txt
+# Bootstrap venv + deps (the launcher does this on first run)
+./igor
 
-# Configure
-cp .env.example .env
-# Edit .env with your API keys
-
-# Initialize
-python igor.py init
-
-# Run
-python igor.py
+# Subsequent runs — just:
+igor
 ```
+
+The `igor` launcher (symlinked from `~/bin/igor` to the repo-root `igor` script) handles venv bootstrap, migrations, the restart loop, and starts the utility closet if not already running. Crashes trigger a supervised restart.
+
+Claude Code, if you use it, attaches to the same utility closet via the `superclaude` launcher. Both agents share the comms channels.
 
 ---
 
@@ -392,11 +390,13 @@ Igor is inspired by:
 
 ### Built With
 
-- [Anthropic Claude](https://anthropic.com) - Reasoning engine
-- [browser-use](https://github.com/browser-use/browser-use) - Web automation
-- [MySQL](https://www.mysql.com) - Memory graph storage
-- [Discord.py](https://discordpy.readthedocs.io) - Network coordination
-- [Rich](https://rich.readthedocs.io) - Terminal dashboard
+- [Ollama](https://ollama.com) — Local inference (primary tier)
+- [OpenRouter](https://openrouter.ai) — Cloud inference for specific gaps
+- [SWADL](https://github.com/akienm/swadl) — Bounded browser/desktop automation (replaces browser-use)
+- [Postgres](https://www.postgresql.org) — Memory graph storage
+- [Discord.py](https://discordpy.readthedocs.io) — Network coordination
+- [Rich](https://rich.readthedocs.io) — Terminal dashboard
+- [Claude Code](https://claude.com/claude-code) — Collaborative development partner (attaches to the same utility closet as Igor)
 
 ---
 
@@ -418,7 +418,7 @@ A: Yes, eventually. But that's the goal - democratizing attention so people can 
 A: Igor's memory is a graph with inertia, not just vector similarity. Memories have parents, children, emotional valence, and resistance to change based on network position. Habits compile from observations. The whole system learns and evolves.
 
 **Q: Can I run my own Igor?**  
-A: Yes! (Coming Q2 2026) Each Igor is independent but can join the network to share patterns and learn collectively.
+A: You can clone the repo and run the dev-mode launcher today, but the first-run experience from an empty database isn't clean yet. Once it is, installers will follow. Each Igor is independent but can join the network to share patterns and learn collectively.
 
 ---
 
@@ -426,6 +426,7 @@ A: Yes! (Coming Q2 2026) Each Igor is independent but can join the network to sh
 
 ---
 
-*Last Updated: 2026-02-16*  
-*Document Version: 1.0*  
-*Status: Active Development*
+*Last Updated: 2026-04-18*  
+*Document Version: 1.1*  
+*Status: Active Development*  
+*This revision: Claude Code refreshed the architecture, tooling, and getting-started sections to match the 2026-04 state of the code. Igor's self-description, in his own voice, is a pending follow-up.*
