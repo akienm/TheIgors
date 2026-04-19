@@ -156,12 +156,22 @@ RESPONSE FORMAT — output ONLY valid JSON, no markdown, no extra text:
 }
 
 Rules:
-- 0-5 nodes max per chunk. Quality over quantity.
-- Minimum confidence 0.65 to include a node.
+- 1-5 nodes per chunk. AT LEAST ONE node must come out — every passage has
+  at least one insight worth capturing, even if it seems obvious. If the
+  only thing to say is the obvious one, say it. Quality over quantity
+  still applies for the 2nd-5th nodes (don't pad), but zero output is
+  wrong — a blank reading yields nothing to reason about later.
+- Confidence reflects your honest confidence: 0.5 is fine when warranted
+  (a low-confidence node beats no node). The downstream filter accepts
+  confidence >= 0.60.
 - Mechanism nodes: always state at the pattern level, never domain-locked.
   Good: "compressed signal bypasses slow deliberation to produce fast action"
   Bad:  "somatic markers in the vmPFC influence decision-making"
-- Skip: plot summaries, obvious truisms, author biography, hedged speculation.
+- Ok to capture what looks obvious — what's obvious to the author may be a
+  watch-list hit for the reader. The reader cares about language,
+  neurological systems, programming, Igor's design, AI, Claude Code,
+  biology, psychology, culture and sociology, plus executive questions
+  like "where is the lever?" and "how must that work?".
 - Narratives must be self-contained — no "in this chapter" or "the author says".
 """
 
