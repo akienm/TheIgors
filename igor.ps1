@@ -25,6 +25,10 @@ if (-not (Test-Path $venvPython)) {
 
 $env:PYTHONUTF8 = '1'
 
+# Ensure the utility closet is up before Igor starts (idempotent).
+$ucStart = "$repoRoot\start_utility_closet.ps1"
+if (Test-Path $ucStart) { & $ucStart }
+
 # If Claude Code is our parent process, set debug_session.flag so the
 # auto-fixer doesn't try to launch a second CC instance on crash.
 $instanceDir = "$env:USERPROFILE\.TheIgors\igor_wild_windows_0001"

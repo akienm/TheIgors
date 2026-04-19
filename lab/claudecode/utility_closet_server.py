@@ -38,6 +38,7 @@ import asyncio
 import json
 import logging
 import os
+import platform
 import signal
 import sys
 import threading
@@ -45,6 +46,56 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
+_IS_WINDOWS = platform.system() == "Windows"
+
+
+def _process_exists(pid: int) -> bool:
+    """Cross-platform PID existence check. Never kills, never raises."""
+    if pid <= 0:
+        return False
+    if _IS_WINDOWS:
+        import ctypes
+
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if not handle:
+            return False
+        # Process may be a zombie — check exit code
+        exit_code = ctypes.c_ulong(0)
+        kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+        kernel32.CloseHandle(handle)
+        STILL_ACTIVE = 259
+        return exit_code.value == STILL_ACTIVE
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def _kill_process(pid: int) -> None:
+    """Cross-platform process kill. Best-effort, never raises."""
+    if pid <= 0:
+        return
+    if _IS_WINDOWS:
+        import ctypes
+
+        PROCESS_TERMINATE = 0x0001
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.OpenProcess(PROCESS_TERMINATE, False, pid)
+        if handle:
+            kernel32.TerminateProcess(handle, 1)
+            kernel32.CloseHandle(handle)
+        return
+    try:
+        os.kill(pid, signal.SIGTERM)
+        time.sleep(1)
+        if _process_exists(pid):
+            os.kill(pid, signal.SIGKILL)
+    except OSError:
+        pass
 
 # Ensure repo root is on sys.path for lab.utility_closet imports
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -894,11 +945,11 @@ def check_running() -> dict | None:
     except (ValueError, OSError):
         return None
 
-    # Check if process exists
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        # Process doesn't exist — stale PID file
+    # On Windows, skip the PID-existence precheck: venv python.exe acts as a
+    # launcher stub and the resulting PID-file value isn't always queryable
+    # via OpenProcess from a different process context. Trust the HTTP check.
+    # On Linux, a quick existence check avoids an HTTP timeout on dead PIDs.
+    if not _IS_WINDOWS and not _process_exists(pid):
         log.info("Stale PID file (pid=%d not running), removing", pid)
         PID_FILE.unlink(missing_ok=True)
         return None
@@ -935,20 +986,7 @@ def check_running() -> dict | None:
 
     # Process exists but health check failed — stalled
     log.warning("Stalled utility closet (pid=%d), killing", pid)
-    try:
-        os.kill(pid, signal.SIGTERM)
-        # Give it a moment to die
-        import time as _time
-
-        _time.sleep(1)
-        try:
-            os.kill(pid, 0)
-            # Still alive — force kill
-            os.kill(pid, signal.SIGKILL)
-        except OSError:
-            log.debug("process %d already dead during cleanup", pid)
-    except OSError as e:
-        log.warning("Failed to kill stalled process %d: %s", pid, e)
+    _kill_process(pid)
     PID_FILE.unlink(missing_ok=True)
     return None
 
@@ -982,8 +1020,8 @@ def main():
         if PID_FILE.exists():
             try:
                 pid = int(PID_FILE.read_text().strip())
-                os.kill(pid, signal.SIGTERM)
-                print(f"Sent SIGTERM to {pid}")
+                _kill_process(pid)
+                print(f"Stopped pid {pid}")
                 PID_FILE.unlink(missing_ok=True)
             except Exception as e:
                 print(f"Stop failed: {e}")
@@ -1014,8 +1052,13 @@ def main():
         _remove_pid()
         sys.exit(0)
 
-    signal.signal(signal.SIGTERM, _shutdown)
     signal.signal(signal.SIGINT, _shutdown)
+    # SIGTERM exists on Windows but only fires for some termination paths;
+    # register it anyway — harmless if never invoked.
+    try:
+        signal.signal(signal.SIGTERM, _shutdown)
+    except (AttributeError, ValueError):
+        pass
 
     ssl_cert = os.environ.get("IGOR_SSL_CERT", "")
     ssl_key = os.environ.get("IGOR_SSL_KEY", "")

@@ -106,7 +106,8 @@ require_api_key() {
 # ─ Utility closet (D335) ────────────────────────────────────────────────────
 
 start_utility_closet() {
-    local uc_server="${REPO_DIR}/claudecode/utility_closet_server.py"
+    # Post-D328 location. The pre-reorg path (claudecode/…) no longer exists.
+    local uc_server="${REPO_DIR}/lab/claudecode/utility_closet_server.py"
 
     if [[ ! -f "$uc_server" ]]; then
         echo "Warning: utility_closet_server.py not found, skipping"
