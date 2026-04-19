@@ -1,0 +1,138 @@
+# lab/seed/machines.yaml
+#
+# Source-of-truth for Igor's machine registry (the fleet he can route inference to).
+# File → DB pattern (hand-curated; DB is runtime cache).
+#
+# 2026-04-18: post-collapse to a single local-model scheme. ollama_model_batch
+# is deliberately null on every row — retained as a column for back-compat but
+# no longer consulted (MachineRecord.model_for always returns ollama_model).
+#
+# Restore command: python3 lab/claudecode/seed_machines.py
+# Versioning: git log lab/seed/machines.yaml IS the history.
+#
+# Field semantics:
+#   inference_rank   — lower = preferred. Router walks in ascending rank.
+#   in_use_hours     — [[start, end], ...] local-hour blocks where machine is
+#                      considered "human in use" and skipped for inference.
+#   roles            — semantic tags (igor_home, db_host, etc.)
+#   aliases          — natural-language names Igor may resolve to this host.
+#   ollama_model     — the single local model on this machine (currently qwen2.5:7b
+#                      for all online workers; llama3.2:1b / nomic-embed-text
+#                      retained on offline boxes for their niche roles).
+
+machines:
+
+  - hostname: akienyoga9i
+    display_name: "Yoga 9i (bedroom)"
+    ip: 10.0.0.90
+    os: windows
+    cpu: "11th Gen Intel Core i7-1185G7 @ 3.00GHz"
+    ram_gb: 16
+    storage: "1TB SSD"
+    hardware_model: "Lenovo Yoga 9 13ITL5"
+    network_type: wifi
+    status: online
+    ollama_port: 11434
+    ollama_model: qwen2.5:7b
+    inference_rank: 1
+    in_use_hours: [[20, 23]]
+    roles: []
+    aliases: [yoga9i, "yoga 9", bedroom, "bedroom machine", "the yoga", "yoga nine"]
+    ssh_enabled: true
+    ssh_user: igor_wild_0001
+    notes: "Bedroom TV and dev box"
+
+  - hostname: akiendell
+    display_name: "AkienDell (main desktop)"
+    ip: 10.0.0.99
+    os: windows
+    cpu: "Intel Core i7-10610U @ 1.80GHz"
+    ram_gb: 32
+    storage: "1TB SSD"
+    hardware_model: "Dell Latitude 5310"
+    network_type: wired
+    status: online
+    ollama_port: 11434
+    ollama_model: qwen2.5:7b
+    inference_rank: 2
+    in_use_hours: [[6, 18]]
+    roles: []
+    aliases: [akiendell, "the dell", "my main machine", "main desktop", "my desktop"]
+    ssh_enabled: true
+    ssh_user: igor_wild_0001
+    notes: "Akien main daily driver — blocked during desk hours"
+
+  - hostname: akienyogai7
+    display_name: "Yoga i7 (living room)"
+    ip: 10.0.0.71
+    os: windows
+    cpu: "Intel Core i7-8550U @ 1.80GHz"
+    ram_gb: 16
+    storage: "1TB SSD"
+    hardware_model: "Lenovo Yoga 920"
+    network_type: wifi
+    status: online
+    ollama_port: 11434
+    ollama_model: qwen2.5:7b
+    inference_rank: 3
+    in_use_hours: [[17, 21]]
+    roles: []
+    aliases: [yogai7, "yoga i7", "yoga 7", "living room", "the tv box", "living room tv", "yoga seven"]
+    ssh_enabled: true
+    ssh_user: igor_wild_0001
+    notes: "Living room TV PC"
+
+  - hostname: akiendelllinux
+    display_name: "Igor home (linux)"
+    ip: 10.0.0.229
+    os: linux
+    cpu: "Intel Core i7-10610U @ 1.80GHz"
+    ram_gb: 32
+    storage: "1TB SSD"
+    hardware_model: "Dell Latitude 5310"
+    network_type: wired
+    status: online
+    ollama_port: 11434
+    ollama_model: qwen2.5:7b
+    inference_rank: 4
+    in_use_hours: []
+    roles: [igor_home, db_host]
+    aliases: ["linux box", "igors box", akiendelllinux, "the linux"]
+    ssh_enabled: false
+    notes: "Igor home + DB host — always last resort, never blocked"
+
+  - hostname: akienasus
+    display_name: "Asus UX410U"
+    os: windows
+    cpu: "Intel Core i7 9th gen"
+    ram_gb: 20
+    storage: "512GB SSD"
+    hardware_model: "Asus UX410U"
+    network_type: wifi
+    status: offline
+    ollama_port: 11434
+    ollama_model: llama3.2:1b
+    inference_rank: 5
+    in_use_hours: []
+    roles: []
+    aliases: [asus, "the asus", akienasus]
+    ssh_enabled: false
+    notes: "Offline"
+
+  - hostname: akienpi
+    display_name: "Raspberry Pi 400"
+    os: linux
+    cpu: ARM
+    ram_gb: 4
+    storage: "512GB SD"
+    hardware_model: "Raspberry Pi 400"
+    network_type: wifi
+    status: offline
+    ollama_port: 11434
+    ollama_model: nomic-embed-text
+    inference_rank: 6
+    in_use_hours: []
+    roles: []
+    aliases: [pi, "the pi", "raspberry pi", akienpi]
+    ssh_enabled: false
+    notes: "Offline — embeddings only"

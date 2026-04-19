@@ -787,7 +787,11 @@ def _deposit_nodes(
       6. Wire CP: add_child + interpretive_edge for semantic traversal
       7. Wire chapter: add_child so chapter→node path exists
     """
-    # T-reading-lever-detection: build attractor keyword set once per batch
+    # T-reading-lever-detection + GH-299 watchlist: build a combined
+    # keyword set from hot attractors AND watch habits (questions + topics
+    # Akien dictated). Either signal marks a chunk as lever-relevant.
+    # Akien's principle 2026-04-18: "there's nothing I read that I don't
+    # get anything at all from" — the gate below no longer drops to zero.
     attractor_keywords: set = set()
     try:
         attractors = cortex.get_attractors(limit=20)
@@ -796,6 +800,17 @@ def _deposit_nodes(
             attractor_keywords.update(w for w in words if len(w) >= 4)
     except Exception:
         pass  # Fail-open: no attractors = neutral scoring
+    try:
+        # Watch habits: PROCEDURAL memories with habit_type=watch.
+        # Both question-watches and topic-watches contribute keywords.
+        for h in cortex.get_habits():
+            meta = h.metadata or {}
+            if meta.get("habit_type") != "watch":
+                continue
+            src = (meta.get("watch_label") or h.narrative or "").lower()
+            attractor_keywords.update(w for w in src.split() if len(w) >= 4)
+    except Exception:
+        pass  # Fail-open: no watchlist = attractor-only scoring
 
     deposited = 0
     for node in nodes:
@@ -809,10 +824,12 @@ def _deposit_nodes(
             if not narrative or confidence < 0.60:
                 continue
 
-            # T-reading-lever-detection: score against hot attractors
+            # T-reading-lever-detection: score against attractor + watch keywords.
+            # Score is recorded in metadata (lever_score / lever_tier below) but
+            # is NO LONGER a deposit gate. Principle: every book yields something;
+            # low-relevance nodes get low scores and decay naturally through
+            # activation dynamics rather than being dropped at the boundary.
             attractor_score = _score_attractor_overlap(narrative, attractor_keywords)
-            if attractor_score < 0.1 and not pass2:
-                continue  # Skip very low-relevance chunks (pass2 always deposits)
 
             # Pass-2 node types map to existing MemoryTypes
             mt = {

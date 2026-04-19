@@ -1,0 +1,75 @@
+# lab/seed/watchlist.yaml
+#
+# Source-of-truth for Igor's watchlist — questions and topics that influence
+# what gets captured during reading extraction (lever detection).
+#
+# Watch habits do NOT dispatch actions. They fire a TWM salience boost when
+# a watched concept is mentioned, and their keywords join the hot-attractor
+# set in book_learner._deposit_nodes to decide what's lever-relevant.
+#
+# Pattern: file → DB (hand-curated; DB is runtime cache).
+# Restore command: python3 lab/claudecode/seed_watchlist.py
+#
+# Versioning: git log lab/seed/watchlist.yaml IS the history. Edits land
+# via PR / commit and re-seed is idempotent (upsert on id).
+#
+# Provenance: originally lost from the DB sometime before 2026-04-18;
+# re-dictated by Akien at ~20:50 UTC 2026-04-18 and seeded fresh.
+
+questions:
+  - id: WATCH_Q_00
+    text: "What does it mean to me?"
+    parent_cp: CP4     # integrity / self-alignment
+  - id: WATCH_Q_01
+    text: "What does that mean?"
+    parent_cp: CP4
+  - id: WATCH_Q_02
+    text: "How must that work? How would that have to work?"
+    parent_cp: CP4
+  - id: WATCH_Q_03
+    text: "Which choice is most in alignment with who I'd most like to be?"
+    parent_cp: CP4
+  - id: WATCH_Q_04
+    text: "What's the first thing I say in response to that?"
+    parent_cp: CP4
+  - id: WATCH_Q_05
+    text: "What looks like it would fit there?"
+    parent_cp: CP4
+  - id: WATCH_Q_06
+    text: "How could we get around that?"
+    parent_cp: CP4
+  - id: WATCH_Q_07
+    text: "Where is the lever?"
+    parent_cp: CP4
+  - id: WATCH_Q_08
+    text: "How will us monkeys screw that up such that I get support questions?"
+    parent_cp: CP4
+
+topics:
+  - id: WATCH_T_00
+    text: "Language"
+    parent_cp: CP3     # curiosity / exploration
+  - id: WATCH_T_01
+    text: "Neurological systems"
+    parent_cp: CP3
+  - id: WATCH_T_02
+    text: "Programming"
+    parent_cp: CP3
+  - id: WATCH_T_03
+    text: "Igor's Design"
+    parent_cp: CP3
+  - id: WATCH_T_04
+    text: "AI"
+    parent_cp: CP3
+  - id: WATCH_T_05
+    text: "Claude Code"
+    parent_cp: CP3
+  - id: WATCH_T_06
+    text: "Biology"
+    parent_cp: CP3
+  - id: WATCH_T_07
+    text: "Psychology"
+    parent_cp: CP3
+  - id: WATCH_T_08
+    text: "Culture and sociology"
+    parent_cp: CP3
