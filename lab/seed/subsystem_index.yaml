@@ -1,0 +1,126 @@
+# lab/seed/subsystem_index.yaml
+#
+# Igor's SUBSYSTEM INDEX — directory service pointing at each load-bearing
+# subsystem's canonical docstring location. Queried by CC before code surgery
+# to find "where is X documented?" — the answer is a file path, and the
+# file's top-of-file docstring carries the design explanation.
+#
+# Pattern established 2026-04-19 per T-docs-live-in-code: docs live with the
+# code, not in separate DSB/CSB/design_docs files. This index is the
+# directory service; the code files are the authoritative content.
+#
+# Schema:
+#   subsystem        — canonical name (stable ID)
+#   primary_file     — where the canonical top-of-file docstring lives
+#   also_see         — other code files in this subsystem (ordered by relevance)
+#   engrams          — memory graph node patterns that participate (may be empty)
+#   decisions        — D### IDs from decisions_log.dsb that shaped the design
+#   summary          — one-line human-readable description (for the index listing)
+#
+# Status: SKELETON. Initial entries are placeholders for the most-talked-about
+# subsystems; docstrings in the primary_file are the real docs (may still be
+# thin). As the sprint progresses, each subsystem gets a proper canonical
+# docstring — the index serves as the worklist.
+#
+# Restore: python3 lab/claudecode/seed_subsystem_index.py
+
+subsystems:
+
+  - subsystem: reading
+    primary_file: wild_igor/igor/tools/reading_engine.py
+    also_see:
+      - wild_igor/igor/tools/reading_tool.py
+      - lab/claudecode/book_learner.py
+      - wild_igor/igor/cognition/reading_indexer.py  # legacy OR-only path
+    engrams:
+      - WATCH_Q_*   # 9 watch questions (Akien's what-matters)
+      - WATCH_T_*   # 9 watch topics
+      - PROC_READING_*
+    decisions: [D333, D334, D356, D358, D359, D360]
+    summary: "Book / URL extraction pipeline; fetch → chunk → extract (local qwen or cloud) → deposit with full provenance. Filtered by attractor+watchlist lever score."
+
+  - subsystem: cortex
+    primary_file: wild_igor/igor/memory/cortex.py
+    also_see:
+      - wild_igor/igor/memory/models.py
+      - wild_igor/igor/memory/provenance.py
+      - wild_igor/igor/memory/episode_binder.py
+    engrams: []
+    decisions: [D119, D216, D263, D319]
+    summary: "Long-term memory store (Postgres graph). Stores memories, interpretive edges, attractors, TWM observations, ring, tails, traces."
+
+  - subsystem: narrative_engine
+    primary_file: wild_igor/igor/cognition/narrative_engine.py
+    also_see:
+      - wild_igor/igor/cognition/milieu.py
+      - wild_igor/igor/cognition/thalamus.py
+    engrams: []
+    decisions: [D352, D353]
+    summary: "Arc / context builder. Pulls from TWM + ring + active goals + milieu. Sleep consolidation lives here (NE._deep_consolidation_pass)."
+
+  - subsystem: comms
+    primary_file: lab/utility_closet/comms.py
+    also_see:
+      - lab/utility_closet/transports/postgres.py
+      - lab/utility_closet/transports/discord.py
+      - lab/utility_closet/transports/inference.py
+      - lab/utility_closet/transports/or_chat.py
+      - lab/utility_closet/transports/memory.py
+    engrams: []
+    decisions: []  # T-uc-comms-module, T-uc-inference-channel, T-uc-chattable-llm-channel
+    summary: "Uhura's console — channel routing, message envelopes, transports. One verb (open channel); many transports (postgres, discord, inference, chat-scrollback)."
+
+  - subsystem: scope_guard_and_pe_chain
+    primary_file: wild_igor/igor/tools/pe_chain.py
+    also_see:
+      - wild_igor/igor/tools/scope_guard.py
+      - wild_igor/igor/tools/ops.py  # goal adoption / run_coding_sprint
+    engrams:
+      - PROC_CODING_SPRINT   # fires on TWM GOAL_READY
+      - PROC_ADOPT_GOAL
+    decisions: [D216, D299, D300, D317, D331]
+    summary: "Code-change pipeline: goal → pe_entry → claim → read → plan → filter → hypothesize → scope_guard → implement → test → close. Blocks on HIGH inertia."
+
+  - subsystem: inference_gateway
+    primary_file: wild_igor/igor/cognition/inference_gateway.py
+    also_see:
+      - wild_igor/igor/cognition/cluster_router.py
+      - lab/utility_closet/machine_manager.py
+      - wild_igor/igor/cognition/cloud_mode.py
+    engrams: []
+    decisions: [D035, D120, D254, D335]
+    summary: "Tier ladder: tier.1 habit → tier.2 local Ollama → tier.3 OR cheap → tier.3.5 OR haiku → tier.4 OR sonnet → tier.5 Anthropic (INHIBITED). Routes by purpose node. Single local model since 2026-04-18."
+
+  - subsystem: comms_channel_infra
+    primary_file: lab/claudecode/utility_closet_server.py
+    also_see:
+      - lab/claudecode/channel.py
+      - lab/claudecode/cc_hook_pending.py
+    engrams: []
+    decisions: [D335]
+    summary: "Utility closet web server + /api/cc_send + WebSocket broadcast to web UI. Channel_messages table is primary storage."
+
+  - subsystem: habit_machinery
+    primary_file: wild_igor/igor/cognition/basal_ganglia.py
+    also_see:
+      - wild_igor/igor/cognition/habit_scorer.py
+      - wild_igor/igor/cognition/push_sources.py
+    engrams:
+      - PROC_*  # all procedural habits
+    decisions: [D201, D254, D300, D352, D355]
+    summary: "Habit scoring, dispatch, competition. TWM salience competition chooses the winning habit per turn."
+
+  - subsystem: reading_worker_pool  # T-reading-worker-pool (pending)
+    primary_file: ""  # created during sprint
+    also_see: []
+    engrams: []
+    decisions: []
+    summary: "[PLACEHOLDER] Stream-of-blocks queue + local/cloud workers for the reading-list re-run. To be built in current sprint."
+
+  - subsystem: sleep_memory_auditor  # T-sleep-memory-auditor (pending)
+    primary_file: ""  # extends narrative_engine._deep_consolidation_pass
+    also_see:
+      - wild_igor/igor/cognition/narrative_engine.py
+    engrams: []
+    decisions: []
+    summary: "[PLACEHOLDER] Chain old reading memories as prior_version_of new ones when they cover the same point. To be built in current sprint."

@@ -48,6 +48,13 @@
 - Proactive best-practice suggestions welcomed.
 - Autonomous sprint mode when Akien says "keep going" or "not in here today".
 
+### Docs live in code (T-docs-live-in-code, 2026-04-19)
+- **Subsystem docs are top-of-file docstrings** on the primary file. Design decisions, architectural intent, which D### decisions shaped the design, and which engrams participate all live here — NOT in separate DSB/CSB files.
+- **Igor holds the index.** A directory-service table/node maps each subsystem to its primary code file(s). Before surgery, CC queries the index → reads the file's top-of-file docstring → then edits.
+- **Migration pattern:** when you touch a load-bearing file, promote its external docs (DSB/CSB/design_docs) into its docstring. Leave the external as a historical log; point from it to the code.
+- **When Akien explains something twice**, it goes into the relevant docstring, not into a separate doc. Bias for inline, against extraction.
+- Scope note: this applies to LOAD-BEARING subsystems (reading, cortex, NE, comms, scope_guard, pe_chain, worker pools, inference gateway). Trivial utilities still follow "don't comment the obvious."
+
 ### Do not
 - Move or rename `brainstem/` contents without Akien review.
 - Delete `~/.TheIgors/Igor-wild-0001/wild-0001.db` — that's the live DB.

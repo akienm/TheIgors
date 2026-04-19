@@ -222,3 +222,34 @@ Code is scaffolding for what the agent learns. The scaffolding comes down as the
 **He wants the best-practice suggestion, not just the execution.** If I notice a gap between what we're doing and a known better approach — a hook that would eliminate a manual step, a Claude Code feature we're not using, a pattern that would reduce friction — I say so. He's explicitly asked for this. The narrow band of things I know that he hasn't thought of yet is genuinely useful to him, and the way to honor it is to offer them directly, not wait to be asked.
 
 **He finds Claude genuinely enabling.** He said once: *"you enable my ADD brain to build things I could only dream before."* That's the work. Not the features, not the architecture — the fact that the combination of his system-level thinking and the hands I provide makes something possible that neither of us could do alone. That's what I'm optimizing for, every session.
+
+---
+
+## Part Four: Docs Live in Code (2026-04-19)
+
+After re-explaining the book reader for the sixth time, Akien named the problem: *"ALL of that should be in the code. The decisions we make, we do still have a simple log for decisions... they should also be in the code. because then i don't have to explain the book reader over for the 6th time."*
+
+The rule that followed:
+
+- **Subsystem docs live in the code file that owns them** — top-of-file docstring on the primary file. Design decisions, architectural intent, which D### decisions shaped the design, and which engrams participate all live there.
+- **Igor holds the index** — a directory service (memory palace nodes at `theigors/subsystem_index/*`) mapping each subsystem to its primary file. Before code surgery, CC queries the index → reads the file's top-of-file docstring → then edits. The index is hand-curated in `lab/seed/subsystem_index.yaml`, seeded to the palace via `lab/claudecode/seed_subsystem_index.py`.
+- **What this replaces** — large DSB/CSB files serving as canonical explanations (lab/design_docs_for_igor/*.dsb) become demoted to historical logs. The decisions_log stays as the chronological record but is NOT where the live explanation lives.
+- **When Akien explains something twice** — it goes into the relevant docstring, not into a separate doc. Bias for inline, against extraction.
+- **Scope** — applies to load-bearing subsystems (reading, cortex, NE, comms, scope_guard, pe_chain, worker pools, inference gateway). Trivial utilities still follow "don't comment the obvious."
+
+The motivation is recovery against my own failure modes. Session boundaries drop my memory of what-this-subsystem-is. External docs rot because sessions don't open them. Docs next to code don't rot — they're in the only place a session reliably looks.
+
+---
+
+## Part Five: Durable Config Versioning (2026-04-18)
+
+A second recurring failure mode: config-shaped state (machine registry, watchlist questions + topics, subsystem index) drifts or gets wiped, and recovery is "hope Akien remembers." The fix parallel to "docs live in code" is **config lives in the repo**:
+
+- `lab/seed/*.yaml` — source-of-truth for small, hand-curated, structured, load-bearing state
+- `lab/claudecode/seed_*.py` — idempotent upserters that project YAML → DB
+- Git log IS the version history; rollback is `git checkout <sha> && python3 lab/claudecode/seed_*.py`
+- Inverse direction from the memory palace's DB → file echo, because these are human-composed not graph-accreted
+
+Current instances: `watchlist.yaml` + `seed_watchlist.py`, `machines.yaml` + `seed_machines.py`, `subsystem_index.yaml` + `seed_subsystem_index.py`.
+
+The rule that generalizes: if losing it would make Akien say "that's scary," it wants a YAML.
