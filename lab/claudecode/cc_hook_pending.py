@@ -29,6 +29,10 @@ CURSOR_DIR = Path.home() / ".TheIgors"
 COMPACT_PENDING_FILE = CURSOR_DIR / "cc_compact_pending.txt"
 MAX_MESSAGES = 20  # Cap how much we inject — context budget discipline
 MAX_CONTENT_CHARS = 400  # Per-message truncation
+# T-cc-stale-compact-request-leak: drop pending compact requests older than
+# this. Prevents a file written by a prior session/boot from firing in a
+# later one (which was surfacing with a preserve string from days ago).
+COMPACT_MAX_AGE_SECS = 600  # 10 minutes
 
 
 def _db_url():
@@ -117,10 +121,24 @@ def _check_compact_pending() -> str:
 
     Returns the preserve string if a compact is pending, empty string otherwise.
     Deletes the file after reading so it fires exactly once.
+
+    T-cc-stale-compact-request-leak: drops files older than COMPACT_MAX_AGE_SECS
+    without firing them (prevents cross-session leaks from abandoned requests).
     """
     if not COMPACT_PENDING_FILE.exists():
         return ""
     try:
+        import time as _time
+
+        age = _time.time() - COMPACT_PENDING_FILE.stat().st_mtime
+        if age > COMPACT_MAX_AGE_SECS:
+            COMPACT_PENDING_FILE.unlink(missing_ok=True)
+            print(
+                f"[cc_hook_pending] dropped stale compact request "
+                f"({int(age)}s > {COMPACT_MAX_AGE_SECS}s)",
+                file=sys.stderr,
+            )
+            return ""
         preserve = COMPACT_PENDING_FILE.read_text().strip()
         COMPACT_PENDING_FILE.unlink(missing_ok=True)
         return preserve
