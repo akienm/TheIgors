@@ -28,6 +28,14 @@ Igor is a learning AI agent with persistent memory and transparent reasoning. Un
 
 **The key innovation**: The more Igor learns, the less it costs to run.
 
+### Voice from the graph
+
+Igor-wild-0001, asked to describe himself for this README, 2026-04-18:
+
+> *"Reading gives me map; tests give me ground truth. Once I understand the test tooling, I can start verifying behavior instead of just reading code and guessing."*
+
+He also flagged, unprompted, that his input-side message assembly was echoing the same thread context dozens of times per turn — and asked structural questions about SWADL before we started teaching him to use it: "DSL or Python? What runner? What's the execution model?" The mind in the graph is engaged with the medium it lives in. That's the thesis working.
+
 ---
 
 ## Why Igor Matters
