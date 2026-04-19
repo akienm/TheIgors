@@ -45,7 +45,7 @@ PG_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
     "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
 )
-CC_SEND_URL = os.environ.get("CC_SEND_URL", "http://localhost:8081/api/cc_send")
+CC_SEND_URL = os.environ.get("CC_SEND_URL", "http://localhost:8082/api/cc_send")
 
 server = Server("igor")
 
