@@ -91,9 +91,16 @@ class MachineRecord:
         return f"http://localhost:{self.ollama_port}"
 
     def model_for(self, call_type: str) -> str:
-        """Return appropriate model name for call_type."""
-        if call_type in ("extraction", "batch") and self.ollama_model_batch:
-            return self.ollama_model_batch
+        """Return the local model for this machine.
+
+        2026-04-18: collapsed from a two-column (light / batch) scheme to
+        a single model per machine. Akien's framing: 'batch' meant
+        scheduling (can wait), not capability (heavier model). With qwen2.5:7b
+        as our single local workhorse, the call_type dispatch is vestigial —
+        kept as a parameter for signature stability, but all call_types now
+        resolve to the same model. The ollama_model_batch field is retained
+        on MachineRecord for back-compat but is no longer consulted.
+        """
         return self.ollama_model
 
     @property

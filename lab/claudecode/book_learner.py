@@ -481,14 +481,27 @@ def _extract_nodes_local(chunk_text: str, chapter_title: str = "") -> dict:
         with urllib.request.urlopen(req, timeout=300) as resp:
             data = json.loads(resp.read())
         raw = data.get("message", {}).get("content", "").strip()
-        return json.loads(_clean_json(raw))
+        parsed = json.loads(_clean_json(raw))
+        # Thread the actual model the router selected back to the caller so
+        # memory deposits carry accurate model_used provenance — the router
+        # already made this decision, we just weren't returning it.
+        parsed.setdefault("model_used", model)
+        parsed.setdefault("inference_tier", "local")
+        return parsed
     except json.JSONDecodeError:
         return {
             "nodes": [],
             "summary": f"local parse error: {raw[:100] if 'raw' in dir() else '?'}",
+            "model_used": model,
+            "inference_tier": "local",
         }
     except Exception as e:
-        return {"nodes": [], "summary": f"local inference error: {e}"}
+        return {
+            "nodes": [],
+            "summary": f"local inference error: {e}",
+            "model_used": model,
+            "inference_tier": "local",
+        }
 
 
 def _extract_nodes(
@@ -552,14 +565,24 @@ def _extract_nodes(
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read())
         raw = data["choices"][0]["message"]["content"].strip()
-        return json.loads(_clean_json(raw))
+        parsed = json.loads(_clean_json(raw))
+        parsed.setdefault("model_used", model)
+        parsed.setdefault("inference_tier", "cloud")
+        return parsed
     except json.JSONDecodeError:
         return {
             "nodes": [],
             "summary": f"parse error: {raw[:100] if 'raw' in dir() else '?'}",
+            "model_used": model,
+            "inference_tier": "cloud",
         }
     except Exception as e:
-        return {"nodes": [], "summary": f"API error: {e}"}
+        return {
+            "nodes": [],
+            "summary": f"API error: {e}",
+            "model_used": model,
+            "inference_tier": "cloud",
+        }
 
 
 # ── Arousal scoring from CP affinity ──────────────────────────────────────────
