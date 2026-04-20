@@ -1,11 +1,142 @@
-"""
-comms.py — Channel routing, message envelopes, and transport dispatch.
+"""comms.py — Channel routing, message envelopes, and transport dispatch.
 
-Lt Uhura's console: all routing, no participation. Every message through
-comms gets a standard envelope regardless of channel. Channels are
-addressable via comms:// URIs and backed by pluggable transports.
+WHAT IT IS
+──────────
+Lt Uhura's console: all routing, no participation. Comms is the unified
+messaging layer for the whole system. Every message between agents (Igor,
+CC, web UI, external systems) flows through a standard envelope and gets
+routed to pluggable transports. Channels are identified by comms:// URIs;
+messages inherit retention and logging behavior from channel config.
 
-T-uc-comms-module
+WHY IT EXISTS
+─────────────
+Igor's cognition is distributed — memory graph, inference requests, skill
+invocations, habit dispatch all generate inter-process messages. Without
+a unified comms layer (D335), messaging would scatter across
+subprocess.Popen, raw TCP, files, and direct LLM calls. Comms centralizes:
+single envelope, single subscriber model, single file-logging surface.
+This makes the system debuggable, enables multi-instance comms on shared
+Postgres, and makes CC ↔ Igor conversation first-class infrastructure
+rather than ad-hoc relaying.
+
+HOW IT WORKS (architecture)
+───────────────────────────
+Three collaborating layers:
+
+1. comms.py (this file) — envelope + channel registry. Exposes send(),
+   read(), subscribe(). Routes to transports via channel address. All
+   retention/logging behavior derived from Channel config.
+
+2. Transport base (Transport class) — pluggable send/read backends.
+   Implementations live in lab/utility_closet/transports/:
+     postgres.py  — persistent history in infra.channel_messages (D210)
+     discord.py   — bridges to discord_bot module
+     inference.py — LLM calls as comms messages (request/response)
+     or_chat.py   — stateful chat: scrollback-aware multi-turn
+     memory.py    — in-memory deque (testing, ephemeral channels)
+   Each transport implements send(channel, message) → bool and
+   read(channel, limit, since) → list[ChannelMessage].
+
+3. Utility closet web server — HTTP/WebSocket front-end.
+   lab/claudecode/utility_closet_server.py wraps CommsModule. /api/cc_send
+   routes POST → channel.send(). WebSocket subscribers get broadcast on
+   every message. channel_messages table (infra schema) is the persistent
+   log.
+
+ChannelMessage envelope
+───────────────────────
+  id           — uuid hex (16 chars), set by envelope
+  channel      — comms:// URI
+  source       — actor id (igor-wild-0001, ccmain, akien, inference-gateway)
+  timestamp    — ISO8601, set at send() time
+  content_type — MIME type (text/plain, text/markdown, inference/request)
+  payload      — message body
+  reply_to     — optional correlation ID for req/resp pairs
+  metadata     — dict for transport-specific hints (priority, tags, …)
+  retention    — forever | 1y | 30d | ephemeral (inherits from channel)
+
+Channel config contract
+───────────────────────
+  address        — comms:// URI; routing target
+  direction      — READ_ONLY | WRITE_ONLY | READ_WRITE (access gate)
+  delivery       — PULL | PUSH (retrieval model; PUSH reserved for future)
+  notify         — bool; whether to trigger WebSocket broadcast
+  retention      — default TTL (1y, 30d, ephemeral, forever)
+  show_timestamp — bool; web UI renders HHMMSS prefix on author labels
+                   (T-web-chat-timestamp-prefix, 2026-04-20)
+  log_path       — optional file path; auto-derived from address if None
+
+Addressing scheme
+─────────────────
+  comms://shared                 — broadcast to all attached agents
+  comms://discord/<channel-id>   — Discord channel (Discord transport)
+  comms://discord/webhook        — Discord webhook
+  comms://model/<model-name>     — LLM inference request/response
+  comms://igor/<instance-id>     — per-instance intra-Igor comms
+
+Subscriber model
+────────────────
+  comms.subscribe(address, subscriber_id, callback)
+  comms.unsubscribe(address, subscriber_id)
+
+Subscribers get notified on every send() EXCEPT for messages whose
+message.source matches their subscriber_id (source-skip rule in send()).
+Callbacks are synchronous during send(); exceptions are caught and logged,
+not propagated.
+
+File logging
+────────────
+Non-ephemeral messages are appended to .conversation.log files (JSON-per-
+line). Log path derived from channel address:
+  comms://shared            → base_dir/shared.conversation.log
+  comms://discord/dm-akien  → base_dir/discord--dm-akien.conversation.log
+Custom log_path overrides derivation. Ephemeral messages skip logging.
+
+Routing flow (send)
+───────────────────
+  1. Lock; channel and transport looked up
+  2. Direction checked (reject WRITE_ONLY reads, READ_ONLY writes)
+  3. Retention inherited from channel if not set on message
+  4. channel.last_active updated
+  5. transport.send() called (if configured)
+  6. Message logged to file (unless ephemeral)
+  7. Subscribers notified (source-skip)
+  8. _message_count incremented
+  9. Return success (delivered || no transport configured)
+
+Rack integration
+────────────────
+CommsModule extends RackModule (lab/utility_closet/rack.py) and registers
+with the UC service layer on startup. Provides health(), stop(), and
+standard name/version/type for discovery. UC server manages the module
+lifecycle.
+
+KEY DECISIONS SHAPING THIS SUBSYSTEM
+────────────────────────────────────
+  D210  channel-pg-mirror — server._channel_append writes to Postgres
+        channel_messages; MCP channel_read sees all Igor web replies
+  D335  utility-closet-platform — UC is the shared agent platform;
+        comms is platform-level infrastructure, not Igor-only
+
+ENGRAM PORTION
+──────────────
+None yet. Comms is pure infrastructure. Future: PROC_CHANNEL_* habits
+when subscription patterns stabilize.
+
+If you want to change:
+  - Available transports    — add/remove files in transports/
+  - Default retention       — edit Channel.retention default in dataclass
+  - Timestamp prefix format — edit utility_closet_server.py addMsg(), not
+                               this file
+  - Log file paths          — edit Channel.log_file_path() derivation
+  - Subscriber dispatch     — edit send() loop (watch source-skip rule)
+  - Transport routing       — edit register_channel(),
+                               set_default_transport()
+
+Provenance:
+  T-uc-comms-module              — initial implementation, 2026-03-30
+  T-uc-comms-default-channels    — shared + per-agent auto-create, 2026-04-18
+  T-web-chat-timestamp-prefix    — show_timestamp field, 2026-04-20
 """
 
 from __future__ import annotations
