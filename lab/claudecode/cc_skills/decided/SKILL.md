@@ -1,86 +1,167 @@
 ---
 name: decided
-description: Post-discussion record for TheIgors. "These points are decided." Records design decisions to DB/DSB, runs plan check if work was planned, updates tickets. Use when Akien says /decided, "that's decided", "we've decided", or at the end of any planning discussion.
+description: Batch-ticketize conversation decisions. Reads recent conversation turns (since /design marker or prior /decided), summarizes each decision, drafts tickets per decision, runs /review on each ticket filing-time, and writes to queue + slate + session record + Igor memory palace with two-way decision↔ticket backlinks.
+model: sonnet
 ---
 
-# Decided — Post-Discussion Record
+# /decided — Close a design block → batch tickets
 
-Fires when a discussion concludes. "These points are decided."
-The action taken depends on what type of conclusion was reached.
+The closing mark of a design conversation. Takes "the stuff we just talked about" and makes it durable — decisions in the palace, tickets in the queue, everything linked.
 
----
+## Inputs
 
-## Step 1 — What was decided?
+- Optional arg: a brief one-line summary of this decision, e.g. `/decided rename audit to day-close-audit`. If omitted, CC infers the summary from the scope.
+- Scope boundary: look back to either:
+  1. The most recent `DESIGN_START` marker in the session record (written by /design), OR
+  2. The most recent prior /decided boundary, OR
+  3. The session start, whichever is most recent.
 
-Identify the type(s) of conclusion:
-- **Design decision** (Dxxx): architectural choice made → go to Step 2
-- **Work plan**: tasks agreed, ready to implement → go to Step 3
-- **Work complete**: unit of work finished → go to Step 4
-- **Multiple**: do all that apply
+## Steps
 
----
-
-## Step 2 — Record design decisions
-
-For each Dxxx decided:
+### 1. Determine scope
 
 ```bash
 DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/decision_manager.py add Dxxx "short-name" "status" "one-line description"
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-decision Dxxx
+# Find the last boundary (DESIGN_START or prior /decided) in the current session's key_changes
+IGOR_HOME_DB_URL=$DB python3 -c "
+import psycopg2, os
+sid = open(os.path.expanduser('~/.TheIgors/cc_channel/current_session.txt')).read().strip()
+conn = psycopg2.connect(os.environ['IGOR_HOME_DB_URL'])
+cur = conn.cursor()
+cur.execute('SET search_path TO instance, infra, public')
+cur.execute('SELECT key_changes FROM sessions WHERE id = %s', (sid,))
+row = cur.fetchone()
+kc = (row[0] if row else '') or ''
+# Most recent DESIGN_START marker wins; else oldest content is the start
+for line in reversed(kc.splitlines()):
+    if 'DESIGN_START' in line or 'DECIDED ' in line:
+        print(line)
+        break
+"
 ```
 
-This atomically: updates decisions_log.dsb header + appends line, upserts to docs_entries, flushes to Igor memory.
+If no prior boundary, treat the whole session as the scope.
 
----
+### 2. Summarize the decision
 
-## Step 3 — If work was planned: run plan check
+One to two sentences. Assign a decision id: `D-<kebab-slug-of-topic>-YYYY-MM-DD`.
 
-Run `/filter` on the plan before any tickets are created or work starts:
+### 3. Draft tickets
 
+For each implementation unit the decision implies, draft a ticket:
+```python
+{
+  "id": "T-<kebab-slug>",
+  "title": "<short title, <80 chars>",
+  "size": "S|M|L|XL",
+  "tags": ["<Topic>", "<Area>"],
+  "description": "<problem + proposed shape + scope boundary + blocked-by if any>",
+  "decision_id": "D-...",
+  "gate": null,  # set if depends on another pending ticket
+  "priority": 0.5  # raise for unblockers
+}
 ```
-/filter
+
+### 4. Run /review on each draft (filing-time mode)
+
+For each drafted ticket, invoke /review. If /review returns:
+- **PASS** → proceed to filing.
+- **AMEND** → apply the amendments (or ask Akien if ambiguous), re-submit to /review.
+- **SPLIT** → replace the single draft with N child drafts; run /review on each.
+- **DISCARD** → drop the draft, note why in the decision narrative.
+
+HIGH-inertia findings from /review surface inline to Akien for pre-approval; the approval stamp lands in the ticket body.
+
+### 5. File the tickets
+
+Write a batch JSON file to `/tmp/decided_batch_<decision-id>.json` containing the post-review tickets, then:
+```bash
+python3 ~/TheIgors/lab/claudecode/cc_queue.py add /tmp/decided_batch_<decision-id>.json
 ```
 
-Fix any blocking issues. If Akien explicitly overrides a filter failure: note it and proceed.
+### 6. Write to Igor memory palace
 
-Then update tickets:
+Create a decision node at `theigors/decisions/D-...` in the palace:
+```bash
+# After T-decisions-into-palace-subtree lands, this uses palace_write.
+# Until then, use a file stub at lab/design_docs/decisions/D-....md
+```
+
+Fields on the palace node / file:
+- `title`: one-line decision summary
+- `content`: decision narrative (the 1-2 sentences from step 2 + context from the conversation scope)
+- `spawned_tickets`: list of ticket ids created
+- `date`: YYYY-MM-DD
+- `status`: open (closes automatically when all spawned_tickets close, via decision-rollup)
+
+### 7. Append to decisions log
+
+Chronological append to the decisions file (palace-echoed once T-decisions-into-palace-subtree ships). Until then:
+```bash
+echo "$(date -Iseconds) | D-... | <summary> | tickets: T-x, T-y, T-z" >> ~/TheIgors/lab/design_docs_for_igor/decisions_log.dsb
+```
+(Note: auto-memory flags this file as "do not blindly write" — /decided is a structured writer, not a blind dump; this is the exception. After palace migration this file becomes a generated echo.)
+
+### 8. Append to slate + session
 
 ```bash
-# Add new tickets
-python3 ~/TheIgors/lab/claudecode/cc_queue.py add "title" "description" --priority N
+# Today's slate: under ## Ad hoc
+echo "- $D_ID: <summary> — T-x, T-y, T-z" >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
 
-# Update existing tickets
-python3 ~/TheIgors/lab/claudecode/cc_queue.py update <ticket-id> "updated description"
+# Session record: boundary marker + decision
+IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-change "DECIDED $D_ID: <summary> → T-x T-y T-z"
+IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-decision "$D_ID"
 ```
 
-Accumulate in session record:
-```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-change "decided: <what was planned>"
-```
-
----
-
-## Step 4 — If work was completed: record key change
+### 9. Clear /design flag (if set)
 
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-python3 ~/TheIgors/lab/claudecode/cc_queue.py done <task-id> "what was built + test status"
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-change "done: <what was built>"
+rm -f ~/.TheIgors/cc_channel/design_mode.json
 ```
 
----
+### 10. Report
 
-## Step 5 — Savestate if session is winding down
+```
+/decided <summary> — D-...
+Tickets filed: T-x, T-y, T-z (<N> total)
+All linked to D-... (two-way navigation via decision_id field + decision's spawned_tickets list)
+```
 
-If this was a major planning session or the session is ending: run `/savestate`.
-Otherwise skip — savestate runs at natural session end.
+## Flow integration
 
----
+Design pattern:
+```
+/design (optional)
+  → conversation turns (may include back-and-forth, questions, exploration)
+/decided <summary>
+  → tickets filed, decision recorded, design block closes
+/sprint-batch decision:D-...
+  → sprints all tickets from this decision
+```
 
-## What /decided is NOT
+Or, with multiple decisions in one session:
+```
+/design
+  → discuss topic A
+/decided A — T-a1, T-a2
+  → discuss topic B
+/decided B — T-b1
+  → discuss topic C
+/decided C — T-c1, T-c2, T-c3
+/sprint-batch today-slate
+  → sprints all 6 tickets across the three decisions
+```
 
-- Not a commit — commit separately with `/commit`
-- Not a day-close — that's separate
-- Not a savestate on its own — only triggers savestate when session is winding down
+## Invariants
+
+- Every decision gets a D-id, even single-ticket ones — makes trace navigable.
+- Every ticket in a /decided batch carries `decision_id` — no orphaned tickets.
+- /review runs on EVERY draft, not just the first or biggest.
+- HIGH-inertia approvals are recorded in the ticket body before filing, not remembered in CC's head (survives compaction).
+
+## Hard rules
+
+- Never skip /review. The whole point is filing-time quality.
+- Never file a ticket that /review returned DISCARD on without explicit Akien override.
+- Never merge multiple decisions into one D-id just because they came in one session — each decision is its own scope.
+- Never edit a decision node after filing — decisions are append-only. New context becomes a new decision, linked via metadata.
