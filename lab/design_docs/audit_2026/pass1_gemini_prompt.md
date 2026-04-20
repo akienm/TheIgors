@@ -1,6 +1,6 @@
 # Pass 1 — Gemini 2.5 Pro, breadth audit
 
-**Status:** DRAFT — not yet approved by Akien. Do not kick the audit off this file until it bears an "APPROVED" marker and a date.
+**Status:** APPROVED 2026-04-20a — Akien reviewed and edited (commit 811718cf). Ready for kickoff via `lab/claudecode/audit_pass1_run.py`.
 
 **Target model:** Gemini 2.5 Pro (1M context)
 **Transport:** `comms://model/gemini-pro` via inference-channel (T-uc-inference-channel)
