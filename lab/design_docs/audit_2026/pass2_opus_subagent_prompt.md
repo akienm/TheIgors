@@ -1,6 +1,6 @@
 # Pass 2 — Opus 4.7, depth audit (per-subagent prompt template)
 
-**Status:** DRAFT — not yet approved by Akien. Do not kick any Pass-2 subagent from this template until it bears an "APPROVED" marker and a date.
+**Status:** APPROVED 2026-04-20a — Akien reviewed and edited (commit 811718cf). Ready for kickoff via the CC Agent tool, one subagent per concern area.
 
 **Target model:** Claude Opus 4.7 (1M context)
 **Transport:** direct subagent via CC Agent tool, one subagent per concern category
