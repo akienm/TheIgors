@@ -40,7 +40,7 @@ find ~/TheIgors -maxdepth 4 \
     -name "*.pid" -o \
     -name "*.json" -not -name "package*.json" \
     -not -path "*/design_docs*" \
-    -not -path "*/claudecode/book_learner*" \
+    -not -path "*/lab/claudecode/book_learner*" \
   \) \
   -type f 2>/dev/null
 ```

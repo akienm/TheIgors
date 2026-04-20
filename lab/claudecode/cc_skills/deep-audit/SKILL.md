@@ -81,7 +81,7 @@ Files to read: `wild_igor/igor/cognition/word_graph.py` (top 80 lines), `wild_ig
 Lens: is the learning loop actually learning? Training signal quality, gradient/weight meaningfulness, embedding usage patterns, when does the matrix stop improving? What would accelerate learning? How can we do better?
 
 **Panel 9 — PROCESS / META ENGINEER**
-Files to read: `claudecode/session_manager.py` (top 40 lines), `claudecode/cc_queue.py` (top 40 lines), `~/.claude/skills/sprint/SKILL.md`, `~/.claude/skills/context-load/SKILL.md`.
+Files to read: `lab/claudecode/session_manager.py` (top 40 lines), `lab/claudecode/cc_queue.py` (top 40 lines), `~/.claude/skills/sprint/SKILL.md`, `~/.claude/skills/context-load/SKILL.md`.
 Lens: token efficiency across the dev loop, cost per feature delivered, what percentage of the build cycle could Igor already do himself vs. requires Claude, remaining blockers to Igor-as-own-developer. **How can we improve development and token use processes?** What conventions are adding friction without value?
 
 **Panel 10 — SYSTEMS DYNAMICS ANALYST**
@@ -89,7 +89,7 @@ Files to read: `wild_igor/igor/cognition/push_sources.py` (lines 400-510), `wild
 Lens: feedback loops and emergent behavior — where does the system fight itself, unintended couplings between subsystems, second-order effects at scale, where do delays cause oscillation, where are runaway loops possible. **Critical question**: what recurrent connections are missing that would let context at one level reshape processing at another? The brain thinks in systems because of recurrent loops — where are ours?
 
 **Panel 11 — PRODUCTION SRE**
-Files to read: `wild_igor/igor/main.py` (lines 1-60), any restart/crash handling logic, `claudecode/cc_queue.py` (top 30 lines for queue health).
+Files to read: `wild_igor/igor/main.py` (lines 1-60), any restart/crash handling logic, `lab/claudecode/cc_queue.py` (top 30 lines for queue health).
 Lens: observability gaps, what cannot be diagnosed from current logs alone, what happens at 3 AM when something goes wrong unattended, crash recovery paths, alerting blind spots, what breaks silently. How can we do better?
 
 ---
