@@ -45,7 +45,18 @@ Discard reason (if DISCARD): <one line>
 
 ### Writes (for T-review-self-learning)
 
-Every /review invocation writes a `review_findings` record to the DB (when T-review-self-learning ships). For now, log to `~/.TheIgors/claudecode/logs/YYYYMMDD.review.log` so the future self-learning pass can backfill.
+Every /review invocation writes a `review_findings` record to the DB. Use `review_manager.py write`:
+
+```bash
+python3 ~/TheIgors/lab/claudecode/review_manager.py write \
+  --mode filing \
+  --ticket <ticket-id> \
+  --verdict <PASS|AMEND|SPLIT|DISCARD> \
+  --findings '<finding1>' '<finding2>' \
+  --checks '<json>'
+```
+
+For standalone mode, use `--mode plan`, `--mode code`, or `--mode pr` accordingly (with --plan, --commit, or --pr instead of --ticket). Also log to `~/.TheIgors/claudecode/logs/YYYYMMDD.review.log` for human readability.
 
 ## Mode B — standalone (code / plan / PR)
 
@@ -84,10 +95,26 @@ Must-fix: <blocking issues — do not proceed until resolved>
 Suggestions: <non-blocking improvements>
 ```
 
+## Self-learning (T-review-self-learning)
+
+After filing ~10 reviews, check historical confidence per check:
+
+```bash
+python3 ~/TheIgors/lab/claudecode/review_manager.py confidence --check duplicate --days 30
+python3 ~/TheIgors/lab/claudecode/review_manager.py stats --mode filing --days 30
+```
+
+Interpretation:
+- confidence=1.0 (100%): check is reliable, trust it
+- confidence=0.5 (50%): check overridden about half the time, be cautious
+- confidence=0.0 (0%): check frequently wrong, ask Akien on AMEND/DISCARD verdicts
+
+Adjust salience of checks based on this: high-confidence checks (dup, already-done) should block harder; low-confidence checks (scope-creep) should be advisory only.
+
 ## Hard rules
 
 - Must-fix items block the sprint / filing. Do not proceed until resolved.
-- If Akien overrides a must-fix: record it and proceed (the override becomes training data for /review self-learning).
+- If Akien overrides a must-fix: record it with `--override --override-reason <reason>` so it becomes training data for /review self-learning.
 - Don't review your own work as "PASS" by default — actually look.
 - Filing-time /review runs in seconds (Haiku-shaped checklist work). Standalone /review on a complex plan can escalate to Sonnet reasoning if needed.
 - Log every invocation to the review log file so T-review-self-learning can later read it.
