@@ -381,6 +381,54 @@ def _decision_rollup(tasks: list, decision_id: str) -> None:
         )
 
 
+def _append_to_todays_slate(ticket: dict) -> None:
+    """T-sync-on-close-not-dayend: append closed ticket to today's slate
+    ## Done today section. Idempotent (skips if ticket id already there).
+    Graceful degrade: silent on missing slate or read/write failure.
+    """
+    try:
+        today = datetime.now(timezone.utc).strftime("%Y%m%d")
+        slate_path = os.path.expanduser(f"~/.TheIgors/claudecode/{today}.slate.txt")
+        if not os.path.exists(slate_path):
+            return
+        with open(slate_path) as f:
+            content = f.read()
+        tid = ticket["id"]
+        title = ticket.get("title", "")
+        result = (ticket.get("result") or "").split("\n")[0][:120]
+        entry = f"- {tid} — {title}"
+        if result:
+            entry += f" ({result})"
+        lines = content.splitlines(keepends=True)
+        out = []
+        appended = False
+        in_done = False
+        for i, line in enumerate(lines):
+            # Skip idempotency: if ticket already present in "## Done today"
+            if in_done and tid in line and line.lstrip().startswith("-"):
+                appended = True  # treat as already-done
+                out.append(line)
+                continue
+            out.append(line)
+            if line.startswith("## Done today"):
+                in_done = True
+                continue
+            if in_done and line.startswith("## ") and not appended:
+                out.insert(len(out) - 1, entry + "\n")
+                appended = True
+                in_done = False
+        if in_done and not appended:
+            if out and not out[-1].endswith("\n"):
+                out.append("\n")
+            out.append(entry + "\n")
+            appended = True
+        if appended:
+            with open(slate_path, "w") as f:
+                f.writelines(out)
+    except Exception as e:
+        _log({"action": "slate_append_failed", "error": str(e), "id": ticket.get("id")})
+
+
 def cmd_done(args):
     if len(args) < 2:
         print("Usage: done <id> <result-message>")
@@ -399,6 +447,7 @@ def cmd_done(args):
     _log({"action": "done", "id": args[0], "title": t["title"], "result": args[1]})
     _prepend_closed_ticket(args[0], t["title"])
     _close_igor_goal(args[0])
+    _append_to_todays_slate(t)
     print(f"Completed {args[0]}: {t['title']}")
 
 
