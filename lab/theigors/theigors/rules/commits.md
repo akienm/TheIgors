@@ -1,11 +1,11 @@
-# Commit Discipline
+# Commits — full cycle, no amend, no force-push
 
 **Path:** `theigors/rules/commits`
-**Updated:** 2026-04-12T15:55:13.184913+00:00 by seed_memory_palace
+**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
 
-Commit = full cycle (add + commit + pull + push). Autonomous commit rights: tests pass + no secrets = commit without asking. Never --no-verify or force-push main. Never commit .env, *.db, or ~/.TheIgors/ paths.
-
-## Pointers
-
-- **skill:** `/commit`
-- **tool:** `gh CLI for PRs/issues`
+Commit discipline:
+- Commit = full cycle: add + commit + pull + push. Never partial.
+- Autonomous commit rights: tests pass + no secrets = commit without asking.
+- Never `--no-verify` or force-push main.
+- Never stage .env, *.db, or ~/.TheIgors/ runtime paths.
+- Never `git commit --amend`. Always new commits, even when the amend 'seems harmless.' Stash is the right tool when `pull --rebase` fails on unstaged changes.

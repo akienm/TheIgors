@@ -36,7 +36,19 @@ Section order is salience-first (D-slate-salience-order-2026-04-20): read top-do
 stop once you have enough context. Next up = what to work on now; Blocked = candidates
 to promote; After that = queue; Decided = this-session decisions; Done = shipped.
 
-## Step 2 — Memory palace tree (what exists, where to look)
+## Step 2a — Rules (read these FIRST, every session)
+```bash
+psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -c \
+  "SELECT title, content FROM memory_palace
+   WHERE path LIKE 'theigors/rules/%' ORDER BY path" -tA
+```
+
+Canonical rules live in the palace DB (T-rules-canonical-db-first, 2026-04-20).
+CLAUDE.md is a thin shim — palace wins on conflict. Read order: persona →
+coding → commits → memory → database → budget → collaboration →
+igor-constraints → docs-live-in-code → do-not.
+
+## Step 2b — Memory palace tree (what exists, where to look)
 ```bash
 psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -c \
   "SELECT path, title FROM memory_palace ORDER BY path" -t

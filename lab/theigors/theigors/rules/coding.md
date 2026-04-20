@@ -1,13 +1,15 @@
-# Coding Conventions
+# Coding — read first, respect inertia
 
 **Path:** `theigors/rules/coding`
-**Updated:** 2026-04-12T15:55:13.184913+00:00 by seed_memory_palace
+**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
 
-Read before editing. Check inertia level. HIGH files need strong justification. MEDIUM files discuss first. LOW files freely improvable. Never --no-verify or force-push main.
+Before editing:
+- Read the file first. Never overwrite blindly.
+- Check inertia level. HIGH needs strong justification, MEDIUM discuss first, LOW freely improvable.
 
-## Pointers
+Inertia levels:
+- HIGH (0.90+): brainstem/, memory/models.py, cognition/reasoners/base.py
+- MEDIUM: cognition/, memory/cortex.py, main.py
+- LOW: tools/, dashboard/, word_graph.py
 
-- **file:** `CLAUDE.md`
-- **note:** `HIGH: brainstem/, memory/models.py, cognition/reasoners/base.py`
-- **note:** `MEDIUM: cognition/, memory/cortex.py, main.py`
-- **note:** `LOW: tools/, dashboard/, word_graph.py`
+HIGH-inertia edits stay with CC. Igor handles everything else.

@@ -1,11 +1,10 @@
-# Database Rules
+# Database — Postgres everywhere, db_proxy always
 
 **Path:** `theigors/rules/database`
-**Updated:** 2026-04-12T15:55:13.184913+00:00 by seed_memory_palace
+**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
 
-NO SQLITE anywhere — everything Postgres. db_proxy translates ?→%s blanket, so use jsonb_exists(metadata, 'key') not metadata ? 'key'. All DB access through db_proxy, never raw psycopg2 in tools.
-
-## Pointers
-
-- **file:** `wild_igor/igor/memory/db_proxy.py`
-- **table:** `Igor-wild-0001 (Postgres)`
+Database rules:
+- NO SQLITE ANYWHERE. Everything Postgres.
+- db_proxy does blanket `?→%s` translation — use `jsonb_exists(metadata, 'key')` not `metadata ? 'key'`.
+- All DB access through db_proxy, never raw psycopg2 in tools.
+- Primary DB: Igor-wild-0001 at 127.0.0.1. Runtime dir: ~/.TheIgors/Igor-wild-0001/ (capital I).
