@@ -2,8 +2,12 @@
 """
 cc_queue.py — Designer/Worker Claude task queue manager.
 
-Queue file: ~/.TheIgors/cc_channel/queue.json
-Log file:   ~/.TheIgors/cc_channel/log.jsonl
+Canonical storage: clan.memories where parent_id='TICKETS_ROOT' (FACTUAL rows,
+metadata.kind='ticket'). queue.json is a generated echo, regenerated on every
+save for downstream consumers that still read the file.
+
+Echo file: ~/.TheIgors/cc_channel/queue.json
+Log file:  ~/.TheIgors/cc_channel/log.jsonl
 
 Usage:
     cc_queue.py list                          — show tasks (pending first, gated hidden)
@@ -38,6 +42,8 @@ from datetime import datetime, timezone
 
 IGOR_FLUSH_URL = "https://localhost:8080/api/cc_send"
 
+TICKETS_ROOT_ID = "TICKETS_ROOT"
+
 
 def _ssl_ctx() -> ssl.SSLContext:
     ctx = ssl.create_default_context()
@@ -61,17 +67,89 @@ STATUS_ORDER = {
 }
 
 
+def _db_conn():
+    """Connect to clan.memories storage."""
+    import psycopg2
+
+    return psycopg2.connect(
+        os.environ.get(
+            "IGOR_HOME_DB_URL",
+            "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
+        )
+    )
+
+
+def _narrative_for(t: dict) -> str:
+    """Narrative = title + description (both GIN-searchable)."""
+    title = (t.get("title") or "").strip()
+    desc = (t.get("description") or t.get("body") or "").strip()
+    return f"{title}\n\n{desc}" if desc else title
+
+
 def _load():
-    if not os.path.exists(QUEUE_PATH):
-        return []
-    with open(QUEUE_PATH) as f:
-        return json.load(f)
+    """Canonical read: SELECT from clan.memories. Returns list of ticket dicts."""
+    conn = _db_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT metadata FROM clan.memories WHERE parent_id = %s",
+            (TICKETS_ROOT_ID,),
+        )
+        tasks = []
+        for (md,) in cur.fetchall():
+            if not md:
+                continue
+            t = dict(md)
+            t.pop("kind", None)
+            tasks.append(t)
+        return tasks
+    finally:
+        conn.close()
 
 
-def _save(tasks):
+def _write_queue_echo(tasks):
+    """Regenerate queue.json as echo for downstream readers (github_sync etc.)."""
     os.makedirs(os.path.dirname(QUEUE_PATH), exist_ok=True)
     with open(QUEUE_PATH, "w") as f:
         json.dump(tasks, f, indent=2)
+
+
+def _save(tasks):
+    """Canonical write: UPSERT each ticket to clan.memories, then echo queue.json."""
+    conn = _db_conn()
+    try:
+        cur = conn.cursor()
+        now = datetime.now(timezone.utc).isoformat()
+        for t in tasks:
+            if not t.get("id"):
+                continue
+            metadata = dict(t)
+            metadata["kind"] = "ticket"
+            cur.execute(
+                """
+                INSERT INTO clan.memories
+                  (id, narrative, memory_type, parent_id, metadata, timestamp,
+                   source, scope, confidence, updated_at)
+                VALUES (%s, %s, 'FACTUAL', %s, %s::jsonb, %s, 'cc_queue',
+                        'class', 1.0, %s)
+                ON CONFLICT (id) DO UPDATE SET
+                  narrative = EXCLUDED.narrative,
+                  metadata = EXCLUDED.metadata,
+                  updated_at = EXCLUDED.updated_at
+                """,
+                (
+                    t["id"],
+                    _narrative_for(t),
+                    TICKETS_ROOT_ID,
+                    json.dumps(metadata),
+                    now,
+                    now,
+                ),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+    _write_queue_echo(tasks)
 
 
 def _log(entry: dict):
