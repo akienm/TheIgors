@@ -1,8 +1,96 @@
+## Session 2026-04-20a
+**Theme**: Workflow overhaul sprint: design+decided+review+sprint-batch, ticket schema extensions
+**Key changes**:
+- done: T-rename-audit-to-day-close-audit (bf86a1cb + ee46e83) + filed 10 workflow-overhaul tickets with decision_id D-workflow-overhaul-2026-04-20
+- filed 9 palace-as-source-of-truth tickets under D-palace-source-of-truth-2026-04-20: epic + rules-db-first + tickets/decisions/slates/skills-into-palace + sync-on-close + /export-chat + chat-history-backfill
+- done: T-ticket-schema-decision-id-and-gate (d93c71e4) — cc_queue.py gains decision_id/gate fields + gate/ungate/set-decision verbs + list filter
+- sprint-batch done: T-review-filing-time + T-decided + T-sprint-batch + T-palace-epic (5dfd5c34) + T-rules-canonical-db-first gated w/ palace-empty finding
+- done: T-fixit-rewrite (e8f96273 + 3bbc7aa) + WorkingWithClaude.md refresh + ClaudeAndAkien sync. Filed T-swarm-via-home-web-server (deferred). Skills work chapter closed.
+- done: T-savestateauto-emit-compact-preserve (retroactive, first exercise of T-sync-on-close-not-dayend pattern) — savestateauto always prints compact preserve block
+- /day-close starting — skills chapter closed, palace migration sequencing queued
+**In-flight**: NONE
+
+## Session 2026-04-19a
+**Theme**: Post-compact autonomous sprint: docs-live-in-code extension + worker-foreman Phase B
+**Key changes**:
+- Phase B worker-foreman narratives shipped (b61438b3); filed T-savestate-append-change-gap and patched /savestateauto to emit append-change.
+- done: T-savestate-append-change-gap — /savestateauto patched, key_changes now populated
+- scoped T-planning-as-waypoint-graph: most work already shipped via goal_decompose; narrowed to plan_traverse + prereq edges + plan_construct (M not L)
+**Next session**: Next: workflow overhaul (9 tickets), T-docs-live-in-code, audit launch
+**In-flight**: NONE
+
+## Session 2026-04-18b
+**Theme**: Session startup
+**Key changes**:
+- done: T-cc-daily-chat-logs — chat log formatter + Stop hook (e82be852)
+- done: T-swadl-vendor — SWADL editable install + overview doc (8ded14c7)
+- done: T-igor-flush-session-404 — flush_session now uses cc_send (acba41eb)
+- done: T-cc-stale-compact-request-leak — 10min mtime check (5ab111be)
+- done: T-routing-future-override-test-fail — patch target correction (eebc7296)
+- partial: T-update-readme CC portion shipped (15e263ba); Igor's self-description pending
+- done: T-uc-inference-channel — InferenceTransport MVP (fd69b3b1)
+- done: T-uc-chattable-llm-channel — OrChatTransport MVP (98ca45ca)
+- done: T-uc-module-migration-epic closed with 2 child tickets (T-uc-budget-shelf, T-uc-filesystem-shelf)
+- done: T-scope-guard-echo-dedup — 30min dedup on SCOPE_GUARD/pe_chain posts (d121605f)
+- done: T-update-readme (616b8541 Igor voice added) + T-foreground-reading-emotional-read (asked, no gap named)
+- done: T-seed-memories-deposited-by (cd624a7d) + T-versioned-seed-config (a08daee1); committed ec977f92 extract diagnostics
+- done: T-igor-input-echo-thread-history — strip prefix at anchor write (659bb5a4)
+- done: T-extract-prompt-zero-tolerance — 1+ nodes/chunk enforced in prompt (5f1518e8)
+- done: T-remove-extract-timeout (698625ea)
+- done: T-provenance-gap-metric-memories (2169f297)
+- done: T-input-echo-ne-arc (e65931c8)
+- done: T-reading-worker-pool MVP (abe23c52)
+- done: T-sleep-memory-auditor (2836bac9)
+- done: T-uc-budget-shelf partial (44db598a) + T-uc-filesystem-shelf partial (62f8c342)
+- done: T-ollama-model-cleanup (3a9915d1)
+**In-flight**: NONE
+
+## Session 2026-04-18a
+**Theme**: Sprint: gate primitive, episode binding, SensorTree, confab gate, Discord transport, Matter shelf, tmux fix
+**Next session**: Next: test superclaude tmux fix, remaining queue tickets
+**In-flight**: In-flight: NONE
+
+## Session 2026-04-17a
+**Theme**: UC rack architecture sprint — design + build
+**Key changes**:
+- done: T-uc-channel-tabs-redesign — channel tabs + notifications, removed dashboard/bridge
+- done: T-provenance-coverage-enforcement — provenance on every memory, 86K backfilled
+- done: T-reader-provenance-fix — all reader deposits carry provenance, fixed reading_list status + dedup
+- done: T-experiment-findings-log — queryable findings table + CLI + DeepSeek finding seeded
+- done: T-active-suppression-action-claims — active inline suppression of false claims
+- done: T-active-suppression-coherence — active suppression of incoherent habit emissions
+- done: T-dashboard-metrics-audit — all metrics verified, removed misleading Graph:0%
+- done: T-fix-discord-bot — reconnect + stability fixes
+- done: T-metrics-store — time-series metrics in infra.metrics
+- done: T-engram-cursor-runtime — cursor traversal extracted to own module, 9 tests
+- done: T-igor-as-programmer — 12 coding engram nodes in BRANCHIF chain
+- done: T-igor-modes — four biological operating modes, derived not set
+- done: T-versioned-memories — child-chain version history on store()
+- done: T-versioned-engrams — delta-based engram versioning
+- done: T-engram-portability — export/import engrams with dependency manifests
+- done: T-config-vars-review — unified boredom threshold, removed dead var, principle established
+- done: T-postgres-home-db-failover — failover appointment tool
+- done: T-history-archive-to-theigorproject — history archived
+- done: GH-270 — already implemented, closed
+- done: GH-274 — graph-native savestate
+**Next session**: Next: T-inhibitory-pattern-primitive (gate), T-ring-to-binding, GH-281 (SensorTree), T-uc-inference-channel, T-uc-channel-migration
+**In-flight**: In-flight: NONE
+
 ## Session 2026-04-16b
 **Theme**: Epic close sprint + system-proxy + calving fix
 **Key changes**:
 - done: 17 tickets — 4 epics closed (experiment-primitive, graph-calving, reasoning-voice-split, llm-shrinkage), system-proxy facade+migrations, pipeline voice fix, CRITICAL calving protection fix
-**In-flight**: NONE
+- done: T-uc-schema-three-namespaces — three Postgres schemas (instance/clan/infra), m050 migration, search_path per proxy factory
+- done: T-uc-base-class-extract — AgentBase in lab/utility_closet/, IgorBase thin subclass, 25 tests
+- done: T-uc-rack-architecture — RackModule + Rack registry, 22 tests
+- done: T-uc-comms-module — comms rack shelf with envelopes, channels, transports, subscriptions, 35 tests
+- done: T-uc-comms-default-channels — comms://shared + auto-create agent channels, 2 API endpoints, 12 tests
+- done: T-audit-wiring-check — wiring_check.py + audit step 18.5, 17 tests
+- done: T-uc-db-proxy-shelf — db_proxy moved to UC, re-export shim, DatabaseShelf rack module
+- done: T-uc-system-proxy-shelf — system_proxy moved to UC, re-export shim
+- done: T-uc-machine-manager-shelf — machine_manager moved to UC
+**Next session**: Next: T-audit-wiring-check, T-config-vars-review, T-provenance-coverage-enforcement
+**In-flight**: In-flight: NONE — runner.py + decisions_log.dsb unstaged changes in worktree from other CC session
 
 ## Session 2026-04-16a
 **Theme**: 27-ticket sprint
