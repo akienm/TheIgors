@@ -18,15 +18,23 @@ if [ ! -f "$SLATE" ]; then
   cat > "$SLATE" <<EOF
 # Slate $(date +%Y-%m-%d)
 
-## Planned
+## Next up
 
-## Ad hoc
+## Blocked
 
-## Done today
+## After that
+
+## Decided
+
+## Done
 EOF
 fi
 cat "$SLATE"
 ```
+
+Section order is salience-first (D-slate-salience-order-2026-04-20): read top-down,
+stop once you have enough context. Next up = what to work on now; Blocked = candidates
+to promote; After that = queue; Decided = this-session decisions; Done = shipped.
 
 ## Step 2 — Memory palace tree (what exists, where to look)
 ```bash

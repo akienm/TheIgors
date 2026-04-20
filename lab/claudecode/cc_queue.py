@@ -410,7 +410,7 @@ def _append_to_todays_slate(ticket: dict) -> None:
                 out.append(line)
                 continue
             out.append(line)
-            if line.startswith("## Done today"):
+            if line.startswith("## Done"):
                 in_done = True
                 continue
             if in_done and line.startswith("## ") and not appended:
