@@ -101,10 +101,12 @@ For each finding above, do exactly this:
    interacts with yours). Flag anything Pass 1 didn't catch. Add
    these under a "Pass 1 gaps" section, same shape as the per-finding
    output.
+
 2. **Look for theatrical biology Pass 1 missed.** This is the
    highest-value miss class. Anywhere in your concern area with a
    biology name, verify the mechanism honestly corresponds. If it
    doesn't, file the ticket.
+
 3. **Check for dead code referenced by habits.** The previous audit
    (T-audit-2026-03-25) found 58 dead habit code_refs. When you find
    code in your area, cross-check whether any habit's `code_ref`
@@ -122,6 +124,13 @@ For each finding above, do exactly this:
    migration every time the schema changes — a pre-commit hook would
    catch this before it hits CC context". Area-9 is the primary
    integrator; every other subagent contributes.
+
+
+5. What else?
+  - What else should we be asking?
+  - What else might help his cognition? How can we help him learn and reason better?
+  - What else can we optimze given the nature of the project as a research devoted to small hardware?
+  - How do we perform the same review process of the database and it's engrams?
 
 ### Output format
 

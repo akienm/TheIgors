@@ -248,6 +248,12 @@ persona's "this is broken" — the false-negative cost dominates.
     Bias toward SIMPLIFY / DELETE / CONSOLIDATE suggestions over
     "add another skill" suggestions.
 
+12 What else?
+  - What else should we be asking?
+  - What else might help his cognition? How can we help him learn and reason better?
+  - What else can we optimze given the nature of the project as a research devoted to small hardware?
+  - How do we perform the same review process of the database and it's engrams?
+
 ### Do NOT constrain yourself with "what to pay attention to"
 
 No skip rules. No "focus on X" instructions beyond the 11 personas
