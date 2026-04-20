@@ -98,6 +98,7 @@ class Channel:
     delivery: Delivery = Delivery.PULL
     notify: bool = False
     retention: str = "1y"  # default retention for messages
+    show_timestamp: bool = True  # prefix "HHMMSS " on rendered author labels
     log_path: Optional[Path] = None  # auto-derived from address if None
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     last_active: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -318,6 +319,7 @@ class CommsModule(RackModule):
         delivery: Delivery = Delivery.PULL,
         notify: bool = True,
         retention: str = "1y",
+        show_timestamp: bool = True,
         transport: Optional[Transport] = None,
     ) -> Channel:
         """
@@ -334,6 +336,7 @@ class CommsModule(RackModule):
             delivery=delivery,
             notify=notify,
             retention=retention,
+            show_timestamp=show_timestamp,
         )
         self.register_channel(ch, transport)
         return ch

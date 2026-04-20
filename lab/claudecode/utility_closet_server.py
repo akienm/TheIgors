@@ -97,6 +97,7 @@ def _kill_process(pid: int) -> None:
     except OSError:
         pass
 
+
 # Ensure repo root is on sys.path for lab.utility_closet imports
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(_REPO_ROOT) not in sys.path:
@@ -1138,6 +1139,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
     .msg-cc     .author { color: #ffb347; font-weight: bold; }
     .msg-system { color: #888; font-style: italic; }
     .author { margin-right: 0.4rem; }
+    .ts { color: #666; font-family: monospace; margin-right: 0.3rem; font-size: 0.85rem; }
     .content { white-space: pre-wrap; }
     .md p { margin: 0.3em 0; }
     .md p:first-child { margin-top: 0; }
@@ -1289,8 +1291,14 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
       (channelMsgs[ch] || []).forEach(m => {
         const cls = _knownAgents.has(m.author) ? 'igor' : m.author === 'claude-code' ? 'cc' : 'user';
         const label = _knownAgents.has(m.author) ? m.author : m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
-        addMsg(cls, label, m.content);
+        addMsg(cls, label, m.content, m.ts);
       });
+    }
+
+    function _hhmmss(ts) {
+      if (!ts) return '';
+      const m = /(\d{2}):(\d{2}):(\d{2})/.exec(ts);
+      return m ? m[1] + m[2] + m[3] : '';
     }
 
     function switchChannel(ch) {
@@ -1362,9 +1370,11 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
       return out.join('\n');
     }
 
-    function addMsg(cls, author, content) {
+    function addMsg(cls, author, content, ts) {
       const d = document.createElement('div');
       d.className = 'msg msg-' + cls;
+      const hhmmss = _hhmmss(ts);
+      if (hhmmss) { const t = document.createElement('span'); t.className='ts'; t.textContent=hhmmss+' '; d.appendChild(t); }
       if (author) { const s = document.createElement('span'); s.className='author'; s.textContent=author+':'; d.appendChild(s); }
       const c = document.createElement(cls === 'igor' ? 'div' : 'span');
       if (cls === 'igor') { c.className='content md'; c.innerHTML=parseMarkdown(content); }
@@ -1405,7 +1415,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
           if (ch === currentChannel) {
             const cls = _knownAgents.has(m.author) ? 'igor' : m.author === 'claude-code' ? 'cc' : 'user';
             const label = _knownAgents.has(m.author) ? m.author : m.author === 'claude-code' ? 'CC>' : (m.author || 'You');
-            addMsg(cls, label, m.content);
+            addMsg(cls, label, m.content, m.ts);
           } else {
             // Mark tab as having new messages (blue -> green)
             const tab = channelBar.querySelector('[data-channel="'+ch+'"]');
