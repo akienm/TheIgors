@@ -47,7 +47,7 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 **Design docs are architectural truth — not notes, not comments in code.** Keep DSB format docs in the repo, organized as a tree: a root architecture document with subsystem documents beneath it. Make sure Claude's workflow keeps them current. Current docs mean Claude spends the minimum number of tokens getting clear on where the problems are.
 
-**The two-session pattern: Designer + Worker.** Complex work splits across two roles. The Designer Claude (interactive, with Akien present) handles architecture, planning, teaching, and anything requiring judgment. The Worker Claude runs as an autonomous daemon, consuming tickets from the queue and executing sprints without human interaction. The queue (`~/.TheIgors/cc_channel/queue.json`) is the handoff point. The shared channel (`messages.jsonl`) is the coordination substrate — both sessions post to it and can read each other's output. A context-load at session start reads the channel, the slate, and blob tops rather than reloading full files. This pattern scales: multiple workers on multiple machines can pull from the same queue against the same Postgres DB.
+**Batched sprint, in-process pickup.** Complex work used to split across two CC sessions (interactive Designer + automated Worker daemon). That pattern retired in 2026-04: `/sprint-batch` handles the multi-ticket case in a single session (shared setup, topo-sorted dep order, one commit per ticket), and ticket pickup on idle has migrated to the biomimetic engram chain `ENGRAM_TICKET_PICKUP_SCAN → ENGRAM_TICKET_PICKUP_ADOPT → ENGRAM_CODE_INIT` so Igor can pick up his own work in-process without spawning a separate CC session. The queue (`~/.TheIgors/cc_channel/queue.json`) is still canonical for ticket state (with `decision_id` + `gate` fields for two-way navigation + "come back to" precondition). The shared channel (`messages.jsonl`) remains the coordination substrate across Igor + CC + across-machine. Multiple CC instances can still pull from the same queue against the same Postgres DB — the worker *daemon* is gone, not the multi-instance capability.
 
 **Save state at the end of every session.** Agree a ledger of work, say "save state and go," and the next session picks up from disk with full context. The session record is a real artifact, not a courtesy. More precisely: savestate runs *when decisions are made and work starts*, not only at the end — so that a crash mid-session loses only the in-flight hypothesis, not the decisions.
 
@@ -73,36 +73,53 @@ Accept that Claude is a good coder, not always a great one. Plan to periodically
 
 ### The Daily Loop
 
-Each day opens with a fresh slate file (`YYYYMMDD.slate.txt`). Context-load creates it if it doesn't exist.
+Each day opens with a fresh slate file (`YYYY-MM-DD.slate.txt` or `YYYYMMDD.slate.txt`). Context-load creates it if it doesn't exist.
 
-- `/context-load` — read today's slate, orient on active tickets and notes from prior session
-- Review open tickets; discuss how they fit together; resolve design questions (may spawn new tickets)
-- Add anything that surfaces; use `/notethat` to bookmark ideas mid-discussion
-- Finalize the plan and approve it
-- At day's end: `/day-close` syncs docs, creates a new GitHub Discussion for the day's record, and pushes any tickets missing GitHub issues
+- `/context-load` — read today's slate + palace briefing + recent decisions + channel; start session record (2000-token budget)
+- `/design` (optional marker) — bracket a design block so `/decided` knows where to scope back from; most conversations don't need it
+- Discuss open tickets, resolve design questions, explore approaches
+- `/decided <summary>` — close a design block. Runs `/review` per drafted ticket (duplicate / already-done / blocked-by / size sanity / scope-creep / test-plan / HIGH-inertia inline approval), then files the batch with two-way decision↔ticket backlinks. Multiple `/decided` calls per session are normal
+- `/sprint-batch <selector>` — run the unblocked tickets in dependency order. Selectors: `today-slate`, `slate:planned`, `slate:ad-hoc`, `decision:D-...`, `tag:...`, or an explicit list
+- `/note` — parallel path for insights that don't warrant a ticket
+- At day's end: `/day-close` syncs docs, runs `/day-close-audit` (debris + hygiene check — renamed from /audit in 2026-04-20 to separate "debris check" from "plan/code review"), creates a new GitHub Discussion for the day's record, and pushes any tickets missing GitHub issues
 
 ---
 
 ### Each Work Step
 
-Work is ticket-driven. Every piece of work has a ticket in the queue before implementation starts.
+Work is ticket-driven. Every piece of work has a ticket in the queue before implementation starts. Tickets carry `decision_id` (parent decision) and `gate` ("come back to" precondition) fields; gated tickets are hidden from default queue selectors.
 
-**Interactive session** (Designer + Akien):
-1. `/context-load` — orient, read slate, start session record (2000-token budget; ~4 chars per token; stop when ~8000 characters read)
-2. Read relevant tickets; chat about design issues; surface inertia concerns
-3. Update or create tickets from the discussion
-4. For L-size: write a complete plan, get approval before writing a line of code
-5. Implement; read every file before editing; forensic logging on non-trivial changes
-6. `/test-fix` — tests green before probe
-7. `/probe` — behavioral verification if criterion defined
-8. `/decided` — record decisions while context is fresh
-9. `/commit` — stage specific files, pull, push
-10. `/savestate` — end of session
+**Design loop:**
+```
+/design (optional marker)
+  → conversation / discussion
+/decided <summary>
+  → /review runs filing-time checks per drafted ticket
+  → tickets land in queue.json + slate + session record + palace
+  → decision D-... created with spawned_tickets backlink
+/savestateauto
+```
 
-**Worker daemon** (automated, no human present):
-The daemon (`worker_daemon.sh`) polls the queue and runs `claude /sprint <id>` for each pending ticket. S and M tickets run fully autonomously. L tickets run `/filter` on the plan automatically before posting to the channel — blocking filter failures stop execution before any code is written. The ticket being queued is the approval signal; no additional gate needed. Each sprint claims the ticket, implements, tests, probes, posts result, writes a done flag, and exits. The daemon resets timed-out tickets to pending and retries. Exit when queue drains.
+**Build loop (per ticket in a `/sprint-batch` run):**
+```
+claim
+  → build (implement, read every file before editing, forensic logging on non-trivial changes)
+  → test (pytest -x -q)
+  → cleanup (REQUIRED — diff review; remove debug prints, commented code, unused imports, replaced functions, single-use helpers, temp files; every file in diff = on purpose)
+  → doc-refresh (T-docs-live-in-code: if load-bearing file touched, update its canonical docstring)
+  → commit + push (add specific files; pull --rebase; push; never --no-verify)
+  → close (cc_queue.py done; retroactive incidental ticket filed if the commit included unclaimed-but-fixed debris — "oh, and I also fixed this" pattern)
+  → savestateauto
+```
 
-**Ticket schema includes `required_files` and `related_to`.** Pre-declaring which files a ticket needs (`required_files: [...]`) lets `/sprint` load them at open instead of discovering them mid-work — saves 2-3 turns per ticket. `related_to` links tickets that share context so the daemon can prefer the leave-running-minion pattern systematically rather than relying on human recognition of relatedness.
+**Shortcuts:**
+- `/fixit` = `/decided` + `/sprint-batch` on the just-filed tickets. Fast reactive path for bug-shaped work
+- `/review` standalone — invokable outside `/decided` for a risky diff, a PR, or a pre-sprint plan sanity check
+- `/test-fix` — bounded test-run-and-fix loop (3 passes then escalate)
+
+**Ticket schema includes `decision_id`, `gate`, `required_files`, and `related_to`.** `decision_id` links back to the `/decided` record that spawned the ticket; `gate` holds a freeform precondition (e.g. "after productization"); `required_files` pre-declares files a ticket needs so `/sprint` loads them at open; `related_to` links tickets that share context.
+
+**Retired (2026-04):** the two-session Designer + Worker pattern and its `worker_daemon.sh` polling loop. Ticket pickup has migrated to the biomimetic engram chain `ENGRAM_TICKET_PICKUP_SCAN → ENGRAM_TICKET_PICKUP_ADOPT → ENGRAM_CODE_INIT` (Igor picks up his own work in-process, no konsole-spawned separate session). `/sprint-batch` handles the "multiple tickets in one run" case that the worker daemon used to cover.
 
 ---
 
