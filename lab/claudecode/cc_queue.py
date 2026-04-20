@@ -6,7 +6,9 @@ Queue file: ~/.TheIgors/cc_channel/queue.json
 Log file:   ~/.TheIgors/cc_channel/log.jsonl
 
 Usage:
-    cc_queue.py list                          — show all tasks (pending first)
+    cc_queue.py list                          — show tasks (pending first, gated hidden)
+    cc_queue.py list --gated                  — include gated tickets in the list
+    cc_queue.py list --by-decision            — group output by decision_id
     cc_queue.py add <json-file>               — add task from JSON file
     cc_queue.py claim <id>                    — mark task in_progress
     cc_queue.py done <id> <msg>               — mark task completed with result
@@ -21,6 +23,9 @@ Usage:
     cc_queue.py reset-stale                       — reset all in_progress tickets → pending (daemon startup cleanup)
     cc_queue.py set-worker <worker> <id> [<id>]  — assign worker (igor|claude) to ticket(s)
     cc_queue.py needs-review <id>                — mark ticket needs_review (Igor self-coding review gate)
+    cc_queue.py gate <id> <reason>               — gate a ticket behind a precondition (hides from default list)
+    cc_queue.py ungate <id> [note]               — clear a ticket's gate
+    cc_queue.py set-decision <id> <decision-id>  — attach a decision id to a ticket
 """
 
 import json
@@ -127,10 +132,15 @@ def _print_task(t: dict) -> None:
 
 def cmd_list(args):
     by_epic = "--by-epic" in args
+    show_gated = "--gated" in args
+    by_decision = "--by-decision" in args
     tasks = _load()
     if not tasks:
         print("Queue empty.")
         return
+
+    if not show_gated:
+        tasks = [t for t in tasks if not t.get("gate")]
 
     def _priority_int(t):
         p = t.get("priority", 99)
@@ -152,6 +162,16 @@ def cmd_list(args):
         for epic_name in sorted(groups):
             print(f"\n## #{epic_name}")
             for t in groups[epic_name]:
+                _print_task(t)
+    elif by_decision:
+        from collections import defaultdict
+
+        groups: dict[str, list] = defaultdict(list)
+        for t in tasks_sorted:
+            groups[t.get("decision_id") or "(no decision)"].append(t)
+        for decision in sorted(groups):
+            print(f"\n## {decision}")
+            for t in groups[decision]:
                 _print_task(t)
     else:
         for t in tasks_sorted:
@@ -365,6 +385,8 @@ def cmd_add(args):
         nt.setdefault("required_files", [])
         nt.setdefault("related_to", None)
         nt.setdefault("github_issue", None)
+        nt.setdefault("decision_id", None)
+        nt.setdefault("gate", None)
         tasks.append(nt)
         _log({"action": "add", "id": nt["id"], "title": nt["title"]})
         print(f"  added: {nt['id']} — {nt['title']}")
@@ -638,6 +660,74 @@ def cmd_needs_review(args):
 
 
 COMMANDS["needs-review"] = cmd_needs_review
+
+
+def cmd_gate(args):
+    """Gate a ticket behind a precondition. Usage: gate <id> <reason>"""
+    if len(args) < 2:
+        print("Usage: gate <ticket-id> <reason-string>")
+        sys.exit(1)
+    tid = args[0]
+    reason = " ".join(args[1:])
+    tasks = _load()
+    t = _find(tasks, tid)
+    if not t:
+        print(f"Task {tid} not found.")
+        sys.exit(1)
+    t["gate"] = reason
+    _save(tasks)
+    _log({"action": "gate", "id": tid, "reason": reason})
+    print(f"Gated {tid}: {reason}")
+
+
+COMMANDS["gate"] = cmd_gate
+
+
+def cmd_ungate(args):
+    """Clear a ticket's gate. Usage: ungate <id> [reason-cleared]"""
+    if not args:
+        print("Usage: ungate <ticket-id> [reason-cleared]")
+        sys.exit(1)
+    tid = args[0]
+    reason = " ".join(args[1:]) if len(args) > 1 else None
+    tasks = _load()
+    t = _find(tasks, tid)
+    if not t:
+        print(f"Task {tid} not found.")
+        sys.exit(1)
+    prev = t.get("gate")
+    t["gate"] = None
+    _save(tasks)
+    _log({"action": "ungate", "id": tid, "prev_gate": prev, "reason_cleared": reason})
+    msg = f"Ungated {tid}"
+    if prev:
+        msg += f" (was: {prev})"
+    if reason:
+        msg += f" — {reason}"
+    print(msg)
+
+
+COMMANDS["ungate"] = cmd_ungate
+
+
+def cmd_set_decision(args):
+    """Attach a decision id to a ticket. Usage: set-decision <id> <decision-id>"""
+    if len(args) < 2:
+        print("Usage: set-decision <ticket-id> <decision-id>")
+        sys.exit(1)
+    tid, did = args[0], args[1]
+    tasks = _load()
+    t = _find(tasks, tid)
+    if not t:
+        print(f"Task {tid} not found.")
+        sys.exit(1)
+    t["decision_id"] = did
+    _save(tasks)
+    _log({"action": "set_decision", "id": tid, "decision_id": did})
+    print(f"Set decision on {tid}: {did}")
+
+
+COMMANDS["set-decision"] = cmd_set_decision
 
 
 def cmd_set_github_issue(args):
