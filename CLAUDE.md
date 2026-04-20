@@ -78,7 +78,7 @@
 ## Tools available to CC
 
 ### Skills (`~/.claude/skills/`)
-`/context-load` · `/sprint` · `/commit` · `/ticket` · `/note` · `/review` · `/audit` · `/day-close` · `/savestate` · `/savestateauto` · `/fixit` · `/readigor` · `/deep-audit` · `/test-fix` · `/validate-files`
+`/context-load` · `/sprint` · `/commit` · `/ticket` · `/note` · `/review` · `/day-close-audit` · `/day-close` · `/savestate` · `/savestateauto` · `/fixit` · `/readigor` · `/deep-audit` · `/test-fix` · `/validate-files`
 
 ### MCP tools (`mcp__igor__*`)
 - **Memory:** `memory_get`, `memory_search`, `memory_list_by_type`
@@ -112,7 +112,7 @@ Repo echo: `lab/theigors/` (auto-synced by `lab/claudecode/palace_sync.py`).
 
 Skills with `model: haiku` in frontmatter should be spawned via `Agent(model="haiku", subagent_type="general-purpose", ...)` for ~10× cost savings on mechanical work.
 
-- **Haiku 4.5:** pattern-matching, checklist execution, mechanical reads (most of `/audit`, `/readigor`)
+- **Haiku 4.5:** pattern-matching, checklist execution, mechanical reads (most of `/day-close-audit`, `/readigor`)
 - **Sonnet 4.6:** architecture, design reasoning, synthesis (`/sprint`, `/review`, `/savestate`)
 
 Exception: if a Haiku skill step requires design judgment mid-execution, escalate that step to inline Sonnet reasoning.

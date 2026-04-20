@@ -118,11 +118,11 @@ If no criterion: skip this step.
 
 ---
 
-## Step 6 — Audit
+## Step 6 — Day-close audit scan
 
-Run a quick audit scan on changed files:
+Run a quick day-close-audit scan on changed files:
 ```
-/audit
+/day-close-audit
 ```
 
 Fix small findings now. Ticket anything bigger.

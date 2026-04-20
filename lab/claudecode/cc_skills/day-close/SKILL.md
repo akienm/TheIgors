@@ -49,14 +49,14 @@ If no probes defined: skip this step.
 
 ---
 
-## Step 3 — Automated audit ⛔ MANDATORY — NEVER SKIP
+## Step 3 — Day-close audit ⛔ MANDATORY — NEVER SKIP
 
 ```
-/audit
+/day-close-audit
 ```
 
-⛔ **This is not optional. Skipping the audit makes day-close incomplete.**
-Runs all 17 steps. Note all findings.
+⛔ **This is not optional. Skipping the day-close-audit makes day-close incomplete.**
+Runs all 17 steps. Note all findings. (Renamed from `/audit` on 2026-04-20 — `/review` is for reviewing plans/code; `/day-close-audit` is the debris-and-hygiene check.)
 
 ---
 

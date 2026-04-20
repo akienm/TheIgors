@@ -133,7 +133,7 @@ Uncaught exception audit. Scan for bare except: blocks, swallowed exceptions, an
 
 Concern consolidation review. Look for scattered code that's really one thing — and hasn't been named yet. The db_proxy gathered all DB timing, reconnect, and metrics concerns into one place. The inference_gateway gathered all routing, fallback, and cost concerns. This is the inverse of separation of concerns — it's recognizing that concerns belong together and giving them a home, a name, and a clean interface. The signal: when you find yourself writing the same kind of logic in three places, or explaining a subsystem by listing scattered files instead of pointing at one module, consolidation is probably overdue.
 
-The items below are in the automated checklist (see `claudecode/review_audit.md`); the `/audit` skill runs them:
+The items below are in the automated checklist (see `claudecode/review_audit.md`); the `/day-close-audit` skill runs them:
 
 Architectural - Scattered resource managers (DB, HTTP, config, loggers instantiated ad hoc), Parallel conditional trees (same if/elif logic duplicated across multiple locations), Implicit god objects (classes that grew beyond a single clear responsibility), Missing abstraction layers (raw SQL/HTTP in business logic, no service/repository layer), Hardcoded values (magic numbers, model names, ports, thresholds in logic)
 

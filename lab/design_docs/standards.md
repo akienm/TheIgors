@@ -72,7 +72,7 @@ log_memory_op(
 
 - All logs live in `~/.TheIgors/logs/` — never write logs into `~/TheIgors/` (source tree)
 - Newest-first prepend via `_prepend()` — do not append; prepend means the top is always current
-- Rotate when file exceeds 10MB (flag for `/audit` to catch)
+- Rotate when file exceeds 10MB (flag for `/day-close-audit` to catch)
 - Dated logs (turn_trace, pipeline_trace, inference_io) rotate daily: `name.YYYYMMDD.log`
 - One log file per concern — do not multiplex unrelated events into the same file
 

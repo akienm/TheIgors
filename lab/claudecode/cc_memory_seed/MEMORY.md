@@ -63,9 +63,9 @@ See `project_todays_plan.md` — three rounds (clean → code-into-data → perf
 9. **PROC_THINKING_ACK** — after Windows round. See `project_habit_ack_pattern.md`
 10. **Search depth tiers + post-habit fork** — see `project_search_depth_and_post_habit_fork.md`
 11. **Temporal gradient consolidation** — one `TemporalGradient` primitive replacing 6 special-cased decay implementations; milieu as first-class TWM slot; see `project_temporal_gradient_primitive.md` — cortex.search() depth (shallow/medium/deep) gated by TWM attractor_weight; closed/deferred excluded from shallow; post-habit ack fork; self-query gates deeper processing. Will make Igor dramatically more coherent. See `project_search_depth_and_post_habit_fork.md`
-12. **T-tool-registry-proxy** — ToolRegistry: per-tool call count, error rate, p50/p95 latency; hookable from BG dispatch path; feeds /audit
+12. **T-tool-registry-proxy** — ToolRegistry: per-tool call count, error rate, p50/p95 latency; hookable from BG dispatch path; feeds /day-close-audit
 13. **T-daemon-supervisor** — DaemonSupervisor: register-on-create, health ping, clean-shutdown guarantee; live threadlock found 2026-03-22 without this
-14. **T-network-proxy** — NetworkProxy: single HTTP client wrapper replacing per-caller timeout/retry in budget.py, embedder, cluster_router, OR reasoner, discord; per-host health view; feeds /audit
+14. **T-network-proxy** — NetworkProxy: single HTTP client wrapper replacing per-caller timeout/retry in budget.py, embedder, cluster_router, OR reasoner, discord; per-host health view; feeds /day-close-audit
 
 ## Pattern Engineering (2026-03-18) — FIFTH CRYSTALLIZATION
 See `project_pattern_engineering.md` — "pattern" = one or more habits at the right granularity. Habit engineering becomes pattern engineering/repair/design/debugging. "Code in the data." Sudo relay is the canonical example (3 habits, 1 pattern). Each habit reusable; pattern is the unit of design.

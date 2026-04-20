@@ -138,7 +138,7 @@ Type `/skill-name` in a Claude Code session. All skills live in `~/.claude/skill
 | `/decided` | Record a design decision or work completion mid-session |
 | `/sprint` | Worker session — reads ticket, implements, reports, exits |
 | `/filter` | Pre-implementation plan verification checklist |
-| `/audit` | Full subsystem audit against design docs |
+| `/day-close-audit` | Debris-and-hygiene check run during /day-close |
 | `/fixit` | Ticket + filter + implement loop |
 | `/review` | Code review against Igor conventions |
 | `/commit` | Structured git commit with session record |
