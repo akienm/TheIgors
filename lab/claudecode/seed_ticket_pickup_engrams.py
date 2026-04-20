@@ -70,10 +70,15 @@ PICKUP_CHAIN = [
     {
         "id": "ENGRAM_TICKET_PICKUP_SCAN",
         "narrative": (
-            "Check the ticket queue for pending work. Deposits 'pending=N' "
+            "When idle and wondering what to pick up next — 'pick up next "
+            "ticket', 'pending work', 'what's next in the queue', 'start "
+            "the queue', 'anything pending', 'what should I be working on' "
+            "— I check the task queue for pending work. Deposits 'pending=N' "
             "into the basket and branches into ENGRAM_TICKET_PICKUP_ADOPT "
-            "so Igor picks one up himself (biomimetic replacement for "
-            "worker_foreman's konsole spawn)."
+            "so I pick one up myself in-process. This is the biomimetic "
+            "replacement for worker_foreman's konsole-spawn pattern: no "
+            "separate CC worker session, no polling daemon — just engrams "
+            "chaining under boredom or direct invocation."
         ),
         "tool_name": "queue_pending_count",
         "next_id": "ENGRAM_TICKET_PICKUP_ADOPT",
@@ -81,9 +86,12 @@ PICKUP_CHAIN = [
     {
         "id": "ENGRAM_TICKET_PICKUP_ADOPT",
         "narrative": (
-            "Adopt the next-best pending ticket as an active goal, then "
-            "branch into ENGRAM_CODE_INIT so pe_chain runs in-process. "
-            "No konsole spawn; Igor does the work himself."
+            "When a pickup scan has deposited pending>0 into the basket, "
+            "I adopt the next-best pending ticket as an active goal using "
+            "weighted_ticket_score and goal_adopt, then branch into "
+            "ENGRAM_CODE_INIT so pe_chain runs in-process. No konsole "
+            "spawn; I do the work myself. Triggered phrases: 'adopt next "
+            "ticket', 'claim a ticket', 'pick up a ticket'."
         ),
         "tool_name": "adopt_next_ticket",
         "next_id": "ENGRAM_CODE_INIT",
