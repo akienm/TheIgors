@@ -1,7 +1,7 @@
 # test-plan-or-why-not — ticket declares tests or justifies absence
 
 **Path:** `theigors/rules/ticket_design_checks/test-plan-or-why-not`
-**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 applies_when: |
   ticket is not pure documentation, config, or palace data entry.
@@ -20,6 +20,8 @@ This node is the check shape: /review Mode A reads the YAML above
 at ticket filing time and verifies tickets positively against it.
 When editing behavior, edit the narrative at theigors/rules/coding first,
 then reflect the change here.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
 
 
 ## Pointers

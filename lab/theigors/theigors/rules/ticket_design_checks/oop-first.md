@@ -1,7 +1,7 @@
 # oop-first — shared state across functions → propose a class
 
 **Path:** `theigors/rules/ticket_design_checks/oop-first`
-**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 applies_when: |
   ticket adds shared state that multiple functions read or write,
@@ -22,6 +22,8 @@ This node is the check shape: /review Mode A reads the YAML above
 at ticket filing time and verifies tickets positively against it.
 When editing behavior, edit the narrative at theigors/rules/coding first,
 then reflect the change here.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
 
 
 ## Pointers

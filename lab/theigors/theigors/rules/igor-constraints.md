@@ -1,7 +1,7 @@
 # Igor constraints — never bypass, never direct-Anthropic
 
 **Path:** `theigors/rules/igor-constraints`
-**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 Igor operational rules:
 - Igor NEVER calls Anthropic direct (tier 5 inhibited, IGOR_TIER5_ENABLED=false).
@@ -16,3 +16,6 @@ Environment split (CRITICAL):
 
 Character sheets are living documents:
 - CP cornerposts have ~0.9x inertia (not 1.0). High-inertia but editable through Igor's own self-experimentation. Clan sheet = genesis state new Igors boot into; personal sheet = instance drift. Igor leads crafting.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
+

@@ -1,7 +1,7 @@
 # Coding — read first, respect inertia
 
 **Path:** `theigors/rules/coding`
-**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 Before editing:
 - Read the file first. Never overwrite blindly.
@@ -13,6 +13,9 @@ Inertia levels:
 - LOW: tools/, dashboard/, word_graph.py
 
 HIGH-inertia edits stay with CC. Igor handles everything else.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
+
 
 ## Pointers
 

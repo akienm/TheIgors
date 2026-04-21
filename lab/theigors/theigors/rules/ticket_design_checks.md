@@ -1,7 +1,7 @@
 # Ticket design checks — filing-time positive checks for /review Mode A
 
 **Path:** `theigors/rules/ticket_design_checks`
-**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 Check-shaped entries that /review Mode A loads at ticket filing time
 to verify each draft positively against Akien's design rules. The
@@ -28,6 +28,8 @@ Entry index:
   - test-plan-or-why-not      (narrative: theigors/rules/coding)
 
 Decision: D-scaffold-not-correct-2026-04-21.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
 
 
 ## Pointers

@@ -1,7 +1,7 @@
 # docs-in-code — load-bearing touch must name its docstring
 
 **Path:** `theigors/rules/ticket_design_checks/docs-in-code`
-**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 applies_when: |
   ticket touches a load-bearing subsystem (reading, cortex, NE,
@@ -21,6 +21,8 @@ This node is the check shape: /review Mode A reads the YAML above
 at ticket filing time and verifies tickets positively against it.
 When editing behavior, edit the narrative at theigors/rules/docs-live-in-code first,
 then reflect the change here.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
 
 
 ## Pointers

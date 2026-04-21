@@ -1,7 +1,7 @@
 # Do not — explicit destructive-action blocklist
 
 **Path:** `theigors/rules/do-not`
-**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
+**Updated:** 2026-04-21 by T-palace-rules-versioned
 
 Destructive-action blocklist (never do these without explicit Akien go-ahead):
 - Move or rename brainstem/ contents without Akien review.
@@ -14,3 +14,6 @@ Destructive-action blocklist (never do these without explicit Akien go-ahead):
 - Write to decisions_log.dsb directly (it's generated now).
 
 These live here because the cost of forgetting is high and irreversible. Keep this list short and absolute; everything else goes in context-specific rule nodes.
+
+revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
+
