@@ -555,6 +555,53 @@ def cmd_log(args):
     print(f"Logged: {msg}")
 
 
+# ── Worker auto-default (D-worker-mode-routing-2026-04-21) ────────────────────
+#
+# HIGH-inertia or XL-sized tickets route to CC (reviewable konsole-spawn).
+# Everything else routes to Igor (cheap in-process via engram chain / Qwen).
+# Explicit `worker` in input JSON always wins.
+#
+# Keep these heuristics synced with lab/theigors/rules/coding.md
+# ("Inertia levels") and decision D-worker-mode-routing-2026-04-21.
+
+_HIGH_INERTIA_TAGS = {"HIGH", "high-inertia", "HIGH-inertia", "high_inertia"}
+_HIGH_INERTIA_PATHS = (
+    "brainstem/",
+    "memory/models.py",
+    "cognition/reasoners/base.py",
+)
+
+
+def _infer_worker(t: dict) -> str:
+    """Route ticket to 'claude' (reviewable) or 'igor' (cheap) by metadata.
+
+    Rule:
+      HIGH-inertia tag OR size=XL OR description touches HIGH-inertia paths
+        → 'claude' (CC reviews; konsole-spawned session).
+      Everything else → 'igor' (in-process via engram chain, Qwen tier).
+
+    Callers should only invoke this when the ticket has no explicit 'worker'.
+    """
+    tags = t.get("tags") or []
+    if any(tag in _HIGH_INERTIA_TAGS for tag in tags):
+        return "claude"
+
+    size = (t.get("size") or "").upper()
+    if size == "XL":
+        return "claude"
+
+    # Scan title + description for HIGH-inertia code paths
+    blob_parts = [t.get("title") or "", t.get("description") or "", t.get("body") or ""]
+    for f in t.get("required_files") or []:
+        blob_parts.append(f)
+    blob = " ".join(blob_parts)
+    for path in _HIGH_INERTIA_PATHS:
+        if path in blob:
+            return "claude"
+
+    return "igor"
+
+
 def cmd_add(args):
     """Add tasks from a JSON file (array of task objects) or inline JSON string."""
     if not args:
@@ -576,7 +623,9 @@ def cmd_add(args):
             print(f"  skip (exists): {nt['id']}")
             continue
         nt.setdefault("status", "pending")
-        nt.setdefault("worker", "claude")
+        # D-worker-mode-routing-2026-04-21: auto-default by metadata if unset
+        if "worker" not in nt or nt.get("worker") in (None, ""):
+            nt["worker"] = _infer_worker(nt)
         nt.setdefault("result", None)
         nt.setdefault("claimed_at", None)
         nt.setdefault("completed_at", None)
