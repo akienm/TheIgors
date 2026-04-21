@@ -54,12 +54,26 @@ Each drafted ticket, BEFORE it lands in queue.json, goes through these checks. I
    `no-sqlite`, `oop-first`, `docs-in-code`, `no-new-memory-schemas`, `test-plan-or-why-not`.
 
    This check subsumes the old standalone Test-plan check: `test-plan-or-why-not` enforces it. If the palace check set grows, this loader picks up new rules automatically.
+8. **Build-tightness grade** — after checks 1-7, score the ticket's description against the 4 structured fields (`Affected files`, `Design rules`, `Scope boundary`, `Test plan` — see `/ticket` `## Description template`). A field counts as **present** only if it is specific and non-trivial:
+   - `Affected files`: names at least one concrete path (not "TBD" unless the whole ticket is genuinely discovery-shaped)
+   - `Design rules`: names specific palace checks that apply, or an explicit "none apply" with a one-line reason
+   - `Scope boundary`: states what's in scope AND what's out of scope
+   - `Test plan`: names specific tests OR gives an explicit "no tests because: …" justification
+
+   Grade by count present:
+   - 4/4 → **tight** — advisory note only, no effect on verdict.
+   - 3/4 → **medium** — advisory note: `build-tightness: medium — <missing field>`. Does not force AMEND on its own, but counts against PASS if other findings are borderline.
+   - ≤2/4 → **loose** — force AMEND with this verbatim failure message (even if all other checks passed):
+     > This ticket makes the builder do design work. Bounce back to designer to tighten before filing. Missing/under-specified: `<list>`. See /ticket `## Description template`.
+
+   The grade is always emitted on the `Build-tightness:` line of the output (see below). Rationale: well-specced tickets make cheap builders viable; loose tickets push design onto the builder. Making that bar explicit at filing time is the scaffold.
 
 ### Output format (filing-time)
 
 ```
 /review — <ticket-id>
 Verdict: PASS | AMEND | SPLIT | DISCARD
+Build-tightness: tight | medium | loose
 
 Findings:
 - <finding 1>
