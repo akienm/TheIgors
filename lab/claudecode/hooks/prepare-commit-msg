@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# prepare-commit-msg hook: reject `git commit --amend`.
+# Install: ln -sf ../../lab/claudecode/hooks/prepare-commit-msg .git/hooks/prepare-commit-msg
+#
+# CLAUDE.md rule: "git commit --amend — always create new commits".
+# git passes $2 = "commit" when the commit source is an existing commit
+# (i.e. --amend). We reject those unless the user explicitly sets
+# ALLOW_AMEND=1 in the environment (escape hatch for rare legitimate cases).
+
+set -u
+
+COMMIT_SOURCE="${2:-}"
+
+if [ "$COMMIT_SOURCE" = "commit" ]; then
+    if [ "${ALLOW_AMEND:-0}" = "1" ]; then
+        printf '\033[33mprepare-commit-msg: amend permitted (ALLOW_AMEND=1).\033[0m\n' >&2
+        exit 0
+    fi
+    printf '\033[31mprepare-commit-msg: REJECTED\033[0m git commit --amend\n' >&2
+    printf '  → CLAUDE.md rule: always create new commits.\n' >&2
+    printf '  → Escape hatch: ALLOW_AMEND=1 git commit --amend\n' >&2
+    exit 1
+fi
+
+exit 0
