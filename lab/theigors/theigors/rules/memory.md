@@ -1,7 +1,7 @@
 # Memory discipline — verify, don't trust prior claims
 
 **Path:** `theigors/rules/memory`
-**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
+**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
 
 Memory hygiene:
 - Verify before trusting memory. Don't trust 'X was removed' claims from prior sessions — grep the code.
@@ -12,3 +12,7 @@ Memory hygiene:
 - DELEGATE research/exploration to Igor. 'Investigate X' / 'audit Y' / 'homogenize Z' → Igor does it, not CC. Token cost + self-understanding.
 - Session-wrap phrasing: at session-boundary moments, emit exactly `please slash compact preserve:<preserve string>` — no variants.
 - Compact preserve is a POINTER, not a copy. Only include what's NOT recoverable from slate/git/DB (session id, slate pointer, in-flight hypothesis, rules surfaced this run, non-slate surprises).
+
+## Pointers
+
+- **check:** `theigors/rules/ticket_design_checks/no-new-memory-schemas`

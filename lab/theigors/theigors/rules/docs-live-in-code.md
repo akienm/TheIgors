@@ -1,7 +1,7 @@
 # Docs live in code — top-of-file docstrings, not DSB/CSB
 
 **Path:** `theigors/rules/docs-live-in-code`
-**Updated:** 2026-04-20T20:22:35Z by migrate_rules_to_palace.py
+**Updated:** 2026-04-21T19:42:54.171707+00:00 by T-palace-ticket-design-rules
 
 Coding standard (T-docs-live-in-code, 2026-04-19):
 
@@ -12,3 +12,7 @@ Coding standard (T-docs-live-in-code, 2026-04-19):
 - Scope: LOAD-BEARING subsystems (reading, cortex, NE, comms, scope_guard, pe_chain, worker pools, inference gateway). Trivial utilities still follow 'don't comment the obvious.'
 
 Index location: palace path `theigors/subsystem_index`, children map subsystem → primary file.
+
+## Pointers
+
+- **check:** `theigors/rules/ticket_design_checks/docs-in-code`
