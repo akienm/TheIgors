@@ -115,7 +115,7 @@ def seed(dry_run: bool = False):
             "coding_chain": True,
             "chain_position": i,
             "chain_length": len(CODING_CHAIN),
-            "triggers": {"__entry__": "coding sprint entry"},
+            "triggers": {"__entry__": "cells"},
         }
 
         payload = {"cells": payload_cells}
