@@ -1,6 +1,7 @@
 ---
 name: note
 description: Log a milestone, insight, or decision to notes.log. Replaces /decided for non-ticket items.
+model: haiku
 ---
 
 # /note — Log a notable event

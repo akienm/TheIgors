@@ -1,6 +1,8 @@
 ---
 name: day-close
 description: End-of-day ritual — savestateauto, close slate, audit, update docs, commit.
+model: haiku
+model_exception: /day-close-audit step escalates to Sonnet for simplification review
 ---
 
 # /day-close — Close out the day

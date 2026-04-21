@@ -1,6 +1,7 @@
 ---
 name: commit
 description: Thin commit cycle — test, stage, commit, pull, push. For ad-hoc commits outside sprints.
+model: haiku
 ---
 
 # /commit — Test + ship

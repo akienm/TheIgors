@@ -1,6 +1,7 @@
 ---
 name: validate-files
 description: Audit skill for TheIgors runtime file placement. Walks ~/TheIgors, ~/.TheIgors, and ~ to find instance data in wrong locations, leaked runtime files, and code that wrote them incorrectly. Produces candidates-for-removal list for discussion. Invoke when Akien says /validate-files, "check for misplaced files", "find leaked files", or "audit file placement".
+model: haiku
 ---
 
 # Validate Files — Igor Runtime Audit Skill

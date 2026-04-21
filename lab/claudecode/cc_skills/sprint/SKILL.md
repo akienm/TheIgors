@@ -1,6 +1,7 @@
 ---
 name: sprint
 description: Claim a ticket, work it, commit, close it. Args: "last", ticket ID, or empty (next in queue).
+model: sonnet
 ---
 
 # /sprint — Claim, work, ship

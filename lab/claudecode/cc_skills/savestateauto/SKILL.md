@@ -1,6 +1,7 @@
 ---
 name: savestateauto
 description: Lightweight state flush — update session record, flush to Igor, remove debug flag, AND emit a compact preserve string so Akien can manually /compact at a clean boundary if desired. Does not itself compact.
+model: haiku
 ---
 
 # /savestateauto — Quick state flush (+ compact preserve string)
@@ -39,25 +40,21 @@ Since 2026-04-20: the final step always emits a compact-ready preserve string. A
 
 6. **Emit compact preserve string** (always, even if Akien doesn't ask for compact):
 
-   Render a block that Akien can hand to `/compact` if he chooses. Shape:
+   The preserve string is a **pointer, not a copy**. The slate + session record already hold the detailed state on disk — duplicating that content here just burns tokens and rots fast. Tell post-compact CC *where to look*, plus the one or two things that aren't on disk (in-flight hypothesis, next-move intent).
+
+   Shape:
    ```
-   preserve: Session <session-id>. <theme short>.
-   Today's commits: <hashes>.
-   Done this session: <T-x, T-y, ...>.
-   Filed: <T-a (gated on ...), T-b, ...>.
-   Active decisions: <D-x (N open), D-y (done)>.
-   In-flight: <hypothesis or NONE>.
-   Next: <top 1-3 priorities>.
-   Rules: <any load-bearing context rules CC should remember>.
+   preserve: Session <session-id>. State on disk — read
+   ~/.TheIgors/claudecode/YYYYMMDD.slate.txt and run
+   `IGOR_HOME_DB_URL=... python3 ~/TheIgors/lab/claudecode/session_manager.py show 1`
+   for full context. In-flight: <hypothesis or NONE>. Next: <top 1-3 ticket ids>.
    ```
 
    Build from:
    - Session id: `cat ~/.TheIgors/cc_channel/current_session.txt`
-   - Theme + key_changes + decisions: query `infra.sessions` for current session
-   - Today's commits: `git log --oneline --since=midnight`
-   - Active decisions: group by `decision_id` in queue.json, count open vs closed tickets each
+   - Slate path: `~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt`
    - In-flight hypothesis: from step 1 above
-   - Next priorities: from today's slate `## Planned` (top few)
+   - Next priorities: top 1-3 from today's slate `## Next up`
 
    Print the block at the end of the /savestateauto output, clearly labeled:
 
@@ -66,5 +63,7 @@ Since 2026-04-20: the final step always emits a compact-ready preserve string. A
    preserve: ...
    ───────────────────────────────────────────────────────────────
    ```
+
+   Do NOT include: today's commits, done/filed ticket lists, active decision counts, theme descriptions, rule text. All of that is on disk — the slate has the session's done+filed+decisions, `session_manager show` has theme+key_changes+commits, git has the commit log.
 
 That's it. No compact (Akien decides), no file rewrites, no DSB updates. Just DB + Igor flush + a compact-ready block on standby.

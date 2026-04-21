@@ -1,6 +1,7 @@
 ---
 name: savestate
 description: End-of-session — runs /savestateauto then triggers /compact with preserve string.
+model: haiku
 ---
 
 # /savestate — Full session close

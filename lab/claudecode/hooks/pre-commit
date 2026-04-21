@@ -62,7 +62,7 @@ fi
 
 # ── Skills sync (existing behavior) ───────────────────────────────────
 SKILLS_SRC="$HOME/.claude/skills"
-SKILLS_DST="$REPO_ROOT/claudecode/cc_skills"
+SKILLS_DST="$REPO_ROOT/lab/claudecode/cc_skills"
 
 if [ -d "$SKILLS_SRC" ]; then
     rsync -a --delete "$SKILLS_SRC/" "$SKILLS_DST/"

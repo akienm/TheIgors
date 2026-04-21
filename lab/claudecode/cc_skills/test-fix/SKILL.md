@@ -1,6 +1,7 @@
 ---
 name: test-fix
 description: Bounded test-run-and-fix loop for TheIgors project. Runs tests, fixes failures, retries up to 3 times, then escalates to human. Use when Akien says /test-fix, "run and fix tests", "make the tests pass", or after implementation work completes.
+model: sonnet
 ---
 
 # Test-Fix — Bounded Retry Loop
