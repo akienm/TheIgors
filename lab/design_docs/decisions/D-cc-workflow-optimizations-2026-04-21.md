@@ -1,0 +1,41 @@
+# D-cc-workflow-optimizations-2026-04-21 — Optimize Claude Code dev-loop
+
+**Date:** 2026-04-21
+**Status:** open
+**Decision type:** dev-loop / tooling
+
+## Summary
+
+Audit the CC workflow scripts and skill definitions to reduce per-session overhead. Two levers: (1) consolidate 9 fragmented cc-admin scripts into a single `lab.claudecode.api` module + `igor-admin` CLI — fixes a weeks-old silent broken subprocess path in `decision_manager.py:75` and eliminates 20 hardcoded DB URLs across skills; (2) quick wins that pay immediately — env-key safety check, Haiku model annotations on 7 mechanical skills (~60-70% cost savings), and rule-hash caching (~1500 tokens/session). Keystone is T-cc-admin-consolidation; autonomics hooks follow it.
+
+## Rationale
+
+Pass 2 area_8 audit (18 SHIP candidates). Highest-leverage findings:
+- `decision_manager.py:75` subprocess has been broken since the lab/ migration — calls `~/TheIgors/claudecode/cc_queue.py` (old path), silently except'd. Every /decided's Igor-flush has been a no-op for weeks.
+- 20 hardcoded `postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001` URLs across 10 SKILL.md files — password change requires 10 manual edits.
+- 7 mechanical skills (commit, note, ticket, context-load, validate-files, day-close, savestateauto) default to Sonnet; Haiku suffices for all of them.
+- `/context-load` reloads ~2000 tokens of rules every session even when nothing changed.
+
+## Spawned tickets
+
+- `T-cc-env-split-startup-check` (S) — context-load step 0 key safety check; ungated, do first
+- `T-skill-model-audit-haiku` (S) — Haiku annotations on 7 mechanical skills; ungated
+- `T-context-load-rule-hash` (S) — hash-cache rules across sessions; ungated
+- `T-cc-admin-consolidation` (L) — keystone consolidation + fix broken decision_manager path; ungated
+- `T-cc-hook-autonomics` (M) — pre-commit + session-start enforcement hooks; gated on T-cc-admin-consolidation
+
+Decision closes when all five land.
+
+## Sequencing recommendation
+
+1. T-cc-env-split-startup-check (S, immediate safety win, trivial)
+2. T-skill-model-audit-haiku (S, immediate cost win)
+3. T-context-load-rule-hash (S, token savings)
+4. T-cc-admin-consolidation (L, keystone — sprint last of the four ungated)
+5. T-cc-hook-autonomics (M, follows after keystone)
+
+## Pointers
+
+- Source: `lab/design_docs/audit_2026/pass2_output/area_8_cc_workflow.md`
+- Aggregate: `lab/design_docs/audit_2026/pass2_output/AGGREGATE.md`
+- Broken path: `lab/claudecode/decision_manager.py:75`
