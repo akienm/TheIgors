@@ -166,7 +166,7 @@ PYEOF
 
 step "Step 6 — Install Claude Code skills"
 
-SKILLS_SRC="$REPO_ROOT/claudecode/cc_skills"
+SKILLS_SRC="$REPO_ROOT/lab/claudecode/cc_skills"
 SKILLS_DST="$HOME/.claude/skills"
 
 mkdir -p "$SKILLS_DST"

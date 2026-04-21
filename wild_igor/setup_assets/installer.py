@@ -341,12 +341,12 @@ def migration_003(instance_dir: Path) -> None:
     Bootstrap Claude Code workflow: MCP config, skill symlinks, memory seeds.
 
     1. Merge igor MCP server into .claude/settings.local.json (non-destructive)
-    2. Symlink skills from claudecode/cc_skills/ → ~/.claude/skills/ (idempotent)
-    3. Seed project memory from claudecode/cc_memory_seed/ (don't overwrite)
+    2. Symlink skills from lab/claudecode/cc_skills/ → ~/.claude/skills/ (idempotent)
+    3. Seed project memory from lab/claudecode/cc_memory_seed/ (don't overwrite)
     """
     repo_root = _REPO_ROOT
-    skills_src = repo_root / "claudecode" / "cc_skills"
-    seed_dir = repo_root / "claudecode" / "cc_memory_seed"
+    skills_src = repo_root / "lab" / "claudecode" / "cc_skills"
+    seed_dir = repo_root / "lab" / "claudecode" / "cc_memory_seed"
 
     # ── 1. MCP config ──
     if platform.system() == "Windows":
@@ -354,7 +354,7 @@ def migration_003(instance_dir: Path) -> None:
     else:
         python_path = str(repo_root / "venv" / "bin" / "python")
 
-    mcp_script = str(repo_root / "claudecode" / "igor_mcp.py")
+    mcp_script = str(repo_root / "lab" / "claudecode" / "igor_mcp.py")
     db_url = os.environ.get(
         "IGOR_HOME_DB_URL",
         f"postgresql://igor:choose_a_password@127.0.0.1/{instance_dir.name}",
@@ -442,7 +442,7 @@ def uninstall_cc() -> None:
     - CLAUDE.md or .claude/bootstrap.md (repo files, managed by git)
     """
     skills_dir = _cc_skills_dir()
-    skills_src = _REPO_ROOT / "claudecode" / "cc_skills"
+    skills_src = _REPO_ROOT / "lab" / "claudecode" / "cc_skills"
 
     if not skills_src.exists():
         log.info("uninstall_cc: no cc_skills source dir — nothing to do")
