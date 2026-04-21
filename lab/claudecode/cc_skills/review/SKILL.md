@@ -37,18 +37,19 @@ Each drafted ticket, BEFORE it lands in queue.json, goes through these checks. I
        ORDER BY path"
    ```
 
-   For each check node loaded, the content has a YAML block at the top with three fields:
+   For each check node loaded, the content has a YAML block at the top with these fields:
    - `applies_when` — predicate: does this check fire for this ticket?
+   - `verdict` — optional; `AMEND` (default) or `DISCARD`. Lets a check escalate failure to DISCARD when the rule is unsalvageable at filing time (e.g. no-sqlite: SQLite is never allowed, so a ticket proposing it is DISCARD, not "please tweak and resubmit").
    - `check_body` — what the ticket draft must contain if it fires
-   - `failure_message` — AMEND guidance if the check body is not satisfied
+   - `failure_message` — guidance if the check body is not satisfied
 
    For each check:
    1. Read `applies_when`; judge whether it fires against the ticket's title + description + tags. If not, skip.
    2. Read `check_body`; judge whether the ticket satisfies it.
    3. If satisfied → pass silently.
-   4. If not satisfied → record `failure_message` (as-is, verbatim) as a finding. Verdict becomes AMEND.
+   4. If not satisfied → record `failure_message` (as-is, verbatim) as a finding, and record the check's `verdict` (default `AMEND` if absent).
 
-   Multiple failed checks → list all `failure_message` entries in findings, single AMEND verdict (not N separate verdicts).
+   Aggregate across all failed checks: if any failed check has `verdict: DISCARD`, the overall verdict is DISCARD. Otherwise AMEND. List all `failure_message` entries as findings regardless (single aggregated verdict line, not N separate verdicts).
 
    Current check set (as of 2026-04-21, under `theigors/rules/ticket_design_checks/`):
    `no-sqlite`, `oop-first`, `docs-in-code`, `no-new-memory-schemas`, `test-plan-or-why-not`.
