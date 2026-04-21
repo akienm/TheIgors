@@ -1,6 +1,6 @@
 ---
 name: review
-description: Filing-time + standalone critical review. Primary use — called by /decided on each drafted ticket (duplicate/already-done/blocked-by/size/scope-creep/test-plan/HIGH-inertia). Also invokable directly on a risky diff/PR/plan, or before a sprint claim. Replaces the old /filter + /review with one skill covering both.
+description: Filing-time + standalone critical review. Primary use — called by /decided on each drafted ticket (duplicate/already-done/blocked-by/size/scope-creep/HIGH-inertia/palace-design-rules). Also invokable directly on a risky diff/PR/plan, or before a sprint claim. Replaces the old /filter + /review with one skill covering both.
 model: haiku
 ---
 
@@ -22,11 +22,38 @@ Each drafted ticket, BEFORE it lands in queue.json, goes through these checks. I
    - S declared on ≥800 words of description → flag as probably bigger than S
    - L or XL → nudge for breakdown: "does this want to be 2-3 child tickets?" Output `SPLIT: propose <N> children with <shapes>` if obvious cuts exist
 5. **Scope-creep** — does the description actually contain multiple separable tickets? ("Also: refactor X", "While we're at it, Y"). If yes: `SPLIT: propose <N> children`.
-6. **Test-plan** — emit a `test_plan:` field on the ticket if missing. At minimum: which new tests, which existing regressions, any real-DB integration test needed (no-mocks rule). Not writing the tests, just planning them.
-7. **HIGH-inertia check** — if the description names `brainstem/`, `memory/models.py`, `cognition/reasoners/base.py`, or any other file flagged HIGH-inertia in the rules:
+6. **HIGH-inertia check** — if the description names `brainstem/`, `memory/models.py`, `cognition/reasoners/base.py`, or any other file flagged HIGH-inertia in the rules:
    - ASK AKIEN INLINE: "This ticket touches <file> (HIGH inertia). Pre-approve? y/n/reword"
    - If pre-approved: stamp ticket body: `pre-approved by Akien YYYY-MM-DD for touching <file> — reason: <reason>`
    - If not: `AMEND: rescope to avoid <file>`, or `DISCARD`
+7. **Design-rule checks (palace-loaded)** — load Akien's design rules from the palace and verify the ticket **positively** against each one. This is the scaffold-not-correct check: rules present at filing time, not expected to be remembered.
+
+   Load the checks:
+   ```bash
+   psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -tA -c \
+     "SELECT path, content FROM clan.memory_palace
+       WHERE path LIKE 'theigors/rules/ticket_design_checks/%'
+         AND path NOT LIKE '%/ticket_design_checks'
+       ORDER BY path"
+   ```
+
+   For each check node loaded, the content has a YAML block at the top with three fields:
+   - `applies_when` — predicate: does this check fire for this ticket?
+   - `check_body` — what the ticket draft must contain if it fires
+   - `failure_message` — AMEND guidance if the check body is not satisfied
+
+   For each check:
+   1. Read `applies_when`; judge whether it fires against the ticket's title + description + tags. If not, skip.
+   2. Read `check_body`; judge whether the ticket satisfies it.
+   3. If satisfied → pass silently.
+   4. If not satisfied → record `failure_message` (as-is, verbatim) as a finding. Verdict becomes AMEND.
+
+   Multiple failed checks → list all `failure_message` entries in findings, single AMEND verdict (not N separate verdicts).
+
+   Current check set (as of 2026-04-21, under `theigors/rules/ticket_design_checks/`):
+   `no-sqlite`, `oop-first`, `docs-in-code`, `no-new-memory-schemas`, `test-plan-or-why-not`.
+
+   This check subsumes the old standalone Test-plan check: `test-plan-or-why-not` enforces it. If the palace check set grows, this loader picks up new rules automatically.
 
 ### Output format (filing-time)
 
