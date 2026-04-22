@@ -3,7 +3,16 @@
 **Generated:** 2026-04-20a  
 **Subagents:** 8 Opus-4.7 deep-dives, parallel  
 **Total tickets proposed:** ~149  
-**Total SHIP:** ~85 (per-subagent recommendations; Pass 3 will re-disposition against the 5-10 ticket cap)
+**Total SHIP:** ~85 (per-subagent recommendations)
+
+**Policy correction (2026-04-21, Akien 7th+ correction):** There is NO
+5-10 ticket cap and NO filter-down step. Every non-REFUTED finding across
+Pass 1 + Pass 2 becomes a ticket and gets fixed. The whole point of
+spinning 8 Opus deep-dives was to enumerate EVERYTHING broken so we fix
+EVERYTHING broken. Pass 3 = (a) conditional re-review + (b) guaranteed
+brief-and-compelling documentation for humans — Pass 3 decides nothing.
+Biology-thesis decisions (engram retention, Hebbian, etc.) happen
+in-conversation during ticket resolution, not at any synthesis boundary.
 
 ---
 
@@ -73,18 +82,22 @@ Pass 1 called out filesystem-vs-DB duality. Pass 2 confirmed broadly:
 
 ---
 
-## What Pass 3 needs to decide
+## Decisions to make during ticket resolution (NOT at Pass 3)
 
-1. **Engram identity question** — Pass 3 must commit to one of two paths:
+Pass 3 decides nothing. These are the significant decisions that need to
+happen in-conversation between Akien and Claude as the corresponding
+tickets surface and get worked:
+
+1. **Engram identity question** — one of two paths:
    - (a) Engrams-as-ensembles refactor (HIGH-inertia models.py change; adds `engram_id` linking co-encoded nodes)
    - (b) Formally retire "engram" vocabulary and call Igor what he architecturally is — a graph reasoner with biological names
-   - Status quo (mismatched naming with confident docstrings) is the worst option per audit findings.
+   - Status quo (mismatched naming with confident docstrings) is the worst option per audit findings. Default per `feedback_biology_commitment.md`: implement the real mechanism, i.e. (a).
 
-2. **Hebbian commitment** — same shape: enable the bridge + implement true replay-based sleep, OR retract from docstrings across NE, reasoners/base, word_graph, hebbian_bridge.
+2. **Hebbian commitment** — same shape: enable the bridge + implement true replay-based sleep, OR retract from docstrings across NE, reasoners/base, word_graph, hebbian_bridge. Same default.
 
-3. **SHIP cap enforcement** — Pass 2 produced ~85 SHIP candidates. The audit ticket targets 5-10. Pass 3 must re-disposition aggressively. Suggested cap: top 10 by stakes-x-blast-radius, biased toward **deletion-first** picks (db_proxy SQLite shim, cc_skills mirror, ENGRAM_CODE_* dead chain, `slate_manager.py`).
+3. **Is-Igor-proving-his-case verdicts** — happens during Pass 3 (b) as part of the brief-and-compelling documentation for humans. Each major claim of the Igor thesis (local-inference share trending up, TWM as competitive workspace, habits forming organically, real Hebbian patterns, Igor shipping his own code) gets evidenced honestly in the human docs.
 
-4. **"Is Igor proving his case?" verdicts** — the case-proof pass per the original audit ticket. Each major claim of the Igor thesis (local-inference share trending up, TWM as competitive workspace, habits forming organically, real Hebbian patterns, Igor shipping his own code) gets pass/partial/fail with evidence pointers.
+**Note:** Previous versions of this section listed "SHIP cap enforcement (85 → 5-10)" as a Pass 3 decision. That was wrong and has been corrected — see the policy note at the top of this file. All findings get fixed; there is no cap.
 
 ---
 
