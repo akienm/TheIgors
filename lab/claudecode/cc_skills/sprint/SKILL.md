@@ -77,8 +77,8 @@ Move ticket to ## Done today in slate.
 ### 10. /savestateauto
 
 ## Hard rules
-- No ticket = no sprint
-- Never skip cleanup (step 6)
-- Never `--no-verify` or force-push main
-- Never stage `.env`, `*.db`, or `~/.TheIgors/` runtime files
-- Tests pass + no secrets = commit without asking
+- Every sprint starts from a ticket — `/ticket` first if there isn't one.
+- Cleanup (step 6) is the last pre-commit act of every sprint — debris review is load-bearing.
+- Hooks run on every commit; pushes are non-force on main (integrity preserved).
+- Stage files specifically by name — keeps `.env`, `*.db`, and `~/.TheIgors/` runtime paths off the commit.
+- Tests pass + no secrets = commit without asking.

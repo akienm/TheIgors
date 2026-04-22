@@ -59,6 +59,6 @@ Either:
 
 ## Hard rules
 
-- Don't use /design for single-question turns. Only use when the conversation is clearly a design block that will produce multiple decisions.
-- Don't block tool-use during design mode — the nudge is self-imposed by CC, not enforced by the skill.
-- Don't double-fire — if a DESIGN_START marker already exists for this session with no closing /decided, /design just updates the topic instead of adding a new marker.
+- Use /design when the conversation is a design block that will produce multiple decisions; single-question turns skip it.
+- Tool-use remains open during design mode — the nudge is CC-self-imposed, not enforced by the skill.
+- DESIGN_START markers are single-firing per session — re-invoking /design just updates the topic rather than stacking a new marker.

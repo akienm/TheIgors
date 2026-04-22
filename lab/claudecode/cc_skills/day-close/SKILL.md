@@ -77,6 +77,6 @@ git pull --rebase origin main && git push origin main
 ### 13. /savestate
 
 ## Hard rules
-- Never skip audit (step 3)
-- Never commit source code here — docs only
-- Skip steps with nothing to update
+- Audit (step 3) runs every day-close — it's the hygiene gate.
+- Commits during day-close are docs-only; source changes belong in /sprint commits.
+- Skip steps with nothing to update.

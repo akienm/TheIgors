@@ -161,7 +161,7 @@ Or, with multiple decisions in one session:
 
 ## Hard rules
 
-- Never skip /review. The whole point is filing-time quality.
-- Never file a ticket that /review returned DISCARD on without explicit Akien override.
-- Never merge multiple decisions into one D-id just because they came in one session — each decision is its own scope.
-- Never edit a decision node after filing — decisions are append-only. New context becomes a new decision, linked via metadata.
+- /review runs on every drafted ticket — filing-time quality is the whole point.
+- DISCARD verdicts from /review block filing until Akien explicitly overrides.
+- Each distinct decision gets its own D-id. Single-session doesn't mean single-decision.
+- Decisions are append-only. New context becomes a new decision, linked via metadata.

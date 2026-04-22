@@ -143,9 +143,9 @@ Print the complete synthesis output to the conversation so Akien can read it dir
 
 ## Hard rules
 
-- All 11 agents MUST launch in a single parallel message — no sequential fallback
-- Haiku for panels, Sonnet for synthesis — never reverse this
-- Each panel reads its own files — don't pre-load everything into the prompt
-- Synthesis is inline Sonnet reasoning, not another subagent
-- If a panel errors: note it in synthesis as "Panel N: unavailable" and proceed
-- Post to channel even if synthesis is partial
+- All 11 agents launch in a single parallel message (parallelism is load-bearing for the run).
+- Panels run on Haiku; synthesis runs on Sonnet.
+- Each panel reads its own files — prompts carry the scope, not the content.
+- Synthesis is inline Sonnet reasoning (not another subagent).
+- Panel errors get noted in synthesis ("Panel N: unavailable") and the run proceeds.
+- Channel post happens even if synthesis is partial.

@@ -137,7 +137,7 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py start 
 ```
 
 ## Hard rules
-- 2000 token budget max
-- Never read more than 40 lines of any blob
-- When a question maps to a palace branch, read that node — don't search the codebase blindly
+- 2000 token budget max.
+- Per-blob read cap: 40 lines.
+- When a question maps to a palace branch, read that node — palace-first over codebase grep.
 - Palace is the index; code is the truth. If palace says X and code says Y, trust the code and update the palace.

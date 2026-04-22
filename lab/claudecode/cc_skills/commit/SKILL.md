@@ -45,6 +45,6 @@ For commits outside of /sprint (one-off fixes, doc edits).
    ```
 
 ## Hard rules
-- Never `--no-verify` or force-push main
-- Never stage `.env`, `*.db`, or `~/.TheIgors/` runtime files
-- Tests pass + no secrets = commit without asking
+- Hooks run on every commit; pushes are non-force on main (integrity preserved).
+- Stage files specifically by name — keeps `.env`, `*.db`, and `~/.TheIgors/` runtime paths off the commit.
+- Tests pass + no secrets = commit without asking.

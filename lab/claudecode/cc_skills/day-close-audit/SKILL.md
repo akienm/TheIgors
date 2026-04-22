@@ -474,9 +474,9 @@ Ticketed:   <list>
 
 ## Hard rules
 
-- ⛔ **AUDIT IS MANDATORY FOR DAY-CLOSE. Never skip it. A day-close without audit is incomplete.**
-- Never delete files during audit — candidates list only, discuss with Akien
-- Never fix medium/large issues inline — ticket them
-- Never skip Step 1 (tests) — a failing test blocks everything else
-- Simplification review (Step 17) requires judgment — do not skip it by saying "no changes found"
-- Run /commit after fixes before continuing day-close
+- **Day-close audit is mandatory; it's the day-close integrity gate — every day-close runs it.**
+- Audit surfaces candidates for deletion; removal happens after Akien review (deletion lives outside audit).
+- Small issues get fixed inline during audit; medium/large issues get ticketed.
+- Step 1 (tests) runs before anything else — a failing test blocks the rest.
+- Simplification review (Step 17) requires actual judgment — "no changes found" is earned by looking, not default.
+- After fixes, /commit runs before the day-close continues.
