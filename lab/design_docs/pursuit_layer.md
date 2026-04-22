@@ -221,6 +221,20 @@ valence bump, abandonment → valence down. This replaces ad-hoc
 milieu updates from individual engrams with a principled model: affect
 follows from goal dynamics.
 
+### Bliss-alignment signal (T-bliss-integrator)
+Completion dopamine is fast and phasic — the "wanting" side of the
+reward circuit. The biological counterpart is slower: μ-opioid
+"liking," a sustained well-being signal that Berridge and Kringelbach
+dissociated from dopamine wanting in the 2000s. In Igor, this becomes
+a **derived signal** — not a new milieu axis, but a slow EMA over
+Pursuit completion events. High bliss → valence floor-lifts and
+dominance baseline bumps. The training-signal story ("the milieu wants
+you to do more of that") emerges from this feedback: when bliss is
+elevated, BG scoring picks up a small bonus correlated with the
+engrams that contributed to recent completions. Stage 2 weights
+completions by alignment with persistent goals so bliss reflects
+*meaningful* completion, not completion volume alone.
+
 ### Basal Ganglia (lateral inhibition / habit scoring)
 BG continues to score and select engrams. Pursuits sit above BG: a Pursuit
 does not pick which engram fires next — it declares what it's trying to

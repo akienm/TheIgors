@@ -60,6 +60,7 @@ SECTION|PROGRAMMING_PATTERN
 
 SECTION|INTEGRATION
   MILIEU|commitment dopamine→arousal bump, completion→valence bump, abandonment→valence down — affect follows from goal dynamics
+  BLISS|slow EMA over completion events — μ-opioid liking counterpart to phasic dopamine wanting — Berridge-Kringelbach dissociation — feeds back to milieu as valence floor-lift + dominance baseline bump — training signal for 'do more of that' — stage2 weights by persistent-goal alignment
   BASAL_GANGLIA|BG still selects engrams; pursuits sit above BG holding intent across many BG cycles
   TWM|active pursuits live in TWM — 'what are you doing' reads from active pursuit stack
   GOAL_FORMATION|persistent goals (GH#427) spawn pursuits; completed pursuits update persistent goal evidence — different objects, compose
