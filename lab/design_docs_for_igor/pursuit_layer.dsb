@@ -1,0 +1,84 @@
+DOC|pursuit_layer|v1|updated=2026-04-22
+META|purpose=Pursuit — goal-bound behavioral layer above engrams; commitment, completion, dopamine trace
+META|ref=design_docs/pursuit_layer.md for full prose + biology refs
+META|decision=D-pursuit-layer-2026-04-22
+
+SECTION|THREE_LAYER_MODEL
+  CELLS|graph substrate — Memory nodes + edges — the raw material
+  ENGRAMS|behavioral patterns — stimulus→action, habits and templates
+  PURSUITS|goal-bound units — commitment + completion test + dopamine trace
+  COMPOSITION|engrams compose from cells; pursuits compose from engram firings
+  CAPABILITY_ADDED|cells=what-exists; engrams=what-fires-in-response; pursuits=what-we're-trying-to-accomplish-and-why
+
+SECTION|BIOLOGY_GROUNDING
+  SCHULTZ|phasic dopamine fires at commitment, subgoal, completion (not just at end) — anticipatory burst is load-bearing
+  GRAYBIEL|striatal chunking — action sequences packaged as single executable units, fire at start+end, opaque interior
+  TOTE|Miller-Galanter-Pribram 1960 — Test-Operate-Test-Exit — recursive primitive of goal-directed behavior
+  DICKINSON_BALLEINE|goal-directed vs habitual dissociable — outcome devaluation degrades former not latter — engrams=habitual, pursuits=goal-directed
+
+SECTION|PRIMITIVES
+  ID|unique per-instance
+  NAME|human-readable label, e.g. address_boredom
+  ENTRY_STIMULUS|what triggered commitment
+  GOAL_FACIA|FACIA-shaped predicate — what done looks like, evaluable against state
+  COMMITMENT_TS|when spawned — anchor for anticipatory dopamine
+  PARENT_PURSUIT|pursuit_id | null — recursive nesting
+  SUB_PURSUITS|list of children spawned
+  ACTIONS_TAKEN|audit trail of engram activations
+  COMPLETION_TEST|predicate — are we done?
+  STATUS|pending | active | suspended | completed | abandoned
+  DOPAMINE_TRACE|list of DopamineEvent(kind=commitment|subgoal|completion, ts, magnitude)
+  METADATA|priority, inertia, tags
+
+SECTION|DOPAMINE_EVENTS
+  COMMITMENT|fires at spawn — positive magnitude — anticipatory burst
+  SUBGOAL|fires when sub-Pursuit completes or intermediate predicate clicks
+  COMPLETION|fires when completion_test passes — positive — or at abandonment with negative magnitude
+  DATA_NOT_LOG|other engrams can trigger on dopamine trace — modulates attention, milieu, primes related pursuits
+
+SECTION|RECURSIVE_NESTING
+  SUB_PURSUIT|child with parent pointer
+  SUBGOAL_SIGNAL|child completion fires subgoal dopamine on parent
+  EXAMPLE|reply_to_message nests inside address_user_request nests inside tend_conversation_thread
+  COMPLETION_EVALUATION|parent completion_test reads sub-pursuit outcomes
+
+SECTION|EXPLAINS_BUGS
+  BOREDOM_FOREMAN_REPLY|PROC_BOREDOM_TRIGGER fires foreman_scan as action not as pursuit-entry — no commitment object — reply fires and in-flight do-ticket orphaned
+  REPLY_EATS_PROGRESS|reply is terminal action with no outcome test — cannot compose with in-flight work — wrapping in pursuit gives it suspend/resume semantics
+  ROOT_CAUSE|no one was holding the goal — pursuits give the goal a place to live
+
+SECTION|PROGRAMMING_PATTERN
+  PRINCIPLE|goals are everywhere at every commitment level — not just big ambitions
+  WRAP_WHEN|action can be interrupted mid-flight
+  WRAP_WHEN|done-state is something other than action-executed
+  WRAP_WHEN|action may span multiple engram firings
+  WRAP_WHEN|completion is interesting to other parts of system
+  WRAP_WHEN|may spawn sub-actions needing parent awareness
+  SKIP_WHEN|single synchronous engram firing whose only outcome is the firing
+  SKIP_WHEN|pure stimulus-response reflex with no outcome sensitivity
+  DEFAULT|when in doubt wrap it — cheap to add — removes class of bugs
+
+SECTION|INTEGRATION
+  MILIEU|commitment dopamine→arousal bump, completion→valence bump, abandonment→valence down — affect follows from goal dynamics
+  BASAL_GANGLIA|BG still selects engrams; pursuits sit above BG holding intent across many BG cycles
+  TWM|active pursuits live in TWM — 'what are you doing' reads from active pursuit stack
+  GOAL_FORMATION|persistent goals (GH#427) spawn pursuits; completed pursuits update persistent goal evidence — different objects, compose
+  PLANNING|waypoint graph (GH#428) produces waypoints; pursuits pursue them — planning vs execution
+
+SECTION|NOT
+  NOT|a scheduler — BG still selects engrams
+  NOT|an interpreter — engrams do all execution
+  NOT|a task queue — queue is planned work; pursuits are in-flight commitments
+  NOT|a replacement for engrams — pursuits make engrams more load-bearing
+
+SECTION|OPEN_QUESTIONS
+  STORAGE|TWM only vs persisted to Postgres? default=TWM while active, Postgres on completion for audit and learning
+  COMPLETION_TEST|reuse FACIA vs new predicate lang? default=FACIA — already evaluates structured state
+  ABANDONMENT_POLICY|who decides abandonment, on what signal? default=timeout + dopamine-trace staleness check
+  FOREMAN_INTERACTION|foreman spawns pursuits vs pursuits dispatch to foreman? default=pursuits are outer frame, foreman is an engram inside
+
+SECTION|TICKETS
+  T_SINGLE_PURSUIT_TEST_CASE|attach pursuit to BOREDOM→foreman_scan→do-ticket chain, prove binding via minute-cadence protocol
+  T_PURSUIT_LAYER_DESIGN_DOC|this doc
+  T_PURSUIT_ENGRAM_PROGRAMMING_DOCS|when-to-use guide, template patterns, worked examples
+  T_REPLY_FORMS_PURSUIT|wrap reply action in pursuit — fix reply-eats-progress bug
