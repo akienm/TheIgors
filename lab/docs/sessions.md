@@ -1,3 +1,64 @@
+## Session 2026-04-21a
+**Theme**: Pass 2 re-disposition: worker_mode routing decision + 5 tickets filed
+**Decisions**: D-WORKER-MODE-ROUTING-2026-04-21, D-CC-WORKFLOW-OPTIMIZATIONS-2026-04-21, D-SCAFFOLD-NOT-CORRECT-2026-04-21, D-APPROACH-FRAME-PRINCIPLE-2026-04-21
+**Key changes**:
+- DECIDED D-worker-mode-routing-2026-04-21: route worker dispatch by ticket metadata → T-worker-dispatch-routing T-engram-trigger-cell-name-mismatch T-engram-mcpcall-register-pe-steps T-verify-pe-chain-qwen-tier T-worker-dispatch-validation
+- done: T-engram-trigger-cell-name-mismatch — trigger/cell key fixed, run_engram_cursor added, re-seeded, tests pass
+- DECIDED D-cc-workflow-optimizations-2026-04-21: CC dev-loop optimizations → T-cc-env-split-startup-check T-skill-model-audit-haiku T-context-load-rule-hash T-cc-admin-consolidation T-cc-hook-autonomics
+- done: T-cc-env-split-startup-check — env key check added to context-load step 0
+- done: T-context-load-rule-hash — hash-cache rule/tree in context-load steps 2a/2b
+- SESSION END: Background agent aedaf300031346180 on T-cc-admin-consolidation (keystone consolidation) — will notify on completion. Otherwise clean: 3 tickets closed, 5 filed, 1 earlier shipped.
+- done: T-cc-admin-consolidation — api.py + igor-admin + fixed decision_manager path
+- done: T-savestate-preserve-pointer-shape — preserve string is now pointer not copy
+- done: T-engram-mcpcall-register-pe-steps — 12 pe_* steps registered
+- done: T-verify-pe-chain-qwen-tier — pe_chain already routed to Qwen correctly via route('batch'); added _log_pe_inference() forensic hook + verified via integration test tests/test_pe_chain_qwen_tier.py (real Ollama, no mocks)
+- done: T-worker-dispatch-routing — dispatch switch in launch_next_worker routes igor → adopt_next_ticket (pe_chain in-process), claude/missing → konsole; cc_queue add auto-defaults by tags/size/paths
+- done: T-cc-pre-commit-guards — pre-commit guards + amend-reject hook shipped (follow-up from T-cc-hook-autonomics scope gap)
+- blocked: T-worker-dispatch-validation — dispatch crashes at adopt_next_ticket (goal_adopt() source_message kwarg); filed T-validation-adopt-goal-kwarg; probe seeded as T-igor-validation-probe (gated until fix)
+- done: T-validation-adopt-goal-kwarg — source_message kwarg dropped
+- done: T-worker-dispatch-validation — end-to-end dispatch verified; pe_chain guardrail correctly escalates under broken test suite; T-fix-memory-scope-portable-test filed as unblocker
+- done: T-fix-memory-scope-portable-test — cortex tolerates raw-text payloads (SKILL-* memories)
+- TOPIC BREAK: Topic break. Pre-Pass-3 cleanup framing established: close everything we can before Pass 3. New rules + categories for dispatch (7th category: Akien-does-personally; 8th: externally-blocked; plus no-immobile-observe-tickets rule). T-audit-immobile-observe-tickets filed.
+- DECIDED D-scaffold-not-correct-2026-04-21: shift design rules from implicit to explicit-at-filing-time → T-palace-ticket-design-rules T-ticket-template-structured T-review-loads-palace-rules T-review-build-tightness-grade
+- Topic close: D-scaffold-not-correct-2026-04-21 filed (4 tickets). In-flight: NONE. Compacting.
+- done: T-palace-ticket-design-rules — 5 check-shape palace nodes scaffold filing-time /review (commit 07b1c6cf)
+- hypothesis: NONE — T-palace-ticket-design-rules shipped; scaffold batch 1/4 done; next two siblings unblocked
+- done: T-review-loads-palace-rules — /review Mode A Check 7 palace-loaded design rules (commit b11ea1fa)
+- done: T-ticket-template-structured — /ticket structured fields, closes filing-time scaffold loop (commit 0a38873c)
+- done: T-review-build-tightness-grade — /review Check 8 build-tightness grade; CLOSES D-scaffold-not-correct-2026-04-21 4/4 (commit 032ec98a)
+- done: T-decision-rollup-preserves-narrative — narrative preserved + 3 docs restored (commit c6f388bb)
+- done: T-fix-skills-sync-rsync-path — rsync path + auto-cleaned 8 retired skills (commit 3ef288a6)
+- checkpoint: 7 tickets shipped post-compact; 1 decision closed (D-scaffold); 1 filed (T-pytest-runner-pipe-hang); rsync auto-cleaned 8 retired skill stubs
+- done: T-pytest-runner-pipe-hang — pytest.ini timeout=30 bounds hangs; real cause was tests hanging, not pipes
+- done: T-fix-installer-claudecode-path — swept 11 stale claudecode/ path refs across installer + Igor tools
+- checkpoint: clean boundary after T-fix-installer-claudecode-path; in-flight NONE
+- done: T-strengthen-no-sqlite-filter — 5th-attempt filter strengthened: DISCARD on SQLite proposals + fallback language at filing time. commit e1ac1092.
+- filed T-epic-fix-all-pass2-findings + T-audit-design-thread-pass2. Positive-focus scaffold for the FIX-ALL policy (corrected 7th time). Memory rewritten, MEMORY.md index updated, AGGREGATE.md 5-10-cap framing corrected at source.
+- DECIDED D-approach-frame-principle-2026-04-21: approach-frame as canonical rule-shaping principle → T-palace-approach-frame-rule T-palace-rules-versioned T-audit-cc-rules-approach-frame T-audit-igor-cp-approach-frame T-igor-self-audit-approach-frame T-approach-frame-sensor-node T-slow-metrics-sensor-tree-pattern T-sweep-avoidance-frame-docs
+- done: T-palace-approach-frame-rule — palace node written, commit 59e76863
+- done: T-palace-rules-versioned — 16 rule nodes revision-tagged, commit 706f3143
+- done: T-approach-frame-sensor-node — palace metric subtree + palace_metric helper + 9 tests
+- progress: T-audit-igor-cp-approach-frame — CP scored (5/6 approach, CP6 mixed); 5 reframe options proposed; awaiting Akien sign-off for palace write
+- savestateauto: 3 approach-frame tickets shipped (palace rule, revision affordance, metric subtree); CP audit blocked awaiting Akien CP6 pick
+- done: T-audit-igor-cp-approach-frame — CP6 kept per Igor's direct input; rationale saved to project_cp6_hard_edge.md; metric +6 reviewed +1 kept_with_rationale
+- done: T-audit-cc-rules-approach-frame — 8/10 rules reframed, do-not→safeguards, commit 7217cda7
+- done: T-sweep-avoidance-frame-docs — 5-category sweep, 17 reviewed/17 reframed, commit 3e8e31fe
+- done: T-slow-metrics-sensor-tree-pattern — rule + pass2_findings + habit_health subtrees
+- dispatched: T-igor-self-audit-approach-frame → Igor (gate cleared, channel post with full scope + palace_metric helper refs)
+- Approach-frame batch complete. In-flight: T-igor-self-audit-approach-frame (worker=igor, pending)
+**Next session**: Next: sprint T-palace-ticket-design-rules (CC-first per project_fix_claude_before_igor.md)
+**In-flight**: In-flight: NONE
+
+## Session 2026-04-20b
+**Theme**: Pre-audit cleanup: T-docs-live-in-code + unblocked palace/workflow children
+**Decisions**: D-SLATE-SALIENCE-ORDER-2026-04-20
+**Key changes**:
+- done: T-docs-live-in-code (d68661de) — reading_tool.py pilot; filed T-docs-live-code-rollout checklist. Audit blocker cleared.
+- done: T-docs-live-in-code (d68661de) + T-stale-ticket-sweeper + T-decision-rollup-on-last-ticket-close (83a69173). Ungated 5 stale gates on-the-fly.
+- done: T-tickets-into-palace-subtree — 698 tickets migrated to clan.memories as canonical (e7232f01)
+- DECIDED D-slate-salience-order-2026-04-20: slate salience-ordered sections → T-slate-section-reorder
+**In-flight**: NONE
+
 ## Session 2026-04-20a
 **Theme**: Workflow overhaul sprint: design+decided+review+sprint-batch, ticket schema extensions
 **Key changes**:
@@ -8,7 +69,12 @@
 - done: T-fixit-rewrite (e8f96273 + 3bbc7aa) + WorkingWithClaude.md refresh + ClaudeAndAkien sync. Filed T-swarm-via-home-web-server (deferred). Skills work chapter closed.
 - done: T-savestateauto-emit-compact-preserve (retroactive, first exercise of T-sync-on-close-not-dayend pattern) — savestateauto always prints compact preserve block
 - /day-close starting — skills chapter closed, palace migration sequencing queued
-**In-flight**: NONE
+- day-close complete: 11 tix closed, 21 filed, 8 commits, Discussion #501
+- post-day-close: ran export_chat.py --all; 94 transcripts → 23 dated files (29MB, gitignored); T-chat-history-igor-backfill narrowed to Igor-side background job only
+- Pass 2 audit complete: 8 subagents, 149 candidates, 85 SHIP; AGGREGATE.md on disk; in-flight NONE
+- Session close: transcript exported (1.3MB); audit artifacts committed (ceeae924, 8a9d4a19); in-flight NONE
+**Next session**: Next: re-disposition 85 SHIP → 5-10 cap using AGGREGATE.md + run /decided batch; then start the deletion-first sprints (db_proxy SQLite shim, cc_skills mirror, ENGRAM_CODE_* dead chain)
+**In-flight**: In-flight: NONE
 
 ## Session 2026-04-19a
 **Theme**: Post-compact autonomous sprint: docs-live-in-code extension + worker-foreman Phase B
