@@ -1,12 +1,11 @@
-# Budget — present numbers, never recommend tiers
+# Budget — present numbers, decide explicitly
 
 **Path:** `theigors/rules/budget`
-**Updated:** 2026-04-21 by T-palace-rules-versioned
+**Updated:** 2026-04-21 by T-audit-cc-rules-approach-frame
 
-Budget discipline:
-- Never recommend spending tiers or budget limits. Present numbers, let Akien decide.
-- CC is flat-rate Pro Max. Igor's OR spend is the meter — minimize that, not CC usage.
-- Verify e2e before flipping switches. Don't enable gated features until the output path produces real user-facing text, not stubs. Recurring failure mode.
+Present the numbers; Akien decides the spending tier. CC is flat-rate Pro Max, so the meter to minimize is Igor's OR spend.
 
-revision: 2026-04-21 — initial versioned tag (T-palace-rules-versioned)
+Before flipping a feature gate: verify end-to-end that the output path produces real user-facing text, not stubs. This is the recurring failure mode — a feature reads 'enabled' without the downstream path carrying the signal to a user.
+
+revision: 2026-04-21 — reframed to approach-target (T-audit-cc-rules-approach-frame)
 

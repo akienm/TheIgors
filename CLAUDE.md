@@ -14,8 +14,9 @@ psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -c \
    WHERE path LIKE 'theigors/rules/%' ORDER BY path" -tA | less
 ```
 
-Order (top-to-bottom): persona → coding → commits → memory → database →
-budget → collaboration → igor-constraints → docs-live-in-code → do-not.
+Order (top-to-bottom): approach-frame → persona → coding → commits → memory →
+database → budget → collaboration → igor-constraints → docs-live-in-code →
+safeguards.
 
 `/context-load` pulls these explicitly; read the full tree any time with
 `SELECT path, title FROM memory_palace ORDER BY path`.
