@@ -22,6 +22,18 @@ if [ -n "$OR_KEY" ]; then
 fi
 ```
 
+## Step 0.25 — Stale slate check (soft prompt to close previous day)
+```bash
+python3 ~/TheIgors/lab/claudecode/stale_slate_check.py
+```
+
+Soft prompt — if the most-recent prior-day slate has open items in `## Next up`,
+`## Blocked`, or `## After that` AND lacks a `✅ CLOSED` marker, this emits a
+warning. Silent when the prior slate is fully closed, empty, or doesn't exist.
+
+When the warning fires, surface it to the user and offer: run `/day-close` on the
+stale date, defer, or skip. Not a gate — user decides.
+
 ## Step 0.5 — Debug flag
 ```bash
 touch ~/.TheIgors/Igor-wild-0001/debug_session.flag
