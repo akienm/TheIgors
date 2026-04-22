@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 """
-export_chat.py — Render CC session transcript(s) to markdown.
+export_chat.py — Render CC session transcript(s) to per-day markdown files.
+
+Each message is routed to `YYYY-MM-DD.md` based on its *own* timestamp. Long-lived
+sessions that span days contribute to multiple day-files. Day-files are rebuilt
+from scratch on each invocation as the union of every session's contribution for
+that date — so the output is idempotent.
 
 Usage:
-    export_chat.py              — render the most-recently-modified transcript
-                                  to claude_chat_logs/YYYYMMDD.md (today's date)
-    export_chat.py --session <session-id>
-                                — render a specific session
-    export_chat.py --all        — render every transcript in the projects dir
-                                  to its corresponding day (idempotent; appends if
-                                  output file already exists)
-    export_chat.py --dry-run    — print what would be written, don't touch disk
+    export_chat.py              — refresh day-files touched by the newest session
+    export_chat.py --session ID — refresh day-files touched by a specific session
+    export_chat.py --all        — rebuild every day-file from the full transcript dir
+    export_chat.py --dry-run    — report what would be written, don't touch disk
 
 Source:  ~/.claude/projects/-home-akien-TheIgors/<session-id>.jsonl
-Output:  /home/akien/TheIgors/claude_chat_logs/YYYYMMDD.md
+Output:  /home/akien/TheIgors/claude_chat_logs/YYYY-MM-DD.md
 
-Recovery purpose — if something scrolls off the top of the chat, run
-/export-chat to get a persistent copy.
+Recovery purpose — if something scrolls off the top of the chat, run /export-chat
+to get a persistent copy.
 """
 
 from __future__ import annotations
@@ -36,7 +37,6 @@ def _render_message(msg: dict) -> str:
     mtype = msg.get("type")
     ts = msg.get("timestamp", "")
     if mtype == "user":
-        # user messages can have nested structure
         content = msg.get("message", {}).get("content", "")
         if isinstance(content, list):
             parts = []
@@ -45,7 +45,6 @@ def _render_message(msg: dict) -> str:
                     if c.get("type") == "text":
                         parts.append(c.get("text", ""))
                     elif c.get("type") == "tool_result":
-                        # elide tool results — too noisy for a recovery log
                         tc = c.get("content", "")
                         if isinstance(tc, list):
                             tc = " ".join(
@@ -73,7 +72,6 @@ def _render_message(msg: dict) -> str:
                     elif c.get("type") == "tool_use":
                         tname = c.get("name", "?")
                         tin = c.get("input", {})
-                        # render a one-line summary of the tool call
                         summary = json.dumps(tin)[:200].replace("\n", " ")
                         parts.append(
                             f"_[tool: {tname}({summary}{'...' if len(json.dumps(tin)) > 200 else ''})]_"
@@ -87,29 +85,25 @@ def _render_message(msg: dict) -> str:
     return ""
 
 
-def _date_for_transcript(path: Path) -> str:
-    """Derive YYYYMMDD from transcript's first message timestamp, else mtime."""
+def _local_date_of(ts: str) -> str | None:
+    """Parse an ISO timestamp, return local YYYY-MM-DD, or None if unparseable."""
+    if not ts:
+        return None
     try:
-        with path.open() as f:
-            first = f.readline()
-            if first:
-                obj = json.loads(first)
-                ts = obj.get("timestamp")
-                if ts:
-                    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-                    return dt.astimezone().strftime("%Y-%m-%d")
-    except Exception:
-        pass
-    mtime = datetime.fromtimestamp(path.stat().st_mtime)
-    return mtime.strftime("%Y-%m-%d")
+        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return dt.astimezone().strftime("%Y-%m-%d")
 
 
-def render(path: Path) -> str:
-    """Render one transcript file to markdown."""
-    lines = []
-    lines.append(f"# Chat log — {path.name}\n")
-    lines.append(f"_rendered {datetime.now(timezone.utc).isoformat()}_\n")
-    msg_count = 0
+def partition_session_by_day(path: Path) -> dict[str, list[str]]:
+    """Read one transcript and return {YYYY-MM-DD: [rendered_markdown_block, ...]}.
+
+    Messages without a timestamp attach to the most recent known date in the
+    session. Messages before any timestamped record are skipped.
+    """
+    by_day: dict[str, list[str]] = {}
+    current_date: str | None = None
     with path.open() as f:
         for line in f:
             line = line.strip()
@@ -119,65 +113,97 @@ def render(path: Path) -> str:
                 msg = json.loads(line)
             except json.JSONDecodeError:
                 continue
+            ts_date = _local_date_of(msg.get("timestamp", ""))
+            if ts_date:
+                current_date = ts_date
+            if current_date is None:
+                continue
             rendered = _render_message(msg)
             if rendered:
-                lines.append(rendered)
-                msg_count += 1
-    lines.append(f"\n---\n_{msg_count} messages rendered_\n")
-    return "".join(lines)
+                by_day.setdefault(current_date, []).append(rendered)
+    return by_day
 
 
-def write_out(path: Path, content: str, date_str: str, dry_run: bool) -> Path:
-    out_path = OUTPUT_DIR / f"{date_str}.md"
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    if dry_run:
-        print(f"[dry-run] would write {len(content)} bytes → {out_path}")
-        return out_path
-    separator = ""
-    mode = "w"
-    if out_path.exists():
-        # append with separator so multiple sessions on the same day stack
-        separator = f"\n\n---\n\n## Additional session transcript {path.name}\n"
-        mode = "a"
-    with out_path.open(mode) as f:
-        f.write(separator + content)
-    print(f"Wrote {len(content)} bytes → {out_path}")
-    return out_path
+def render_day_file(date_str: str, per_session: list[tuple[str, list[str]]]) -> str:
+    """Render a day-file as union of session contributions, ordered by session id."""
+    parts = [
+        f"# Chat log — {date_str}\n",
+        f"\n_rendered {datetime.now(timezone.utc).isoformat()}_\n",
+    ]
+    for session_id, blocks in sorted(per_session, key=lambda x: x[0]):
+        parts.append(f"\n---\n\n## Session {session_id}\n")
+        parts.extend(blocks)
+        parts.append(f"\n_({len(blocks)} messages rendered for this day)_\n")
+    return "".join(parts)
 
 
-def resolve_target(session_id: str | None, all_mode: bool) -> list[Path]:
+def resolve_target_sessions(
+    transcript_dir: Path, session_id: str | None, all_mode: bool
+) -> list[Path]:
+    files = sorted(transcript_dir.glob("*.jsonl"), key=lambda p: p.stat().st_mtime)
+    if not files:
+        print("No transcripts found.", file=sys.stderr)
+        sys.exit(1)
     if all_mode:
-        files = sorted(TRANSCRIPT_DIR.glob("*.jsonl"), key=lambda p: p.stat().st_mtime)
-        if not files:
-            print("No transcripts found.", file=sys.stderr)
-            sys.exit(1)
         return files
     if session_id:
-        p = TRANSCRIPT_DIR / f"{session_id}.jsonl"
+        p = transcript_dir / f"{session_id}.jsonl"
         if not p.exists():
             print(f"No transcript for session {session_id}", file=sys.stderr)
             sys.exit(1)
         return [p]
-    # default: most-recently-modified transcript
-    files = sorted(TRANSCRIPT_DIR.glob("*.jsonl"), key=lambda p: p.stat().st_mtime)
-    if not files:
-        print("No transcripts found.", file=sys.stderr)
-        sys.exit(1)
     return [files[-1]]
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--session", help="Specific session id (without .jsonl)")
-    parser.add_argument("--all", action="store_true", help="Render every transcript")
+    parser.add_argument(
+        "--all", action="store_true", help="Rebuild every day-file from all transcripts"
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    targets = resolve_target(args.session, args.all)
-    for p in targets:
-        content = render(p)
-        date_str = _date_for_transcript(p)
-        write_out(p, content, date_str, args.dry_run)
+    all_transcripts = sorted(
+        TRANSCRIPT_DIR.glob("*.jsonl"), key=lambda p: p.stat().st_mtime
+    )
+    if not all_transcripts:
+        print("No transcripts found.", file=sys.stderr)
+        sys.exit(1)
+
+    targets = resolve_target_sessions(TRANSCRIPT_DIR, args.session, args.all)
+
+    # Partition every session once — we need the other sessions' contributions
+    # when rewriting the day-files touched by the target sessions.
+    all_partitions: dict[str, dict[str, list[str]]] = {}
+    for path in all_transcripts:
+        all_partitions[path.stem] = partition_session_by_day(path)
+
+    # Days touched by the target set = days we need to rewrite.
+    days_to_refresh: set[str] = set()
+    for path in targets:
+        days_to_refresh.update(all_partitions[path.stem].keys())
+
+    if not days_to_refresh:
+        print("No dated messages in target session(s) — nothing to write.")
+        return
+
+    if not args.dry_run:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    for date_str in sorted(days_to_refresh):
+        per_session: list[tuple[str, list[str]]] = []
+        for sid, day_map in all_partitions.items():
+            blocks = day_map.get(date_str)
+            if blocks:
+                per_session.append((sid, blocks))
+        content = render_day_file(date_str, per_session)
+        out_path = OUTPUT_DIR / f"{date_str}.md"
+        if args.dry_run:
+            print(f"[dry-run] {len(content)} bytes → {out_path}")
+        else:
+            out_path.write_text(content)
+            print(f"wrote {len(content)} bytes → {out_path}")
 
 
 if __name__ == "__main__":
