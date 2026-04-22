@@ -133,24 +133,46 @@ def cmd_channel(args):
 
 
 def cmd_env(args):
+    import re
+
+    def _mask(url: str) -> str:
+        # Mask password: postgresql://user:PASSWORD@host/db → postgresql://user:****@host/db
+        return re.sub(r"(:)[^:@]+(@)", r"\1****\2", url)
+
     db_url = os.environ.get("IGOR_HOME_DB_URL", "")
-    if db_url:
-        # Mask password: postgresql://user:PASSWORD@host/db
-        masked = db_url
-        import re
+    source_label = "IGOR_HOME_DB_URL"
+    if not db_url:
+        db_url = os.environ.get("IGOR_DB_URL", "")
+        source_label = "IGOR_DB_URL (fallback)"
 
-        masked = re.sub(r"(:)[^:@]+(@)", r"\1****\2", db_url)
-        print(f"IGOR_HOME_DB_URL is set: {masked}")
-    else:
-        db_url2 = os.environ.get("IGOR_DB_URL", "")
-        if db_url2:
-            import re
+    if not db_url:
+        print("IGOR_HOME_DB_URL is NOT set", file=sys.stderr)
+        sys.exit(1)
 
-            masked = re.sub(r"(:)[^:@]+(@)", r"\1****\2", db_url2)
-            print(f"IGOR_DB_URL is set (fallback): {masked}")
-        else:
-            print("IGOR_HOME_DB_URL is NOT set")
-            sys.exit(1)
+    print(f"{source_label} is set: {_mask(db_url)}")
+
+    # Trivial connectivity query — verifies Postgres is reachable & creds work.
+    try:
+        import psycopg2
+    except ImportError as e:
+        print(f"psycopg2 not importable: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        conn = psycopg2.connect(db_url, connect_timeout=3)
+        try:
+            with conn.cursor() as c:
+                c.execute("SELECT 1")
+                c.fetchone()
+        finally:
+            conn.close()
+        print(f"Postgres reachable at {_mask(db_url)}")
+    except Exception as e:
+        print(
+            f"Postgres UNREACHABLE at {_mask(db_url)}: {e}",
+            file=sys.stderr,
+        )
+        sys.exit(3)
 
 
 # ── Argument parser ───────────────────────────────────────────────────────────
