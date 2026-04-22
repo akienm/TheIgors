@@ -1,0 +1,71 @@
+DOC|pursuit_programming|v1|updated=2026-04-22
+META|purpose=How-to guide for wrapping actions in Pursuits — when to wrap, templates, worked examples, common mistakes
+META|ref=design_docs/pursuit_programming.md for full prose + code samples
+META|companion=pursuit_layer (concept) + engram_language (substrate)
+
+SECTION|CORE_PRINCIPLE
+  GOALS_EVERYWHERE|pursuits are for every commitment at every scale — not just big ambitions
+  TEST|if someone could ask 'did that work?' after action, it wants a pursuit
+  ANTI_TEST|if only possible answer is 'the action ran', no pursuit needed
+
+SECTION|WRAP_CRITERIA
+  WRAP|action can be interrupted mid-flight
+  WRAP|done-state is more than 'action returned'
+  WRAP|spans multiple engram firings
+  WRAP|another part of system cares about completion
+  WRAP|may spawn sub-actions needing parent awareness
+  WRAP|you'd answer 'what am I doing' with this action
+
+SECTION|SKIP_CRITERIA
+  SKIP|single synchronous firing whose outcome IS the firing (log write, metric inc)
+  SKIP|pure reflex — reaction IS the point, not outcome
+  SKIP|pure reader — no side effects, no spawn (current_time, list_tickets, read_node)
+
+SECTION|DEFAULT
+  WHEN_IN_DOUBT|wrap — wrapped-unneeded costs bytes; unwrapped-needed produces orphan ghost
+
+SECTION|MINIMAL_TEMPLATE
+  SPAWN|Pursuit.spawn(name, entry_stimulus, goal_facia) — fires commitment dopamine
+  ENGRAM_INVOCATION|pass pursuit_id to engram layer so firings attribute correctly
+  COMPLETION|try/finally with pursuit.evaluate_completion() — runs test, fires completion or abandonment dopamine
+
+SECTION|NESTING
+  PARENT_POINTER|sub-Pursuit carries parent_pursuit reference
+  SUSPEND_RESUME|parent.suspend() before child runs; parent.resume() after child completes
+  SUBGOAL_DOPAMINE|child completion fires subgoal event on parent
+  EXAMPLE_STACK|address_boredom → do_ticket → reply (three-deep)
+
+SECTION|WORKED_EXAMPLES
+  REPLY|wrap handle_reply with parent_pursuit param — suspends in-flight parent, runs reply, resumes parent
+  BOREDOM|address_boredom outer (goal=some-ticket-closed-after-spawn), do_ticket inner (goal=specific-ticket-done), composes with reply
+  KEY_INSIGHT|outer pursuit goal should be abstract (any productive output), inner pursuit goal should be specific
+
+SECTION|COMMON_MISTAKES
+  INTERNAL_STATE|goal_facia checks 'function was called' instead of 'outcome produced' — completion becomes noise
+  TOO_GRANULAR|wrapping every line creates commitment storm — pursuits are for interruptible outcome-bearing actions
+  ORPHAN_REPLY|forgetting parent_pursuit detaches reply — parent keeps running, old bug returns
+  UNREACHABLE_TEST|completion_test that can never pass — TWM fills, abandonment timeout produces no useful signal
+  PURE_READER|wrapping read-only ops — no outcome to commit to
+
+SECTION|ENGRAM_GRAMMAR_IMPACT
+  UNCHANGED|D208 engram language unchanged
+  BASKET_ADDITION|pursuit_id rides in the basket — engrams attribute their firings against active Pursuit
+  BLOOM_INHIBIT|lateral inhibition at engram layer unchanged — pursuits compose hierarchically not competitively
+  SCHEDULER_FREE|preserved — zero-or-more Pursuits active, engrams fire underneath via BG+milieu alone
+
+SECTION|DEBUG_PROTOCOL
+  DID_NOT_COMPLETE|read actions_taken + dopamine_trace — firings without outcome = wrong completion_test
+  STILL_OPEN|check TTL and dopamine-trace staleness — missing abandonment = check disabled or threshold too high
+  FIRED_TWICE|duplicate-trigger upstream — second spawn with same name+entry_stimulus should no-op or re-enter
+
+SECTION|MVP_FOR_TEST_CASE
+  NEED|Pursuit dataclass with fields from pursuit_layer.md §4
+  NEED|spawn() fires commitment, evaluate_completion() fires outcome or abandonment
+  NEED|suspend/resume for nesting
+  NEED|TWM slot for active pursuits readable by 'what am I doing'
+  NEED|dopamine event stream subscribable by other engrams
+  DEFER|persistence, learning, milieu integration, staleness — layer on after first wrap proves design
+
+SECTION|TICKETS
+  T_SINGLE_PURSUIT_TEST_CASE|MVP implementation + BOREDOM chain experiment
+  T_REPLY_FORMS_PURSUIT|first real-world wrap — fixes reply-eats-progress bug
