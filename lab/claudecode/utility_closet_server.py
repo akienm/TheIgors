@@ -308,13 +308,59 @@ def _add_to_history(session_id: str, msg: dict):
 
 
 def _broadcast_to_session(session_id: str, payload: str):
-    """Fan out a payload to clients in a specific session."""
+    """Fan out a payload to clients in a specific session.
+
+    Logs fanout count for every call. If fanout_count=0, also posts a channel
+    diagnostic so silent drops (agent POST 200 OK but no WS subscriber on the
+    target session_id) surface in real time instead of vanishing.
+    T-uc-delivery-telemetry: the suspected smoking gun is session_id mismatch
+    between Igor's send default ('shared') and the browser's joined channel.
+    """
     if _loop is None:
+        log.warning(
+            "uc_deliver: no event loop, cannot broadcast session=%s", session_id
+        )
         return
     with _client_lock:
         queues = list(_session_clients.get(session_id, []))
+        known_sessions = list(_session_clients.keys())
+
+    fanout_count = len(queues)
+    preview = ""
+    try:
+        preview = json.loads(payload).get("content", "")[:80].replace("\n", " ")
+    except Exception:
+        preview = payload[:80].replace("\n", " ")
+
+    if fanout_count == 0:
+        log.warning(
+            "uc_deliver: DROP session=%s fanout=0 known_sessions=%s: %s",
+            session_id,
+            known_sessions,
+            preview,
+        )
+        try:
+            _channel_append(
+                "uc_deliver",
+                f"[uc_deliver] ✗ session={session_id} fanout=0 "
+                f"known={known_sessions}: {preview}",
+                msg_type="diagnostic",
+            )
+        except Exception as chexc:
+            log.debug("uc_deliver: channel diagnostic failed: %s", chexc)
+    else:
+        log.info(
+            "uc_deliver: session=%s fanout=%d: %s",
+            session_id,
+            fanout_count,
+            preview,
+        )
+
     for q in queues:
-        _loop.call_soon_threadsafe(q.put_nowait, payload)
+        try:
+            _loop.call_soon_threadsafe(q.put_nowait, payload)
+        except Exception as e:
+            log.warning("uc_deliver: enqueue failed session=%s: %s", session_id, e)
 
 
 def _broadcast(payload: str):
@@ -332,6 +378,13 @@ def _broadcast(payload: str):
 
 def agent_send(text: str, agent_id: str, session_id: str = "shared"):
     """An agent sends a response to the web UI."""
+    log.info(
+        "uc_deliver: agent_send agent=%s session=%s len=%d: %s",
+        agent_id,
+        session_id,
+        len(text),
+        text[:80].replace("\n", " "),
+    )
     msg = {
         "type": "message",
         "author": agent_id,
@@ -676,11 +729,23 @@ async def _api_agent_send(request: Request):
     try:
         body = await request.json()
     except Exception:
+        log.warning("uc_deliver: POST /api/agents/%s/send — invalid JSON", agent_id)
         return JSONResponse({"error": "invalid JSON"}, status_code=400)
     content = body.get("content", "").strip()
     session_id = body.get("session_id", "shared")
     if not content:
+        log.warning(
+            "uc_deliver: POST /api/agents/%s/send session=%s — empty content",
+            agent_id,
+            session_id,
+        )
         return JSONResponse({"error": "empty content"}, status_code=400)
+    log.info(
+        "uc_deliver: POST accepted agent=%s session=%s len=%d",
+        agent_id,
+        session_id,
+        len(content),
+    )
     agent_send(content, agent_id, session_id)
     return JSONResponse({"status": "ok"})
 
@@ -773,6 +838,15 @@ async def _ws_endpoint(ws: WebSocket):
                         _session_clients.setdefault(new_sid, []).append(q)
                         _client_session[id(ws)] = new_sid
                         hist = list(_session_history.get(new_sid, []))
+                        subscriber_count = len(_session_clients.get(new_sid, []))
+                    log.info(
+                        "uc_deliver: join_session client=%s %s -> %s "
+                        "(new_session now has %d subscriber(s))",
+                        id(ws),
+                        current_session,
+                        new_sid,
+                        subscriber_count,
+                    )
                     current_session = new_sid
                     await ws.send_text(
                         json.dumps(
@@ -815,9 +889,21 @@ async def _ws_endpoint(ws: WebSocket):
         try:
             while True:
                 payload = await q.get()
-                await ws.send_text(payload)
+                try:
+                    await ws.send_text(payload)
+                except Exception as send_exc:
+                    preview = payload[:80].replace("\n", " ")
+                    log.warning(
+                        "uc_deliver: ws.send_text FAILED client=%s session=%s: %s "
+                        "(payload preview: %s)",
+                        id(ws),
+                        current_session,
+                        send_exc,
+                        preview,
+                    )
+                    raise
         except Exception as e:
-            log.debug("ws forward error: %s", e)
+            log.debug("ws forward loop ended for client=%s: %s", id(ws), e)
 
     recv = asyncio.ensure_future(_receive())
     fwd = asyncio.ensure_future(_forward())
@@ -834,6 +920,13 @@ async def _ws_endpoint(ws: WebSocket):
         if q in qs:
             qs.remove(q)
         _client_session.pop(id(ws), None)
+        remaining = len(_session_clients.get(current_session, []))
+    log.info(
+        "uc_deliver: disconnect client=%s session=%s (remaining subscribers=%d)",
+        id(ws),
+        current_session,
+        remaining,
+    )
 
 
 # ── Starlette app factory ───────────────────────────────────────────────────
