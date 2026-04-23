@@ -376,8 +376,18 @@ def _broadcast(payload: str):
 # ── Public send API (called by agents via REST) ─────────────────────────────
 
 
+def _canonical_session_id(sid: str) -> str:
+    # Browser tabs + comms.py channel registry use the comms:// URI form;
+    # bare names like "shared" are an agent-side convenience. Coerce here
+    # so _session_clients/_session_history keys match the browser's join.
+    if not sid:
+        return "comms://shared"
+    return sid if sid.startswith("comms://") else f"comms://{sid}"
+
+
 def agent_send(text: str, agent_id: str, session_id: str = "shared"):
     """An agent sends a response to the web UI."""
+    session_id = _canonical_session_id(session_id)
     log.info(
         "uc_deliver: agent_send agent=%s session=%s len=%d: %s",
         agent_id,
@@ -772,7 +782,7 @@ async def _api_agent_poll(request: Request):
 async def _ws_endpoint(ws: WebSocket):
     await ws.accept()
     q: asyncio.Queue = asyncio.Queue()
-    current_session = "shared"
+    current_session = "comms://shared"
     with _client_lock:
         _session_clients.setdefault(current_session, []).append(q)
         _client_session[id(ws)] = current_session
@@ -831,6 +841,7 @@ async def _ws_endpoint(ws: WebSocket):
                     new_sid = (msg.get("session_id") or "shared").strip()[
                         :64
                     ] or "shared"
+                    new_sid = _canonical_session_id(new_sid)
                     with _client_lock:
                         old_qs = _session_clients.get(current_session, [])
                         if q in old_qs:
