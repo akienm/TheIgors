@@ -130,6 +130,28 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py show 1
 python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep "🟠"
 ```
 
+## Step 5.6 — Unread CC inbox
+```bash
+python3 -c "
+from lab.claudecode.cc_inbox import read_unread
+entries = read_unread()
+if entries:
+    high = sum(1 for e in entries if e.urgency == 'high')
+    needs_reply = sum(1 for e in entries if e.response_expected)
+    print(f'Inbox: {len(entries)} unread ({high} high, {needs_reply} need reply)')
+    for e in entries[:5]:
+        urg = '!' if e.urgency == 'high' else '·' if e.urgency == 'low' else ' '
+        tk = f' [{e.ticket_id}]' if e.ticket_id else ''
+        print(f'  [{urg}] {e.kind}{tk}: {e.summary}')
+else:
+    print('Inbox: empty')
+"
+```
+
+Pushes from Igor subsystems (pe_chain escalations, scope_guard blocks,
+go-live-when trips). Surface any unread to Akien; then invoke /readinbox
+to see full details and mark-read.
+
 ## Step 6 — Assemble briefing
 Token budget: 2000 tokens (~8000 chars). Output:
 ```
