@@ -47,15 +47,16 @@ if [ ! -f "$SLATE" ]; then
   cat > "$SLATE" <<EOF
 # Slate $(date +%Y-%m-%d)
 
-## Next up
+## In-flight
+NONE
 
-## Blocked
+## Planned
 
-## After that
+## Ad hoc
 
-## Decided
+## Done today
 
-## Done
+## Notes
 EOF
 fi
 cat "$SLATE"
@@ -119,13 +120,7 @@ tail -10 ~/TheIgors/lab/design_docs_for_igor/decisions_log.dsb | sed 's/|/ — /
 python3 ~/TheIgors/lab/claudecode/channel.py read 5
 ```
 
-## Step 5 — Last session
-```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py show 1
-```
-
-## Step 5.5 — Pending approvals
+## Step 5 — Pending approvals
 ```bash
 python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep "🟠"
 ```
@@ -156,18 +151,13 @@ to see full details and mark-read.
 Token budget: 2000 tokens (~8000 chars). Output:
 ```
 CONTEXT LOAD — <timestamp>
+In-flight: <## In-flight line from slate, or NONE>
 Active: <ticket IDs from slate>
 Palace: <node count + top-level branches>
 Decisions: <one-line from tail>
 Channel: <recent or "quiet">
 [~NNN tokens]
 Ready.
-```
-
-## Step 7 — Start session record (REQUIRED)
-```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py start "YYYY-MM-DDx" "Theme"
 ```
 
 ## Hard rules

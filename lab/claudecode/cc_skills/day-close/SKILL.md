@@ -26,10 +26,9 @@ Small fixes (typo, missing log, dead import): fix now.
 Bigger issues: /ticket them.
 If code changed: `/commit`
 
-### 5. Read today's session
+### 5. Read today's slate
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py show 1
+cat ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
 ```
 
 ### 6. Push tickets to GitHub
@@ -37,11 +36,10 @@ IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py show 1
 python3 ~/TheIgors/lab/claudecode/github_sync.py push-queue
 ```
 
-### 7. Sync docs DB + render sessions
+### 7. Sync docs DB
 ```bash
 DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
 IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/docs_sync.py sync
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py render
 ```
 
 ### 8. Update affected DSBs

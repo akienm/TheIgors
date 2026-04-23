@@ -69,9 +69,7 @@ For each ticket in order, run the /sprint body:
    ```
 8. **Close**: `cc_queue.py done <id> "<summary of what was built>"`
 9. **Retroactive incidental ticket (T-sync-on-close-not-dayend pattern)**: if the commit includes changes unrelated to the claimed ticket (the "oh, and I also fixed this" case), draft a new ticket + immediately close it for the incidental fix so every change has a ticket.
-10. **Session record**: `session_manager.py append-change "done: T-... — ..."`
-
-After each ticket: update the slate `## Done today` section inline.
+10. **Slate**: `echo "- done: T-... — ..." >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt`
 
 ### 5. Handle failure mid-batch
 
@@ -84,8 +82,7 @@ If a ticket fails (test failure, unresolvable conflict, scope mismatch), prompt:
 
 Once all tickets complete (or batch aborts):
 1. `/savestateauto` once for the whole batch
-2. Flush session summary: `cc_queue.py flush_session ...`
-3. Print recap: N done, M skipped, P failed, ticket ids + commit hashes
+2. Print recap: N done, M skipped, P failed, ticket ids + commit hashes
 
 ## Invariants
 

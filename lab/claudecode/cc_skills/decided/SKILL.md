@@ -20,27 +20,15 @@ The closing mark of a design conversation. Takes "the stuff we just talked about
 
 ### 1. Determine scope
 
+Scope boundary: look back to the most recent prior /decided entry in the slate, or
+the most recent DESIGN_START note in `## Notes`, or the session start — whichever
+is most recent. Scan `## Notes` and `## Done today` sections of today's slate:
+
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-# Find the last boundary (DESIGN_START or prior /decided) in the current session's key_changes
-IGOR_HOME_DB_URL=$DB python3 -c "
-import psycopg2, os
-sid = open(os.path.expanduser('~/.TheIgors/cc_channel/current_session.txt')).read().strip()
-conn = psycopg2.connect(os.environ['IGOR_HOME_DB_URL'])
-cur = conn.cursor()
-cur.execute('SET search_path TO instance, infra, public')
-cur.execute('SELECT key_changes FROM sessions WHERE id = %s', (sid,))
-row = cur.fetchone()
-kc = (row[0] if row else '') or ''
-# Most recent DESIGN_START marker wins; else oldest content is the start
-for line in reversed(kc.splitlines()):
-    if 'DESIGN_START' in line or 'DECIDED ' in line:
-        print(line)
-        break
-"
+grep -E "^(- D-|## In-flight|## Notes|DESIGN_START)" ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt | tail -20
 ```
 
-If no prior boundary, treat the whole session as the scope.
+If no prior boundary, treat the whole conversation as scope.
 
 ### 2. Summarize the decision
 
@@ -102,15 +90,10 @@ echo "$(date -Iseconds) | D-... | <summary> | tickets: T-x, T-y, T-z" >> ~/TheIg
 ```
 (Note: auto-memory flags this file as "do not blindly write" — /decided is a structured writer, not a blind dump; this is the exception. After palace migration this file becomes a generated echo.)
 
-### 8. Append to slate + session
+### 8. Append to slate
 
 ```bash
-# Today's slate: under ## Ad hoc
 echo "- $D_ID: <summary> — T-x, T-y, T-z" >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
-
-# Session record: boundary marker + decision
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-change "DECIDED $D_ID: <summary> → T-x T-y T-z"
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-decision "$D_ID"
 ```
 
 ### 9. Clear /design flag (if set)

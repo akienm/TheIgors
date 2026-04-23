@@ -122,10 +122,9 @@ Post summary to channel:
 python3 ~/TheIgors/lab/claudecode/channel.py post "deep-audit complete — <N> findings, top issue: <one line>" --as claude-code
 ```
 
-Append to session record:
+Append to slate:
 ```bash
-DB=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001
-IGOR_HOME_DB_URL=$DB python3 ~/TheIgors/lab/claudecode/session_manager.py append-change "done: deep-audit — <one line summary of top finding>"
+echo "- done: deep-audit — <one line summary of top finding>" >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
 ```
 
 Close ticket:

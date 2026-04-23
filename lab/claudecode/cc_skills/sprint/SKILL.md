@@ -69,10 +69,8 @@ git pull --rebase origin main && git push origin main
 ### 9. Close ticket
 ```bash
 python3 ~/TheIgors/lab/claudecode/cc_queue.py done <id> "what was built"
-IGOR_HOME_DB_URL=postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 \
-  python3 ~/TheIgors/lab/claudecode/session_manager.py append-change "done: <id> — <summary>"
+echo "- done: <id> — <summary>" >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
 ```
-Move ticket to ## Done today in slate.
 
 ### 10. /savestateauto
 
