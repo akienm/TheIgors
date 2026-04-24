@@ -21,8 +21,8 @@ misfire_counter is resolved lazily via absolute import, so the
 registry doesn't pull wild_igor.igor at module-load time.
 """
 
-import bisect
 import time
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -78,11 +78,18 @@ class Tool:
 
 @dataclass
 class ToolStats:
-    """Per-tool call statistics. Latency samples kept sorted (max 1000) for percentiles."""
+    """Per-tool call statistics. Keeps newest-1000 latency samples for percentiles.
+
+    T-toolstats-sample-semantics-fix: previously used bisect.insort into a
+    sorted list and pop(0) on overflow — which drops the fastest call, not
+    the oldest, biasing p50/p95 toward slow as the buffer fills. Now uses a
+    deque with maxlen=1000 for insertion-order eviction; percentile math
+    sorts a snapshot on demand.
+    """
 
     call_count: int = 0
     error_count: int = 0
-    _samples: list = field(default_factory=list)  # sorted list of elapsed_ms ints
+    _samples: deque = field(default_factory=lambda: deque(maxlen=1000))
 
     _MAX_SAMPLES = 1000
 
@@ -90,9 +97,7 @@ class ToolStats:
         self.call_count += 1
         if not success:
             self.error_count += 1
-        bisect.insort(self._samples, elapsed_ms)
-        if len(self._samples) > self._MAX_SAMPLES:
-            self._samples.pop(0)  # drop oldest (smallest) when full
+        self._samples.append(elapsed_ms)
 
     @property
     def error_rate(self) -> float:
@@ -103,8 +108,9 @@ class ToolStats:
     def _pct(self, p: int) -> int | None:
         if not self._samples:
             return None
-        idx = max(0, int(len(self._samples) * p / 100) - 1)
-        return self._samples[idx]
+        ordered = sorted(self._samples)
+        idx = max(0, int(len(ordered) * p / 100) - 1)
+        return ordered[idx]
 
     @property
     def p50(self) -> int | None:
