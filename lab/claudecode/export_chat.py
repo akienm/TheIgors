@@ -24,12 +24,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 TRANSCRIPT_DIR = Path.home() / ".claude/projects/-home-akien-TheIgors"
-OUTPUT_DIR = Path("/home/akien/TheIgors/claude_chat_logs")
+# T-cc-script-dead-code-sweep: parameterize output dir so this isn't
+# user-hostile across checkouts. Default keeps the prior behavior.
+OUTPUT_DIR = Path(
+    os.environ.get(
+        "CLAUDE_CHAT_LOGS_DIR",
+        str(Path.home() / "TheIgors" / "claude_chat_logs"),
+    )
+)
 
 
 def _render_message(msg: dict) -> str:

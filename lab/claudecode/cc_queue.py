@@ -22,7 +22,6 @@ Usage:
     cc_queue.py flush_decision <id> <summary> — flush decision to Igor memory
     cc_queue.py flush_session <session> <summary> — flush session blob to Igor memory
     cc_queue.py worker-launch                     — ensure worker daemon is running (spawns konsole if not)
-    cc_queue.py inject <ticket-id> <text>         — deprecated; use worker-launch instead
     cc_queue.py reset <id>                        — reset one ticket from in_progress → pending (retry after timeout)
     cc_queue.py reset-stale                       — reset all in_progress tickets → pending (daemon startup cleanup)
     cc_queue.py set-worker <worker> <id> [<id>]  — assign worker (igor|claude) to ticket(s)
@@ -804,14 +803,6 @@ def cmd_worker_launch(args):
     print(f"Launched worker daemon — konsole PID {proc.pid}")
 
 
-def cmd_inject(args):
-    """Deprecated: xdotool injection replaced by worker daemon. Kept for emergencies."""
-    print(
-        "cmd_inject is deprecated — worker daemon handles orchestration without xdotool."
-    )
-    print("Use 'worker-launch' to ensure the daemon is running.")
-
-
 def cmd_reset(args):
     """Reset a single ticket back to pending (e.g., after a timeout)."""
     if not args:
@@ -863,7 +854,6 @@ COMMANDS = {
     "flush_decision": cmd_flush_decision,
     "flush_session": cmd_flush_session,
     "worker-launch": cmd_worker_launch,
-    "inject": cmd_inject,
     "notify-igor": cmd_notify_igor,
     "reset": cmd_reset,
     "reset-stale": cmd_reset_stale,
