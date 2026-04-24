@@ -238,6 +238,37 @@ async def list_tools() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="consult_sessions_recent",
+            description=(
+                "Read recent peer-LLM consult sessions from "
+                "~/.TheIgors/local/logs/consults.log. Each session shows: open "
+                "metadata (problem_kind, tier, ticket, pursuit), every ask turn "
+                "(question, hypotheses, next_question, confidence), confab flags, "
+                "and the conclusion. Lets you step through Igor's stuck-point "
+                "reasoning conversation-by-conversation. Use this to diagnose why "
+                "pe_chain stalled, what hypothesis Igor adopted, and whether the "
+                "session actually went multi-turn."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of sessions to return (default 10)",
+                    },
+                    "since_minutes": {
+                        "type": "integer",
+                        "description": "Only sessions opened in the last N minutes (optional)",
+                    },
+                    "session_id": {
+                        "type": "string",
+                        "description": "Return only this session_id (full transcript). Overrides limit/since_minutes when set.",
+                    },
+                },
+                "required": [],
+            },
+        ),
+        types.Tool(
             name="channel_send",
             description=(
                 "Send a message to a named channel on the utility closet. "
@@ -425,6 +456,12 @@ def _dispatch(name: str, args: dict) -> str:
         return _hot_nodes(args.get("limit", 10), args.get("since_hours", 2))
     elif name == "turn_trace_recent":
         return _turn_trace_recent(args.get("limit", 5), args.get("since_minutes"))
+    elif name == "consult_sessions_recent":
+        return _consult_sessions_recent(
+            args.get("limit", 10),
+            args.get("since_minutes"),
+            args.get("session_id"),
+        )
     elif name == "channel_send":
         return _channel_send(args["content"], args.get("channel", "shared"))
     elif name == "cc_send":
@@ -768,6 +805,126 @@ def _turn_trace_recent(limit: int, since_minutes: int | None) -> str:
             f"    out:    {preview!r}"
         )
     return "\n".join(lines)
+
+
+# ── consult_sessions_recent ──────────────────────────────────────────────────
+
+
+def _consult_sessions_recent(
+    limit: int, since_minutes: int | None, session_id: str | None
+) -> str:
+    """Read peer-LLM consult sessions from the forensic JSONL log.
+
+    Each line in the log is a single event: session_open, ask_ok, ask_error,
+    parse_error, confab_flag, session_close. We group by session_id and render
+    a per-session block with all turns + the conclusion. Lets CC step through
+    Igor's stuck-point reasoning conversation-by-conversation.
+    """
+    log_path = Path.home() / ".TheIgors" / "local" / "logs" / "consults.log"
+    if not log_path.exists():
+        return f"No consults log found at {log_path}."
+
+    cutoff_iso: str | None = None
+    if since_minutes is not None:
+        cutoff = datetime.now(tz=None) - timedelta(minutes=since_minutes)
+        cutoff_iso = cutoff.isoformat(timespec="seconds")
+
+    sessions: dict[str, dict] = {}
+    with open(log_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                evt = json.loads(line)
+            except Exception:
+                continue
+            sid = evt.get("session_id")
+            if not sid:
+                continue
+            if session_id and sid != session_id:
+                continue
+            sess = sessions.setdefault(
+                sid, {"open": None, "turns": [], "confab_flags": [], "close": None}
+            )
+            kind = evt.get("event")
+            if kind == "session_open":
+                sess["open"] = evt
+            elif kind in ("ask_ok", "ask_error", "parse_error"):
+                sess["turns"].append(evt)
+            elif kind == "confab_flag":
+                sess["confab_flags"].append(evt)
+            elif kind == "session_close":
+                sess["close"] = evt
+
+    if cutoff_iso is not None:
+        sessions = {
+            sid: s
+            for sid, s in sessions.items()
+            if s.get("open") and s["open"].get("ts", "") >= cutoff_iso
+        }
+
+    # Sort by open ts (newest first)
+    ordered = sorted(
+        sessions.items(),
+        key=lambda kv: kv[1].get("open", {}).get("ts", ""),
+        reverse=True,
+    )
+    if not session_id:
+        ordered = ordered[:limit]
+
+    if not ordered:
+        return "No matching consult sessions."
+
+    blocks: list[str] = []
+    for sid, s in ordered:
+        opn = s.get("open") or {}
+        cls = s.get("close") or {}
+        turn_count = cls.get("turn_count", len(s["turns"]))
+        head = (
+            f"── session {sid} "
+            f"({opn.get('problem_kind','?')} / {opn.get('tier','?')} / "
+            f"{opn.get('model','?')})\n"
+            f"   ticket={opn.get('ticket_id','-')} pursuit={opn.get('pursuit_id','-')}\n"
+            f"   summary: {(opn.get('summary') or '')[:200]}\n"
+            f"   turns: {turn_count}  confab_flags: {len(s['confab_flags'])}"
+        )
+        blocks.append(head)
+        for i, t in enumerate(s["turns"]):
+            ev = t.get("event", "?")
+            if ev == "ask_ok":
+                hyps = t.get("hypotheses") or []
+                hyp_lines = "\n".join(f"      - {h[:200]}" for h in hyps)
+                blocks.append(
+                    f"  turn {t.get('turn_idx', i)} ({ev}, conf={t.get('confidence',0):.2f}, "
+                    f"{t.get('elapsed_ms',0)}ms)\n"
+                    f"    hypotheses:\n{hyp_lines if hyp_lines else '      (none)'}\n"
+                    f"    next_question: {(t.get('next_question') or '')[:200]}"
+                )
+            else:
+                blocks.append(
+                    f"  turn {t.get('turn_idx', i)} ({ev}): "
+                    f"{(t.get('error') or '')[:200]}"
+                )
+        if s["confab_flags"]:
+            for cf in s["confab_flags"]:
+                flag_summaries = ", ".join(
+                    f"{fl.get('subtype','?')}@{fl.get('confidence',0):.2f}"
+                    for fl in cf.get("flags", [])
+                )
+                blocks.append(
+                    f"  ⚠ confab turn={cf.get('turn_idx','?')}: {flag_summaries}"
+                )
+        if cls:
+            blocks.append(
+                f"  conclusion: {(cls.get('final_hypothesis') or '')[:200]} "
+                f"(conf={cls.get('confidence',0):.2f})"
+            )
+        else:
+            blocks.append("  conclusion: <session still open>")
+        blocks.append("")  # blank line between sessions
+
+    return "\n".join(blocks).rstrip()
 
 
 # ── channel_send ──────────────────────────────────────────────────────────────
