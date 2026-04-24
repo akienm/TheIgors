@@ -281,6 +281,39 @@ def _invalidate_cache() -> None:
 # ── Public API ────────────────────────────────────────────────────────────────
 
 
+def machines_row_count() -> int:
+    """Return the total number of rows in infra.machines. 0 on error."""
+    import psycopg2
+
+    try:
+        _ensure_schema()
+        conn = _pg_connect()
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM infra.machines")
+        row = cur.fetchone()
+        conn.close()
+        return int(row[0]) if row else 0
+    except Exception as exc:
+        _log.warning("machines_row_count failed: %s", exc)
+        return 0
+
+
+def machines_inertia():
+    """Return TableInertia for the machines table.
+
+    Empty/sparse → LOW with a populate-first redirection; populated → HIGH so
+    schema or bulk edits surface for approval. Wire this into any mutation
+    site that could wipe the table.
+    """
+    from .table_inertia import compute_inertia
+
+    return compute_inertia(
+        machines_row_count(),
+        table_name="infra.machines",
+        fill_hint="run machine_manager.register_self() on each node, or seed from ~/.TheIgors/local/machines.json",
+    )
+
+
 def get_ranked_machines() -> list[MachineRecord]:
     """Return online machines sorted by inference_rank. Cached 60s."""
     global _cache, _cache_time
