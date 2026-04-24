@@ -8,6 +8,9 @@ blocklist that's too dangerous to depend on a DB query.
 
 ## Read rules on session start
 
+Always pull the palace rules at the start of a fresh session — the full
+canonical set lives there, and CLAUDE.md is just the pre-DB bootstrap:
+
 ```bash
 psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -c \
   "SELECT title, content FROM memory_palace
@@ -18,30 +21,37 @@ Order (top-to-bottom): approach-frame → persona → coding → commits → mem
 database → budget → collaboration → igor-constraints → docs-live-in-code →
 safeguards.
 
-`/context-load` pulls these explicitly; read the full tree any time with
+`/context-load` pulls these explicitly. During a working session, always
+reach for `memory_get(path="theigors/rules/<name>")` for single-node reads
+and `memory_search(query="...")` for topic lookups — those are the
+frictionless defaults. Read the full palace tree any time with
 `SELECT path, title FROM memory_palace ORDER BY path`.
 
 ---
 
 ## Destructive-action blocklist (honor without DB access)
 
-- Move/rename `brainstem/` contents without Akien review.
-- Delete `~/.TheIgors/Igor-wild-0001/wild-0001.db` — live DB.
-- Edit `.env` without noting what changed and why.
-- `git commit --amend` — always create new commits.
-- `git push --force` to main.
-- Enable `IGOR_TIER5_ENABLED` or `IGOR_ARBITER_ENABLED`.
-- Skip pre-commit hooks with `--no-verify`.
-- Write to `decisions_log.dsb` directly — generated now.
-- Stage `.env`, `*.db`, or `~/.TheIgors/` runtime paths.
+These are the actions whose consequences are hard enough to reverse that
+every one gets its own "Always do X instead" line:
+
+- **Always Akien-review before moving or renaming anything under `brainstem/`.** These files are HIGH-inertia; a silent rename breaks symbol resolution across Igor's cognition.
+- **Always protect `~/.TheIgors/Igor-wild-0001/wild-0001.db`.** It's the live DB; deletion loses Igor's working state.
+- **Always note what changed and why when editing `.env`.** The env split (CC vs Igor) is load-bearing; silent edits create ghost bugs that take hours to localize.
+- **Always create a new commit — never `git commit --amend`.** Amends rewrite history; new commits keep the decision-rollup trace intact.
+- **Always push non-force to main.** `git push --force` to main overwrites shared history; only do it with explicit instruction.
+- **Always leave `IGOR_TIER5_ENABLED` and `IGOR_ARBITER_ENABLED` off.** Enabling these ships unsafe code paths to production.
+- **Always let pre-commit hooks run.** Never use `--no-verify` — the hooks are the last line of defense against committing debris.
+- **Always go through `/decided` to write the decisions log.** `decisions_log.dsb` is a structured echo now; direct writes corrupt the chronological record.
+- **Always stage files specifically by name.** Name-staging keeps `.env`, `*.db`, and runtime paths under `~/.TheIgors/` out of commits automatically.
 
 ---
 
 ## Environment split (CRITICAL — pre-DB)
 
-CC runs with `REAL_ANTHROPIC_API_KEY`. Igor's `.env` sets OR routing and
-does NOT affect CC. `superclaude`/`cc.sh` handle the key swap. Never read
-Igor's `.env` and assume it reflects CC's environment.
+CC always runs with `REAL_ANTHROPIC_API_KEY`. Igor's `.env` sets OR routing
+and does NOT affect CC. `superclaude`/`cc.sh` handle the key swap. Always
+treat Igor's `.env` as Igor's environment — reading it tells you nothing
+about what CC has in its own env.
 
 ---
 
@@ -76,5 +86,6 @@ Repo echo of the palace lives at `lab/theigors/` (auto-synced by
 
 ## Hierarchy when sources disagree
 
-code > palace > CLAUDE.md > MEMORY.md. Palace is the index, code is the
-truth. If palace says X and code says Y, trust the code and update palace.
+code > palace > CLAUDE.md > MEMORY.md. Palace is the index; code is the
+truth. When palace says X and code says Y, always trust the code and
+update the palace.

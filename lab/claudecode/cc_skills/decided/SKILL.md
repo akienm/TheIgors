@@ -10,40 +10,44 @@ The closing mark of a design conversation. Takes "the stuff we just talked about
 
 ## Inputs
 
-- Optional arg: a brief one-line summary of this decision, e.g. `/decided rename audit to day-close-audit`. If omitted, CC infers the summary from the scope.
-- Scope boundary: look back to either:
-  1. The most recent `DESIGN_START` marker in the session record (written by /design), OR
+- Optional arg: a brief one-line summary, e.g. `/decided rename audit to day-close-audit`. If omitted, infer the summary from the scope.
+- Scope boundary — look back to whichever is most recent:
+  1. A `DESIGN_START` marker (written by /design), OR
   2. The most recent prior /decided boundary, OR
-  3. The session start, whichever is most recent.
+  3. The session start.
 
 ## Steps
 
 ### 1. Determine scope
 
-Scope boundary: look back to the most recent prior /decided entry in the slate, or
-the most recent DESIGN_START note in `## Notes`, or the session start — whichever
-is most recent. Scan `## Notes` and `## Done today` sections of today's slate:
+Always identify where the design block begins before drafting tickets — the
+scope sets which turns feed each decision.
 
 ```bash
 grep -E "^(- D-|## In-flight|## Notes|DESIGN_START)" ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt | tail -20
 ```
 
-If no prior boundary, treat the whole conversation as scope.
+Pick whichever boundary appears most recently: DESIGN_START, prior /decided,
+or session start. When no prior boundary exists, treat the whole conversation
+as scope.
 
 ### 2. Summarize the decision
 
-One to two sentences. Assign a decision id: `D-<kebab-slug-of-topic>-YYYY-MM-DD`.
+Always write a one-to-two sentence summary and assign a decision id of the
+form `D-<kebab-slug>-YYYY-MM-DD`. A decision without a D-id can't be
+rolled up or traced back from the tickets it spawned.
 
 ### 3. Draft tickets
 
-For each implementation unit the decision implies, draft a ticket:
+For each implementation unit the decision implies, draft one ticket shaped
+per the `/ticket` description template:
 ```python
 {
   "id": "T-<kebab-slug>",
   "title": "<short title, <80 chars>",
   "size": "S|M|L|XL",
   "tags": ["<Topic>", "<Area>"],
-  "description": "<problem + proposed shape + scope boundary + blocked-by if any>",
+  "description": "<problem + proposed shape + Affected files + Design rules + Scope boundary + Test plan>",
   "decision_id": "D-...",
   "gate": null,  # set if depends on another pending ticket
   "priority": 0.5  # raise for unblockers
@@ -52,43 +56,58 @@ For each implementation unit the decision implies, draft a ticket:
 
 ### 4. Run /review on each draft (filing-time mode)
 
-For each drafted ticket, invoke /review. If /review returns:
+Always invoke /review once per drafted ticket — filing-time quality is the
+whole point of /decided. /review returns one of:
 - **PASS** → proceed to filing.
-- **AMEND** → apply the amendments (or ask Akien if ambiguous), re-submit to /review.
+- **AMEND** → apply the amendments (ask Akien if ambiguous), re-submit.
 - **SPLIT** → replace the single draft with N child drafts; run /review on each.
-- **DISCARD** → drop the draft, note why in the decision narrative.
+- **DISCARD** → drop the draft; record the reason in the decision narrative.
 
-HIGH-inertia findings from /review surface inline to Akien for pre-approval; the approval stamp lands in the ticket body.
+When /review flags a HIGH-inertia touch, always surface it inline for
+Akien's pre-approval. Stamp the approval into the ticket body before filing
+— that stamp survives compaction; CC's memory does not.
 
 ### 5. File the tickets
 
-Write a batch JSON file to `/tmp/decided_batch_<decision-id>.json` containing the post-review tickets, then:
+Write the post-review batch to `/tmp/decided_batch_<decision-id>.json`, then
+append to the queue:
 ```bash
 python3 ~/TheIgors/lab/claudecode/cc_queue.py add /tmp/decided_batch_<decision-id>.json
 ```
+`cc_queue.py` is the canonical writer — always go through it so the slate
+echo and session record stay consistent.
 
 ### 6. Write to Igor memory palace
 
-Create a decision node at `theigors/decisions/D-...` in the palace:
-```bash
-# After T-decisions-into-palace-subtree lands, this uses palace_write.
-# Until then, use a file stub at lab/design_docs/decisions/D-....md
+Always create a decision node so the rollup loop can find it. Until
+`T-decisions-into-palace-subtree` ships the palace writer, drop a file stub
+at `lab/design_docs/decisions/D-....md`:
+```markdown
+# D-<id>
+**title:** <one-line summary>
+**date:** YYYY-MM-DD
+**status:** open
+**spawned_tickets:** T-x, T-y, T-z
+
+## Decision narrative
+<1-2 sentences from step 2 + context from the conversation scope>
 ```
 
-Fields on the palace node / file:
-- `title`: one-line decision summary
-- `content`: decision narrative (the 1-2 sentences from step 2 + context from the conversation scope)
-- `spawned_tickets`: list of ticket ids created
-- `date`: YYYY-MM-DD
-- `status`: open (closes automatically when all spawned_tickets close, via decision-rollup)
+Fields expected on the palace node (same shape):
+- `title` — one-line decision summary
+- `content` — decision narrative (summary + scope context)
+- `spawned_tickets` — list of ticket ids created
+- `date` — YYYY-MM-DD
+- `status` — `open` (auto-closes when all spawned_tickets close, via decision-rollup)
 
 ### 7. Append to decisions log
 
-Chronological append to the decisions file (palace-echoed once T-decisions-into-palace-subtree ships). Until then:
+Chronological append (this is the exception to "don't write to
+decisions_log.dsb directly" — /decided is a structured writer, not a blind
+dump; the file becomes a generated echo once the palace migration ships):
 ```bash
 echo "$(date -Iseconds) | D-... | <summary> | tickets: T-x, T-y, T-z" >> ~/TheIgors/lab/design_docs_for_igor/decisions_log.dsb
 ```
-(Note: auto-memory flags this file as "do not blindly write" — /decided is a structured writer, not a blind dump; this is the exception. After palace migration this file becomes a generated echo.)
 
 ### 8. Append to slate
 
@@ -122,7 +141,7 @@ Design pattern:
   → sprints all tickets from this decision
 ```
 
-Or, with multiple decisions in one session:
+Multiple decisions in one session:
 ```
 /design
   → discuss topic A
@@ -140,11 +159,11 @@ Or, with multiple decisions in one session:
 - Every decision gets a D-id, even single-ticket ones — makes trace navigable.
 - Every ticket in a /decided batch carries `decision_id` — no orphaned tickets.
 - /review runs on EVERY draft, not just the first or biggest.
-- HIGH-inertia approvals are recorded in the ticket body before filing, not remembered in CC's head (survives compaction).
+- HIGH-inertia approvals land in the ticket body before filing; they are not kept in CC's conversational memory.
 
 ## Hard rules
 
-- /review runs on every drafted ticket — filing-time quality is the whole point.
+- Always run /review on every drafted ticket — filing-time quality is the whole point.
 - DISCARD verdicts from /review block filing until Akien explicitly overrides.
-- Each distinct decision gets its own D-id. Single-session doesn't mean single-decision.
+- Every distinct decision gets its own D-id. Single-session doesn't mean single-decision.
 - Decisions are append-only. New context becomes a new decision, linked via metadata.

@@ -7,6 +7,9 @@ model: haiku
 # context-load — Session startup
 
 ## Step 0 — Environment key check (runs first)
+
+Always verify the API key shape first — CC and Igor use different keys, and
+a mix-up ships requests to the wrong account.
 ```bash
 CC_KEY="${REAL_ANTHROPIC_API_KEY:-}"
 OR_KEY="${OPENROUTER_API_KEY:-}"
@@ -27,12 +30,14 @@ fi
 python3 ~/TheIgors/lab/claudecode/stale_slate_check.py
 ```
 
-Soft prompt — if the most-recent prior-day slate has open items in `## Next up`,
-`## Blocked`, or `## After that` AND lacks a `✅ CLOSED` marker, this emits a
-warning. Silent when the prior slate is fully closed, empty, or doesn't exist.
+Soft prompt — when the most-recent prior-day slate has open items in
+`## Next up`, `## Blocked`, or `## After that` AND lacks a `✅ CLOSED`
+marker, the check emits a warning. Silent when the prior slate is fully
+closed, empty, or doesn't exist.
 
-When the warning fires, surface it to the user and offer: run `/day-close` on the
-stale date, defer, or skip. Not a gate — user decides.
+When the warning fires, always surface it to Akien and offer: run
+`/day-close` on the stale date, defer, or skip. Soft prompt, not a gate —
+Akien decides.
 
 ## Step 0.5 — Debug flag
 ```bash
@@ -40,6 +45,9 @@ touch ~/.TheIgors/Igor-wild-0001/debug_session.flag
 ```
 
 ## Step 1 — Today's slate
+
+Always ensure today's slate exists — context-load creates one when the
+current day has no file yet:
 ```bash
 SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
 if [ ! -f "$SLATE" ]; then
@@ -62,11 +70,15 @@ fi
 cat "$SLATE"
 ```
 
-Section order is salience-first (D-slate-salience-order-2026-04-20): read top-down,
-stop once you have enough context. Next up = what to work on now; Blocked = candidates
-to promote; After that = queue; Decided = this-session decisions; Done = shipped.
+Section order is salience-first (D-slate-salience-order-2026-04-20): read
+top-down, stop once you have enough context. In-flight = what's mid-work;
+Planned = what to pick up next; Ad hoc = today's reactive additions;
+Done today = shipped.
 
 ## Step 2a — Rules (hash-gated; read these FIRST when changed)
+
+Always check the rules hash before reading — the rules only reload when
+something changed since last session:
 ```bash
 HASH_FILE=~/.TheIgors/claudecode/rules_hash.txt
 CURRENT_HASH=$(psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -tAc \
@@ -104,11 +116,17 @@ else
 fi
 ```
 
-The palace is the navigable map. Each node is a signpost — title + pointer to where the real info lives (code, DB, tools, docs). Query specific nodes with:
-```bash
-psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -c \
-  "SELECT title, content, pointers FROM memory_palace WHERE path = 'theigors/rules/coding'"
+The palace is the navigable map. Each node is a signpost — title + pointer
+to where the real info lives (code, DB, tools, docs).
+
+Always use the MCP tools to query specific nodes during a session:
 ```
+memory_get(path="theigors/rules/coding")       # exact node read
+memory_search(query="...")                     # topic lookup
+memory_list_by_type(type="RULE")               # typed listing
+```
+The raw psql path remains available for bulk operations, but `memory_get`
+is the frictionless default for single-node reads in a working session.
 
 ## Step 3 — Decisions hot window (last 10)
 ```bash
@@ -116,6 +134,13 @@ tail -10 ~/TheIgors/lab/design_docs_for_igor/decisions_log.dsb | sed 's/|/ — /
 ```
 
 ## Step 4 — Channel (last 5)
+
+Always use the MCP channel read for this — matches how other sessions and
+Igor himself read the channel, stays consistent across machines:
+```
+mcp__igor__channel_read(limit=5)
+```
+Fallback (shared Postgres channel, all machines):
 ```bash
 python3 ~/TheIgors/lab/claudecode/channel.py read 5
 ```
@@ -126,6 +151,9 @@ python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep "🟠"
 ```
 
 ## Step 5.6 — Unread CC inbox
+
+Always check the inbox — pushes from Igor subsystems (pe_chain escalations,
+scope_guard blocks, go-live-when trips) land here and need surfacing:
 ```bash
 python3 -c "
 from lab.claudecode.cc_inbox import read_unread
@@ -143,12 +171,12 @@ else:
 "
 ```
 
-Pushes from Igor subsystems (pe_chain escalations, scope_guard blocks,
-go-live-when trips). Surface any unread to Akien; then invoke /readinbox
-to see full details and mark-read.
+When unread exists, always surface the summary to Akien, then invoke
+/readinbox to see full details and mark-read.
 
 ## Step 6 — Assemble briefing
-Token budget: 2000 tokens (~8000 chars). Output:
+
+Always stay inside the 2000-token (~8000-char) budget. Output shape:
 ```
 CONTEXT LOAD — <timestamp>
 In-flight: <## In-flight line from slate, or NONE>
@@ -161,7 +189,7 @@ Ready.
 ```
 
 ## Hard rules
-- 2000 token budget max.
+- Always stay within the 2000-token budget.
 - Per-blob read cap: 40 lines.
-- When a question maps to a palace branch, read that node — palace-first over codebase grep.
-- Palace is the index; code is the truth. If palace says X and code says Y, trust the code and update the palace.
+- When a question maps to a palace branch, always read that node first (`memory_get(path=...)`) — palace-first over codebase grep.
+- Palace is the index; code is the truth. When palace says X and code says Y, trust the code and update the palace.

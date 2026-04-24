@@ -12,34 +12,81 @@ model: haiku
 
 ## Description template
 
-The ticket's `description` field must have this shape:
+Always shape the ticket `description` field this way — /review checks for
+these sections at filing time, and missing ones get flagged:
 
     <1-3 sentences: problem and proposed shape>
 
     **Affected files:** <comma-separated paths, or "TBD — discovery step in sprint" if genuinely unknown>
-    **Design rules:** <which palace checks under theigors/rules/ticket_design_checks/ apply — e.g. "no-sqlite, test-plan-or-why-not". Say "none apply" only if you have thought about it.>
+    **Design rules:** <which palace checks under theigors/rules/ticket_design_checks/ apply — e.g. "no-sqlite, test-plan-or-why-not". "none apply" only after thinking about it.>
     **Scope boundary:** <what's explicitly in scope; what's explicitly out of scope>
-    **Test plan:** <specific tests to add or run, OR "no tests because: <reason>" — do not leave blank>
+    **Test plan:** <specific tests to add or run, OR "no tests because: <reason>" — always state one or the other>
 
-Structure lives in description TEXT as labeled sections. Do NOT add columns to cc_queue.py's DB row. Free-form narrative on top, labeled fields below.
+Structure lives in description TEXT as labeled sections. Free-form narrative
+on top, labeled fields below. The cc_queue.py DB row stays shape-stable —
+the labeled fields go inside `description`, not into new columns.
 
 ## Steps
 
-1. **Identify**: New ticket or update to existing?
-   ```bash
-   python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep -i "<keyword>"
-   ```
+### 1. Identify: new ticket or update?
 
-2. **Fill structured fields** (see `## Description template` above): the description must include Affected files, Design rules, Scope boundary, Test plan. For `/ticket last`, infer each field from the conversation; mark genuinely unknown fields as "TBD" rather than skipping. Missing fields will be flagged by /review at filing time.
+Always check for an existing ticket before drafting a new one — /review's
+duplicate check runs at filing time, but a pre-check here saves a round
+trip.
+```bash
+python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep -i "<keyword>"
+```
 
-3. **Review**: Check the plan before creating — inertia levels, scope, tests planned?
+### 2. Fill the structured fields
 
-4. **Create or update**:
-   - ID format: `T-<kebab-slug>` (max 5 words)
-   - Check for collision before creating
-   - For new: write JSON to /tmp/ticket.json, then `cc_queue.py add /tmp/ticket.json`
-   - For update: `cc_queue.py done/block/claim <id>`
+Always fill all four sections (Affected files, Design rules, Scope boundary,
+Test plan) per the description template above. For `/ticket last`, infer
+each field from the conversation; mark genuinely unknown fields as "TBD"
+rather than skipping — /review flags blanks, not TBDs-with-reason.
 
-5. **Add to slate**: Put ticket ID in today's slate under ## Planned or ## Ad hoc.
+When the ticket touches memory shapes, read the relevant palace rule via:
+```
+memory_get(path="theigors/rules/memory")
+```
+And for persistence-touching work:
+```
+memory_get(path="theigors/rules/database")
+```
+Those reads surface the rule text the ticket needs to match; the result
+feeds the "Design rules" field.
 
-6. **Run /savestateauto**
+### 3. Review the plan before creating
+
+Always state the plan back in one sentence before filing. Check:
+- Inertia levels of affected files (read `memory_get(path='theigors/rules/safeguards')` if unsure)
+- Scope boundary — is it tight?
+- Test coverage — what specifically will be tested?
+
+### 4. Create or update
+
+Always use an ID of form `T-<kebab-slug>` (max 5 words). Check for collision
+with existing ticket ids before creating.
+
+New ticket:
+```bash
+# Write JSON to /tmp/ticket.json (matching queue.json schema), then:
+python3 ~/TheIgors/lab/claudecode/cc_queue.py add /tmp/ticket.json
+```
+
+Update existing ticket:
+```bash
+python3 ~/TheIgors/lab/claudecode/cc_queue.py done|block|claim <id>
+```
+
+### 5. Add to slate
+
+Always append the ticket ID to today's slate under `## Planned` or `## Ad hoc`
+— otherwise the ticket lives only in the queue and the daily view misses it:
+```bash
+echo "- <id>: <title>" >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+```
+
+### 6. Run /savestateauto
+
+Always flush state after ticketing so the session record picks up the new
+ticket id.

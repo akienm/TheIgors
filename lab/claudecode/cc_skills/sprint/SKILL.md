@@ -17,44 +17,69 @@ model: sonnet
 ```bash
 python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep "⚪\|🟡"
 ```
-No args: highest-priority pending. "last": most recently discussed ticket.
-**No ticket = no work.** Run /ticket first if needed.
+No args: highest-priority pending. `last`: most recently discussed ticket.
+
+Always sprint from a ticket. When no ticket exists yet, stop here and run
+/ticket first — a sprint without a ticket has no place to report done.
 
 ### 2. Claim ticket
 ```bash
 python3 ~/TheIgors/lab/claudecode/cc_queue.py claim <id>
 ```
-Add to today's slate.
+Always claim before working — the claim marks the ticket in-progress so the
+queue and slate reflect active work. Then add the ticket ID to today's slate
+under `## Planned` or `## Ad hoc`.
 
 ### 3. Select executor
-- **CC inline**: default
-- **Haiku subagent**: mechanical/checklist work
-- **Igor**: delegate via `mcp__igor__cc_send` for Igor-domain work
+- **CC inline**: default for code changes in this repo
+- **Haiku subagent**: mechanical/checklist work (use the Agent tool, subagent_type=general-purpose with a Haiku model override)
+- **Igor**: delegate via `mcp__igor__cc_send` for Igor-domain work (cognition debugging, memory curation, palace edits)
 
-### 4. Review
-State the plan. Check inertia levels, test coverage, scope boundary.
-HIGH inertia files = discuss with Akien first.
+### 4. Review the plan
+First, state the plan in one to three sentences: what files will change, what tests will cover it, what the scope boundary is.
+
+Check inertia before touching anything — the authoritative list lives at
+`theigors/rules/safeguards` in the palace. Read it via:
+```
+memory_get(path="theigors/rules/safeguards")
+```
+When the plan touches a HIGH-inertia file, always pause and surface it to
+Akien for inline pre-approval before coding. Stamp the approval into the
+ticket body so it survives compaction.
 
 ### 5. Pull + work
+First, pull to get a clean base:
 ```bash
 git pull --rebase origin main
 ```
-Do the work. Write code, tests, docs.
+If the working tree is dirty, stash first (`git stash -u`), pull, then pop.
+
+Then write the change. Code first, tests alongside (integration tests hit
+real Postgres per `theigors/rules/database` — no mocks), docstrings on
+load-bearing files per `theigors/rules/docs-live-in-code`.
 
 ### 6. Cleanup (REQUIRED)
-Review your diff:
+Always review the diff before staging:
 ```bash
 git diff --stat && git diff
 ```
-Remove: debug prints, commented-out code, unused imports, replaced functions,
-single-use helpers (inline them), temp files. Every file in the diff = on purpose.
+Every file in the diff exists on purpose. Remove: debug prints,
+commented-out code, unused imports, replaced functions, single-use helpers
+(inline them), temp files. A clean diff is the signal that the sprint is
+ready to ship.
 
 ### 7. Test
+Always run tests before commit:
 ```bash
 cd ~/TheIgors && source venv/bin/activate && python -m pytest tests/ -x -q 2>&1 | tail -20
 ```
+A green run is the signal to stage. A red run means fix the failure first —
+never commit-and-see.
 
 ### 8. Commit + push
+Always stage files specifically by name (not `git add -A` / `git add .`) —
+that keeps `.env`, `*.db`, and runtime paths under `~/.TheIgors/` out of
+the commit by default.
 ```bash
 git add <specific files>
 git commit -m "$(cat <<'EOF'
@@ -65,18 +90,26 @@ EOF
 )"
 git pull --rebase origin main && git push origin main
 ```
+Always let pre-commit hooks run — they catch issues before they ship.
+Push non-force to main; force-push overwrites shared history and is only
+used with explicit instruction.
 
 ### 9. Close ticket
+Always close with a one-line summary of what actually shipped — this line
+feeds decision-rollup, the session record, and today's slate:
 ```bash
 python3 ~/TheIgors/lab/claudecode/cc_queue.py done <id> "what was built"
 echo "- done: <id> — <summary>" >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
 ```
 
 ### 10. /savestateauto
+Always run /savestateauto at sprint end — it flushes session state, appends
+the change to the session record, and emits a compact-ready preserve
+string. That's what makes sprint work visible to the next session.
 
 ## Hard rules
-- Every sprint starts from a ticket — `/ticket` first if there isn't one.
-- Cleanup (step 6) is the last pre-commit act of every sprint — debris review is load-bearing.
-- Hooks run on every commit; pushes are non-force on main (integrity preserved).
-- Stage files specifically by name — keeps `.env`, `*.db`, and `~/.TheIgors/` runtime paths off the commit.
-- Tests pass + no secrets = commit without asking.
+- Always sprint from a ticket — run /ticket first when one doesn't exist.
+- Cleanup (step 6) is the last pre-commit act of every sprint — the debris review is load-bearing, not optional.
+- Always let pre-commit hooks run; always push non-force to main.
+- Always stage files by name. Runtime state (`.env`, `*.db`, paths under `~/.TheIgors/`) lives outside the tree; name-staging keeps it there.
+- When tests pass and no secrets are in the diff, commit proceeds without asking for permission.

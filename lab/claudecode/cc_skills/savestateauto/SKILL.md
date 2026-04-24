@@ -8,48 +8,61 @@ model: haiku
 
 Called automatically by /ticket, /sprint, /day-close. Also callable directly.
 
-The preserve string is always emitted so Akien can /compact at any clean boundary.
+Always emit the preserve string — that way Akien can /compact at any clean
+boundary without a separate setup step.
 
 ## Steps
 
-1. **State hypothesis**: One sentence — what's in-flight and why? NONE if clean.
+### 1. State hypothesis
 
-2. **Write in-flight to slate**:
-   ```bash
-   SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
-   echo "" >> "$SLATE"
-   echo "## In-flight: <hypothesis from step 1>" >> "$SLATE"
-   ```
+Always write one sentence naming what's in-flight and why. Use `NONE` when
+the session is clean — the slate must say something either way, and silence
+is not interpretable.
 
-3. **Remove debug flag**:
-   ```bash
-   rm -f ~/.TheIgors/Igor-wild-0001/debug_session.flag
-   ```
+### 2. Write in-flight to slate
 
-4. **Emit compact preserve string** (always, even if Akien doesn't ask for compact):
+Always append the hypothesis to today's slate so the next session reads it
+on /context-load:
+```bash
+SLATE=~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt
+echo "" >> "$SLATE"
+echo "## In-flight: <hypothesis from step 1>" >> "$SLATE"
+```
 
-   The preserve string is a **pointer, not a copy**. The slate holds all state on disk.
+### 3. Remove debug flag
+```bash
+rm -f ~/.TheIgors/Igor-wild-0001/debug_session.flag
+```
 
-   Shape:
-   ```
-   preserve: State on disk — read ~/.TheIgors/claudecode/YYYYMMDD.slate.txt.
-   In-flight: <hypothesis or NONE>. Next: <top 1-3 ticket ids>.
-   ```
+### 4. Emit compact preserve string
 
-   Build from:
-   - Slate path: `~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt`
-   - In-flight hypothesis: from step 1 above
-   - Next priorities: top 1-3 pending tickets from queue or slate
+Always emit the preserve block at the end of /savestateauto output, even
+when Akien didn't ask for /compact — preserving the option is cheap.
 
-   Print the block at the end of the /savestateauto output, clearly labeled:
+The preserve string is a **pointer, not a copy**. The slate holds all
+state on disk; the preserve string tells post-compact CC where to look.
 
-   ```
-   ── COMPACT PRESERVE STRING (copy if you want to /compact now) ──
-   preserve: ...
-   ───────────────────────────────────────────────────────────────
-   ```
+Shape:
+```
+preserve: State on disk — read ~/.TheIgors/claudecode/YYYYMMDD.slate.txt.
+In-flight: <hypothesis or NONE>. Next: <top 1-3 ticket ids>.
+```
 
-   Do NOT include: session ids, commit lists, done/filed ticket lists, decision counts,
-   rule text. All on disk — git log has commits, slate has decisions+done.
+Build from:
+- Slate path: `~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt`
+- In-flight hypothesis: step 1
+- Next priorities: top 1-3 pending tickets (from queue or today's slate)
 
-That's it. No compact (Akien decides), no DB writes, no session records.
+Print the block at the end of output, clearly labeled:
+```
+── COMPACT PRESERVE STRING (copy if you want to /compact now) ──
+preserve: ...
+───────────────────────────────────────────────────────────────
+```
+
+Always keep the preserve string thin. Do NOT include: session ids, commit
+lists, done/filed ticket lists, decision counts, or rule text. Every one
+of those lives on disk — git log has commits, slate has decisions + done,
+the palace has rules. The pointer is enough.
+
+That's it. No compact (Akien triggers that), no DB writes, no session records.

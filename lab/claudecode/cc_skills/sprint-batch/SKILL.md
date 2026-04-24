@@ -6,7 +6,8 @@ model: sonnet
 
 # /sprint-batch — Multi-ticket sprint
 
-Shared setup once, per-ticket loop, shared teardown. For when /decided just filed a batch, or when you're clearing a slate.
+Shared setup once, per-ticket loop, shared teardown. Use when /decided just
+filed a batch, or when you're clearing a slate.
 
 ## Selectors (positional arg)
 
@@ -21,19 +22,27 @@ Shared setup once, per-ticket loop, shared teardown. For when /decided just file
 
 ### 1. Resolve target set
 
-Parse the selector, read from `~/.TheIgors/cc_channel/queue.json` (or the slate file for slate selectors), filter to `status=pending` and `gate=null`. Bail with a clear message if nothing matches.
+Always parse the selector first and resolve it against the canonical
+sources — `~/.TheIgors/cc_channel/queue.json` (for ticket selectors) or the
+slate file (for slate selectors). Filter to `status=pending` and
+`gate=null`. When nothing matches, bail with a clear message — an empty
+batch is a signal, not a sprint.
 
 ### 2. Topo-sort by dependencies
 
-Build a dependency graph from:
+Always topo-sort before running — gated and dependent tickets must land in
+the right order. Build the graph from:
 - Explicit `related_to` edges
 - Implicit `gate` references ("T-x gated on T-y" → T-y before T-x)
 - Same-decision sibling tickets: lowest priority number first
 
-If the graph has cycles: print the cycle, bail, ask Akien to pick an order. Don't silently break.
+When the graph has cycles, always print the cycle and bail — a cycle is a
+dependency-graph bug, not something to silently break by picking an order.
+Ask Akien to pick when the graph is cyclic.
 
 ### 3. Shared setup (once)
 
+Always run setup once at batch start — per-ticket re-setup just burns time:
 ```bash
 cd ~/TheIgors
 git pull --rebase origin main
@@ -49,18 +58,20 @@ SPRINT-BATCH plan (N tickets):
   ...
 ```
 
-Ask Akien: "proceed, reorder, skip-one, abort?" (unless running in auto mode).
+Unless running in auto mode, always ask Akien: "proceed, reorder, skip-one,
+abort?" before the first ticket.
 
 ### 4. Per-ticket loop
 
-For each ticket in order, run the /sprint body:
+For each ticket in topo-order, run the /sprint body:
+
 1. **Claim**: `cc_queue.py claim <id>`
-2. **Review plan** (if ticket description has /review pre-approval stamp, skip asking; else invoke /review on the plan)
+2. **Review plan**: when the ticket description carries a /review pre-approval stamp, skip asking. Otherwise always invoke /review on the plan before coding.
 3. **Build**: implement the ticket
 4. **Test**: `python -m pytest tests/ -x -q 2>&1 | tail -20`
-5. **Cleanup** (REQUIRED): review diff, remove debris — debug prints, commented code, unused imports, replaced functions, single-use helpers, temp files. Every file in diff = on purpose.
-6. **Doc-refresh** (if load-bearing file touched, T-docs-live-in-code): promote or update docstring alongside the code change
-7. **Commit + push** (full cycle, with stash if Igor auto-edits interfere):
+5. **Cleanup** (REQUIRED): always review the diff and remove debris — debug prints, commented code, unused imports, replaced functions, single-use helpers, temp files. Every file in the diff exists on purpose.
+6. **Doc-refresh** (when a load-bearing file is touched, per T-docs-live-in-code): always update the top-of-file docstring alongside the code change.
+7. **Commit + push** (full cycle, with stash when Igor auto-edits interfere):
    ```bash
    git stash -u && git pull --rebase origin main && git stash pop
    git add <specific files>
@@ -68,27 +79,27 @@ For each ticket in order, run the /sprint body:
    git push origin main
    ```
 8. **Close**: `cc_queue.py done <id> "<summary of what was built>"`
-9. **Retroactive incidental ticket (T-sync-on-close-not-dayend pattern)**: if the commit includes changes unrelated to the claimed ticket (the "oh, and I also fixed this" case), draft a new ticket + immediately close it for the incidental fix so every change has a ticket.
+9. **Retroactive incidental ticket** (T-sync-on-close-not-dayend pattern): when the commit includes changes unrelated to the claimed ticket (the "oh, and I also fixed this" case), always draft a new ticket and immediately close it for the incidental fix — every change has a ticket.
 10. **Slate**: `echo "- done: T-... — ..." >> ~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt`
 
 ### 5. Handle failure mid-batch
 
-If a ticket fails (test failure, unresolvable conflict, scope mismatch), prompt:
+When a ticket fails (test failure, unresolvable conflict, scope mismatch), always prompt:
 - **abort** — stop the batch, leave remaining tickets pending
 - **skip** — mark this ticket blocked with reason, continue
 - **rewind** — reset this ticket to pending, stop the batch, let Akien investigate
 
 ### 6. Shared teardown
 
-Once all tickets complete (or batch aborts):
-1. `/savestateauto` once for the whole batch
-2. Print recap: N done, M skipped, P failed, ticket ids + commit hashes
+Once all tickets complete (or the batch aborts):
+1. Always run /savestateauto once for the whole batch (not per-ticket — that's just noise).
+2. Print recap: N done, M skipped, P failed, ticket ids + commit hashes.
 
 ## Invariants
 
 - Each ticket in the batch gets its own commit (no combined commits across tickets).
-- Gated tickets are skipped, not unblocked by the batch — if the batch happens to ship a ticket that was gating another, the gate clears on the done action (via T-sync-on-close-not-dayend) and the formerly-gated one becomes eligible for the NEXT batch, not this one.
-- Dependencies are respected — no sprint starts before its prerequisites close.
+- Gated tickets are skipped, not unblocked by the batch — when the batch happens to ship a ticket that was gating another, the gate clears on the done action (via T-sync-on-close-not-dayend) and the formerly-gated one becomes eligible for the NEXT batch, not this one.
+- Dependencies are always respected — no sprint starts before its prerequisites close.
 
 ## Flow integration
 
@@ -109,10 +120,10 @@ At start of day:
 
 ## Hard rules
 
-- Shared setup (venv activation + env var export) runs once per batch — cheap, prevents per-ticket drift.
-- Tests run per-ticket with `pytest -x -q`; failure stops that ticket and prompts to skip/abort.
-- One commit per ticket — load-bearing for decision-rollup, which needs per-ticket close events.
-- Topo cycles surface a dependency-graph bug — bail with the cycle printed and get Akien's call.
+- Shared setup (venv activation + env var export) always runs once per batch — cheap, prevents per-ticket drift.
+- Always run tests per-ticket with `pytest -x -q`; failure stops that ticket and prompts skip/abort.
+- Always commit per ticket — load-bearing for decision-rollup, which needs per-ticket close events.
+- Topo cycles always surface as a dependency-graph bug — bail with the cycle printed and get Akien's call.
 
 ## Related
 

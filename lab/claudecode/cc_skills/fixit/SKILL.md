@@ -6,29 +6,46 @@ model: sonnet
 
 # /fixit — Implicit design, batch sprint
 
-The fast path. Use when Akien says "fix this", "quick fix", "/fixit", or when a bug is known and the discussion is short. More considered work uses the explicit `/design` → discussion → `/decided` loop instead.
+The fast path. Use /fixit when Akien says "fix this", "quick fix", "/fixit",
+or when a bug is known and the discussion was short. More considered work
+goes through the explicit `/design` → discussion → `/decided` loop instead.
 
 ## What /fixit is
 
 `/fixit` = `/decided` + `/sprint-batch` on the just-filed tickets. Nothing more.
 
 That means:
-- Implicit design scope — the "thing just discussed" covers the recent conversation turns
-- Full filing-time `/review` runs on every drafted ticket (duplicate / already-done-in-code / blocked-by-pending / size sanity / scope-creep / test-plan / HIGH-inertia inline approval + stamp)
-- Every ticket that gets filed also gets sprinted in this same invocation
-- Multiple tickets is fine — /fixit is not limited to a single ticket, it inherits /sprint-batch's multi-ticket handling
+- Implicit design scope — the "thing just discussed" covers recent conversation turns since the last /decided or session start
+- Always run filing-time `/review` on every drafted ticket (duplicate / already-done-in-code / blocked-by-pending / size sanity / scope-creep / test-plan / HIGH-inertia inline approval + stamp)
+- Every ticket that gets filed gets sprinted in this same invocation
+- Multiple tickets is fine — /fixit inherits /sprint-batch's multi-ticket handling
 
 ## Steps
 
-1. **Invoke /decided** with implicit scope (recent conversation since last /decided or session start). This:
-   - Summarizes the decision (1-2 sentences; assigns a D-... id)
-   - Drafts ticket(s) needed to implement
-   - Runs /review on each drafted ticket; applies AMEND / SPLIT / DISCARD based on findings; stamps HIGH-inertia approvals
-   - Files the surviving tickets into queue.json + slate + session + Igor palace
+### 1. Invoke /decided with implicit scope
 
-2. **Invoke /sprint-batch** with selector `decision:D-<just-created-id>` — runs all tickets spawned by step 1 in topo-sorted dependency order. Per ticket: claim → build → test → cleanup → doc-refresh → commit+push → close. Retroactive "oh, and I also fixed this" incidental tickets are filed automatically if the commit includes debris-scope fixes.
+Always run the full /decided pipeline — filing-time /review is the whole
+point of the quality gate. /decided:
+- Summarizes the decision (1-2 sentences; assigns a D-... id)
+- Drafts the ticket(s) needed to implement
+- Runs /review on each drafted ticket; applies AMEND / SPLIT / DISCARD based on findings; stamps HIGH-inertia approvals
+- Files the surviving tickets into queue.json + slate + session + Igor palace
 
-3. **/savestateauto** at batch end (handled by /sprint-batch).
+### 2. Invoke /sprint-batch with selector `decision:D-<just-created-id>`
+
+Always scope the sprint to the just-created decision id — that's how /fixit
+avoids picking up unrelated pending tickets. The batch runs all tickets
+spawned by step 1 in topo-sorted dependency order. Per ticket: claim →
+build → test → cleanup → doc-refresh → commit + push → close.
+
+When the commit includes "oh, and I also fixed this" scope (debris or
+adjacent fixes outside the claimed ticket's scope), always file a
+retroactive incidental ticket and immediately close it — every change has
+a ticket that explains it.
+
+### 3. /savestateauto at batch end
+
+Handled by /sprint-batch.
 
 ## Report
 
@@ -43,7 +60,7 @@ Commits: <hash1>, <hash2>, ...
 
 - When the scope is load-bearing or architectural — use explicit `/design` → discussion → `/decided` → `/sprint-batch` instead. /fixit's implicit scope inference is fine for small reactive work; for bigger work, explicit design brackets are worth the ceremony.
 - When the work needs multiple days to ship — /fixit is a single-session shortcut. Multi-day efforts file tickets via `/decided` and get sprinted later.
-- When Akien wants to stop after /decided and review tickets before sprint. Say `/decided` directly instead of `/fixit`; then `/sprint-batch <selector>` later.
+- When Akien wants to stop after /decided and review tickets before sprinting. Say `/decided` directly instead of `/fixit`; then `/sprint-batch <selector>` later.
 
 ## Flow comparison
 
@@ -67,10 +84,10 @@ Commits: <hash1>, <hash2>, ...
 
 ## Hard rules
 
-- /review runs even in the fast path — filing-time quality gate applies.
-- HIGH-inertia pre-approval fires inline during /fixit; Akien approves, stamp lands in the ticket body before filing.
+- Always run /review — filing-time quality gate applies even in the fast path.
+- Always surface HIGH-inertia pre-approval inline during /fixit; the stamp lands in the ticket body before filing.
 - /sprint-batch respects gates — a ticket gated on pre-approval clears the gate first.
-- Each distinct decision gets its own D-id; /sprint-batch scopes to the current /fixit invocation's decision id.
+- Every distinct decision gets its own D-id; /sprint-batch scopes to the current /fixit invocation's decision id.
 
 ## Related
 
