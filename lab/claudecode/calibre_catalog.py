@@ -468,15 +468,13 @@ def main() -> None:
         # Use paths.py from the project
         project_root = Path(__file__).parent.parent
         sys.path.insert(0, str(project_root))
-        try:
-            from wild_igor.igor.paths import paths
+        # T-scan-ebooks-use-paths-abstraction: paths().calibre_library is the
+        # single source of truth (EBOOKS_ROOT / CALIBRE_LIBRARY_PATH overrides
+        # handled inside). The previous hardcoded fallback was user-hostile
+        # for any other checkout.
+        from wild_igor.igor.paths import paths
 
-            library_path = paths().calibre_library
-        except Exception:
-            library_path = Path(
-                "/home/akien/.TheIgors/akien/onedrive"
-                "/AkiensMedia/Ebooks/Calibre Portable/Calibre Library"
-            )
+        library_path = paths().calibre_library
 
     if not library_path.exists():
         print(f"ERROR: Calibre library not found at: {library_path}", file=sys.stderr)

@@ -29,10 +29,13 @@ import sys
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-CALIBRE_DB = Path(
-    "/home/akien/.TheIgors/akien/onedrive/AkiensMedia/Ebooks/Calibre Portable/Calibre Library/metadata.db"
-)
-EBOOKS_ROOT = Path("/home/akien/.TheIgors/akien/onedrive/AkiensMedia/Ebooks")
+# T-scan-ebooks-use-paths-abstraction: use paths().ebooks_root and
+# paths().calibre_library instead of the hardcoded onedrive paths so the
+# script runs on any checkout honoring EBOOKS_ROOT / CALIBRE_LIBRARY_PATH.
+from wild_igor.igor.paths import paths as _paths
+
+CALIBRE_DB = _paths().calibre_library / "metadata.db"
+EBOOKS_ROOT = _paths().ebooks_root
 OUTPUT = Path.home() / "TheIgors" / "ebook_candidates.md"
 
 # ── Priority matchers ──────────────────────────────────────────────────────────
