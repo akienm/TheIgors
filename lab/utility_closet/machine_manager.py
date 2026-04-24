@@ -31,19 +31,27 @@ from typing import Optional
 
 _log = logging.getLogger(__name__)
 
-_DB_URL = os.getenv("IGOR_HOME_DB_URL", "")
-if not _DB_URL:
-    raise RuntimeError(
-        "IGOR_HOME_DB_URL not set — machine_manager requires a Postgres connection. "
-        "Set this env var at system level (not user level on Windows)."
-    )
+
+# T-machine-manager-lazy-db-url-check: guard read at first-connect time,
+# not at module-import time. Previously an unset IGOR_HOME_DB_URL blew up
+# every import chain that reached here (test discovery, static analysis,
+# audit tools). Now the error fires only when something actually touches
+# the DB — same human-readable message, just at the right moment.
+def _db_url() -> str:
+    url = os.getenv("IGOR_HOME_DB_URL", "")
+    if not url:
+        raise RuntimeError(
+            "IGOR_HOME_DB_URL not set — machine_manager requires a Postgres connection. "
+            "Set this env var at system level (not user level on Windows)."
+        )
+    return url
 
 
 def _pg_connect():
     """Connect to Postgres with search_path set for three-schema layout."""
     import psycopg2
 
-    conn = psycopg2.connect(_DB_URL)
+    conn = psycopg2.connect(_db_url())
     cur = conn.cursor()
     cur.execute("SET search_path TO instance, clan, infra, public")
     cur.close()
@@ -182,21 +190,23 @@ def _fetch_machines() -> list[MachineRecord]:
         rows = cur.fetchall()
         conn.close()
     except Exception as exc:
+        db_url = _db_url()
         _log.error(
             "[machine_manager] DB_FETCH_FAIL: %s (db_url=%s)",
             exc,
             (
-                _DB_URL.split("@")[-1] if "@" in _DB_URL else _DB_URL
+                db_url.split("@")[-1] if "@" in db_url else db_url
             ),  # host/db only, no creds
         )
         return []
 
     if not rows:
+        db_url = _db_url()
         _log.warning(
             "[machine_manager] MACHINES_EMPTY: query returned 0 rows — "
             "check machines table has rows with status!='offline' AND inference_rank IS NOT NULL "
             "(db=%s)",
-            _DB_URL.split("/")[-1] if "/" in _DB_URL else _DB_URL,
+            db_url.split("/")[-1] if "/" in db_url else db_url,
         )
 
     machines = []
