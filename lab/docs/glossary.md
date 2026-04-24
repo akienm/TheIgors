@@ -30,7 +30,7 @@ Terms specific to this project. Standard software/AI terms are not defined here.
 
 ## Memory Stores
 
-**LTM** (Long-Term Memory) — The main `memories` SQLite table. Persists across restarts. Contains the full memory graph.
+**LTM** (Long-Term Memory) — The main `clan.memories` Postgres table (Igor-wild-0001). Persists across restarts. Contains the full memory graph.
 
 **TWM** (Temporal Working Memory) — A push-only observation sandbox in the DB. Things get deposited here with a TTL and expire. The Narrative Engine reads this and integrates important observations into LTM. Think of it as the inbox before things become permanent memories.
 
@@ -84,9 +84,9 @@ Terms specific to this project. Standard software/AI terms are not defined here.
 
 **Milieu** — Igor's 3D emotional state: valence, arousal, dominance. Shared across instances via a JSON file. Affects habit firing threshold, tier escalation.
 
-**Word graph** — SQLite-backed two-tier graph (words + bigrams). Same weights used for both parsing (recognizing patterns) and generation (predicting what comes next). This is the "same thing in both directions" insight.
+**Word graph** — Two-tier graph (words + bigrams) living in the instance-local store. Same weights used for both parsing (recognizing patterns) and generation (predicting what comes next). This is the "same thing in both directions" insight.
 
-**DB proxy** — Wraps every SQLite call with timing, slow query logging, reconnect on failure, and performance metrics. All DB access routes through it. Callers never know a connection dropped.
+**DB proxy** — Wraps every database call with timing, slow query logging, reconnect on failure, and performance metrics. Backed by Postgres for shared graph tables (memories, interpretive_edges, etc.) and a local store for per-box transient tables (ring_memory, twm_observations). All DB access routes through it. Callers never know a connection dropped.
 
 ---
 
@@ -133,8 +133,21 @@ Terms specific to this project. Standard software/AI terms are not defined here.
 | Name | Path |
 |---|---|
 | Source | `~/TheIgors/wild_igor/igor/` |
-| Live DB | `~/.TheIgors/Igor-wild-0001/wild-0001.db` |
+| Live DB | Postgres DSN `postgresql://igor:…@127.0.0.1/Igor-wild-0001` |
 | Config | `~/.TheIgors/Igor-wild-0001/.env` |
 | Logs | `~/.TheIgors/logs/` |
 | Word graph | `~/.TheIgors/word_graph.db` |
 | Igor's soul | `~/.TheIgors/SOUL.md` |
+
+---
+
+## Palace
+
+The canonical design-intent + rules + subsystem index lives in the
+**memory palace** (`clan.memory_palace` table, repo echo at
+`lab/theigors/`). If a term here contradicts the palace, the palace wins.
+
+```bash
+psql postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001 -c \
+  "SELECT path FROM memory_palace WHERE path LIKE 'theigors/%' ORDER BY path"
+```
