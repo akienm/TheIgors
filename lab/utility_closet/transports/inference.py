@@ -102,14 +102,27 @@ class InferenceTransport(Transport):
         """Call the existing inference gateway. Returns response text or
         an error-tagged string so callers can distinguish success from
         failure without raising.
+
+        T-inference-transport-make-context-signature (Pass-2 Area 5 Gap 1):
+        make_context takes (is_background, is_user_turn, research_mode,
+        complexity) — not purpose/metadata. Previously every call TypeError'd
+        and the transport silently returned '[inference-error] ...'; whole
+        comms://model/* surface was dead. purpose flows via gw.call's
+        purpose_id; metadata has no corresponding channel in the gateway
+        so we log it for traceability and drop it.
         """
         from wild_igor.igor.cognition.inference_gateway import make_context
 
         try:
             gw = self._get_gateway()
+            complexity = "low"
+            research_mode = False
+            if metadata:
+                complexity = str(metadata.get("complexity", complexity))
+                research_mode = bool(metadata.get("research_mode", research_mode))
             ctx = make_context(
-                purpose=purpose,
-                metadata=metadata or {},
+                research_mode=research_mode,
+                complexity=complexity,
             )
             text = gw.call(purpose_id=purpose, prompt=prompt, ctx=ctx)
             return text or ""
