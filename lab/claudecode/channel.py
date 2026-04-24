@@ -210,6 +210,32 @@ def format_entry(e: dict, color: bool = True) -> str:
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 
+def _consume_flags(
+    args: list[str], allowed_with_value: set[str]
+) -> tuple[dict, list[str]]:
+    """Pop known --flag <value> pairs from args; return (values, remaining positionals).
+
+    Raises ValueError on any unrecognized --flag — the whole point of strict parsing
+    is to surface typos ('--author' vs '--as') before they silently lose the message.
+    """
+    values: dict[str, str] = {}
+    remaining: list[str] = []
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a in allowed_with_value:
+            if i + 1 >= len(args):
+                raise ValueError(f"flag {a} requires a value")
+            values[a] = args[i + 1]
+            i += 2
+            continue
+        if a.startswith("-"):
+            raise ValueError(f"unknown flag: {a}")
+        remaining.append(a)
+        i += 1
+    return values, remaining
+
+
 def _cli():
     args = sys.argv[1:]
     if not args or args[0] in ("-h", "--help"):
@@ -217,21 +243,27 @@ def _cli():
         return
 
     cmd = args[0]
+    rest = args[1:]
 
     if cmd == "post":
-        if len(args) < 2:
+        try:
+            flags, positionals = _consume_flags(rest, allowed_with_value={"--as"})
+        except ValueError as e:
+            print(f"channel.py post: {e}", file=sys.stderr)
+            sys.exit(2)
+        if len(positionals) != 1:
             print("Usage: channel.py post <message> [--as <author>]", file=sys.stderr)
             sys.exit(1)
-        content = args[1]
-        author = ""
-        if "--as" in args:
-            idx = args.index("--as")
-            author = args[idx + 1] if idx + 1 < len(args) else ""
-        entry = post(content, author=author)
+        entry = post(positionals[0], author=flags.get("--as", ""))
         print(f"Posted: {format_entry(entry)}")
 
     elif cmd == "read":
-        n = int(args[1]) if len(args) > 1 else 20
+        try:
+            flags, positionals = _consume_flags(rest, allowed_with_value=set())
+        except ValueError as e:
+            print(f"channel.py read: {e}", file=sys.stderr)
+            sys.exit(2)
+        n = int(positionals[0]) if positionals else 20
         entries = read(n)
         if not entries:
             print("(channel is empty)")
@@ -239,6 +271,11 @@ def _cli():
             print(format_entry(e))
 
     elif cmd == "listen":
+        try:
+            _consume_flags(rest, allowed_with_value=set())
+        except ValueError as e:
+            print(f"channel.py listen: {e}", file=sys.stderr)
+            sys.exit(2)
         print(f"Listening on {_MESSAGES_FILE} (Ctrl-C to stop)...")
         try:
             for entry in listen():
@@ -247,6 +284,11 @@ def _cli():
             pass
 
     elif cmd == "sessions":
+        try:
+            _consume_flags(rest, allowed_with_value=set())
+        except ValueError as e:
+            print(f"channel.py sessions: {e}", file=sys.stderr)
+            sys.exit(2)
         sessions = active_sessions()
         if not sessions:
             print("(no active sessions in last 10 minutes)")
