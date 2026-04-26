@@ -106,7 +106,7 @@ def run_sql(entry: dict) -> tuple[str, str]:
 
 
 def run_shell(entry: dict) -> tuple[str, str]:
-    """Run a shell one-liner. Non-empty stdout = FAIL."""
+    """Run a shell one-liner. Exit code is authoritative: 0=PASS, non-0=FAIL."""
     try:
         result = subprocess.run(
             entry["pattern"],
@@ -118,12 +118,19 @@ def run_shell(entry: dict) -> tuple[str, str]:
         )
     except subprocess.TimeoutExpired:
         return "ERROR", "shell timed out"
-    if result.returncode != 0 and not result.stdout:
-        return "ERROR", result.stderr.strip()[:200]
-    if result.stdout.strip():
-        first = result.stdout.strip().splitlines()[0]
-        return "FAIL", f"stdout: {first[:120]}"
-    return "PASS", "no output"
+    if result.returncode == 0:
+        detail = (
+            result.stdout.strip().splitlines()[0][:120]
+            if result.stdout.strip()
+            else "ok"
+        )
+        return "PASS", detail
+    detail = (
+        (result.stdout or result.stderr).strip().splitlines()[0][:120]
+        if (result.stdout or result.stderr).strip()
+        else f"exit {result.returncode}"
+    )
+    return "FAIL", detail
 
 
 def run_python(entry: dict) -> tuple[str, str]:
