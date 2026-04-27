@@ -39,30 +39,23 @@ rm -f ~/.TheIgors/Igor-wild-0001/debug_session.flag
 Always emit the preserve block at the end of /savestateauto output, even
 when Akien didn't ask for /compact — preserving the option is cheap.
 
-The preserve string is a **pointer, not a copy**. The slate holds all
-state on disk; the preserve string tells post-compact CC where to look.
+The preserve string is a **fixed generic pointer**. The slate holds all
+state on disk (in-flight and next were written in Step 2); post-compact CC
+resolves the rest by reading the slate.
 
-Shape:
+Always emit this exact string — no per-session customization needed:
 ```
-preserve: State on disk — read ~/.TheIgors/claudecode/YYYYMMDD.slate.txt.
-In-flight: <hypothesis or NONE>. Next: <top 1-3 ticket ids>.
+preserve: Read today's slate: ~/.TheIgors/claudecode/YYYYMMDD.slate.txt. In-flight and Next: see slate.
 ```
-
-Build from:
-- Slate path: `~/.TheIgors/claudecode/$(date +%Y%m%d).slate.txt`
-- In-flight hypothesis: step 1
-- Next priorities: top 1-3 pending tickets (from queue or today's slate)
 
 Print the block at the end of output, clearly labeled:
 ```
 ── COMPACT PRESERVE STRING (copy if you want to /compact now) ──
-preserve: ...
+preserve: Read today's slate: ~/.TheIgors/claudecode/YYYYMMDD.slate.txt. In-flight and Next: see slate.
 ───────────────────────────────────────────────────────────────
 ```
 
-Always keep the preserve string thin. Do NOT include: session ids, commit
-lists, done/filed ticket lists, decision counts, or rule text. Every one
-of those lives on disk — git log has commits, slate has decisions + done,
-the palace has rules. The pointer is enough.
+Post-compact CC knows today's date from context and resolves YYYYMMDD itself.
+No session ids, commit lists, ticket ids, or rule text — those all live on disk.
 
 That's it. No compact (Akien triggers that), no DB writes, no session records.

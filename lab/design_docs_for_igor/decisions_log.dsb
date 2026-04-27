@@ -1,4 +1,4 @@
-DOC|decisions_log|v1|updated=2026-04-10
+DOC|decisions_log|v1|updated=2026-04-26
 META|purpose=settled decisions + WHY — prevents re-litigating; load before self-edit
 META|format=D{n}|topic|status|why (one line per decision; drill to decisions_log.csb.txt for full rationale)
 META|status_values=implemented,implemented-partial,implemented-poc,implemented-seeds,live,planned,decided,defined,proposed,active,open,revised,deferred,superseded,abandoned,closed
@@ -570,6 +570,7 @@ D357|winnow-trigger-fix|implemented|T-winnow-trigger-fix: WINNOW breadcrumb depo
 D358|enable-trail-training|implemented|Enable IGOR_TRAIL_TRAINING_ENABLED=true in .env. Hebbian edge strengthening from search co-activation: every search trace creates/strengthens co_activation edges between nodes that appear together. STDP-weighted (LTP for sequential, LTD for reversed). Learning rate 0.05, creation threshold 0.1. Graph learns associations automatically without LLM.
 D359|reading-extract-via-gateway|planned|Reading extraction uses inference gateway instead of hardcoded OR. New 'reading_extract' purpose node. Gateway gets model_override kwarg for benchmarking only — never used in production. Connects to future mode-based routing (background mode picks model per task type).
 D360|reading-model-benchmark|planned|7-pass reading quality benchmark: same chapter through (1) gpt-4o-mini baseline, (2) llama3.2:1b local, (3) DeepSeek-R1-Distill-Qwen-7B local, (4) qwen2.5:7b local, (5) DeepSeek R1 cloud, (6) Haiku cloud, (7) Sonnet cloud. Compare node count, edge density, concept overlap. Goal: prove local 7B can replace cloud for reading extraction.
+D-GENERIC-COMPACT-PRESERVE-2026-04-26|generic-compact-preserve|implemented|Savestateauto Step 4 emits fixed slate-pointer template instead of per-session summary. compact-igor bashrc alias added for terminal hotkey use.
 2026-04-20T13:57:19-06:00 | D-slate-salience-order-2026-04-20 | Slate sections salience-ordered: Next up → Blocked → After that → Decided → Done | tickets: T-slate-section-reorder
 2026-04-21T09:33:53-06:00 | D-worker-mode-routing-2026-04-21 | decided | Route worker dispatch by ticket metadata: default worker=igor (in-process via engram chain, Qwen-routable), opt-in worker=claude (konsole-spawn) for HIGH-inertia/parallel/safety-isolated/Claude-required; retirement of worker_foreman was overgeneralized
 2026-04-21T10:15:19-06:00 | D-cc-workflow-optimizations-2026-04-21 | Optimize CC dev-loop: consolidate 9 admin scripts + quick wins (env check, Haiku model audit, rule hash cache, pre-commit hooks) | tickets: T-cc-env-split-startup-check, T-skill-model-audit-haiku, T-context-load-rule-hash, T-cc-admin-consolidation, T-cc-hook-autonomics
@@ -585,3 +586,4 @@ D360|reading-model-benchmark|planned|7-pass reading quality benchmark: same chap
 2026-04-23T11:29:19-06:00 | D-cc-inbox-2026-04-23 | CC inbox — push path from Igor events to CC (pairs with consult primitive's observe-tune ticket) | tickets: T-cc-inbox-storage, T-cc-inbox-producer, T-cc-inbox-consumer
 2026-04-23T16:37:59-06:00 | D-sessions-to-slate-2026-04-23 | Replace CC sessions with slate — move in-flight/theme/notes to slate, drop session_manager from all skills | tickets: T-sessions-to-slate
 2026-04-24T14:41:23-06:00 | D-directed-positive-prompts-2026-04-24 | Directed positive framing + binding imperatives + MCP-first prompt-rewrite pass | tickets: T-directed-positive-prompts-pass-1
+2026-04-26T20:07:05-06:00 | D-igor-tmux-session-launcher-2026-04-26 | Igor launcher wraps itself in named tmux session | tickets: T-igor-tmux-session-launcher
