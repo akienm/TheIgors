@@ -47,4 +47,18 @@ if [ -f "$UC_SERVER" ]; then
     fi
 fi
 
-exec "$VENV_DIR/bin/python" "$INSTALLER" "$@"
+# Launch inside tmux so Igor's restart loop and tools stay attached.
+IGOR_TMUX_SESSION="${IGOR_TMUX_SESSION:-igor}"
+export IGOR_TMUX_SESSION
+
+if [[ -n "${TMUX:-}" ]]; then
+    exec "$VENV_DIR/bin/python" "$INSTALLER" "$@"
+else
+    tmux new-session -d -s "$IGOR_TMUX_SESSION" 2>/dev/null || true
+    IGOR_CMD="cd $(printf '%q' "$PWD") && $(printf '%q' "$0")"
+    for arg in "$@"; do
+        IGOR_CMD+=" $(printf '%q' "$arg")"
+    done
+    tmux send-keys -t "$IGOR_TMUX_SESSION" "$IGOR_CMD" Enter
+    exec tmux attach -t "$IGOR_TMUX_SESSION"
+fi
