@@ -55,6 +55,16 @@ if [[ -n "${TMUX:-}" ]]; then
     exec "$VENV_DIR/bin/python" "$INSTALLER" "$@"
 else
     tmux new-session -d -s "$IGOR_TMUX_SESSION" 2>/dev/null || true
+
+    # Console capture via pipe-pane → rolling daily log (7-day retention)
+    ADC_HOME="${AGENT_DATACENTER_HOME:-$HOME/.agent_datacenter}"
+    CONSOLE_DIR="$ADC_HOME/logs/Igor-wild-0001"
+    mkdir -p "$CONSOLE_DIR"
+    CONSOLE_LOG="$CONSOLE_DIR/$(date +%Y%m%d).console.log"
+    tmux pipe-pane -t "$IGOR_TMUX_SESSION" -o "cat >> '$CONSOLE_LOG'" 2>/dev/null || true
+    # Prune console logs older than 7 days
+    find "$CONSOLE_DIR" -name "*.console.log" -mtime +7 -delete 2>/dev/null || true
+
     IGOR_CMD="cd $(printf '%q' "$PWD") && $(printf '%q' "$0")"
     for arg in "$@"; do
         IGOR_CMD+=" $(printf '%q' "$arg")"
