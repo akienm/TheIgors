@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 """
-cc_mcp_server.py — MCP server for Claude Code self-compaction via tmux.
+DEPRECATED — superseded by wild_igor/igor/mcp/igor_mcp.py (real MCP SDK).
 
-Exposes request_compaction(preserve_instructions: str) tool.
-Tool injects /compact <payload> into the running Claude Code tmux session.
+request_compaction was moved to igor_mcp.py (T-mcp-request-compaction, 2026-04).
+This file is kept for reference only. Do not start it; it will conflict with
+the skeleton MCP aggregator. See lab/claudecode/CC_MCP_REGISTRATION.md for the
+current setup.
 
-Session name read from CLAUDE_TMUX_SESSION env var (default: claude-main).
-
-Usage:
-  1. Start MCP server:
-     CLAUDE_TMUX_SESSION=claude-main python3 claudecode/cc_mcp_server.py
-
-  2. Register tool in Claude Code MCP config (see instructions below)
-
-  3. From Claude Code, call via MCP: request_compaction("preserve: ...")
+Original purpose: hand-rolled MCP server for Claude Code self-compaction via tmux.
 """
 
 import json
