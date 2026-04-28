@@ -14,7 +14,9 @@ Usage:
     export_chat.py --dry-run    — report what would be written, don't touch disk
 
 Source:  ~/.claude/projects/-home-akien-TheIgors/<session-id>.jsonl
-Output:  /home/akien/TheIgors/claude_chat_logs/YYYY-MM-DD.md
+Output:  $AGENT_DATACENTER_HOME/logs/CC.0/YYYY-MM-DD.md
+         (default: ~/.agent_datacenter/logs/CC.0/)
+         Override with CLAUDE_CHAT_LOGS_DIR env var.
 
 Recovery purpose — if something scrolls off the top of the chat, run /export-chat
 to get a persistent copy.
@@ -32,10 +34,13 @@ from pathlib import Path
 TRANSCRIPT_DIR = Path.home() / ".claude/projects/-home-akien-TheIgors"
 # T-cc-script-dead-code-sweep: parameterize output dir so this isn't
 # user-hostile across checkouts. Default keeps the prior behavior.
+_ADC_HOME = Path(
+    os.environ.get("AGENT_DATACENTER_HOME", str(Path.home() / ".agent_datacenter"))
+)
 OUTPUT_DIR = Path(
     os.environ.get(
         "CLAUDE_CHAT_LOGS_DIR",
-        str(Path.home() / "TheIgors" / "claude_chat_logs"),
+        str(_ADC_HOME / "logs" / "CC.0"),
     )
 )
 
