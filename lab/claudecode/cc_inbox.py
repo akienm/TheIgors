@@ -1,5 +1,11 @@
 """cc_inbox.py — Claude Code's notification inbox (append-only JSONL).
 
+DEPRECATED: Migrate callers to comms://CC.0 (Router.send) directly.
+This shim is dual-write: every append() goes to both the JSONL file and the
+IMAP CC.0 mailbox (if agent_datacenter IMAP is reachable). The JSONL file is
+the authoritative read/mark-read source during the migration window; after
+verification, the JSONL backend will be removed (Phase 5).
+
 Producers (Igor subsystems) append events; consumer (CC) reads unread, marks
 read. The inbox fills the gap where CC only learned about Igor's state when
 Akien mentioned it — now Igor's ticket-trip events, pe_chain escalations,
@@ -32,6 +38,33 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal, Optional
+
+# ── IMAP mirror (dual-write shim) ─────────────────────────────────────────────
+# Mirrors every append() to comms://CC.0. Silently no-ops if IMAP is unavailable.
+# read_unread() / mark_read() still use the JSONL backend during the migration window.
+
+_imap_router: object = None  # Router | None
+_imap_init_done: bool = False
+
+
+def _get_imap_router():
+    """Lazy-init the IMAP mirror. Returns router or None."""
+    global _imap_router, _imap_init_done
+    if _imap_init_done:
+        return _imap_router
+    _imap_init_done = True
+    try:
+        from bus.imap_server import IMAPServer
+        from agent_datacenter.bus.router import Router
+
+        s = IMAPServer()
+        s.start()
+        s.create_mailbox("CC.0")
+        _imap_router = Router(s)
+    except Exception:
+        pass  # IMAP unavailable — JSONL remains authoritative
+    return _imap_router
+
 
 Urgency = Literal["low", "normal", "high"]
 
@@ -135,6 +168,21 @@ def append(
         import sys as _sys
 
         print(f"cc_inbox.append failed (non-fatal): {e}", file=_sys.stderr)
+    # Mirror to IMAP CC.0 (dual-write shim). Silently skipped if unavailable.
+    router = _get_imap_router()
+    if router is not None:
+        try:
+            from bus.envelope import Envelope
+
+            env = Envelope(
+                from_device="igor",
+                to_device="CC.0",
+                sent_at=entry.ts,
+                payload=entry.to_dict(),
+            )
+            router.send("comms://CC.0", env)
+        except Exception:
+            pass  # JSONL write already succeeded — IMAP mirror is best-effort
     return entry
 
 

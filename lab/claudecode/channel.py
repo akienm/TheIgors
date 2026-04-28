@@ -2,6 +2,12 @@
 """
 channel.py — Shared coordination channel for Claude Code sessions and Igor.
 
+DEPRECATED: Migrate callers to comms://Shared (Router.send) directly.
+This shim is dual-write: every post() goes to both the JSONL file and the
+IMAP Shared mailbox (if agent_datacenter IMAP is reachable). The JSONL file
+is the authoritative read source until the IMAP migration is verified;
+after verification, the JSONL backend will be removed (Phase 5).
+
 Append-only JSONL log at ~/.TheIgors/cc_channel/messages.jsonl
 Any process can post. Any process can read the tail.
 No Igor required. No web server required.
@@ -23,6 +29,41 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+# ── IMAP mirror (dual-write shim) ─────────────────────────────────────────────
+# Mirrors every post() to comms://Shared. Silently no-ops if IMAP is unavailable.
+# Callers of read() still read from JSONL during the migration window.
+
+_imap: object = None  # IMAPServer | None
+_imap_router: object = None  # Router | None
+_imap_init_done: bool = False
+
+
+def _get_imap_router():
+    """Lazy-init the IMAP mirror. Returns (imap_server, router) or (None, None)."""
+    global _imap, _imap_router, _imap_init_done
+    if _imap_init_done:
+        return _imap, _imap_router
+    _imap_init_done = True
+    try:
+        import sys as _sys
+
+        _sys.path.insert(
+            0, str(Path(__file__).parents[3] / "dev" / "src" / "agent_datacenter")
+        )
+        from bus.imap_server import IMAPServer
+        from agent_datacenter.bus.router import Router
+
+        s = IMAPServer()
+        s.start()
+        s.create_mailbox("Shared")
+        r = Router(s)
+        _imap = s
+        _imap_router = r
+    except Exception:
+        pass  # IMAP unavailable — JSONL remains authoritative
+    return _imap, _imap_router
+
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -119,6 +160,22 @@ def post(content: str, author: str = "", msg_type: str = "message") -> dict:
         "content": content,
     }
     _append(entry)
+    # Mirror to IMAP Shared mailbox (dual-write shim). Silently skipped if
+    # agent_datacenter IMAP is not reachable.
+    _, router = _get_imap_router()
+    if router is not None:
+        try:
+            from bus.envelope import Envelope
+
+            env = Envelope(
+                from_device=entry["author"],
+                to_device="Shared",
+                sent_at=entry["ts"],
+                payload=entry,
+            )
+            router.send("comms://Shared", env)
+        except Exception:
+            pass  # JSONL write already succeeded — IMAP mirror is best-effort
     return entry
 
 
