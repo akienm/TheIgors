@@ -24,6 +24,7 @@ SOURCE_ROOT = REPO_ROOT / "wild_igor" / "igor"
 # SQLite stores Igor doesn't own. NOT exemptions for Igor's own data.
 LEGITIMATE_EXTERNAL = {
     "tools/ebook_reader.py",  # Calibre catalog (external)
+    "tools/learner.py",  # Calibre metadata.db read (external — Calibre's own store)
     "tools/ebook_drm/androidkindlekey.py",  # Android Kindle keychain (external)
 }
 
