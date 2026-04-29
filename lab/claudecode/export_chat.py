@@ -31,6 +31,17 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# T-timestamp-format-normalization: display local time in human-readable sections
+try:
+    from lab.claudecode.ts_format import format_display, parse_iso
+except ImportError:
+    # Fallback if run standalone (e.g. python3 lab/claudecode/export_chat.py)
+    def parse_iso(ts: str) -> datetime:  # type: ignore[misc]
+        return datetime.fromisoformat(ts.replace("Z", "+00:00"))
+
+    def format_display(dt: datetime) -> str:  # type: ignore[misc]
+        return dt.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+
 TRANSCRIPT_DIR = Path.home() / ".claude/projects/-home-akien-TheIgors"
 # T-cc-script-dead-code-sweep: parameterize output dir so this isn't
 # user-hostile across checkouts. Default keeps the prior behavior.
@@ -48,7 +59,11 @@ OUTPUT_DIR = Path(
 def _render_message(msg: dict) -> str:
     """Render one transcript message to markdown. Returns '' for uninteresting ones."""
     mtype = msg.get("type")
-    ts = msg.get("timestamp", "")
+    ts_raw = msg.get("timestamp", "")
+    try:
+        ts = format_display(parse_iso(ts_raw)) if ts_raw else ""
+    except (ValueError, TypeError):
+        ts = ts_raw  # fallback to raw if unparseable
     if mtype == "user":
         content = msg.get("message", {}).get("content", "")
         if isinstance(content, list):
@@ -141,7 +156,7 @@ def render_day_file(date_str: str, per_session: list[tuple[str, list[str]]]) -> 
     """Render a day-file as union of session contributions, ordered by session id."""
     parts = [
         f"# Chat log — {date_str}\n",
-        f"\n_rendered {datetime.now(timezone.utc).isoformat()}_\n",
+        f"\n_rendered {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}_\n",
     ]
     for session_id, blocks in sorted(per_session, key=lambda x: x[0]):
         parts.append(f"\n---\n\n## Session {session_id}\n")
