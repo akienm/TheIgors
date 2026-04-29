@@ -16,12 +16,13 @@ fallback, reconnection, and forensic logging.
 from __future__ import annotations
 
 import logging
+from lab.utility_closet.agent_base import get_logger
 import re
 from typing import Optional
 
 from ..comms import Channel, ChannelMessage, Transport
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # Pattern to extract channel ID from comms address
 _CHANNEL_ID_RE = re.compile(r"comms://discord/(\d+)$")

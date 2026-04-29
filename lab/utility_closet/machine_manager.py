@@ -23,13 +23,14 @@ from __future__ import annotations
 
 import json
 import logging
+from lab.utility_closet.agent_base import get_logger
 import os
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
-_log = logging.getLogger(__name__)
+_log = get_logger(__name__)
 
 
 # T-machine-manager-lazy-db-url-check: guard read at first-connect time,

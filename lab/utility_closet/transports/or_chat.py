@@ -27,6 +27,7 @@ T-uc-chattable-llm-channel.
 from __future__ import annotations
 
 import logging
+from lab.utility_closet.agent_base import get_logger
 from typing import Optional
 
 from ..comms import Channel, ChannelMessage, Transport
@@ -37,7 +38,7 @@ from .inference import (
     InferenceTransport,
 )
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 OR_CHAT_URI_PREFIX = "comms://or-chat/"

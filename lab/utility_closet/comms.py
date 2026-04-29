@@ -142,6 +142,7 @@ Provenance:
 from __future__ import annotations
 
 import logging
+from lab.utility_closet.agent_base import get_logger
 import threading
 import time
 import uuid
@@ -153,7 +154,7 @@ from typing import Callable, Optional
 
 from .rack import RackModule
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 # ── Enums ────────────────────────────────────────────────────────────────────

@@ -203,7 +203,7 @@ class AgentBase:
                 existing = log_path.read_text() if log_path.exists() else ""
                 log_path.write_text(line + existing)
             except Exception as _e:
-                logging.getLogger(__name__).warning("perf log write failed: %s", _e)
+                self.log.warning("perf log write failed: %s", _e)
 
     def _perf_summary(self, label: Optional[str] = None) -> str:
         """Return p50/p95/p99 summary for all labels (or one label)."""

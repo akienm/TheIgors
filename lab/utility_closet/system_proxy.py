@@ -19,6 +19,7 @@ Inertia: LOW (new file)
 from __future__ import annotations
 
 import logging
+from lab.utility_closet.agent_base import get_logger
 import os
 import threading
 import time
@@ -27,7 +28,7 @@ from typing import Any, Optional
 
 from lab.utility_closet.agent_base import AgentBase as IgorBase  # UC uses AgentBase
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 _DEFAULT_STALENESS_SEC = 2.0
 

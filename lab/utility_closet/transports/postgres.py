@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import json
 import logging
+from lab.utility_closet.agent_base import get_logger
 import os
 from typing import Optional
 
 from ..comms import Channel, ChannelMessage, Transport
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 class PostgresTransport(Transport):

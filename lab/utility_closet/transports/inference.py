@@ -30,13 +30,14 @@ from __future__ import annotations
 
 import json
 import logging
+from lab.utility_closet.agent_base import get_logger
 import uuid
 from typing import Optional
 
 from ..comms import Channel, ChannelMessage, Transport
 from .postgres import PostgresTransport
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 # Channel-address prefix convention

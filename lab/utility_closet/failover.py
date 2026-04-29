@@ -17,11 +17,12 @@ The automation is in propagating that decision to the swarm.
 
 import json
 import logging
+from lab.utility_closet.agent_base import get_logger
 import os
 from datetime import datetime
 from typing import Optional
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 def appoint_home_db(

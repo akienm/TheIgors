@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import logging
+from lab.utility_closet.agent_base import get_logger
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -33,7 +34,7 @@ from .rack import RackModule
 if TYPE_CHECKING:
     pass
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class DeviceType(str, Enum):

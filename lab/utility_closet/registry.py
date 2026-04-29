@@ -189,11 +189,7 @@ class ToolRegistry(AgentBase):
                 tool_name, error_type, dispatch_path="tool_execute"
             )
         except Exception as e:
-            import logging
-
-            logging.getLogger(__name__).debug(
-                f"Failed to record misfire for {tool_name}: {e}"
-            )
+            _log.debug(f"Failed to record misfire for {tool_name}: {e}")
 
     def tool_stats(self) -> dict[str, dict]:
         """Return per-tool stats dict, sorted by call count descending."""

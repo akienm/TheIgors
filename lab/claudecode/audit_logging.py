@@ -191,9 +191,56 @@ def _is_cli_entrypoint(tree: ast.AST) -> bool:
     return False
 
 
-def _classify_call(node: ast.Call) -> Optional[str]:
-    """Return the pattern name for a call node, or None if not a logging call."""
+_LOG_VAR_NAMES = frozenset({"_log", "logger", "_logger", "log"})
+
+
+def _scan_logger_assignments(tree: ast.AST) -> dict[str, str]:
+    """Map module-level `<var> = <factory>(...)` to factory name.
+
+    Returns {var_name: 'get_logger' | 'logging.getLogger' | 'unknown'} so
+    classify_call can distinguish a `_log.warning(...)` whose `_log` came
+    from get_logger (good) vs. logging.getLogger (legacy).
+    """
+    out: dict[str, str] = {}
+    if not isinstance(tree, ast.Module):
+        return out
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        if len(node.targets) != 1 or not isinstance(node.targets[0], ast.Name):
+            continue
+        var = node.targets[0].id
+        if var not in _LOG_VAR_NAMES:
+            continue
+        if not isinstance(node.value, ast.Call):
+            continue
+        factory = node.value.func
+        if isinstance(factory, ast.Name) and factory.id == "get_logger":
+            out[var] = "get_logger"
+        elif (
+            isinstance(factory, ast.Attribute)
+            and factory.attr == "getLogger"
+            and isinstance(factory.value, ast.Name)
+            and factory.value.id == "logging"
+        ):
+            out[var] = "logging.getLogger"
+        else:
+            out[var] = "unknown"
+    return out
+
+
+def _classify_call(
+    node: ast.Call, logger_assignments: Optional[dict[str, str]] = None
+) -> Optional[str]:
+    """Return the pattern name for a call node, or None if not a logging call.
+
+    `logger_assignments` (optional) tells us which module-level log-var
+    names came from `get_logger(...)` (good) vs `logging.getLogger(...)`
+    (legacy). When omitted, all log-var calls fall through to LEGACY for
+    backward-compat with existing call sites and tests.
+    """
     func = node.func
+    assignments = logger_assignments or {}
 
     # print(...)
     if isinstance(func, ast.Name) and func.id == "print":
@@ -223,14 +270,12 @@ def _classify_call(node: ast.Call) -> Optional[str]:
             and target.value.id == "self"
         ):
             return PATTERN_SELF_LOG
-        # _log.<level>(...) or logger.<level>(...) — legacy module-level
-        if isinstance(target, ast.Name) and target.id in {
-            "_log",
-            "logger",
-            "_logger",
-            "log",
-        }:
-            return PATTERN_LEGACY_LOG
+        # <name>.<level>(...) — check the assignment table
+        if isinstance(target, ast.Name) and target.id in _LOG_VAR_NAMES:
+            factory = assignments.get(target.id)
+            if factory == "get_logger":
+                return PATTERN_GET_LOGGER  # _log = get_logger(...) is the canonical pattern
+            return PATTERN_LEGACY_LOG  # logging.getLogger or unknown source
         # get_logger(__name__).<level>(...) — chained call
         if isinstance(target, ast.Call):
             inner = target.func
@@ -250,10 +295,17 @@ def _classify_call(node: ast.Call) -> Optional[str]:
 class _CallsiteWalker(ast.NodeVisitor):
     """AST walker that records logging callsites with class/function context."""
 
-    def __init__(self, source_lines: list[str], path_str: str, in_test: bool):
+    def __init__(
+        self,
+        source_lines: list[str],
+        path_str: str,
+        in_test: bool,
+        logger_assignments: Optional[dict[str, str]] = None,
+    ):
         self.source_lines = source_lines
         self.path_str = path_str
         self.in_test = in_test
+        self.logger_assignments = logger_assignments or {}
         self.callsites: list[Callsite] = []
         self._class_stack: list[str] = []
         self._func_stack: list[str] = []
@@ -279,7 +331,7 @@ class _CallsiteWalker(ast.NodeVisitor):
         self._func_stack.pop()
 
     def visit_Call(self, node: ast.Call) -> None:
-        pattern = _classify_call(node)
+        pattern = _classify_call(node, self.logger_assignments)
         if pattern:
             severity = PATTERN_SEVERITY[pattern]
             self.callsites.append(
@@ -362,7 +414,10 @@ def audit_file(path: Path) -> FileResult:
         return result
 
     is_cli = _is_cli_entrypoint(tree)
-    walker = _CallsiteWalker(source.splitlines(), rel, in_test)
+    logger_assignments = _scan_logger_assignments(tree)
+    walker = _CallsiteWalker(
+        source.splitlines(), rel, in_test, logger_assignments=logger_assignments
+    )
     walker.visit(tree)
     callsites = walker.callsites
 

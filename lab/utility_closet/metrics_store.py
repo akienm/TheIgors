@@ -18,11 +18,12 @@ Usage:
 
 import json
 import logging
+from lab.utility_closet.agent_base import get_logger
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 _DB_URL = os.environ.get("IGOR_HOME_DB_URL", "")
 

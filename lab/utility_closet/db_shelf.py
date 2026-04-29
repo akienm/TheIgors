@@ -18,12 +18,13 @@ T-uc-db-proxy-shelf
 from __future__ import annotations
 
 import logging
+from lab.utility_closet.agent_base import get_logger
 import os
 from typing import Optional
 
 from .rack import RackModule
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 class DatabaseShelf(RackModule):

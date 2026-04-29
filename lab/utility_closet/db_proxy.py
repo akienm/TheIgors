@@ -20,7 +20,6 @@ Updated 2026-04-29T17:08:53Z
 from __future__ import annotations
 
 import hashlib
-import logging
 import os
 import re
 import sqlite3
@@ -31,7 +30,10 @@ from pathlib import Path
 from typing import Optional
 
 from lab.utility_closet.agent_base import AgentBase as IgorBase  # UC uses AgentBase
+from lab.utility_closet.agent_base import get_logger
 from wild_igor.igor.paths import paths
+
+_log = get_logger(__name__)
 
 # Thread-local flag to prevent EXPLAIN QUERY PLAN re-entrancy
 _in_explain = threading.local()
@@ -73,7 +75,7 @@ def _db_log(elapsed_ms: float, sql: str, owner: str = "?") -> None:
 
             turn_id = get_turn_id()
         except Exception as _bare_e:
-            logging.getLogger(__name__).warning(
+            _log.warning(
                 "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
             )
         ts = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -81,9 +83,7 @@ def _db_log(elapsed_ms: float, sql: str, owner: str = "?") -> None:
         with open(_DB_LOG_PATH, "a", encoding="utf-8") as f:
             f.write(line)
     except Exception as _bare_e:
-        logging.getLogger(__name__).warning(
-            "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
-        )
+        _log.warning("bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e)
 
 
 class _DBContext:
@@ -129,13 +129,13 @@ class _DBContext:
                 else:
                     self._conn.rollback()
             except Exception as _bare_e:
-                logging.getLogger(__name__).warning(
+                _log.warning(
                     "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
                 )
             try:
                 self._conn.close()
             except Exception as _bare_e:
-                logging.getLogger(__name__).warning(
+                _log.warning(
                     "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
                 )
         return False  # never suppress exceptions
@@ -184,30 +184,26 @@ class DatabaseProxy(IgorBase):
         if elapsed_ms >= _SLOW_MS:
             self._slow += 1
             try:
-                import logging
 
                 sql_snippet = (
                     last_sql[:600].replace("\n", " ").strip()
                     if last_sql
                     else "(unknown)"
                 )
-                logging.getLogger(__name__).warning(
-                    f"[db_proxy] slow query {elapsed_ms}ms — {sql_snippet}"
-                )
+                _log.warning(f"[db_proxy] slow query {elapsed_ms}ms — {sql_snippet}")
                 _db_log(elapsed_ms, sql_snippet, owner=self.get_name())
             except Exception as _bare_e:
-                logging.getLogger(__name__).warning(
+                _log.warning(
                     "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
                 )
 
     def _record_error(self, exc: Exception) -> None:
         self._connect_errors += 1
         try:
-            import logging
 
-            logging.getLogger(__name__).error(f"[db_proxy] connection error: {exc}")
+            _log.error(f"[db_proxy] connection error: {exc}")
         except Exception as _bare_e:
-            logging.getLogger(__name__).warning(
+            _log.warning(
                 "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
             )
 
@@ -326,7 +322,7 @@ class DatabaseProxy(IgorBase):
                     "created_at": row["created_at"],
                 }
         except Exception as _bare_e:
-            logging.getLogger(__name__).warning(
+            _log.warning(
                 "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
             )
         return result
@@ -599,13 +595,13 @@ class _PGConnWrapper:
         try:
             self._cur.close()
         except Exception as _bare_e:
-            logging.getLogger(__name__).warning(
+            _log.warning(
                 "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
             )
         try:
             self._conn.close()
         except Exception as _bare_e:
-            logging.getLogger(__name__).warning(
+            _log.warning(
                 "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
             )
 
@@ -677,13 +673,13 @@ class _PGContext:
                 else:
                     raw_conn.rollback()
             except Exception as _bare_e:
-                logging.getLogger(__name__).warning(
+                _log.warning(
                     "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
                 )
             try:
                 self._proxy._pool.putconn(raw_conn)
             except Exception as _bare_e:
-                logging.getLogger(__name__).warning(
+                _log.warning(
                     "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
                 )
         return False
@@ -741,30 +737,26 @@ class PGDatabaseProxy(IgorBase):
         if elapsed_ms >= _SLOW_MS:
             self._slow += 1
             try:
-                import logging
 
                 sql_snippet = (
                     last_sql[:600].replace("\n", " ").strip()
                     if last_sql
                     else "(unknown)"
                 )
-                logging.getLogger(__name__).warning(
-                    f"[pg_proxy] slow query {elapsed_ms}ms — {sql_snippet}"
-                )
+                _log.warning(f"[pg_proxy] slow query {elapsed_ms}ms — {sql_snippet}")
                 _db_log(elapsed_ms, sql_snippet, owner=self.get_name())
             except Exception as _bare_e:
-                logging.getLogger(__name__).warning(
+                _log.warning(
                     "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
                 )
 
     def _record_error(self, exc: Exception) -> None:
         self._connect_errors += 1
         try:
-            import logging
 
-            logging.getLogger(__name__).error(f"[pg_proxy] connection error: {exc}")
+            _log.error(f"[pg_proxy] connection error: {exc}")
         except Exception as _bare_e:
-            logging.getLogger(__name__).warning(
+            _log.warning(
                 "bare except in wild_igor/igor/memory/db_proxy.py: %s", _bare_e
             )
 
