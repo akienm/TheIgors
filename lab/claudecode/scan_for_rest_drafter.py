@@ -20,8 +20,10 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
+from wild_igor.igor.igor_base import IgorBase
 
-class ScanForRestDrafter:
+
+class ScanForRestDrafter(IgorBase):
     """Drafts a ticket capturing partial call-graph signature changes."""
 
     def draft(
@@ -101,10 +103,16 @@ Auto-drafted by scan_for_rest_drafter.py at {now}. Review before filing.
 def main():
     parser = argparse.ArgumentParser(description="Draft a scan-for-rest ticket")
     parser.add_argument("--function", required=True, help="Changed function name")
-    parser.add_argument("--found-callers", default="", help="Comma-separated updated callers")
-    parser.add_argument("--missing-callers", default="", help="Comma-separated stale callers")
+    parser.add_argument(
+        "--found-callers", default="", help="Comma-separated updated callers"
+    )
+    parser.add_argument(
+        "--missing-callers", default="", help="Comma-separated stale callers"
+    )
     parser.add_argument("--description", default="", help="Brief change description")
-    parser.add_argument("--output", default=None, help="Output JSON path (default: /tmp/)")
+    parser.add_argument(
+        "--output", default=None, help="Output JSON path (default: /tmp/)"
+    )
     args = parser.parse_args()
 
     drafter = ScanForRestDrafter()
@@ -117,7 +125,9 @@ def main():
     )
     out_path = args.output or f"/tmp/scan-for-rest-{args.function[:20]}.json"
     print(f"Drafted ticket {ticket['id']} → {out_path}")
-    print(f"  Missing callers: {len([f for f in args.missing_callers.split(',') if f])}")
+    print(
+        f"  Missing callers: {len([f for f in args.missing_callers.split(',') if f])}"
+    )
     print(f"  Review before filing: /decided will pick this up from /tmp/")
 
 

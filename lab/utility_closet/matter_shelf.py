@@ -29,6 +29,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
+from .agent_base import AgentBase
 from .rack import RackModule
 
 if TYPE_CHECKING:
@@ -77,7 +78,7 @@ class MatterDevice:
         return d
 
 
-class MatterController:
+class MatterController(AgentBase):
     """
     Abstract Matter protocol controller.
 
@@ -108,6 +109,7 @@ class MockController(MatterController):
     """Mock controller for testing without physical devices."""
 
     def __init__(self):
+        super().__init__()
         self._devices: dict[str, MatterDevice] = {}
 
     def add_device(self, device: MatterDevice) -> None:

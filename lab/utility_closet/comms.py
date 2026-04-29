@@ -152,6 +152,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Optional
 
+from .agent_base import AgentBase
 from .rack import RackModule
 
 log = get_logger(__name__)
@@ -247,7 +248,7 @@ class Channel:
 # ── Transport base ───────────────────────────────────────────────────────────
 
 
-class Transport:
+class Transport(AgentBase):
     """
     Base class for comms transports. A transport handles the actual
     delivery mechanism for a channel (postgres, file, websocket, etc.).

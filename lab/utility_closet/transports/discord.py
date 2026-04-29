@@ -45,6 +45,7 @@ class DiscordTransport(Transport):
     """
 
     def __init__(self):
+        super().__init__()
         self._bot = None
         self._send_count = 0
 

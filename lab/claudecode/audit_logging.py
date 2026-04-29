@@ -49,6 +49,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Reuse the inheritance check from audit_check_igorbase.
 sys.path.insert(0, str(REPO_ROOT / "lab" / "claudecode"))
 from audit_check_igorbase import (  # noqa: E402
+    EXEMPT_CLASS_NAMES,
     KNOWN_IGORBASE_ANCESTORS,
     THIRD_PARTY_BASES,
     _base_name,
@@ -370,6 +371,8 @@ def _collect_classes(tree: ast.AST, path_str: str, in_test: bool) -> list[ClassF
         if not isinstance(node, ast.ClassDef):
             continue
         if node.name.startswith("_"):
+            continue
+        if node.name in EXEMPT_CLASS_NAMES:
             continue
         bases = [_base_name(b) for b in node.bases]
 

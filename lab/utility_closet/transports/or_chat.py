@@ -68,6 +68,7 @@ class OrChatTransport(Transport):
         scrollback_budget_chars: int = DEFAULT_SCROLLBACK_BUDGET_CHARS,
         scrollback_limit: int = DEFAULT_SCROLLBACK_LIMIT,
     ):
+        super().__init__()
         self._inner = InferenceTransport(db_url)
         self._budget = scrollback_budget_chars
         self._limit = scrollback_limit

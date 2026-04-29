@@ -16,6 +16,8 @@ from __future__ import annotations
 import os
 import re
 
+from wild_igor.igor.igor_base import IgorBase
+
 _DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
     "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
@@ -37,10 +39,11 @@ _AREA_PREFIXES = [
 ]
 
 
-class InfrastructureBrief:
+class InfrastructureBrief(IgorBase):
     """Produces a one-screen infrastructure brief for a set of touched areas."""
 
     def __init__(self):
+        super().__init__()
         self._cache: dict[str, str | None] = {}
 
     def detect_areas(self, files: list[str]) -> set[str]:
@@ -58,6 +61,7 @@ class InfrastructureBrief:
             return self._cache[area]
         try:
             import psycopg2
+
             conn = psycopg2.connect(_DB_URL)
             conn.autocommit = True
             cur = conn.cursor()
@@ -88,11 +92,19 @@ class InfrastructureBrief:
         for area in sorted(areas):
             content = self._load_brief(area)
             if content is None:
-                lines.append(f"### {area}\n_(no palace entry — consider adding theigors/infrastructure/by_area/{area})_\n")
+                lines.append(
+                    f"### {area}\n_(no palace entry — consider adding theigors/infrastructure/by_area/{area})_\n"
+                )
                 continue
             lines.append(f"### {area}")
             # Extract key fields from YAML content
-            for field in ("base_classes", "mcp_tools", "proxies", "imap_buses", "notes"):
+            for field in (
+                "base_classes",
+                "mcp_tools",
+                "proxies",
+                "imap_buses",
+                "notes",
+            ):
                 match = re.search(rf"^{field}:(.*?)(?=^\w|\Z)", content, re.M | re.S)
                 if match:
                     val = match.group(1).strip()
@@ -109,4 +121,5 @@ def main(files: list[str]) -> None:
 
 if __name__ == "__main__":
     import sys
+
     main(sys.argv[1:])

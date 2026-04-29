@@ -87,6 +87,7 @@ class InferenceTransport(Transport):
     """
 
     def __init__(self, db_url: Optional[str] = None):
+        super().__init__()
         self._store = PostgresTransport(db_url)
         self._gateway = None  # lazy
 

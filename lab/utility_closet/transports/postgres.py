@@ -22,6 +22,7 @@ class PostgresTransport(Transport):
     """Persistent message store using the infra.channel_messages table."""
 
     def __init__(self, db_url: Optional[str] = None):
+        super().__init__()
         self._db_url = db_url or os.getenv("IGOR_HOME_DB_URL")
         self._conn = None
 

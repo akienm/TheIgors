@@ -24,6 +24,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from wild_igor.igor.igor_base import IgorBase
+
 _DB_URL = os.environ.get(
     "IGOR_HOME_DB_URL",
     "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
@@ -37,10 +39,11 @@ _REPO = _HOME / "TheIgors"
 MAP_TTL_DAYS = 14
 
 
-class IgorMap:
+class IgorMap(IgorBase):
     """Produces a structured snapshot of Igor's full state."""
 
     def __init__(self, sections: list[str] | None = None):
+        super().__init__()
         self.sections = sections
         self._snapshot: dict[str, Any] = {}
 
@@ -56,6 +59,7 @@ class IgorMap:
     def _pg(self, sql: str) -> list[tuple]:
         try:
             import psycopg2
+
             conn = psycopg2.connect(_DB_URL)
             cur = conn.cursor()
             cur.execute(f"SET search_path TO {_SEARCH_PATH}")
@@ -73,7 +77,9 @@ class IgorMap:
         )
         return {
             "total_nodes": len(rows),
-            "nodes": [{"path": r[0], "title": r[1], "content_bytes": r[2]} for r in rows[:100]],
+            "nodes": [
+                {"path": r[0], "title": r[1], "content_bytes": r[2]} for r in rows[:100]
+            ],
         }
 
     def collect_rules(self) -> dict:
@@ -100,17 +106,23 @@ class IgorMap:
         by_status: dict[str, list] = {}
         for t in tasks:
             s = t.get("status", "unknown")
-            by_status.setdefault(s, []).append({
-                "id": t["id"],
-                "title": t.get("title", "")[:80],
-                "size": t.get("size", "?"),
-                "gate": t.get("gate", ""),
-            })
+            by_status.setdefault(s, []).append(
+                {
+                    "id": t["id"],
+                    "title": t.get("title", "")[:80],
+                    "size": t.get("size", "?"),
+                    "gate": t.get("gate", ""),
+                }
+            )
         return {s: items for s, items in sorted(by_status.items())}
 
     def collect_slates(self) -> dict:
         slate_dir = _HOME / ".TheIgors" / "claudecode"
-        slates = sorted(slate_dir.glob("*.slate.txt"), reverse=True)[:4] if slate_dir.exists() else []
+        slates = (
+            sorted(slate_dir.glob("*.slate.txt"), reverse=True)[:4]
+            if slate_dir.exists()
+            else []
+        )
         result = {}
         for s in slates:
             try:
@@ -163,13 +175,17 @@ class IgorMap:
         if not inbox.exists():
             return {"unread": 0}
         try:
-            entries = [json.loads(l) for l in inbox.read_text().splitlines() if l.strip()]
+            entries = [
+                json.loads(l) for l in inbox.read_text().splitlines() if l.strip()
+            ]
             unread = [e for e in entries if not e.get("read")]
             return {
                 "unread": len(unread),
                 "by_urgency": {
                     "high": sum(1 for e in unread if e.get("urgency") == "high"),
-                    "normal": sum(1 for e in unread if e.get("urgency") not in ("high", "low")),
+                    "normal": sum(
+                        1 for e in unread if e.get("urgency") not in ("high", "low")
+                    ),
                     "low": sum(1 for e in unread if e.get("urgency") == "low"),
                 },
                 "latest": unread[:3],
@@ -184,22 +200,26 @@ class IgorMap:
                 stat = log_path.stat()
                 result[str(log_path)] = {
                     "size_mb": round(stat.st_size / 1_048_576, 2),
-                    "modified": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%dT%H:%M:%S"),
+                    "modified": datetime.fromtimestamp(stat.st_mtime).strftime(
+                        "%Y-%m-%dT%H:%M:%S"
+                    ),
                 }
             except Exception:
                 pass
         return result
 
     def collect_db_schema(self) -> dict:
-        rows = self._pg(
-            """SELECT relname, n_live_tup FROM pg_stat_user_tables
+        rows = self._pg("""SELECT relname, n_live_tup FROM pg_stat_user_tables
                WHERE schemaname IN ('clan','infra','instance')
-               ORDER BY n_live_tup DESC LIMIT 30"""
-        )
+               ORDER BY n_live_tup DESC LIMIT 30""")
         return {"tables": [{"table": r[0], "rows": r[1]} for r in rows]}
 
     def collect_runtime(self) -> dict:
-        return {"du": self._run(f"du -sh {_HOME / '.TheIgors'}/* 2>/dev/null | sort -rh | head -10")}
+        return {
+            "du": self._run(
+                f"du -sh {_HOME / '.TheIgors'}/* 2>/dev/null | sort -rh | head -10"
+            )
+        }
 
     def collect_code_map(self) -> dict:
         result = {}
@@ -214,7 +234,9 @@ class IgorMap:
     def collect_processes(self) -> dict:
         return {
             "tmux": self._run("tmux ls 2>/dev/null"),
-            "igor_pids": self._run("pgrep -a -f 'wild_igor|igor.*main' 2>/dev/null | head -5"),
+            "igor_pids": self._run(
+                "pgrep -a -f 'wild_igor|igor.*main' 2>/dev/null | head -5"
+            ),
             "ollama": self._run("pgrep -a -f ollama 2>/dev/null | head -3"),
         }
 
@@ -269,21 +291,33 @@ class IgorMap:
         secs = snapshot.get("sections", {})
         lines = [f"Igor map — {snapshot.get('generated_at', '?')}"]
         if "palace_tree" in secs:
-            lines.append(f"  palace: {secs['palace_tree'].get('total_nodes', '?')} nodes")
+            lines.append(
+                f"  palace: {secs['palace_tree'].get('total_nodes', '?')} nodes"
+            )
         if "tickets" in secs:
             t = secs["tickets"]
-            lines.append(f"  tickets: {len(t.get('pending', []))} pending, {len(t.get('in_progress', []))} in_progress, {len(t.get('done', []))} done")
+            lines.append(
+                f"  tickets: {len(t.get('pending', []))} pending, {len(t.get('in_progress', []))} in_progress, {len(t.get('done', []))} done"
+            )
         if "gates" in secs:
-            enabled = [k for k, v in secs["gates"].items() if v.lower() in ("true", "1", "yes")]
+            enabled = [
+                k for k, v in secs["gates"].items() if v.lower() in ("true", "1", "yes")
+            ]
             lines.append(f"  gates enabled: {', '.join(enabled) or 'none'}")
         if "inbox" in secs:
             lines.append(f"  inbox: {secs['inbox'].get('unread', 0)} unread")
         if "processes" in secs:
             lines.append(f"  tmux: {secs['processes'].get('tmux', '?')[:80]}")
         if "logs" in secs:
-            big = [(p, d["size_mb"]) for p, d in secs["logs"].items() if d.get("size_mb", 0) > 5]
+            big = [
+                (p, d["size_mb"])
+                for p, d in secs["logs"].items()
+                if d.get("size_mb", 0) > 5
+            ]
             if big:
-                lines.append(f"  LARGE LOGS: {', '.join(f'{p}({m}MB)' for p,m in big[:3])}")
+                lines.append(
+                    f"  LARGE LOGS: {', '.join(f'{p}({m}MB)' for p,m in big[:3])}"
+                )
         return "\n".join(lines)
 
 
@@ -294,7 +328,10 @@ def diff_snapshots(current: dict, prior: dict) -> dict:
         cur_val = json.dumps(current["sections"][section], sort_keys=True)
         pri_val = json.dumps(prior.get("sections", {}).get(section, {}), sort_keys=True)
         if cur_val != pri_val:
-            diff[section] = {"current": current["sections"][section], "prior": prior.get("sections", {}).get(section)}
+            diff[section] = {
+                "current": current["sections"][section],
+                "prior": prior.get("sections", {}).get(section),
+            }
     return diff
 
 

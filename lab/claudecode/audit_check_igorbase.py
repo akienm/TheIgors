@@ -65,18 +65,37 @@ THIRD_PARTY_BASES = {
     # Tkinter
     "Frame",
     "Tk",
+    # stdlib logging
+    "Handler",
+    "Logger",
+    "Formatter",
 }
 
 # Subdirectories entirely excluded from the check (vendored / external code)
 EXCLUDED_SUBDIRS = {"ebook_drm"}
 
 # Igor-internal base classes defined in OTHER files that already inherit
-# IgorBase transitively. Subclasses in separate files are exempt.
+# IgorBase / AgentBase transitively. Subclasses in separate files are exempt.
 KNOWN_IGORBASE_ANCESTORS = {
-    "BasePushSource",     # push_sources.py — IgorBase direct
-    "BaseCascadeLevel",   # experiment_cascade.py — IgorBase direct
-    "BaseReasoner",       # reasoners/base.py — IgorBase direct
-    "BaseInterruptor",    # interruptors.py — IgorBase direct
+    "BasePushSource",  # push_sources.py — IgorBase direct
+    "BaseCascadeLevel",  # experiment_cascade.py — IgorBase direct
+    "BaseReasoner",  # reasoners/base.py — IgorBase direct
+    "BaseInterruptor",  # interruptors.py — IgorBase direct
+    "RackModule",  # lab/utility_closet/rack.py — AgentBase direct
+    "Rack",  # lab/utility_closet/rack.py — AgentBase direct
+    "Transport",  # lab/utility_closet/comms.py — AgentBase direct
+    "MatterController",  # lab/utility_closet/matter_shelf.py — AgentBase direct
+}
+
+# Names that the audit explicitly exempts even with no IgorBase ancestry.
+# Reserved for primitives whose responsibilities are too narrow to benefit
+# from inheritance (and where adding it would add overhead — e.g. __slots__
+# classes used in hot paths) or run before IgorBase is importable
+# (boot utilities).
+EXEMPT_CLASS_NAMES = {
+    "AgentBase",  # IS the base — definitionally exempt
+    "TimerHandle",  # lightweight slotted timer in logging_setup.py
+    "PathManager",  # paths.py — boot-time utility, runs before IgorBase is safe
 }
 
 # Only enforce on these subdirectories
@@ -156,6 +175,8 @@ def _check_file(path: Path) -> list[str]:
             continue
         if node.name.startswith("_"):
             continue  # private helpers are not primary component classes
+        if node.name in EXEMPT_CLASS_NAMES:
+            continue  # explicit primitive exemption
         bases = [_base_name(b) for b in node.bases]
 
         # Transitive IgorBase check (file-local ancestry)

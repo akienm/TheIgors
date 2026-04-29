@@ -25,6 +25,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Callable, Optional
 
+from wild_igor.igor.igor_base import IgorBase
+
 from .confab_scanner import ConfabScanner, Match
 
 # Age threshold for "stale" activation — memories touched this long ago or
@@ -74,7 +76,7 @@ class TraceMissReport:
     suggested_engram_shape: Optional[str] = None
 
 
-class TraceMissAnalyzer:
+class TraceMissAnalyzer(IgorBase):
     """Build TraceMissReport from injected loaders.
 
     current_year: Passed to ConfabScanner for temporal-drift detection.
@@ -90,6 +92,7 @@ class TraceMissAnalyzer:
         current_year: Optional[int] = None,
         now: Optional[datetime] = None,
     ) -> None:
+        super().__init__()
         self.turn_loader = turn_loader
         self.trace_loader = trace_loader
         self.memory_loader = memory_loader

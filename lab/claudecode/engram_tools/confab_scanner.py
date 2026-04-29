@@ -32,6 +32,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Iterable, Optional
 
+from wild_igor.igor.igor_base import IgorBase
+
 # ── tell-phrase libraries ────────────────────────────────────────────────────
 #
 # Phrases are matched case-insensitively as substrings. Regex patterns are
@@ -97,7 +99,7 @@ class Match:
     output_preview: str
 
 
-class ConfabScanner:
+class ConfabScanner(IgorBase):
     """Scan turn outputs for confabulation tells.
 
     current_year: Used for temporal-drift detection. Defaults to today's year
@@ -105,6 +107,7 @@ class ConfabScanner:
     """
 
     def __init__(self, current_year: Optional[int] = None) -> None:
+        super().__init__()
         self.current_year = current_year or datetime.now(timezone.utc).year
 
     def scan(self, turns: Iterable[dict]) -> list[Match]:

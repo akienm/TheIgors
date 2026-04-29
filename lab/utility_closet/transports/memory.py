@@ -18,6 +18,7 @@ class MemoryTransport(Transport):
     """In-memory message store backed by a bounded deque."""
 
     def __init__(self, max_messages: int = 1000):
+        super().__init__()
         self._messages: dict[str, deque[ChannelMessage]] = {}
         self._max = max_messages
         self._lock = threading.Lock()
