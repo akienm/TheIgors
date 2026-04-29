@@ -52,11 +52,19 @@ MEM_COLS = (
 
 _DB_LOG_PATH = paths().logs / "db_queries.log"
 _DB_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+_DB_LOG_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 
 
 def _db_log(elapsed_ms: float, sql: str, owner: str = "?") -> None:
     """Append one slow-query entry to db_queries.log."""
     try:
+        # Rotate at 10 MB — keep .1 backup, start fresh
+        if _DB_LOG_PATH.exists() and _DB_LOG_PATH.stat().st_size > _DB_LOG_MAX_BYTES:
+            backup = _DB_LOG_PATH.with_suffix(".log.1")
+            if backup.exists():
+                backup.unlink()
+            _DB_LOG_PATH.rename(backup)
+
         turn_id = "(unknown)"
         try:
             from wild_igor.igor.cognition.forensic_logger import get_turn_id
