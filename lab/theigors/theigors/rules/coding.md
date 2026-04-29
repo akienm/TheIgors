@@ -3,17 +3,16 @@
 **Path:** `theigors/rules/coding`
 **Updated:** 2026-04-21 by T-audit-cc-rules-approach-frame
 
-Before editing, read the file and check its inertia level — your edit fits one of three shapes.
+Always read the file first and check its inertia level before editing — the edit's shape depends on which tier the file sits in.
 
 Inertia tiers:
-- HIGH (≥0.90): brainstem/, memory/models.py, cognition/reasoners/base.py. Edit with strong justification, discuss at the plan stage, CC holds the diff.
-- MEDIUM: cognition/, memory/cortex.py, main.py. Discuss the shape first; Igor or CC can author.
+- HIGH (≥0.90): brainstem/, memory/models.py, cognition/reasoners/base.py. Always discuss HIGH-inertia edits at plan stage; CC authors the diff with strong justification.
+- MEDIUM: cognition/, memory/cortex.py, main.py. Always discuss the shape first; Igor or CC authors.
 - LOW: tools/, dashboard/, word_graph.py. Freely improvable; Igor authors by default.
 
-HIGH-inertia work stays with CC; Igor handles everything else.
+Always keep HIGH-inertia work with CC; Igor handles MEDIUM and LOW.
 
-revision: 2026-04-21 — reframed to approach-target (T-audit-cc-rules-approach-frame)
-
+revision: 2026-04-24 — binding-imperative pass (T-directed-positive-prompts-pass-1)
 
 ## Pointers
 
