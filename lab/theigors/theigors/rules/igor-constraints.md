@@ -9,7 +9,7 @@ Extend Igor's stack to fill capability gaps — new tools in `wild_igor/igor/too
 
 Instance layout: `wild_igor/igor/` = code, `~/.TheIgors/Igor-wild-0001/` = runtime (capital I). Igor runs on akiendelllinux; yoga9i and yogai7 are Ollama-only.
 
-Environment split (CRITICAL): CC runs with `REAL_ANTHROPIC_API_KEY` via `superclaude`/`cc.sh` key swap; Igor's .env sets OR routing separately. Use CC's env for CC decisions — Igor's .env does not reflect CC's environment.
+Environment split (CRITICAL): CC uses Claude Max auth — no API key required; Igor's .env sets OR routing separately. Use CC's env for CC decisions — Igor's .env does not reflect CC's environment.
 
 Character sheets are living documents: CP cornerposts have ~0.9x inertia (not 1.0). High-inertia but editable through Igor's own self-experimentation. Clan sheet = genesis state new Igors boot into; personal sheet = instance drift. Igor leads the crafting.
 

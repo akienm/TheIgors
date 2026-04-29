@@ -8,20 +8,14 @@ model: haiku
 
 ## Step 0 — Environment key check (runs first)
 
-Always verify the API key shape first — CC and Igor use different keys, and
-a mix-up ships requests to the wrong account.
+CC uses Claude Max auth — no API key required. The only remaining env check
+is to ensure Igor's OpenRouter key has not leaked into CC's env.
 ```bash
-CC_KEY="${REAL_ANTHROPIC_API_KEY:-}"
 OR_KEY="${OPENROUTER_API_KEY:-}"
-if [ -z "$CC_KEY" ]; then
-  echo "⚠ REAL_ANTHROPIC_API_KEY not set — CC may be using wrong key. Check superclaude handoff."
-elif [[ "$CC_KEY" != sk-ant-* ]]; then
-  echo "⚠ REAL_ANTHROPIC_API_KEY does not look like an Anthropic key (expected sk-ant-...). Check superclaude handoff."
-else
-  echo "env: CC key OK (${CC_KEY:0:14}...)"
-fi
 if [ -n "$OR_KEY" ]; then
   echo "⚠ OPENROUTER_API_KEY is set in CC env — Igor's key may have leaked. Expected empty. Check superclaude."
+else
+  echo "env: OK (Max auth, no OR key leak)"
 fi
 ```
 

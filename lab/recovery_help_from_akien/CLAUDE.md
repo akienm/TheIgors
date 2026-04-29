@@ -71,7 +71,7 @@
 - **DB:** `Igor-wild-0001` (Postgres)
 - **Runtime:** `~/.TheIgors/Igor-wild-0001/`
 - **Launch:** `igor` (bash alias, loops on exit 42)
-- **Environment split (CRITICAL):** CC runs with `REAL_ANTHROPIC_API_KEY`. Igor's `.env` sets OR routing — does NOT affect CC. `superclaude`/`cc.sh` handle the key swap. Never read Igor's `.env` and assume it reflects CC's environment.
+- **Environment split (CRITICAL):** CC uses Claude Max auth — no API key required. Igor's `.env` sets OR routing — does NOT affect CC. Never read Igor's `.env` and assume it reflects CC's environment.
 
 ---
 

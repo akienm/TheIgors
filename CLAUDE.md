@@ -48,10 +48,9 @@ every one gets its own "Always do X instead" line:
 
 ## Environment split (CRITICAL — pre-DB)
 
-CC always runs with `REAL_ANTHROPIC_API_KEY`. Igor's `.env` sets OR routing
-and does NOT affect CC. `superclaude`/`cc.sh` handle the key swap. Always
-treat Igor's `.env` as Igor's environment — reading it tells you nothing
-about what CC has in its own env.
+CC uses Claude Max auth — no API key required. Igor's `.env` sets OR routing
+and does NOT affect CC. Always treat Igor's `.env` as Igor's environment —
+reading it tells you nothing about what CC has in its own env.
 
 ---
 

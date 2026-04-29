@@ -12,11 +12,7 @@
 
 set -euo pipefail
 
-if [ -z "${REAL_ANTHROPIC_API_KEY:-}" ]; then
-    echo "ERROR: REAL_ANTHROPIC_API_KEY is not set." >&2
-    exit 1
-fi
-export ANTHROPIC_API_KEY="$REAL_ANTHROPIC_API_KEY"
+# CC uses Claude Max auth — no API key required.
 
 SESSION_FILE="$HOME/.TheIgors/Igor-wild-0001/cc_session_id"
 SESSION_MAX_AGE=86400   # 24 hours in seconds
