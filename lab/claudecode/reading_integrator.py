@@ -50,10 +50,12 @@ if env_path.exists():
 from igor.memory.cortex import Cortex
 from igor.memory.models import Memory, MemoryType
 
+from lab.utility_closet.agent_base import get_logger
+
 LOG_PATH = Path.home() / ".TheIgors" / "logs" / "reading_integrator.log"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-logger = logging.getLogger("reading_integrator")
+logger = get_logger("reading_integrator")
 
 
 def _log(msg: str) -> None:

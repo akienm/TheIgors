@@ -433,15 +433,12 @@ def audit_file(path: Path) -> FileResult:
     walker.visit(tree)
     callsites = walker.callsites
 
-    # Suppress print() smell flag for CLI entrypoints — print() in main() is fine
+    # Suppress print() smell flag for CLI entrypoints — these are scripts where
+    # stdout output is the design intent (seed scripts, migrations, ops tools).
+    # The `if __name__ == "__main__":` guard signals CLI; all prints in such a
+    # file are exempt regardless of enclosing function.
     if is_cli:
-        callsites = [
-            c
-            for c in callsites
-            if not (
-                c.pattern == PATTERN_PRINT and c.enclosing_function in (None, "main")
-            )
-        ]
+        callsites = [c for c in callsites if c.pattern != PATTERN_PRINT]
 
     result.callsites = callsites
     result.classes = _collect_classes(tree, rel, in_test)

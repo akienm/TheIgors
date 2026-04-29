@@ -111,12 +111,16 @@ from starlette.routing import Mount, Route, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 from starlette.websockets import WebSocket
 
+from lab.utility_closet.agent_base import get_logger
+
 # ── Logging ──────────────────────────────────────────────────────────────────
 
 _LOG_DIR = Path(os.environ.get("IGOR_RUNTIME_ROOT", Path.home() / ".TheIgors")) / "logs"
 _LOG_DIR.mkdir(parents=True, exist_ok=True)
 _log_file = _LOG_DIR / "utility_closet.log"
 
+# basicConfig sets up the file + stream handlers; AgentBase's get_logger
+# wraps the named "utility_closet" logger with emergency-fallback semantics.
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -125,7 +129,7 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-log = logging.getLogger("utility_closet")
+log = get_logger("utility_closet")
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 

@@ -63,7 +63,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-log = logging.getLogger(__name__)
+from lab.utility_closet.agent_base import get_logger
+
+log = get_logger(__name__)
 
 
 # ── Schema ───────────────────────────────────────────────────────────────────

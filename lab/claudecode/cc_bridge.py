@@ -55,18 +55,25 @@ LOG_PATH = Path.home() / ".TheIgors" / "logs" / "cc_bridge.log"
 # ── Logging ───────────────────────────────────────────────────────────────────
 
 
-def _setup_logging(verbose: bool) -> logging.Logger:
+def _setup_logging(verbose: bool):
+    """Configure the underlying logging.Logger named 'cc_bridge' with the
+    bridge's file/stream handlers, then return an AgentBase emergency-safe
+    wrapper for callers to use.
+    """
+    from lab.utility_closet.agent_base import get_logger
+
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    log = logging.getLogger("cc_bridge")
-    log.setLevel(logging.DEBUG if verbose else logging.INFO)
+    # Bridge setup needs the raw logging.Logger for handler attachment.
+    underlying = logging.getLogger("cc_bridge")
+    underlying.setLevel(logging.DEBUG if verbose else logging.INFO)
     fh = logging.FileHandler(LOG_PATH)
     fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
-    log.addHandler(fh)
+    underlying.addHandler(fh)
     if verbose:
         sh = logging.StreamHandler()
         sh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
-        log.addHandler(sh)
-    return log
+        underlying.addHandler(sh)
+    return get_logger("cc_bridge")
 
 
 # ── CC invocation ─────────────────────────────────────────────────────────────
