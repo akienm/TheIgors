@@ -1,7 +1,12 @@
 # Skills Reference
 
-**Last updated**: 2026-04-27
+**Last updated**: 2026-04-29
 **See also**: `glossary.md`, `capability_map.md`
+
+> **In flight:** the audit family is being restructured under
+> [D-audit-pyramid-redesign-2026-04-29](../design_docs/decisions/D-audit-pyramid-redesign-2026-04-29.md).
+> Current skills below still apply until the rename tickets ship. See the
+> "In flight" section at the bottom for the target shape.
 
 Slash-commands available to Akien + Claude. Match each command to *when* in
 the day's flow it fires — that's the discipline. If the column "When to
@@ -107,3 +112,70 @@ Plus added since the old doc:
 - Skill source: `~/.claude/skills/<name>/SKILL.md` (user-defined) or built-in.
 - Repo echo: `lab/claudecode/cc_skills/` mirrors user skills (auto-synced via pre-commit).
 - Authoring a new skill: copy an existing SKILL.md as a template; the next pre-commit picks it up.
+
+---
+
+## In flight — audit pyramid redesign (not yet shipped)
+
+Tracked by [D-audit-pyramid-redesign-2026-04-29](../design_docs/decisions/D-audit-pyramid-redesign-2026-04-29.md).
+Current skills above still apply until the rename tickets land. Target shape:
+
+### Renames + folds
+
+| Today                | Becomes                                                          |
+|---|---|
+| `/day-close-audit`   | `/audit-day` (extended with cross-day watch-for + fix-one-leave-many sweep) |
+| `/deep-audit`        | `/audit-expert` (broadest lens per expert, no "mainly look at X") |
+| `/validate-files`    | folded into `/audit-debris`                                       |
+| `/review` (filing)   | `/audit-ticket` (extended: validation/remediation/rollback/observability) |
+| `/review` (sprint)   | `/audit-precode` (NEW — between /sprint plan and first edit)      |
+
+### New layers
+
+| New                  | Role                                                             |
+|---|---|
+| `/audit-design`      | Called by `/decided` before drafting tickets — catches a "decision" that isn't actually decided |
+| `/audit-precode`     | Between `/sprint` plan and first edit — verifies file paths + symbols + HIGH-inertia gates exist |
+| `/audit-smell`       | Post-code, pre-test — bare try/except, silent-return-False, fix-one-leave-many call-graph walk, diff-drift AMEND-by-default, deprecated-paths, base-class inheritance |
+| `/audit-debris`      | Post-test, pre-commit — folds `/validate-files` + owns docs-update at PR time |
+| `/audit-audits`      | Meta-audit weekly — consumes structured telemetry from every layer; recommends rule promotions, layer rebalancing, dead-check retirement, watch-for ROI |
+
+### Sonnet-failure-modes-as-rules
+
+New palace rules backing the audit checks:
+- `theigors/rules/inherit-base-class` — every non-library class inherits from the base logging+introspection class (foundation of "no print() anywhere"; logging as easy as print via inheritance, not import).
+- `theigors/rules/preferred_paths` — declarative `(deprecated → preferred)` pairs (raw psql → MCP tools, channel.py → IMAP bus, direct DB → db_proxy, etc.). Read by `/audit-precode` and `/audit-smell`.
+- New palace branch `theigors/infrastructure/by_area/<area>` — surfaced as a one-screen brief at `/sprint` plan-review (counter to architectural amnesia).
+
+### Telemetry shape
+
+Every audit emits one structured run record per invocation at
+`theigors/audits/<level>/runs/<timestamp>` (palace tree).
+`/audit-audits` consumes the corpus — no codebase reads at the meta level.
+Watch-for notes are first-class palace nodes with TTL.
+
+### Model routing
+
+| Audit            | Model                                |
+|---|---|
+| `/audit-design`  | Opus (architecture judgment)         |
+| `/audit-ticket`  | Haiku (declarative checks)           |
+| `/audit-precode` | Haiku → Sonnet on HIGH-inertia       |
+| `/audit-smell`   | Sonnet                               |
+| `/audit-debris`  | Haiku                                |
+| `/audit-day`     | Sonnet                               |
+| `/audit-expert`  | Opus per expert (rotated weekly, full panel monthly) |
+| `/audit-audits`  | Sonnet weekly, Opus monthly          |
+
+### New visualization skill
+
+| New          | Role                                                                 |
+|---|---|
+| `/map-igor`  | Haiku, on-demand JSON snapshot of Igor (palace, rules, gates, MCP/IMAP, logs, startup reads, DB schema, runtime tree, processes). Output to `~/.TheIgors/maps/igor-map-<timestamp>.json`. Diff mode: `/map-igor --since=yesterday`. |
+
+### Ship order
+
+Foundation first (rename + telemetry + base-class rule + preferred-paths seed),
+then per-layer skill builds, then cross-cutting (sprint infrastructure brief,
+model routing, auto-scan-for-rest), then `/map-igor`. The audit-audits skill
+gates on telemetry shape landing first.
