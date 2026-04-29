@@ -63,8 +63,17 @@ SCAN_ROOTS = (
     REPO_ROOT / "lab" / "claudecode",
 )
 
-# Excluded paths (vendored, generated, test fixtures)
-EXCLUDED_PARTS = {"__pycache__", "ebook_drm", "venv", ".venv", "node_modules"}
+# Excluded paths (vendored, generated, archived rebuild scripts).
+# `archive` covers lab/claudecode/archive/ — one-shot seed scripts kept for
+# DB rebuild capability per the README warning. Do not migrate; do not flag.
+EXCLUDED_PARTS = {
+    "__pycache__",
+    "ebook_drm",
+    "venv",
+    ".venv",
+    "node_modules",
+    "archive",
+}
 
 # Test files: included but flagged separately (test scaffolding has different
 # rules than production code).
