@@ -16,7 +16,7 @@ goes through the explicit `/design` → discussion → `/decided` loop instead.
 
 That means:
 - Implicit design scope — the "thing just discussed" covers recent conversation turns since the last /decided or session start
-- Always run filing-time `/review` on every drafted ticket (duplicate / already-done-in-code / blocked-by-pending / size sanity / scope-creep / test-plan / HIGH-inertia inline approval + stamp)
+- Always run filing-time `/audit-ticket` on every drafted ticket (duplicate / already-done-in-code / blocked-by-pending / size sanity / scope-creep / test-plan / HIGH-inertia inline approval + stamp)
 - Every ticket that gets filed gets sprinted in this same invocation
 - Multiple tickets is fine — /fixit inherits /sprint-batch's multi-ticket handling
 
@@ -24,11 +24,11 @@ That means:
 
 ### 1. Invoke /decided with implicit scope
 
-Always run the full /decided pipeline — filing-time /review is the whole
+Always run the full /decided pipeline — filing-time /audit-ticket is the whole
 point of the quality gate. /decided:
 - Summarizes the decision (1-2 sentences; assigns a D-... id)
 - Drafts the ticket(s) needed to implement
-- Runs /review on each drafted ticket; applies AMEND / SPLIT / DISCARD based on findings; stamps HIGH-inertia approvals
+- Runs /audit-ticket on each drafted ticket; applies AMEND / SPLIT / DISCARD based on findings; stamps HIGH-inertia approvals
 - Files the surviving tickets into queue.json + slate + session + Igor palace
 
 ### 2. Invoke /sprint-batch with selector `decision:D-<just-created-id>`
@@ -69,7 +69,7 @@ Commits: <hash1>, <hash2>, ...
 /design (optional)
   → discussion, exploration, questions
 /decided
-  → tickets filed with /review applied
+  → tickets filed with /audit-ticket applied
 /sprint-batch (later, after approval or at a natural moment)
   → tickets shipped
 ```
@@ -84,7 +84,7 @@ Commits: <hash1>, <hash2>, ...
 
 ## Hard rules
 
-- Always run /review — filing-time quality gate applies even in the fast path.
+- Always run /audit-ticket — filing-time quality gate applies even in the fast path.
 - Always surface HIGH-inertia pre-approval inline during /fixit; the stamp lands in the ticket body before filing.
 - /sprint-batch respects gates — a ticket gated on pre-approval clears the gate first.
 - Every distinct decision gets its own D-id; /sprint-batch scopes to the current /fixit invocation's decision id.
@@ -93,8 +93,6 @@ Commits: <hash1>, <hash2>, ...
 
 - **/decided** — the filing half of /fixit; invokable standalone for design-mode work that should queue up, not sprint immediately.
 - **/sprint-batch** — the sprint half of /fixit; invokable standalone against any selector (today-slate, tag:..., explicit ids).
-- **/review** — invoked per-ticket by /decided during /fixit; also standalone for diff/PR/plan review.
-
 ## Historical note
 
-Before 2026-04-20, /fixit = `/ticket last` + `/sprint last` — single-ticket shortcut for pre-filed work. The rewrite aligns with the broader workflow overhaul (D-workflow-overhaul-2026-04-20) that introduced /decided + /review-as-filing-time + /sprint-batch.
+Before 2026-04-20, /fixit = `/ticket last` + `/sprint last` — single-ticket shortcut for pre-filed work. The rewrite aligns with the broader workflow overhaul (D-workflow-overhaul-2026-04-20) that introduced /decided + /audit-ticket-as-filing-time + /sprint-batch.

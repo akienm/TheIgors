@@ -66,7 +66,7 @@ abort?" before the first ticket.
 For each ticket in topo-order, run the /sprint body:
 
 1. **Claim**: `cc_queue.py claim <id>`
-2. **Review plan**: when the ticket description carries a /review pre-approval stamp, skip asking. Otherwise always invoke /review on the plan before coding.
+2. **Review plan**: when the ticket description carries an /audit-ticket approval stamp, skip asking. Otherwise always invoke /audit-precode on the plan before coding.
 3. **Build**: implement the ticket
 4. **Test**: `python -m pytest tests/ -x -q 2>&1 | tail -20`
 5. **Cleanup** (REQUIRED): always review the diff and remove debris — debug prints, commented code, unused imports, replaced functions, single-use helpers, temp files. Every file in the diff exists on purpose.

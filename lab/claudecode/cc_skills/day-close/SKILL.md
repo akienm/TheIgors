@@ -47,8 +47,7 @@ yesterday's file when day-close runs after midnight):
 
 Always run `/day-close-audit` — all steps. This is not optional. (Renamed
 from `/audit` on 2026-04-20 to make role clearer: `/day-close-audit` is
-the debris-and-hygiene check; `/review` is the skill for reviewing plans
-and code.)
+the debris-and-hygiene check.)
 
 Log to: `~/.TheIgors/claudecode/logs/$(date +%Y%m%d).code_maintenance_reviews.log`
 

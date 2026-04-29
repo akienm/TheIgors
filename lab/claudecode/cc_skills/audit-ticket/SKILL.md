@@ -1,26 +1,23 @@
 ---
 name: audit-ticket
-description: Filing-time ticket audit — extends /review with validation steps, remediation plan, rollback (HIGH-inertia), logging requirements, observability assertion, and split test. Called by /decided on each drafted ticket before filing. Returns PASS / AMEND / SPLIT / DISCARD. Model: Haiku.
+description: Filing-time ticket audit — quality gate for every ticket before it lands in the queue. Runs duplicate detection, already-done check, scope/size/HIGH-inertia checks, palace design-rules, build-tightness grade, plus validation steps, remediation plan, rollback (HIGH-inertia), logging requirements, observability assertion, and split test. Called by /decided on each drafted ticket. Returns PASS / AMEND / SPLIT / DISCARD. Model: Haiku.
 model: haiku
 ---
 
 # audit-ticket — Filing-time ticket quality gate
 
-Extends `/review` filing-time mode with additional checks focused on runtime
-observability and cleanup completeness. Every ticket goes through this before
-landing in queue.json.
+Quality gate for every ticket before it lands in queue.json. Runs the full
+filing-time checklist in order.
 
 ## Input
 
 A drafted ticket dict (id, title, size, tags, description, decision_id).
 
-## Checks (in order — inherit all /review checks, then add)
+## Checks (in order)
 
-### 1–8. All /review filing-time checks (run first)
+### 1–8. Filing-time checks
 
-Always run the full `/review` checklist (duplicate, already-done, blocked-by,
-size-sanity, scope-creep, HIGH-inertia, palace design-rules, build-tightness).
-These are prerequisite — audit-ticket is additive, not a replacement.
+Run these first on every ticket.
 
 ### 9. Validation steps (how do we observe success in runtime?)
 
@@ -120,7 +117,7 @@ Child proposals (if SPLIT): <list>
 
 ## Hard rules
 
-- Always run all /review checks first, then these additions.
+- Always run checks 1–8 first, then checks 9–15.
 - AMEND on missing validation steps — "tests pass" is not a runtime validation.
 - SPLIT when verb count ≥ 3 in a ticket > S size.
 - HIGH-inertia rollback plan is required — ask Akien if unclear.

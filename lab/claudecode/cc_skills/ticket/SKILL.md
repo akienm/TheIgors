@@ -12,7 +12,7 @@ model: haiku
 
 ## Description template
 
-Always shape the ticket `description` field this way — /review checks for
+Always shape the ticket `description` field this way — /audit-ticket checks for
 these sections at filing time, and missing ones get flagged:
 
     <1-3 sentences: problem and proposed shape>
@@ -30,7 +30,7 @@ the labeled fields go inside `description`, not into new columns.
 
 ### 1. Identify: new ticket or update?
 
-Always check for an existing ticket before drafting a new one — /review's
+Always check for an existing ticket before drafting a new one — /audit-ticket's
 duplicate check runs at filing time, but a pre-check here saves a round
 trip.
 ```bash
@@ -42,7 +42,7 @@ python3 ~/TheIgors/lab/claudecode/cc_queue.py list 2>/dev/null | grep -i "<keywo
 Always fill all four sections (Affected files, Design rules, Scope boundary,
 Test plan) per the description template above. For `/ticket last`, infer
 each field from the conversation; mark genuinely unknown fields as "TBD"
-rather than skipping — /review flags blanks, not TBDs-with-reason.
+rather than skipping — /audit-ticket flags blanks, not TBDs-with-reason.
 
 When the ticket touches memory shapes, read the relevant palace rule via:
 ```

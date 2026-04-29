@@ -1,6 +1,6 @@
 ---
 name: day-close-audit
-description: Debris-and-hygiene check for TheIgors, run during /day-close. MANDATORY part of day-close — never skip. Checks for debris (temp files, leaked runtime state, dead code), tests, file placement, code smells, registry coherence, inertia check, thread hygiene, log sizes, OR burn rate, DB schema, duplication, habit health, TWM coverage, dependency hygiene, credential scan, and simplification review. Fix small issues now, ticket anything bigger. (Renamed 2026-04-20 from /audit — /review is the skill for reviewing plans and code; /day-close-audit is the debris check.)
+description: Debris-and-hygiene check for TheIgors, run during /day-close. MANDATORY part of day-close — never skip. Checks for debris (temp files, leaked runtime state, dead code), tests, file placement, code smells, registry coherence, inertia check, thread hygiene, log sizes, OR burn rate, DB schema, duplication, habit health, TWM coverage, dependency hygiene, credential scan, and simplification review. Fix small issues now, ticket anything bigger.
 model: haiku
 model_exception: Step 17 (simplification review) requires Sonnet — escalate that step inline.
 ---
@@ -27,7 +27,7 @@ If tests fail: **STOP**. Fix before proceeding. Offer to run `/test-fix`.
 ## Step 2 — File placement
 
 ```bash
-/validate-files
+python3 ~/TheIgors/lab/claudecode/validate_files.py 2>/dev/null | head -30
 ```
 
 Note any misplaced files. Small fixes now; large restructures → ticket.

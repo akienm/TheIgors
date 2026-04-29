@@ -192,7 +192,7 @@ All audit levels emit structured telemetry to the palace (`theigors/audits/<leve
 
 `/audit-smell` -- post-code quality scan: premature abstractions, missing log calls, misleading names, bespoke vs. standard patterns
 
-`/audit-ticket` -- filing-time ticket audit (replaces /review Mode A): duplicate, already-done, scope, HIGH-inertia gate, design-rules, build-tightness grade
+`/audit-ticket` -- filing-time ticket audit: duplicate, already-done, scope, HIGH-inertia gate, design-rules, build-tightness grade, validation steps, logging requirements, observability assertion
 
 `/commit` -- does the commit, pull (and merge), push
 
@@ -220,8 +220,6 @@ All audit levels emit structured telemetry to the palace (`theigors/audits/<leve
 
 `/readinbox` -- reads Igor's inbox (messages from build processes, Claude, internal subsystems)
 
-`/review` -- standalone code/plan/PR review (Mode B); filing-time ticket audit now lives in /audit-ticket
-
 `/savestate` -- full session close: savestateauto + compose preserve string + inject compaction
 
 `/savestateauto` -- lightweight state flush called by other skills: writes in-flight hypothesis to slate, clears debug flag, emits compact preserve string
@@ -233,8 +231,6 @@ All audit levels emit structured telemetry to the palace (`theigors/audits/<leve
 `/test-fix` -- test/fix/test-again loop for failing suites
 
 `/ticket` -- creates or updates a ticket; runs /audit-ticket on each draft before filing
-
-`/validate-files` -- file placement audit (absorbed into /audit-debris; still invocable standalone)
 
 ---
 

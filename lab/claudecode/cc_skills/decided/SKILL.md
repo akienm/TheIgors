@@ -1,6 +1,6 @@
 ---
 name: decided
-description: Batch-ticketize conversation decisions. Reads recent conversation turns (since /design marker or prior /decided), summarizes each decision, drafts tickets per decision, runs /review on each ticket filing-time, and writes to queue + slate + session record + Igor memory palace with two-way decision↔ticket backlinks.
+description: Batch-ticketize conversation decisions. Reads recent conversation turns (since /design marker or prior /decided), summarizes each decision, drafts tickets per decision, runs /audit-ticket on each ticket filing-time, and writes to queue + slate + session record + Igor memory palace with two-way decision↔ticket backlinks.
 model: sonnet
 ---
 
@@ -73,16 +73,16 @@ per the `/ticket` description template:
 }
 ```
 
-### 4. Run /review on each draft (filing-time mode)
+### 4. Run /audit-ticket on each draft
 
-Always invoke /review once per drafted ticket — filing-time quality is the
-whole point of /decided. /review returns one of:
+Always invoke /audit-ticket once per drafted ticket — filing-time quality is the
+whole point of /decided. /audit-ticket returns one of:
 - **PASS** → proceed to filing.
 - **AMEND** → apply the amendments (ask Akien if ambiguous), re-submit.
-- **SPLIT** → replace the single draft with N child drafts; run /review on each.
+- **SPLIT** → replace the single draft with N child drafts; run /audit-ticket on each.
 - **DISCARD** → drop the draft; record the reason in the decision narrative.
 
-When /review flags a HIGH-inertia touch, always surface it inline for
+When /audit-ticket flags a HIGH-inertia touch, always surface it inline for
 Akien's pre-approval. Stamp the approval into the ticket body before filing
 — that stamp survives compaction; CC's memory does not.
 
@@ -177,12 +177,12 @@ Multiple decisions in one session:
 
 - Every decision gets a D-id, even single-ticket ones — makes trace navigable.
 - Every ticket in a /decided batch carries `decision_id` — no orphaned tickets.
-- /review runs on EVERY draft, not just the first or biggest.
+- /audit-ticket runs on EVERY draft, not just the first or biggest.
 - HIGH-inertia approvals land in the ticket body before filing; they are not kept in CC's conversational memory.
 
 ## Hard rules
 
-- Always run /review on every drafted ticket — filing-time quality is the whole point.
-- DISCARD verdicts from /review block filing until Akien explicitly overrides.
+- Always run /audit-ticket on every drafted ticket — filing-time quality is the whole point.
+- DISCARD verdicts from /audit-ticket block filing until Akien explicitly overrides.
 - Every distinct decision gets its own D-id. Single-session doesn't mean single-decision.
 - Decisions are append-only. New context becomes a new decision, linked via metadata.
