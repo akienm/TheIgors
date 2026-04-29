@@ -13,6 +13,8 @@ Metrics are stored in an in-memory ring (never written to the DB — circular de
 Exposed via get_metrics() for /introspect and self-directed testing (#208).
 
 Part of #211. Foundation for remote-agent sync (#190).
+
+Updated 2026-04-29T17:08:53Z
 """
 
 from __future__ import annotations
