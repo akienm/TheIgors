@@ -452,6 +452,35 @@ def _append_to_todays_slate(ticket: dict) -> None:
         _log({"action": "slate_append_failed", "error": str(e), "id": ticket.get("id")})
 
 
+def _ungate_dependents(tasks: list, closed_id: str) -> int:
+    """Clear `gate` on any pending task whose gate text references closed_id.
+
+    Returns count of tickets ungated. Operates in-place; caller must _save.
+    Mirrors the decision-rollup ungate pattern at the ticket-id level so
+    gated chains (e.g. T-cc-walk-02 gated on T-cc-walk-01) flow on close.
+    """
+    ungated = 0
+    for t in tasks:
+        if t.get("status") != "pending":
+            continue
+        gate = t.get("gate") or ""
+        if not gate:
+            continue
+        if closed_id in gate:
+            t["gate"] = None
+            ungated += 1
+            print(f"  [ungate] {t['id']} (was gated on {closed_id})")
+    if ungated:
+        _log(
+            {
+                "action": "ungate_on_close",
+                "closed_id": closed_id,
+                "ungated_count": ungated,
+            }
+        )
+    return ungated
+
+
 def cmd_done(args):
     if len(args) < 2:
         print("Usage: done <id> <result-message>")
@@ -466,6 +495,7 @@ def cmd_done(args):
     t["completed_at"] = _now()
     decision_id = t.get("decision_id")
     _decision_rollup(tasks, decision_id)
+    _ungate_dependents(tasks, t["id"])
     _save(tasks)
     _log({"action": "done", "id": args[0], "title": t["title"], "result": args[1]})
     _prepend_closed_ticket(args[0], t["title"])
