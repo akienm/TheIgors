@@ -47,6 +47,22 @@ When the plan touches a HIGH-inertia file, always pause and surface it to
 Akien for inline pre-approval before coding. Stamp the approval into the
 ticket body so it survives compaction.
 
+### 4.5. Infrastructure brief (D-scaffold-not-correct-2026-04-21)
+After the inertia check, surface a one-screen infrastructure brief for the
+touched areas (MCP tools, proxies, base classes, IMAP buses, channels).
+This catches the "Sonnet forgot MCP exists" failure mode before the first
+edit rather than after.
+
+```bash
+python3 ~/TheIgors/lab/claudecode/sprint_infrastructure_brief.py \
+  <file1> <file2> ...
+```
+
+The output is positive scaffolding — read it and ask: "does my plan use the
+preferred forms listed here?" If the plan proposes a deprecated form (raw
+psql, channel.py direct write, print()), amend before coding. Also run
+`/audit-precode` on the plan text before step 5.
+
 ### 5. Pull + work
 First, pull to get a clean base:
 ```bash
