@@ -37,6 +37,25 @@ Always write a one-to-two sentence summary and assign a decision id of the
 form `D-<kebab-slug>-YYYY-MM-DD`. A decision without a D-id can't be
 rolled up or traced back from the tickets it spawned.
 
+### 2.5. Audit the design (audit-design)
+
+Always invoke `audit-design` on the decision summary + scope context before
+drafting tickets. The audit runs nine positive checks (positive-target goal,
+runtime-observable success, alternatives considered, constraints named,
+"what am I missing" pass, conflicts with last-30d decisions, palace-rule
+conflicts, scope decomposition, executor + inertia per piece) and returns:
+
+- **PASS** → proceed to Step 3.
+- **AMEND** → apply the listed amendments to the decision narrative (ask
+  Akien if any are ambiguous), then re-run `audit-design`. Do not draft
+  tickets until the audit returns PASS.
+- **HIGH-inertia surface** → audit-design separately flags HIGH-inertia
+  files mentioned in the narrative; pause for Akien pre-approval before
+  proceeding, even on PASS.
+
+Standalone re-check is supported via `/audit-design <decision-id>` after
+the decision has been filed.
+
 ### 3. Draft tickets
 
 For each implementation unit the decision implies, draft one ticket shaped
