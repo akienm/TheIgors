@@ -842,12 +842,16 @@ def make_home_proxy(db_path: Path = None):
     HOME tables: clan.memories, clan.interpretive_edges, clan.wg_cooccur,
                  clan.reading_list, plus infra.* for cross-agent tables.
     search_path: clan,infra,public — no instance schema access.
+
+    IGOR_HOME_SEARCH_PATH overrides the default search_path (used by test
+    fixtures to redirect writes to an isolated schema, e.g. test_clan_<ts>).
     """
     db_url = os.getenv("IGOR_HOME_DB_URL") or os.getenv(
         "IGOR_DB_URL"
     )  # backward compat
     if db_url:
-        return PGDatabaseProxy(db_url, search_path="clan,infra,public")
+        sp = os.getenv("IGOR_HOME_SEARCH_PATH") or "clan,infra,public"
+        return PGDatabaseProxy(db_url, search_path=sp)
     # SQLite fallback: use explicit path, then IGOR_DB_PATH env var
     if db_path is None:
         env_path = os.getenv("IGOR_DB_PATH")
@@ -864,6 +868,8 @@ def make_local_proxy(db_path: Path = None):
     Checks IGOR_LOCAL_DB_URL first, falls back to IGOR_HOME_DB_URL.
     All data lives in Postgres — no SQLite fallback for TWM/ring.
     search_path: instance,clan,infra,public — full access for Igor.
+
+    IGOR_LOCAL_SEARCH_PATH overrides the default search_path (test fixtures).
     """
     db_url = (
         os.getenv("IGOR_LOCAL_DB_URL")
@@ -871,7 +877,8 @@ def make_local_proxy(db_path: Path = None):
         or os.getenv("IGOR_DB_URL")
     )
     if db_url:
-        return PGDatabaseProxy(db_url, search_path="instance,clan,infra,public")
+        sp = os.getenv("IGOR_LOCAL_SEARCH_PATH") or "instance,clan,infra,public"
+        return PGDatabaseProxy(db_url, search_path=sp)
     # Last resort: SQLite — should not happen in production
     return DatabaseProxy(db_path)
 
