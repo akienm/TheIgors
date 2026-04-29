@@ -38,6 +38,7 @@ EXEMPT_SUFFIXES: set[str] = {
     "wild_igor/igor/tools/google_calendar.py",
     "wild_igor/igor/tools/ebook_reader.py",
     "wild_igor/igor/arbiter/queue.py",
+    "wild_igor/igor/config.py",            # defines the os.getenv default — canonical source
 }
 
 PATTERNS: list[str] = [

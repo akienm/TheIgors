@@ -6,19 +6,6 @@ model: haiku
 
 # context-load — Session startup
 
-## Step 0 — Environment key check (runs first)
-
-CC uses Claude Max auth — no API key required. The only remaining env check
-is to ensure Igor's OpenRouter key has not leaked into CC's env.
-```bash
-OR_KEY="${OPENROUTER_API_KEY:-}"
-if [ -n "$OR_KEY" ]; then
-  echo "⚠ OPENROUTER_API_KEY is set in CC env — Igor's key may have leaked. Expected empty. Check superclaude."
-else
-  echo "env: OK (Max auth, no OR key leak)"
-fi
-```
-
 ## Step 0.25 — Stale slate check (soft prompt to close previous day)
 ```bash
 python3 ~/TheIgors/lab/claudecode/stale_slate_check.py
