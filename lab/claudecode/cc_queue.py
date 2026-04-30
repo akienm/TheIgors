@@ -276,7 +276,7 @@ def cmd_claim(args):
     if not t:
         print(f"Task {args[0]} not found.")
         sys.exit(1)
-    if t["status"] != "pending":
+    if t["status"] != "pending" or (t.get("worker") and t.get("worker") != "igor"):
         print(f"Task {args[0]} is {t['status']}, not pending.")
         sys.exit(1)
     t["status"] = "in_progress"
