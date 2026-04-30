@@ -122,3 +122,41 @@ Estimated time: 10-30 min per walk depending on Igor's success rate. ~3-5 hours 
 - `~/.TheIgors/cc_channel/queue.json` — reset 6 underlyings to pending + worker=claude with metadata trail
 
 Not yet committed at time of writing this report.
+
+---
+
+## Other Igor empty-closes found (non-walk)
+
+12 total Igor empty-closes (`pe_chain autonomous: pass` results) in queue. 6 are walk underlyings (already reset). The other 6 are tickets technically marked done but with no real Igor work:
+
+- T-map-igor-skill — actually built by CC (real deliverable), Igor just rubber-stamped close
+- T-ollama-oom-recovery — empty-close
+- T-remove-sqlite-fallback — empty-close
+- T-habit-fire-rate-visibility — empty-close
+- T-igor-doc-reorg-9-pillars — empty-close
+- T-chat-export-reroute-to-adc — empty-close
+- T-audit-rename-pyramid — empty-close
+- T-post-inventory — has hallucinated commit (NameError bugs in main.py — see below)
+- T-list-primitive — empty-close
+- T-compact-mcp-handoff-does-not-fire — empty-close
+- T-adc-installer-design-call — already reopened by CC earlier today
+
+**Not reset overnight** — these would need triage per-ticket (some may be real work shipped under different commits). Surfaced for morning review.
+
+## Production NameError bugs fixed in main.py (from T-post-inventory)
+
+Igor's autonomous edit (commit `346f8a40`, "T-post-inventory — pe_chain autonomous edit (3 file(s))") shipped two NameError bugs:
+
+1. **Line 292**: `except Exception as e:` but body uses `f"...{_bare_e}"` — undefined name. Would NameError when the except triggers.
+2. **Line 496**: `except Exception as ee_e:` but body uses `f"...{e}"` — undefined name. Would NameError when the except triggers.
+
+Both were unconditional rename-without-update typos. Igor renamed the captured exception but didn't update the f-string references.
+
+Repaired tonight: both sites now use clean `_exc_outer` / `_exc` capture matched to body references.
+
+This makes 3 production bugs found from auditing Igor's pe_chain autonomous commits:
+- `consult.py CONSULT_LOG_PATH` Path('') (T-consult-log-test-mode-gate)
+- `main.py:292` NameError on _bare_e (T-post-inventory)
+- `main.py:496` NameError on e (T-post-inventory)
+
+Of the 4 "pe_chain autonomous edit" commits ever made, **3 contained production bugs** and **1 was hallucinated trivia** (T-ollama-input-cap added unrelated `**_` kwargs). Zero produced correct, intent-matching work.
