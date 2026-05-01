@@ -36,6 +36,8 @@ if [ ! -f "$SLATE" ]; then
   cat > "$SLATE" <<EOF
 # Slate $(date +%Y-%m-%d)
 
+## Notes
+
 ## In-flight
 NONE
 
@@ -44,17 +46,16 @@ NONE
 ## Ad hoc
 
 ## Done today
-
-## Notes
 EOF
 fi
 cat "$SLATE"
 ```
 
 Section order is salience-first (D-slate-salience-order-2026-04-20): read
-top-down, stop once you have enough context. In-flight = what's mid-work;
-Planned = what to pick up next; Ad hoc = today's reactive additions;
-Done today = shipped.
+top-down, stop once you have enough context. Notes = short-term reminders
+(carry forward N days, drop when stale — kept at top so they're actually
+read); In-flight = what's mid-work; Planned = what to pick up next; Ad hoc
+= today's reactive additions; Done today = shipped.
 
 ## Step 2a — Rules (hash-gated; read these FIRST when changed)
 

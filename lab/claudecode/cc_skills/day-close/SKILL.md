@@ -22,6 +22,11 @@ if [ ! -f "$TODAY_SLATE" ]; then
   cat > "$TODAY_SLATE" <<EOF
 # Slate $(date +%Y-%m-%d)
 
+## Notes
+
+## In-flight
+NONE
+
 ## Planned
 
 ## Ad hoc
