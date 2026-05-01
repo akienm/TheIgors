@@ -415,6 +415,7 @@ Auto-synced from `memory_palace` table. Do not edit by hand — changes will be 
       - [new-memory-type/ — new MemoryType variant → tag on existing type](theigors/rules/preferred_paths/new-memory-type.md)
       - [print-statement/ — print() → base-class logger](theigors/rules/preferred_paths/print-statement.md)
       - [raw-psql-in-code/ — raw psql in code → memory_get / memory_search MCP tools](theigors/rules/preferred_paths/raw-psql-in-code.md)
+    - [recency-trumps-age/ — Recency trumps age — newer descriptions hold more validity in almost all cases](theigors/rules/recency-trumps-age.md)
     - [safeguards/ — Safeguards — target clean reversibility, check before high-blast-radius ops](theigors/rules/safeguards.md)
     - [ticket_design_checks/ — Ticket design checks — filing-time positive checks for /review Mode A](theigors/rules/ticket_design_checks.md)
       - [docs-in-code/ — docs-in-code — load-bearing touch must name its docstring](theigors/rules/ticket_design_checks/docs-in-code.md)
