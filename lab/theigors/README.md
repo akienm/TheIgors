@@ -400,6 +400,7 @@ Auto-synced from `memory_palace` table. Do not edit by hand — changes will be 
     - [collaboration/ — Collaboration — keep going, proactive best-practice](theigors/rules/collaboration.md)
     - [commits/ — Commits — full cycle, new commits, integrity preserved](theigors/rules/commits.md)
     - [database/ — Database — Postgres everywhere, db_proxy always](theigors/rules/database.md)
+    - [debugging-discipline/ — Debugging discipline — log line and regression test ship with the fix](theigors/rules/debugging-discipline.md)
     - [docs-live-in-code/ — Docs live in code — top-of-file docstrings, not DSB/CSB](theigors/rules/docs-live-in-code.md)
     - [igor-constraints/ — Igor constraints — inference in-stack, environment CC-owned](theigors/rules/igor-constraints.md)
     - [inherit-base-class/ — Inherit base class — every non-library class inherits from IgorBase / AgentBase](theigors/rules/inherit-base-class.md)
