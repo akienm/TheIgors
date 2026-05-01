@@ -789,26 +789,18 @@ nudge to Akien via YGM that an MCP refresh is recommended.
 
 ### 8.A Existing `comms://igor-wild-0001` URL-style (lineage form)
 
-**Decision: alias, don't replace.** v1.
+**E-decision (2026-05-01, § 14): alias NOT shipped.** Ship clean.
 
-- **Primary routing form:** `comms://<box>.<n>` (e.g., `comms://akiendelllinux.1`).
-- **Lineage alias:** `comms://igor-wild-0001` resolves through a soft-alias
-  table maintained by the announce broker:
-  ```python
-  # ~/.agent_datacenter/aliases.json — atomic-write, mirrors registry
-  {
-    "igor-wild-0001": "akiendelllinux.1",
-    "cc.0":          "akiendelllinux.1.cc.0"
-  }
-  ```
-- The router's `resolve()` consults `aliases.json` after the primary
-  mailbox lookup fails. This is a small, additive router change at
-  `router.py:60-81`.
-- Why alias not replace: there are existing test fixtures and seed scripts
-  that use the lineage form. A flag day breaks them; aliasing is
-  zero-cost.
-- **Open question (§ 11.E):** when to flip the alias to "deprecated, will
-  be removed" — sprint scope or later.
+Opus's recommendation was "alias, don't replace" to protect existing test
+fixtures. Akien overrode: research project, single user, "if it breaks we
+fix it." The aliases.json shim and router.py patch were removed from scope.
+
+- **Primary routing form (only form):** `comms://<box>.<n>` suffix-style.
+- **Lineage form (`comms://igor-wild-0001`):** will raise AddressError.
+  If any test fixture or seed script still uses the lineage form, fix the
+  fixture — don't add an alias.
+- **Ticket T-comms-lineage-alias-removal:** closed as side-effect of
+  profile.py shipping without alias path (announce/profile.py, slice 1).
 
 ### 8.B `cc_queue.py` palace canonical store + `queue.json` echo
 
