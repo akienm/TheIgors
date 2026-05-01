@@ -95,9 +95,6 @@ _EPIC_MARKERS = [
     "tracking ticket",
     "vision-level placeholder",
     "vision-level",
-    "design conversation",
-    "sketch, not binding",
-    "to be refined at sprint",
 ]
 
 
