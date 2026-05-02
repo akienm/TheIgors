@@ -34,7 +34,7 @@ from pathlib import Path
 from typing import Optional
 
 from lab.utility_closet.registry import Tool, registry
-from lab.utility_closet.db_proxy import DatabaseProxy
+from lab.utility_closet.db_proxy import make_home_proxy
 
 # ── Config ──────────────────────────────────────────────────────────────────
 # Soft spending cap (USD) — a local guardrail, not account balance.
@@ -53,51 +53,21 @@ _BALANCE_CACHE_TTL_SEC = 3600
 _balance_cache: dict = {}  # keys: purchased, used, balance, fetched_at
 
 
-def _db_path() -> Path:
-    from wild_igor.igor.paths import paths as _paths
-
-    return _paths().instance / "claude_budget.db"
+_BUDGET_PROXY = None
 
 
-_BUDGET_PROXY: Optional[DatabaseProxy] = None
+def _db_proxy():
+    """Singleton home-db proxy for budget tables.
 
-
-def _db_proxy() -> DatabaseProxy:
-    """Return (or create) the singleton budget DatabaseProxy, initialising schema on first use."""
+    Tables live in infra.* on the home_db (per-Igor operational
+    infrastructure, alongside sessions/slates/decisions/machines/metrics).
+    Schema is created by cortex migration m053; we don't run CREATE TABLE
+    here. make_home_proxy's default search_path includes infra so bare
+    names (spend, budget_config, balance_history) resolve naturally.
+    """
     global _BUDGET_PROXY
     if _BUDGET_PROXY is None:
-        db = _db_path()
-        db.parent.mkdir(parents=True, exist_ok=True)
-        _BUDGET_PROXY = DatabaseProxy(db)
-        with _BUDGET_PROXY() as c:
-            c.execute("""
-                CREATE TABLE IF NOT EXISTS spend (
-                    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT    NOT NULL,
-                    model     TEXT    NOT NULL,
-                    usd       REAL    NOT NULL,
-                    note      TEXT    DEFAULT ''
-                )
-            """)
-            c.execute("""
-                CREATE TABLE IF NOT EXISTS config (
-                    key   TEXT PRIMARY KEY,
-                    value TEXT NOT NULL
-                )
-            """)
-            c.execute("""
-                CREATE TABLE IF NOT EXISTS balance_history (
-                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp  TEXT    NOT NULL,
-                    balance    REAL    NOT NULL,
-                    purchased  REAL    NOT NULL,
-                    used       REAL    NOT NULL
-                )
-            """)
-            c.execute("""
-                CREATE INDEX IF NOT EXISTS idx_bh_timestamp
-                ON balance_history (timestamp)
-            """)
+        _BUDGET_PROXY = make_home_proxy()
     return _BUDGET_PROXY
 
 
@@ -210,8 +180,17 @@ def get_balance_trajectory(window_hours: float = 24.0) -> dict:
             "sample_count": len(rows),
         }
 
-    t0 = datetime.fromisoformat(rows[0]["timestamp"]).timestamp()
-    t1 = datetime.fromisoformat(rows[-1]["timestamp"]).timestamp()
+    # Postgres TIMESTAMPTZ returns datetime; legacy SQLite stored as ISO string.
+    # Accept both — migration script may have left mixed shapes briefly.
+    def _to_ts(v):
+        return (
+            v.timestamp()
+            if isinstance(v, datetime)
+            else datetime.fromisoformat(v).timestamp()
+        )
+
+    t0 = _to_ts(rows[0]["timestamp"])
+    t1 = _to_ts(rows[-1]["timestamp"])
     b0 = rows[0]["balance"]
     b1 = rows[-1]["balance"]
 
@@ -256,7 +235,7 @@ def get_spending_cap() -> float:
     """Return the local spending cap (USD). Not the same as account balance."""
     with _db_proxy()() as c:
         row = c.execute(
-            "SELECT value FROM config WHERE key='spending_cap_usd'"
+            "SELECT value FROM budget_config WHERE key='spending_cap_usd'"
         ).fetchone()
     if row:
         return float(row["value"])
@@ -267,7 +246,7 @@ def set_spending_cap(usd: float) -> str:
     """Set local spending cap. Returns confirmation string."""
     with _db_proxy()() as c:
         c.execute(
-            "INSERT OR REPLACE INTO config (key, value) VALUES ('spending_cap_usd', ?)",
+            "INSERT OR REPLACE INTO budget_config (key, value) VALUES ('spending_cap_usd', ?)",
             (str(usd),),
         )
     return f"Local spending cap set to ${usd:.2f}"
@@ -569,7 +548,9 @@ def _tool_spend_history(limit: int = 20, **_) -> str:
         return "No spend recorded yet."
     lines = ["Recent OpenRouter spend (newest first):"]
     for r in rows:
-        ts = r["timestamp"][:16]
+        # TIMESTAMPTZ from Postgres returns datetime; SQLite returned ISO str.
+        raw = r["timestamp"]
+        ts = raw.isoformat()[:16] if isinstance(raw, datetime) else raw[:16]
         lines.append(f"  {ts}  {r['model']:<35}  ${r['usd']:.4f}  {r['note']}")
     s = budget_status()
     lines.append(f"\nLocal total: ${s['local_spent']:.4f}")

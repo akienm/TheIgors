@@ -420,8 +420,8 @@ _TABLE_PK: dict[str, str | tuple] = {
     "wg_idf": "word",
     "wg_word_docs": ("word", "doc_id"),
     "wg_cooccur": ("word_a", "word_b"),
-    # budget tables
-    "config": "key",
+    # budget tables (T-sqlite-out-claude-budget-db)
+    "budget_config": "key",
 }
 
 
