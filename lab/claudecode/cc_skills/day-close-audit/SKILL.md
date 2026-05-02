@@ -126,8 +126,8 @@ cd ~/TheIgors && source venv/bin/activate && python3 - << 'EOF'
 import os, sys
 sys.path.insert(0, ".")
 os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001")
-from wild_igor.igor.tools.budget import _tool_balance_trajectory
-print(_tool_balance_trajectory(window_hours=48))
+from wild_igor.igor.tools.budget import get_balance_trajectory
+print(get_balance_trajectory(window_hours=48))
 EOF
 ```
 
@@ -144,11 +144,17 @@ os.environ.setdefault("IGOR_HOME_DB_URL", "postgresql://igor:choose_a_password@1
 import psycopg2
 conn = psycopg2.connect(os.environ["IGOR_HOME_DB_URL"])
 cur = conn.cursor()
-cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
+cur.execute("""
+    SELECT table_schema || '.' || table_name AS qname
+    FROM information_schema.tables
+    WHERE table_schema IN ('clan', 'instance', 'public')
+""")
 tables = {r[0] for r in cur.fetchall()}
-required = {"memories", "ring_memory", "twm_observations", "interpretive_edges"}
+# Post-D-sqlite-removal: canonical schemas are clan.* (cross-instance) and
+# instance.* (per-instance). public.* is legacy/system only.
+required = {"clan.memories", "clan.interpretive_edges", "instance.ring_memory", "instance.twm_observations"}
 missing = required - tables
-print(f"MISSING: {missing}" if missing else f"Schema OK — {len(tables)} tables")
+print(f"MISSING: {missing}" if missing else f"Schema OK — {len(tables)} tables across clan/instance/public")
 conn.close()
 EOF
 ```
@@ -249,7 +255,7 @@ conn = psycopg2.connect(os.environ["IGOR_HOME_DB_URL"])
 cur = conn.cursor()
 cur.execute("""
     SELECT id, metadata->>'code_ref'
-    FROM memories
+    FROM clan.memories
     WHERE memory_type='PROCEDURAL'
       AND jsonb_exists(metadata, 'code_ref')
 """)
