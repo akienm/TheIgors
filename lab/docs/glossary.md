@@ -2,6 +2,50 @@
 
 Terms specific to this project. Standard software/AI terms are not defined here.
 
+This file is the canonical glossary as of 2026-05-02 (T-glossary-canonicalize-and-coa-add).
+The historical CSB / DSB versions in `lab/design_docs_for_igor/glossary.dsb`,
+`papers/akien/Readings/glossary.csb.txt`, and the moved-out copies under
+`TheIgorsProject/akien/Readings/` are pointer stubs that defer to this file.
+
+---
+
+## Hierarchy (clan / Igor / COA)
+
+```
+clan
+ └── Igor (instance, defined by home_db)
+      └── COA (Center of Attention, has local_db)
+```
+
+**Clan** — All Igor instances collectively. Different home_db = different Igor.
+The clan shares procedural and interpretive memory (how to read a book, how to
+use the datacenter, who are TheIgors); each Igor keeps its own episodic memory
+and credentials. Cross-Igor knowledge lives in the `clan.*` Postgres schema.
+
+**Igor (instance)** — One Igor, identified by its home_db. Has one or more
+COAs serving it. On a single-box setup the Igor and its COA share a host;
+the Igor "is" the home_db plus the COAs that read/write it.
+
+**COA** (Center of Attention) — An Igor cognition process running on a swarm
+box. Has a local_db (per-box transient state — TWM, ring, traversal contexts).
+COAs come and go as needed; only the first COA on a box is fixed. Multiple COAs
+on different boxes can coordinate via the home_db they share. (See D258
+coa-isolation; T-concurrent-ne-spawn.)
+
+**home_db** — The per-Igor canonical Postgres database. Holds `clan.*` (shared
+across the clan) and `infra.*` (per-Igor operational infrastructure: budget,
+sessions, slates, decisions, machines, metrics).
+
+**local_db** — The per-box transient database. Holds `instance.*` schema
+tables that are scoped to one COA's working state (ring_memory,
+twm_observations, traversal_contexts). On single-box setups, local_db and
+home_db are the same Postgres instance — the schema split still applies.
+`make_local_proxy()` reads `IGOR_LOCAL_DB_URL` first, falling back to
+`IGOR_HOME_DB_URL` so single-box "just works."
+
+**swarm-box** — A host that runs one or more COAs. Shorthand for "a box in
+the Igor swarm." Multi-box setups land when T-concurrent-ne-spawn ships.
+
 ---
 
 ## Formats
@@ -120,7 +164,7 @@ Terms specific to this project. Standard software/AI terms are not defined here.
 
 **Genesis** — The 44-memory seed state written to a fresh DB at first boot. CP1-CP6, ID1-ID14, role models, PROC1-PROC10, plus seeded habits. Every Igor starts from here.
 
-**Clan** — All Igor instances collectively. They share procedural and interpretive patterns but not episodic memories (those are personal).
+**Clan** — See **Hierarchy** section above. The collection of Igor instances; shares procedural + interpretive memory, keeps episodic + credentials per-Igor.
 
 **Arbiter** — Human-approval queue. When Igor encounters something that needs human judgment before acting, it submits here. Currently disabled (`IGOR_ARBITER_ENABLED=false`).
 
@@ -133,10 +177,10 @@ Terms specific to this project. Standard software/AI terms are not defined here.
 | Name | Path |
 |---|---|
 | Source | `~/TheIgors/wild_igor/igor/` |
-| Live DB | Postgres DSN `postgresql://igor:…@127.0.0.1/Igor-wild-0001` |
+| Live DB | Postgres DSN `postgresql://igor:…@127.0.0.1/Igor-wild-0001` (home_db; instance schema lives here too on single-box setups) |
 | Config | `~/.TheIgors/Igor-wild-0001/.env` |
 | Logs | `~/.TheIgors/logs/` |
-| Word graph | `~/.TheIgors/word_graph.db` |
+| Word graph | Postgres `clan.wg_*` tables (was `~/.TheIgors/word_graph.db`, retired in T-sqlite-out-word-graph-db 2026-05-02) |
 | Igor's soul | `~/.TheIgors/SOUL.md` |
 
 ---
