@@ -146,13 +146,20 @@ def append(
     Creates parent directory if missing. Never raises on I/O — logs to stderr
     and returns the entry regardless, so a failing inbox write doesn't break
     the triggering subsystem.
+
+    Scope-tagging (T-test-inbox-tagging): when CC_INBOX_TAG is set in the
+    environment, prepend "[<tag>]: " to the summary so tests / debug
+    sessions / sandboxes can sweep their own writes via delete_by_prefix
+    on exit. Tests set CC_INBOX_TAG=test:<timestamp> in conftest.
     """
     p = path or INBOX_PATH
+    tag = os.environ.get("CC_INBOX_TAG", "").strip()
+    tagged_summary = f"[{tag}]: {summary}" if tag else summary
     entry = InboxEntry(
         id=_make_id(),
         ts=_now_iso(),
         kind=kind,
-        summary=summary,
+        summary=tagged_summary,
         body=body,
         urgency=urgency,
         response_expected=response_expected,
@@ -273,6 +280,30 @@ def mark_all_read(path: Optional[Path] = None) -> int:
     if count > 0:
         _rewrite_all(entries, path)
     return count
+
+
+def delete_by_prefix(prefix: str, path: Optional[Path] = None) -> int:
+    """Delete entries whose summary starts with `prefix`. Returns count removed.
+
+    Sweep helper for scope-tagged entries (T-test-inbox-tagging). pytest
+    conftest invokes this with prefix=f"[{CC_INBOX_TAG}]" at session_finish
+    so test runs don't leave residue in the production inbox. Generalizes
+    to any scope (debug:, sandbox:, dev:) — set CC_INBOX_TAG before
+    appending, sweep with the matching prefix on exit.
+
+    No-op + returns 0 when the inbox file doesn't exist.
+    """
+    if not prefix:
+        return 0
+    p = path or INBOX_PATH
+    if not p.exists():
+        return 0
+    entries = _load_all(p)
+    kept = [e for e in entries if not e.summary.startswith(prefix)]
+    removed = len(entries) - len(kept)
+    if removed > 0:
+        _rewrite_all(kept, p)
+    return removed
 
 
 def _cli(argv: list[str]) -> int:
