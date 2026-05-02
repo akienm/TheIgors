@@ -53,9 +53,7 @@ def _ssl_ctx() -> ssl.SSLContext:
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
-CLOSED_TICKETS_PATH = os.path.expanduser(
-    "~/.TheIgors/lab/claudecode/closed_tickets.txt"
-)
+CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/claudecode/closed_tickets.txt")
 STATUS_ORDER = {
     "pending": 0,
     "in_progress": 1,

@@ -220,7 +220,7 @@ def cmd_delta():
 
 
 QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
-CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/lab/claudecode/closed_tickets.txt")
+CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/claudecode/closed_tickets.txt")
 
 
 def cmd_push_queue():
