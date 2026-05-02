@@ -27,6 +27,10 @@
       "env": {
         "CC_SEND_URL": "http://10.0.0.71:8080/api/cc_send"
       }
+    },
+    "datacenter": {
+      "command": "/home/akien/TheIgors/venv/bin/python",
+      "args": ["/home/akien/TheIgors/lab/claudecode/datacenter_mcp.py"]
     }
   }
 }
