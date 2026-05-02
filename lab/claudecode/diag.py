@@ -51,7 +51,9 @@ def cmd_perf(args):
         p95 = vals[int(n * 0.95)]
         worst = vals[-1]
         avg = sum(vals) // n
-        print(f"  {step:20s}  n={n:3d}  avg={avg:6d}ms  p50={p50:6d}ms  p95={p95:6d}ms  worst={worst:7d}ms")
+        print(
+            f"  {step:20s}  n={n:3d}  avg={avg:6d}ms  p50={p50:6d}ms  p95={p95:6d}ms  worst={worst:7d}ms"
+        )
 
     # Habit fire rate
     trace = LOGS / f"pipeline_trace.{TODAY}.log"
@@ -62,7 +64,11 @@ def cmd_perf(args):
         for line in f:
             if "|step=bg_prospect|" in line:
                 total_turns += 1
-                parts = {p.split("=")[0]: p.split("=")[1] for p in line.split("|") if "=" in p}
+                parts = {
+                    p.split("=")[0]: p.split("=")[1]
+                    for p in line.split("|")
+                    if "=" in p
+                }
                 h = parts.get("habit", "none")
                 if h and h != "none":
                     habit_fires += 1
@@ -78,13 +84,21 @@ def cmd_perf(args):
 def cmd_memory_stats(args):
     db = sqlite3.connect(DB)
     total = db.execute("SELECT COUNT(*) FROM memories").fetchone()[0]
-    with_emb = db.execute("SELECT COUNT(*) FROM memories WHERE embedding IS NOT NULL").fetchone()[0]
-    print(f"Total memories: {total}  (with embedding: {with_emb}, missing: {total - with_emb})")
+    with_emb = db.execute(
+        "SELECT COUNT(*) FROM memories WHERE embedding IS NOT NULL"
+    ).fetchone()[0]
+    print(
+        f"Total memories: {total}  (with embedding: {with_emb}, missing: {total - with_emb})"
+    )
     print("\nBy type:")
-    for row in db.execute("SELECT memory_type, COUNT(*) as n FROM memories GROUP BY memory_type ORDER BY n DESC"):
+    for row in db.execute(
+        "SELECT memory_type, COUNT(*) as n FROM memories GROUP BY memory_type ORDER BY n DESC"
+    ):
         print(f"  {row[0]:20s} {row[1]}")
     print("\nMissing embeddings by type:")
-    for row in db.execute("SELECT memory_type, COUNT(*) as n FROM memories WHERE embedding IS NULL GROUP BY memory_type ORDER BY n DESC"):
+    for row in db.execute(
+        "SELECT memory_type, COUNT(*) as n FROM memories WHERE embedding IS NULL GROUP BY memory_type ORDER BY n DESC"
+    ):
         print(f"  {row[0]:20s} {row[1]}")
 
 
@@ -144,15 +158,21 @@ def cmd_ne_stats(args):
     ne_times.sort()
     n = len(ne_times)
     print(f"NE runs today: {n}")
-    print(f"  avg={sum(ne_times)//n}ms  p50={ne_times[n//2]}ms  p95={ne_times[int(n*0.95)]}ms  worst={ne_times[-1]}ms")
+    print(
+        f"  avg={sum(ne_times)//n}ms  p50={ne_times[n//2]}ms  p95={ne_times[int(n*0.95)]}ms  worst={ne_times[-1]}ms"
+    )
 
 
 def cmd_embed_check(args):
     import time
+
     try:
         import ollama
+
         t = time.time()
-        r = ollama.embeddings(model="nomic-embed-text", prompt="diagnostics embedding speed check")
+        r = ollama.embeddings(
+            model="nomic-embed-text", prompt="diagnostics embedding speed check"
+        )
         ms = (time.time() - t) * 1000
         print(f"nomic-embed-text: {ms:.0f}ms  dims={len(r['embedding'])}")
     except Exception as e:
@@ -162,11 +182,14 @@ def cmd_embed_check(args):
 def cmd_db_size(args):
     db_path = DB
     cache_dir = Path.home() / ".TheIgors/cache/embeddings"
-    wg_db = Path.home() / ".TheIgors/word_graph.db"
 
     def sz(p):
         try:
-            b = p.stat().st_size if p.is_file() else sum(f.stat().st_size for f in p.iterdir())
+            b = (
+                p.stat().st_size
+                if p.is_file()
+                else sum(f.stat().st_size for f in p.iterdir())
+            )
             return f"{b / 1024 / 1024:.1f}MB"
         except Exception:
             return "?"
@@ -178,7 +201,7 @@ def cmd_db_size(args):
             return "?"
 
     print(f"wild-0001.db:        {sz(db_path)}")
-    print(f"word_graph.db:       {sz(wg_db)}")
+    # word_graph.db removed in T-sqlite-out-word-graph-db (Postgres-backed now)
     print(f"embedding cache:     {sz(cache_dir)}  ({count(cache_dir)} files)")
 
 
