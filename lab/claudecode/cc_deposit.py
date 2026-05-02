@@ -83,7 +83,7 @@ def main():
         metadata=metadata,
     )
 
-    cortex = Cortex(DB_PATH)
+    cortex = Cortex()
     cortex.store(mem)
     print(f"deposited {node_id} ({args.type}): {args.narrative[:80]}")
 

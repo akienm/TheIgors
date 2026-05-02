@@ -34,7 +34,7 @@ DB_PATH = Path(
 
 
 def get_cortex():
-    return Cortex(DB_PATH)
+    return Cortex()
 
 
 WONDER_TEMPLATE_ID = "tpl-wonder"

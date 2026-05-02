@@ -290,7 +290,7 @@ def main():
     print(f"  Thresholds: sim={SIM_THRESHOLD}  prune_inertia={PRUNE_INERTIA}  "
           f"prune_days={PRUNE_DAYS}  min_cluster={MIN_CLUSTER}")
 
-    cortex = Cortex(DB_PATH, instance_id=INSTANCE_ID)
+    cortex = Cortex(instance_id=INSTANCE_ID)
 
     total_before = cortex.total_count()
     print(f"\n  Total memories before: {total_before}")

@@ -36,7 +36,7 @@ DB_PATH = Path(os.environ.get(
     Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 ))
 
-cortex = Cortex(DB_PATH)
+cortex = Cortex()
 
 HABITS = [
     # ── Question-habits ───────────────────────────────────────────────────────

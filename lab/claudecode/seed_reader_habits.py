@@ -119,7 +119,7 @@ INSTANTIATIONS = [
 
 def _get_cortex() -> Cortex:
     db_path = Path(os.environ["IGOR_DB_PATH"])
-    return Cortex(db_path)
+    return Cortex()
 
 
 def run():

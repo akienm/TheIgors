@@ -41,7 +41,7 @@ from wild_igor.igor.memory.models import Memory, MemoryType
 from wild_igor.igor.memory.cortex import Cortex
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
-cortex = Cortex(DB_PATH, instance_id="Igor-wild-0001")
+cortex = Cortex(instance_id="Igor-wild-0001")
 
 seeded = 0
 updated = 0

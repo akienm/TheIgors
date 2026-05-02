@@ -24,7 +24,7 @@ from igor.memory.models import Memory, MemoryType
 from igor.memory.cortex import Cortex
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
-cortex = Cortex(DB_PATH, instance_id="wild-0001")
+cortex = Cortex(instance_id="wild-0001")
 
 habit = Memory(
     id="PROC_EXIT_IGOR",

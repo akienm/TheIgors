@@ -87,7 +87,7 @@ def main():
             os.environ.get("IGOR_DB_PATH", "~/.TheIgors/Igor-wild-0001/wild-0001.db")
         )
     )
-    cortex = Cortex(db_path)
+    cortex = Cortex()
 
     report = seed_tiered_research(cortex)
     print(f"seed_tiered_research_habit: upserted {report['id']}")

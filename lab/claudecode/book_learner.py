@@ -963,7 +963,7 @@ def _deposit_nodes(
 
 
 def run(args) -> None:
-    cortex = Cortex(DB_PATH)
+    cortex = Cortex()
 
     # ── Open book ─────────────────────────────────────────────────────────
     print(f"Opening book...")

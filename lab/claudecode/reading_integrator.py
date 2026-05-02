@@ -346,7 +346,7 @@ def run(args) -> None:
             str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
         )
     )
-    cortex = Cortex(db_path)
+    cortex = Cortex()
 
     candidates = _fetch_candidates(cortex, args.book or "", args.batch)
     if not candidates:

@@ -26,7 +26,7 @@ os.environ.setdefault("IGOR_DB_PATH",
 from wild_igor.igor.memory.cortex import Cortex
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
-cortex = Cortex(DB_PATH, instance_id="wild-0001")
+cortex = Cortex(instance_id="wild-0001")
 
 edges = [
     # ── CP1 (epistemic honesty: "I don't know") ──────────────────────────────

@@ -44,7 +44,7 @@ DB_PATH = Path(
 
 
 def get_cortex() -> Cortex:
-    return Cortex(DB_PATH)
+    return Cortex()
 
 
 # ── Pattern definitions ────────────────────────────────────────────────────────

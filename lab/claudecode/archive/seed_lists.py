@@ -24,7 +24,7 @@ REGISTRY_TAGS = [
 
 
 def main():
-    cortex = Cortex(DB_PATH)
+    cortex = Cortex()
     for tag_name, description in REGISTRY_TAGS:
         cortex.list_set(
             list_name="Registry:Tags",

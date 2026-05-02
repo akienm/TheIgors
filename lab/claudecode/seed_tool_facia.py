@@ -37,7 +37,7 @@ from wild_igor.igor.tools.registry import registry
 import wild_igor.igor.tools  # noqa — loads all tools
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
-cortex = Cortex(DB_PATH, instance_id="Igor-wild-0001")
+cortex = Cortex(instance_id="Igor-wild-0001")
 
 seeded = 0
 updated = 0

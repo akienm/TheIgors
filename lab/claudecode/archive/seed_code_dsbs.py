@@ -264,7 +264,7 @@ RING LOG: HABIT_TRIGGERED|id=X|score=X.XX|trigger=Y
 
 def main():
     print(f"Connecting to {DB_PATH}...")
-    cortex = Cortex(DB_PATH)
+    cortex = Cortex()
 
     existing = cortex.search_by_tags(["code_summary", "dsb"])
     existing_narratives = {r["narrative"] for r in existing}

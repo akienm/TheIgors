@@ -24,7 +24,7 @@ DB_PATH = Path(os.environ.get(
     "IGOR_DB_PATH",
     Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
 ))
-cortex = Cortex(DB_PATH)
+cortex = Cortex()
 
 MEMORIES = [
     Memory(
