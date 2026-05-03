@@ -266,22 +266,36 @@ def cmd_show(args):
 
 
 def cmd_claim(args):
+    # --as <worker> selects the claiming worker. Default 'igor' preserves
+    # the cert_worker_freeze design (pe_chain claims without the flag stay
+    # gated to worker=igor tickets). CC manual claims pass --as claude.
+    as_worker = "igor"
+    if "--as" in args:
+        i = args.index("--as")
+        if i + 1 >= len(args):
+            print("Usage: claim <id> [--as <worker>]")
+            sys.exit(1)
+        as_worker = args[i + 1]
+        args = args[:i] + args[i + 2 :]
     if not args:
-        print("Usage: claim <id>")
+        print("Usage: claim <id> [--as <worker>]")
         sys.exit(1)
     tasks = _load()
     t = _find(tasks, args[0])
     if not t:
         print(f"Task {args[0]} not found.")
         sys.exit(1)
-    if t["status"] != "pending" or (t.get("worker") and t.get("worker") != "igor"):
-        print(f"Task {args[0]} is {t['status']}, not pending.")
+    if t["status"] != "pending" or (t.get("worker") and t.get("worker") != as_worker):
+        print(
+            f"Task {args[0]} is {t['status']} or worker mismatch "
+            f"(ticket worker={t.get('worker')!r}, claiming as={as_worker!r})."
+        )
         sys.exit(1)
     t["status"] = "in_progress"
     t["claimed_at"] = _now()
     _save(tasks)
-    _log({"action": "claim", "id": args[0], "title": t["title"]})
-    print(f"Claimed {args[0]}: {t['title']}")
+    _log({"action": "claim", "id": args[0], "title": t["title"], "as": as_worker})
+    print(f"Claimed {args[0]} as {as_worker}: {t['title']}")
 
 
 def _close_igor_goal(ticket_id: str) -> None:
