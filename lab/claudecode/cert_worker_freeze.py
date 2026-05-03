@@ -36,11 +36,23 @@ QUEUE_PATH = Path.home() / ".TheIgors" / "cc_channel" / "queue.json"
 
 
 def load() -> list[dict]:
-    return json.loads(QUEUE_PATH.read_text(encoding="utf-8"))
+    """T-cc-queue-write-race: route through cc_queue canonical Postgres path
+    instead of reading queue.json directly. Same return shape; reads stay
+    consistent with whatever writers are doing canonically."""
+    from lab.claudecode import cc_queue
+
+    return cc_queue.load_tasks()
 
 
 def save(tasks: list[dict]) -> None:
-    QUEUE_PATH.write_text(json.dumps(tasks, indent=2), encoding="utf-8")
+    """T-cc-queue-write-race: route through cc_queue canonical save path
+    instead of overwriting queue.json directly. Previous behavior was the
+    confirmed drift-source for the 2026-05-02 ticket loss — bypass-write
+    of queue.json without the Postgres UPSERT meant the next _save()
+    elsewhere clobbered the changes."""
+    from lab.claudecode import cc_queue
+
+    cc_queue.save_tasks(tasks)
 
 
 def freeze(tasks: list[dict]) -> tuple[int, list[str]]:
