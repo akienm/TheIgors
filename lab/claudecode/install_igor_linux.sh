@@ -166,12 +166,29 @@ PYEOF
 
 step "Step 6 — Install Claude Code skills"
 
-SKILLS_SRC="$REPO_ROOT/lab/claudecode/cc_skills"
-SKILLS_DST="$HOME/.claude/skills"
+# Master skills live in agent_datacenter/skills/ (T-skills-content-migrate-to-master,
+# 2026-05-02). Two TheIgors-internal exceptions live under lab/claudecode/cc_skills/.
 
+SKILLS_DST="$HOME/.claude/skills"
 mkdir -p "$SKILLS_DST"
-rsync -a --delete "$SKILLS_SRC/" "$SKILLS_DST/"
-green "  Skills installed to $SKILLS_DST"
+
+# 1) Master skills from agent_datacenter (if present on this box)
+DATACENTER_SKILLS="$HOME/dev/src/agent_datacenter/skills"
+if [[ -d "$DATACENTER_SKILLS" ]]; then
+    # Mirror manifest-listed dirs (everything except manifest.json itself)
+    rsync -a --exclude=manifest.json "$DATACENTER_SKILLS/" "$SKILLS_DST/"
+    green "  Master skills installed from $DATACENTER_SKILLS"
+else
+    yellow "  agent_datacenter not found at $DATACENTER_SKILLS — master skills SKIPPED"
+    yellow "  Install agent_datacenter first, then re-run, OR run 'agentctl skills deploy'"
+fi
+
+# 2) TheIgors-internal skills (map-igor, readigor — read Igor runtime state)
+THEIGORS_SKILLS="$REPO_ROOT/lab/claudecode/cc_skills"
+if [[ -d "$THEIGORS_SKILLS" ]]; then
+    rsync -a "$THEIGORS_SKILLS/" "$SKILLS_DST/"
+    green "  TheIgors-internal skills installed from $THEIGORS_SKILLS"
+fi
 
 # ── Step 7 — Claude Code settings.json ───────────────────────────────────────
 

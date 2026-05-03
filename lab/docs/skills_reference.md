@@ -109,9 +109,9 @@ Plus added since the old doc:
 
 ## Pointers
 
-- Skill source: `~/.claude/skills/<name>/SKILL.md` (user-defined) or built-in.
-- Repo echo: `lab/claudecode/cc_skills/` mirrors user skills (auto-synced via pre-commit).
-- Authoring a new skill: copy an existing SKILL.md as a template; the next pre-commit picks it up.
+- Skill source: `agent_datacenter/skills/<name>/SKILL.md` (canonical master, T-skills-content-migrate-to-master 2026-05-02). Deployed to `~/.claude/skills/<name>/SKILL.md` on each box via `agentctl skills deploy`.
+- TheIgors-internal exceptions: `map-igor` and `readigor` live in `lab/claudecode/cc_skills/` because they read Igor runtime state.
+- Authoring a new skill: edit in `agent_datacenter/skills/`, add to `manifest.json`, then `agentctl skills deploy`.
 
 ---
 
