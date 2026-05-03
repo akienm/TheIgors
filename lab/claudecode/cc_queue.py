@@ -1111,6 +1111,30 @@ def cmd_set_github_issue(args):
 COMMANDS["set-github-issue"] = cmd_set_github_issue
 
 
+def cmd_retitle(args):
+    """Update a ticket's title: retitle <id> <new-title>"""
+    if len(args) < 2:
+        print("Usage: retitle <ticket-id> <new-title>")
+        sys.exit(1)
+    tid = args[0]
+    new_title = args[1]
+    tasks = _load()
+    t = _find(tasks, tid)
+    if not t:
+        print(f"Task {tid} not found.")
+        sys.exit(1)
+    old_title = t["title"]
+    t["title"] = new_title
+    _save(tasks)
+    _log(
+        {"action": "retitle", "id": tid, "old_title": old_title, "new_title": new_title}
+    )
+    print(f"Retitled {tid}: {new_title!r}")
+
+
+COMMANDS["retitle"] = cmd_retitle
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
         print(__doc__)
