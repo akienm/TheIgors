@@ -129,7 +129,7 @@ or they fire automatically when a matching habit is active.
 
 ## Claude Code Skills (available in CC sessions)
 
-Type `/skill-name` in a Claude Code session. All skills live in `~/.claude/skills/` (synced from `claudecode/cc_skills/`).
+Type `/skill-name` in a Claude Code session. All skills live in `~/.claude/skills/` (deployed from `agent_datacenter/skills/` via `agentctl skills deploy`). The TheIgors-internal skills `map-igor` and `readigor` remain in `lab/claudecode/cc_skills/` because they read Igor-specific runtime state.
 
 | Skill | What It Does |
 |---|---|
