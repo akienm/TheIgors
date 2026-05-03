@@ -55,6 +55,17 @@
       "added_at": "2026-04-15T16:34:20.973133",
       "mode": "forever",
       "ack_until": null
+    },
+    {
+      "name": "callmap-fresh",
+      "kind": "shell",
+      "pattern": "python3 lab/claudecode/callmap.py --check",
+      "description": "lab/docs/callmap.md must match what callmap.py would currently produce",
+      "severity": "med",
+      "added_by": "claude-code",
+      "added_at": "2026-05-03T16:22:49.694141",
+      "mode": "forever",
+      "ack_until": null
     }
   ],
   "history": [
