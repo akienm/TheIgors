@@ -830,7 +830,27 @@ def _deposit_nodes(
     except Exception:
         pass  # Fail-open: no watchlist = attractor-only scoring
 
-    deposited = 0
+    # T-reading-deposit-batched: build all Memory objects first, then batch-write.
+    # Phase 1: construct memories + collect wiring data (pure Python, no DB).
+    _ms = _milieu_mod.read_state()
+    arousal = _ms.arousal if _ms else 0.5
+
+    _MT_MAP = {
+        "procedural": MemoryType.PROCEDURAL,
+        "factual": MemoryType.FACTUAL,
+        "interpretive": MemoryType.INTERPRETIVE,
+        "mechanism": MemoryType.INTERPRETIVE,
+        "lever": MemoryType.PROCEDURAL,
+        "situated": MemoryType.INTERPRETIVE,
+        "tension": MemoryType.INTERPRETIVE,
+    }
+
+    mems_to_store: list = []
+    cp_children: list = []  # (uid,) — parented under parent_cp
+    chapter_children: list = []  # (uid,) — parented under chapter_node_id
+    interp_edges: list = []  # edge dicts for add_interpretive_edges_batch
+    uid_map: dict = {}  # uid → (node, mem) for post-processing
+
     for node in nodes:
         try:
             ntype = node.get("type", "factual").strip().lower()
@@ -842,25 +862,10 @@ def _deposit_nodes(
             if not narrative or confidence < 0.60:
                 continue
 
-            # T-reading-lever-detection: score against attractor + watch keywords.
-            # Score is recorded in metadata (lever_score / lever_tier below) but
-            # is NO LONGER a deposit gate. Principle: every book yields something;
-            # low-relevance nodes get low scores and decay naturally through
-            # activation dynamics rather than being dropped at the boundary.
             attractor_score = _score_attractor_overlap(narrative, attractor_keywords)
-
-            # Pass-2 node types map to existing MemoryTypes
-            mt = {
-                "procedural": MemoryType.PROCEDURAL,
-                "factual": MemoryType.FACTUAL,
-                "interpretive": MemoryType.INTERPRETIVE,
-                "mechanism": MemoryType.INTERPRETIVE,
-                "lever": MemoryType.PROCEDURAL,  # D333: actionable
-                "situated": MemoryType.INTERPRETIVE,  # D333: connection to active concern
-                "tension": MemoryType.INTERPRETIVE,  # D333: contradiction/refinement
-            }.get(ntype, MemoryType.FACTUAL)
-
+            mt = _MT_MAP.get(ntype, MemoryType.FACTUAL)
             uid = f"BL_{str(uuid.uuid4())[:8].upper()}"
+
             meta = {
                 "source": "book_learner",
                 "book": book_title[:60],
@@ -883,18 +888,15 @@ def _deposit_nodes(
                 meta["content_id"] = campaign_id
             if pass2:
                 meta["pass"] = 2
-                meta["extraction_type"] = ntype  # lever/mechanism/situated/tension
+                meta["extraction_type"] = ntype
             if ntype == "mechanism":
                 meta["mechanism"] = True
             if trigger:
                 meta["trigger"] = trigger
-            # D333: pass-2 relevance field — which goal/gap this connects to
             relevance = node.get("relevance", "").strip()
             if relevance:
                 meta["relevance"] = relevance
 
-            # T-reading-lever-detection: attractor-guided identity_weight
-            # High overlap = lever node (deep deposit), low overlap = shallow
             if attractor_score >= 0.5:
                 meta["identity_weight"] = 0.8
                 meta["lever_score"] = round(attractor_score, 3)
@@ -903,60 +905,92 @@ def _deposit_nodes(
             else:
                 meta["identity_weight"] = 0.2
 
-            # Step 1: arousal from systemic milieu state; CP keyword affinity in metadata
-            _ms = _milieu_mod.read_state()
-            arousal = _ms.arousal if _ms else 0.5
             meta["cp_affinity"] = _cp_affinity_score(narrative, parent_cp)
 
             mem = Memory(
                 id=uid,
                 narrative=narrative,
                 memory_type=mt,
-                parent_id=chapter_node_id or None,  # Step 2: spine parent
+                parent_id=chapter_node_id or None,
                 arousal=arousal,
                 source="book_learner",
                 confidence=confidence,
                 context_of_encoding=f"book_learner|{ntype}|{book_title[:40]}",
                 metadata=meta,
             )
-            # Step 3: store
-            cortex.store(mem)
+            mems_to_store.append(mem)
+            uid_map[uid] = (node, mem, parent_cp, trigger, narrative, confidence)
 
-            # Step 4: embed immediately — makes node findable by semantic search
+            if parent_cp and parent_cp.startswith("CP"):
+                cp_children.append(uid)
+                interp_edges.append(
+                    {
+                        "from_id": parent_cp,
+                        "to_id": uid,
+                        "direction": "activation",
+                        "condition_csb": trigger or parent_cp.lower(),
+                        "meaning_payload": narrative[:80],
+                        "weight": confidence,
+                    }
+                )
+            if chapter_node_id:
+                chapter_children.append(uid)
+
+        except Exception as e:
+            print(f"    [deposit build error] {e}")
+
+    if not mems_to_store:
+        return 0
+
+    # Phase 2: batch store — 1 transaction for all nodes in this chunk.
+    try:
+        cortex.store_batch(mems_to_store)
+    except Exception as e:
+        print(f"    [batch store error] {e}")
+        return 0
+
+    # Phase 3: embeddings (non-DB, per node, non-fatal).
+    for mem in mems_to_store:
+        try:
+            cortex._get_or_compute_embedding(mem)
+        except Exception:
+            pass
+
+    # Phase 4: CP children — 1 read + 1 store per unique parent_cp.
+    if cp_children:
+        # Group by parent_cp (each node already carries its own parent_cp in uid_map)
+        _cp_groups: dict = {}
+        for uid, (
+            node,
+            mem,
+            parent_cp,
+            trigger,
+            narrative,
+            confidence,
+        ) in uid_map.items():
+            if parent_cp and parent_cp.startswith("CP") and uid in cp_children:
+                _cp_groups.setdefault(parent_cp, []).append(uid)
+        for _cp_id, _uids in _cp_groups.items():
             try:
-                cortex._get_or_compute_embedding(mem)
+                cortex.add_children_batch(_cp_id, _uids)
             except Exception:
                 pass
 
-            # Step 5: CP wiring — parent_child + interpretive edge
-            if parent_cp and parent_cp.startswith("CP"):
-                try:
-                    cortex.add_child(parent_cp, uid)
-                except Exception:
-                    pass
-                try:
-                    cortex.add_interpretive_edge(
-                        parent_cp,
-                        uid,
-                        direction="activation",
-                        condition_csb=trigger or parent_cp.lower(),
-                        meaning_payload=narrative[:80],
-                        weight=confidence,
-                    )
-                except Exception:
-                    pass
+    # Phase 5: interpretive edges — 1 transaction.
+    if interp_edges:
+        try:
+            cortex.add_interpretive_edges_batch(interp_edges)
+        except Exception:
+            pass
 
-            # Step 6: chapter spine wiring
-            if chapter_node_id:
-                try:
-                    cortex.add_child(chapter_node_id, uid)
-                except Exception:
-                    pass
+    # Phase 6: chapter spine children — 1 read + 1 store.
+    if chapter_children and chapter_node_id:
+        try:
+            cortex.add_children_batch(chapter_node_id, chapter_children)
+        except Exception:
+            pass
 
-            deposited += 1
-        except Exception as e:
-            print(f"    [deposit error] {e}")
-    return deposited
+    return len(mems_to_store)
 
 
 # wg_cooccur training removed — wg_edges (semantic similarity via nomic-embed-text)
