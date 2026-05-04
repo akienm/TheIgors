@@ -65,6 +65,7 @@ except Exception:
                 k, _, v = line.partition("=")
                 os.environ.setdefault(k.strip(), v.strip())
 
+from igor.cognition import milieu as _milieu_mod
 from igor.memory.cortex import Cortex
 
 _CLOUD_OK_OVERRIDE_FILE = Path.home() / ".TheIgors" / "cloud_ok_override.json"
@@ -602,7 +603,7 @@ def _extract_nodes(
         }
 
 
-# ── Arousal scoring from CP affinity ──────────────────────────────────────────
+# ── CP keyword affinity ───────────────────────────────────────────────────────
 
 _CP_KEYWORDS_AROUSAL: dict = {
     "CP1": ["learn", "growth", "capab", "know", "skill", "understand", "master"],
@@ -614,8 +615,8 @@ _CP_KEYWORDS_AROUSAL: dict = {
 }
 
 
-def _arousal_from_cp(narrative: str, parent_cp: str) -> float:
-    """Score arousal [0.10, 0.60] from CP keyword affinity. Never returns 0.0."""
+def _cp_affinity_score(narrative: str, parent_cp: str) -> float:
+    """Keyword-hit score [0.10, 0.60] for CP affinity — stored in metadata, not arousal."""
     text = narrative.lower()
     base = 0.10
     if parent_cp and parent_cp.startswith("CP"):
@@ -902,8 +903,10 @@ def _deposit_nodes(
             else:
                 meta["identity_weight"] = 0.2
 
-            # Step 1: arousal from CP affinity (never 0.0)
-            arousal = _arousal_from_cp(narrative, parent_cp)
+            # Step 1: arousal from systemic milieu state; CP keyword affinity in metadata
+            _ms = _milieu_mod.read_state()
+            arousal = _ms.arousal if _ms else 0.5
+            meta["cp_affinity"] = _cp_affinity_score(narrative, parent_cp)
 
             mem = Memory(
                 id=uid,

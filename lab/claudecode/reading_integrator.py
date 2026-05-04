@@ -47,6 +47,7 @@ if env_path.exists():
             k, _, v = line.partition("=")
             os.environ.setdefault(k.strip(), v.strip())
 
+from igor.cognition import milieu as _milieu_mod
 from igor.memory.cortex import Cortex
 from igor.memory.models import Memory, MemoryType
 
@@ -67,34 +68,6 @@ def _log(msg: str) -> None:
         LOG_PATH.write_text(entry + existing)
     except Exception:
         pass
-
-
-# ── CP keyword arousal (mirrors book_learner._arousal_from_cp) ────────────────
-
-_CP_KEYWORDS_AROUSAL: dict = {
-    "CP1": ["learn", "growth", "capab", "know", "skill", "understand", "master"],
-    "CP2": ["help", "social", "connect", "people", "friend", "communit", "relat"],
-    "CP3": ["curious", "explor", "creat", "discov", "wonder", "novel", "idea"],
-    "CP4": ["integr", "commit", "honest", "trust", "agree", "honor", "principl"],
-    "CP5": ["kind", "empath", "care", "compassion", "feel", "emotion", "person"],
-    "CP6": ["safe", "surviv", "protect", "danger", "homeostas", "risk", "guard"],
-}
-
-_CP_KEYS = list(_CP_KEYWORDS_AROUSAL.keys())
-
-
-def _best_cp(narrative: str) -> tuple[str, float]:
-    """Return (best_cp_id, arousal_score) from keyword affinity."""
-    text = narrative.lower()
-    best_cp = ""
-    best_score = 0.0
-    for cp, keywords in _CP_KEYWORDS_AROUSAL.items():
-        hits = sum(1 for kw in keywords if kw in text)
-        score = min(0.60, 0.15 + hits * 0.08)
-        if hits > 0 and score > best_score:
-            best_score = score
-            best_cp = cp
-    return best_cp, max(0.10, best_score)
 
 
 # ── Spine helpers ─────────────────────────────────────────────────────────────
@@ -300,32 +273,13 @@ def _integrate_node(
         except Exception as e:
             _log(f"  [spine FAIL] {mem.id}: {e}")
 
-    # Step 4: Interpretive bridge from best CP (if none exists)
-    try:
-        best_cp, _ = _best_cp(mem.narrative)
-        if best_cp and not dry_run:
-            with cortex._db() as c:
-                exists = c.execute(
-                    "SELECT 1 FROM interpretive_edges WHERE from_id=? AND to_id=? LIMIT 1",
-                    (best_cp, mem.id),
-                ).fetchone()
-            if not exists:
-                cortex.add_interpretive_edge(
-                    best_cp,
-                    mem.id,
-                    direction="activation",
-                    condition_csb=best_cp.lower(),
-                    meaning_payload=mem.narrative[:80],
-                    weight=float(mem.confidence or 0.7),
-                )
-                stats["interp"] = True
-    except Exception as e:
-        _log(f"  [interp FAIL] {mem.id}: {e}")
+    # Step 4: Interpretive bridge — retired (relied on SQLite cortex._db; Postgres path TBD)
 
-    # Step 5: Arousal — set if still at 0.0
+    # Step 5: Arousal — set from milieu state if still at 0.0
     if (mem.arousal or 0.0) == 0.0:
         try:
-            _, arousal = _best_cp(mem.narrative)
+            _ms = _milieu_mod.read_state()
+            arousal = _ms.arousal if _ms else 0.5
             if not dry_run:
                 mem.arousal = arousal
                 cortex.store(mem)
