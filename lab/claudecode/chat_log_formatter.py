@@ -3,7 +3,7 @@
 chat_log_formatter.py — Convert CC's JSONL transcripts to daily markdown.
 
 Source: newest session in ~/.claude/projects/-home-akien-TheIgors/*.jsonl
-Sink:   ~/TheIgors/claude_chat_logs/YYYY-MM-DD.md (append-only)
+Sink:   ~/.agent_datacenter/logs/CC.0/YYYY-MM-DD.md (append-only)
 State:  ~/.TheIgors/claudecode/chat_log_state.json (session → last-uuid seen)
 
 Invoked by a Claude Code Stop hook after every turn. Safe to run manually.
@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 _PROJECT_DIR = Path.home() / ".claude/projects/-home-akien-TheIgors"
-_OUT_DIR = Path.home() / "TheIgors/claude_chat_logs"
+_OUT_DIR = Path.home() / ".agent_datacenter/logs/CC.0"
 _STATE_FILE = Path.home() / ".TheIgors/claudecode/chat_log_state.json"
 
 _SKIP_TYPES = {
