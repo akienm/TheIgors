@@ -375,7 +375,7 @@ Conventions:
 ### `read_text`
 
 - **Defined:** `lab/claudecode/audit_pass1_run.py:211`
-- **Callers** (246):
+- **Callers** (244):
   - `lab/benchmarks/benchmark.py:529`
   - `lab/benchmarks/benchmark.py:680`
   - `lab/claudecode/audit_add.py:42`
@@ -404,8 +404,7 @@ Conventions:
   - `lab/claudecode/cc_hook_pending.py:45`
   - `lab/claudecode/cc_hook_pending.py:59`
   - `lab/claudecode/cc_hook_pending.py:142`
-  - `lab/claudecode/cc_queue.py:378`
-  - `lab/claudecode/cert_worker_freeze.py:39`
+  - `lab/claudecode/cc_queue.py:431`
   - `lab/claudecode/chat_log_formatter.py:37`
   - `lab/claudecode/cron_graph_cache_refresh.py:34`
   - `lab/claudecode/cron_graph_cache_refresh.py:58`
@@ -591,7 +590,6 @@ Conventions:
   - `wild_igor/igor/tools/memory_snapshot.py:48`
   - `wild_igor/igor/tools/metrics.py:121`
   - `wild_igor/igor/tools/metrics.py:177`
-  - `wild_igor/igor/tools/ops.py:153`
   - `wild_igor/igor/tools/pe_chain.py:1641`
   - `wild_igor/igor/tools/pe_chain.py:2014`
   - `wild_igor/igor/tools/pe_chain.py:2303`
@@ -978,7 +976,7 @@ Conventions:
 ### `append`
 
 - **Defined:** `lab/claudecode/cc_inbox.py:134`
-- **Callers** (1665):
+- **Callers** (1672):
   - `lab/benchmarks/benchmark.py:281`
   - `lab/benchmarks/benchmark.py:299`
   - `lab/benchmarks/benchmark.py:352`
@@ -1188,21 +1186,21 @@ Conventions:
   - `lab/claudecode/cc_inbox.py:207`
   - `lab/claudecode/cc_inbox.py:350`
   - `lab/claudecode/cc_queue.py:101`
-  - `lab/claudecode/cc_queue.py:236`
-  - `lab/claudecode/cc_queue.py:246`
-  - `lab/claudecode/cc_queue.py:367`
-  - `lab/claudecode/cc_queue.py:371`
-  - `lab/claudecode/cc_queue.py:372`
-  - `lab/claudecode/cc_queue.py:445`
-  - `lab/claudecode/cc_queue.py:447`
-  - `lab/claudecode/cc_queue.py:457`
-  - `lab/claudecode/cc_queue.py:458`
-  - `lab/claudecode/cc_queue.py:661`
-  - `lab/claudecode/cc_queue.py:702`
-  - `lab/claudecode/cert_worker_freeze.py:59`
-  - `lab/claudecode/cert_worker_freeze.py:65`
-  - `lab/claudecode/cert_worker_freeze.py:82`
-  - `lab/claudecode/cert_worker_freeze.py:92`
+  - `lab/claudecode/cc_queue.py:289`
+  - `lab/claudecode/cc_queue.py:299`
+  - `lab/claudecode/cc_queue.py:420`
+  - `lab/claudecode/cc_queue.py:424`
+  - `lab/claudecode/cc_queue.py:425`
+  - `lab/claudecode/cc_queue.py:498`
+  - `lab/claudecode/cc_queue.py:500`
+  - `lab/claudecode/cc_queue.py:510`
+  - `lab/claudecode/cc_queue.py:511`
+  - `lab/claudecode/cc_queue.py:714`
+  - `lab/claudecode/cc_queue.py:755`
+  - `lab/claudecode/cert_worker_freeze.py:71`
+  - `lab/claudecode/cert_worker_freeze.py:77`
+  - `lab/claudecode/cert_worker_freeze.py:94`
+  - `lab/claudecode/cert_worker_freeze.py:104`
   - `lab/claudecode/channel.py:136`
   - `lab/claudecode/channel.py:291`
   - `lab/claudecode/chat_log_formatter.py:87`
@@ -1430,6 +1428,7 @@ Conventions:
   - `lab/claudecode/swarm_ollama_cleanup.py:135`
   - `lab/claudecode/swarm_ollama_cleanup.py:179`
   - `lab/claudecode/swarm_ollama_cleanup.py:182`
+  - `lab/claudecode/ticket_prefix_refit.py:64`
   - `lab/claudecode/utility_closet_server.py:309`
   - `lab/claudecode/utility_closet_server.py:455`
   - `lab/claudecode/utility_closet_server.py:777`
@@ -1618,6 +1617,7 @@ Conventions:
   - `wild_igor/igor/cognition/basal_ganglia.py:752`
   - `wild_igor/igor/cognition/basal_ganglia.py:756`
   - `wild_igor/igor/cognition/basal_ganglia.py:788`
+  - `wild_igor/igor/cognition/basal_ganglia.py:815`
   - `wild_igor/igor/cognition/blob_store.py:108`
   - `wild_igor/igor/cognition/blob_store.py:123`
   - `wild_igor/igor/cognition/blob_store.py:128`
@@ -1703,21 +1703,22 @@ Conventions:
   - `wild_igor/igor/cognition/inference_gateway.py:227`
   - `wild_igor/igor/cognition/inference_gateway.py:347`
   - `wild_igor/igor/cognition/inference_gateway.py:351`
-  - `wild_igor/igor/cognition/inference_gateway.py:744`
-  - `wild_igor/igor/cognition/inference_gateway.py:748`
-  - `wild_igor/igor/cognition/inference_gateway.py:752`
-  - `wild_igor/igor/cognition/inference_gateway.py:1423`
-  - `wild_igor/igor/cognition/inference_gateway.py:1429`
-  - `wild_igor/igor/cognition/inference_gateway.py:1435`
-  - `wild_igor/igor/cognition/inference_gateway.py:1455`
-  - `wild_igor/igor/cognition/inference_gateway.py:1467`
-  - `wild_igor/igor/cognition/inference_gateway.py:1485`
-  - `wild_igor/igor/cognition/inference_gateway.py:1501`
-  - `wild_igor/igor/cognition/inference_gateway.py:1554`
-  - `wild_igor/igor/cognition/inference_gateway.py:1560`
-  - `wild_igor/igor/cognition/inference_gateway.py:1562`
-  - `wild_igor/igor/cognition/inference_gateway.py:1564`
-  - `wild_igor/igor/cognition/inference_gateway.py:1566`
+  - `wild_igor/igor/cognition/inference_gateway.py:759`
+  - `wild_igor/igor/cognition/inference_gateway.py:763`
+  - `wild_igor/igor/cognition/inference_gateway.py:767`
+  - `wild_igor/igor/cognition/inference_gateway.py:769`
+  - `wild_igor/igor/cognition/inference_gateway.py:1468`
+  - `wild_igor/igor/cognition/inference_gateway.py:1474`
+  - `wild_igor/igor/cognition/inference_gateway.py:1480`
+  - `wild_igor/igor/cognition/inference_gateway.py:1500`
+  - `wild_igor/igor/cognition/inference_gateway.py:1512`
+  - `wild_igor/igor/cognition/inference_gateway.py:1530`
+  - `wild_igor/igor/cognition/inference_gateway.py:1546`
+  - `wild_igor/igor/cognition/inference_gateway.py:1599`
+  - `wild_igor/igor/cognition/inference_gateway.py:1605`
+  - `wild_igor/igor/cognition/inference_gateway.py:1607`
+  - `wild_igor/igor/cognition/inference_gateway.py:1609`
+  - `wild_igor/igor/cognition/inference_gateway.py:1611`
   - `wild_igor/igor/cognition/interruptors.py:337`
   - `wild_igor/igor/cognition/job_manager.py:182`
   - `wild_igor/igor/cognition/job_manager.py:300`
@@ -1805,6 +1806,10 @@ Conventions:
   - `wild_igor/igor/cognition/node_executor.py:360`
   - `wild_igor/igor/cognition/node_executor.py:382`
   - `wild_igor/igor/cognition/pipeline_manager.py:141`
+  - `wild_igor/igor/cognition/planning.py:90`
+  - `wild_igor/igor/cognition/planning.py:95`
+  - `wild_igor/igor/cognition/planning.py:179`
+  - `wild_igor/igor/cognition/planning.py:256`
   - `wild_igor/igor/cognition/preparse_router.py:138`
   - `wild_igor/igor/cognition/preparse_router.py:142`
   - `wild_igor/igor/cognition/preparse_router.py:328`
@@ -1820,10 +1825,10 @@ Conventions:
   - `wild_igor/igor/cognition/prompt_contexts.py:257`
   - `wild_igor/igor/cognition/prompt_contexts.py:259`
   - `wild_igor/igor/cognition/prompt_contexts.py:291`
-  - `wild_igor/igor/cognition/pursuits.py:70`
-  - `wild_igor/igor/cognition/pursuits.py:152`
-  - `wild_igor/igor/cognition/pursuits.py:157`
-  - `wild_igor/igor/cognition/pursuits.py:216`
+  - `wild_igor/igor/cognition/pursuits.py:84`
+  - `wild_igor/igor/cognition/pursuits.py:189`
+  - `wild_igor/igor/cognition/pursuits.py:194`
+  - `wild_igor/igor/cognition/pursuits.py:253`
   - `wild_igor/igor/cognition/push_sources.py:262`
   - `wild_igor/igor/cognition/push_sources.py:266`
   - `wild_igor/igor/cognition/push_sources.py:347`
@@ -1862,17 +1867,17 @@ Conventions:
   - `wild_igor/igor/cognition/reasoners/base.py:533`
   - `wild_igor/igor/cognition/reasoners/base.py:577`
   - `wild_igor/igor/cognition/reasoners/base.py:776`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:287`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:289`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:291`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:293`
   - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:295`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:856`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:862`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:868`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:874`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:880`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:948`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:297`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:299`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:301`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:303`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:867`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:873`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:879`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:885`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:891`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:959`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:601`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:640`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:674`
@@ -2435,10 +2440,10 @@ Conventions:
   - `wild_igor/igor/tools/openrouter_reasoner.py:156`
   - `wild_igor/igor/tools/openrouter_reasoner.py:158`
   - `wild_igor/igor/tools/openrouter_reasoner.py:159`
-  - `wild_igor/igor/tools/ops.py:164`
-  - `wild_igor/igor/tools/ops.py:392`
-  - `wild_igor/igor/tools/ops.py:583`
-  - `wild_igor/igor/tools/ops.py:609`
+  - `wild_igor/igor/tools/ops.py:165`
+  - `wild_igor/igor/tools/ops.py:393`
+  - `wild_igor/igor/tools/ops.py:584`
+  - `wild_igor/igor/tools/ops.py:610`
   - `wild_igor/igor/tools/or_model_refresh.py:90`
   - `wild_igor/igor/tools/or_model_refresh.py:97`
   - `wild_igor/igor/tools/or_model_refresh.py:132`
@@ -2635,8 +2640,8 @@ Conventions:
   - `wild_igor/igor/tools/watchlist.py:144`
   - `wild_igor/igor/tools/watchlist.py:159`
   - `wild_igor/igor/tools/web_search.py:41`
-  - `wild_igor/igor/tools/worker_foreman.py:182`
-  - `wild_igor/igor/tools/worker_foreman.py:186`
+  - `wild_igor/igor/tools/worker_foreman.py:190`
+  - `wild_igor/igor/tools/worker_foreman.py:194`
   - `wild_igor/igor/web/server.py:197`
   - `wild_igor/setup_assets/installer.py:553`
   - `wild_igor/setup_assets/installer.py:557`
@@ -2699,7 +2704,7 @@ Conventions:
 
 ### `cmd_add`
 
-- **Defined:** `lab/claudecode/cc_queue.py:670`
+- **Defined:** `lab/claudecode/cc_queue.py:723`
 - **Callers** (5):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/decision_manager.py:290`
@@ -2709,56 +2714,56 @@ Conventions:
 
 ### `cmd_approve`
 
-- **Defined:** `lab/claudecode/cc_queue.py:564`
+- **Defined:** `lab/claudecode/cc_queue.py:617`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_block`
 
-- **Defined:** `lab/claudecode/cc_queue.py:519`
+- **Defined:** `lab/claudecode/cc_queue.py:572`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_claim`
 
-- **Defined:** `lab/claudecode/cc_queue.py:268`
+- **Defined:** `lab/claudecode/cc_queue.py:321`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_done`
 
-- **Defined:** `lab/claudecode/cc_queue.py:496`
+- **Defined:** `lab/claudecode/cc_queue.py:549`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_flush_decision`
 
-- **Defined:** `lab/claudecode/cc_queue.py:731`
+- **Defined:** `lab/claudecode/cc_queue.py:784`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_flush_session`
 
-- **Defined:** `lab/claudecode/cc_queue.py:746`
+- **Defined:** `lab/claudecode/cc_queue.py:799`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_gate`
 
-- **Defined:** `lab/claudecode/cc_queue.py:968`
+- **Defined:** `lab/claudecode/cc_queue.py:1021`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_list`
 
-- **Defined:** `lab/claudecode/cc_queue.py:208`
+- **Defined:** `lab/claudecode/cc_queue.py:261`
 - **Callers** (4):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/docs_sync.py:292`
@@ -2767,77 +2772,84 @@ Conventions:
 
 ### `cmd_log`
 
-- **Defined:** `lab/claudecode/cc_queue.py:614`
+- **Defined:** `lab/claudecode/cc_queue.py:667`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_needs_review`
 
-- **Defined:** `lab/claudecode/cc_queue.py:948`
+- **Defined:** `lab/claudecode/cc_queue.py:1001`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_notify_igor`
 
-- **Defined:** `lab/claudecode/cc_queue.py:791`
+- **Defined:** `lab/claudecode/cc_queue.py:844`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_propose`
 
-- **Defined:** `lab/claudecode/cc_queue.py:537`
+- **Defined:** `lab/claudecode/cc_queue.py:590`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_reset`
 
-- **Defined:** `lab/claudecode/cc_queue.py:848`
+- **Defined:** `lab/claudecode/cc_queue.py:901`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_reset_stale`
 
-- **Defined:** `lab/claudecode/cc_queue.py:869`
+- **Defined:** `lab/claudecode/cc_queue.py:922`
+- **Callers** (2):
+  - `lab/claudecode/decision_manager.py:72` (subprocess)
+  - `lab/claudecode/github_sync.py:290` (subprocess)
+
+### `cmd_retitle`
+
+- **Defined:** `lab/claudecode/cc_queue.py:1114`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_set_decision`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1016`
+- **Defined:** `lab/claudecode/cc_queue.py:1069`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_set_epic`
 
-- **Defined:** `lab/claudecode/cc_queue.py:905`
+- **Defined:** `lab/claudecode/cc_queue.py:958`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_set_github_issue`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1036`
+- **Defined:** `lab/claudecode/cc_queue.py:1089`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_set_worker`
 
-- **Defined:** `lab/claudecode/cc_queue.py:925`
+- **Defined:** `lab/claudecode/cc_queue.py:978`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_show`
 
-- **Defined:** `lab/claudecode/cc_queue.py:256`
+- **Defined:** `lab/claudecode/cc_queue.py:309`
 - **Callers** (5):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/decision_manager.py:293`
@@ -2847,25 +2859,41 @@ Conventions:
 
 ### `cmd_ungate`
 
-- **Defined:** `lab/claudecode/cc_queue.py:989`
+- **Defined:** `lab/claudecode/cc_queue.py:1042`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
 
 ### `cmd_worker_launch`
 
-- **Defined:** `lab/claudecode/cc_queue.py:812`
+- **Defined:** `lab/claudecode/cc_queue.py:865`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:290` (subprocess)
+
+### `load_tasks`
+
+- **Defined:** `lab/claudecode/cc_queue.py:191`
+- **Callers** (3):
+  - `lab/claudecode/decision_manager.py:72` (subprocess)
+  - `lab/claudecode/github_sync.py:290` (subprocess)
+  - `lab/claudecode/ticket_prefix_refit.py:54`
+
+### `save_tasks`
+
+- **Defined:** `lab/claudecode/cc_queue.py:197`
+- **Callers** (3):
+  - `lab/claudecode/decision_manager.py:72` (subprocess)
+  - `lab/claudecode/github_sync.py:290` (subprocess)
+  - `lab/claudecode/ticket_prefix_refit.py:69`
 
 ## `lab.claudecode.cert_worker_freeze`
 
 ### `freeze`
 
-- **Defined:** `lab/claudecode/cert_worker_freeze.py:46`
+- **Defined:** `lab/claudecode/cert_worker_freeze.py:58`
 - **Callers** (10):
-  - `lab/claudecode/cert_worker_freeze.py:121`
+  - `lab/claudecode/cert_worker_freeze.py:133`
   - `tests/test_cert_worker_freeze.py:31`
   - `tests/test_cert_worker_freeze.py:41`
   - `tests/test_cert_worker_freeze.py:48`
@@ -2879,15 +2907,17 @@ Conventions:
 ### `load`
 
 - **Defined:** `lab/claudecode/cert_worker_freeze.py:38`
-- **Callers** (2):
-  - `lab/claudecode/cert_worker_freeze.py:111`
+- **Callers** (4):
+  - `lab/claudecode/cert_worker_freeze.py:123`
   - `wild_igor/igor/cognition/job_manager.py:172`
+  - `wild_igor/tools/swadl_flows/gmail.py:120`
+  - `wild_igor/tools/swadl_flows/gmail.py:140`
 
 ### `save`
 
-- **Defined:** `lab/claudecode/cert_worker_freeze.py:42`
+- **Defined:** `lab/claudecode/cert_worker_freeze.py:47`
 - **Callers** (13):
-  - `lab/claudecode/cert_worker_freeze.py:128`
+  - `lab/claudecode/cert_worker_freeze.py:140`
   - `lab/claudecode/map_igor.py:347`
   - `wild_igor/igor/cognition/job_manager.py:129`
   - `wild_igor/igor/cognition/job_manager.py:165`
@@ -2903,9 +2933,9 @@ Conventions:
 
 ### `status`
 
-- **Defined:** `lab/claudecode/cert_worker_freeze.py:86`
+- **Defined:** `lab/claudecode/cert_worker_freeze.py:98`
 - **Callers** (23):
-  - `lab/claudecode/cert_worker_freeze.py:114`
+  - `lab/claudecode/cert_worker_freeze.py:126`
   - `tests/test_cert_worker_freeze.py:96`
   - `tests/test_cert_worker_freeze.py:102`
   - `tests/test_daemon_supervisor.py:54`
@@ -2931,9 +2961,9 @@ Conventions:
 
 ### `unfreeze`
 
-- **Defined:** `lab/claudecode/cert_worker_freeze.py:69`
+- **Defined:** `lab/claudecode/cert_worker_freeze.py:81`
 - **Callers** (5):
-  - `lab/claudecode/cert_worker_freeze.py:124`
+  - `lab/claudecode/cert_worker_freeze.py:136`
   - `tests/test_cert_worker_freeze.py:70`
   - `tests/test_cert_worker_freeze.py:79`
   - `tests/test_cert_worker_freeze.py:86`
@@ -2993,9 +3023,9 @@ Conventions:
   - `lab/claudecode/audit_pass1_run.py:321`
   - `lab/claudecode/book_learner.py:499`
   - `lab/claudecode/book_learner.py:583`
-  - `lab/claudecode/cc_queue.py:171`
-  - `lab/claudecode/cc_queue.py:430`
-  - `lab/claudecode/cc_queue.py:784`
+  - `lab/claudecode/cc_queue.py:224`
+  - `lab/claudecode/cc_queue.py:483`
+  - `lab/claudecode/cc_queue.py:837`
   - `lab/claudecode/channel.py:324`
   - `lab/claudecode/consolidate_memories.py:59`
   - `lab/claudecode/igor_mcp.py:953`
@@ -3030,12 +3060,12 @@ Conventions:
   - `wild_igor/igor/cognition/cloud_mode.py:54`
   - `wild_igor/igor/cognition/cluster_router.py:97`
   - `wild_igor/igor/cognition/consult.py:271`
-  - `wild_igor/igor/cognition/inference_gateway.py:839`
-  - `wild_igor/igor/cognition/inference_gateway.py:875`
+  - `wild_igor/igor/cognition/inference_gateway.py:884`
+  - `wild_igor/igor/cognition/inference_gateway.py:920`
   - `wild_igor/igor/cognition/milieu.py:397`
   - `wild_igor/igor/cognition/reading_indexer.py:151`
   - `wild_igor/igor/cognition/reasoners/base.py:607`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:1053`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:1064`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:108`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:224`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:747`
@@ -3071,8 +3101,8 @@ Conventions:
   - `wild_igor/igor/tools/senses.py:108`
   - `wild_igor/igor/tools/template_tools.py:385`
   - `wild_igor/igor/tools/want_tracker.py:84`
-  - `wild_igor/igor/tools/worker_foreman.py:151`
-  - `wild_igor/igor/tools/worker_foreman.py:153`
+  - `wild_igor/igor/tools/worker_foreman.py:159`
+  - `wild_igor/igor/tools/worker_foreman.py:161`
   - `wild_igor/igor/web/utility_closet_client.py:74`
   - `wild_igor/igor/web/utility_closet_client.py:133`
   - `wild_igor/igor/web/utility_closet_client.py:189`
@@ -3397,12 +3427,12 @@ Conventions:
   - `wild_igor/igor/tools/memory_provenance.py:62`
   - `wild_igor/igor/tools/ops.py:58`
   - `wild_igor/igor/tools/ops.py:129`
-  - `wild_igor/igor/tools/ops.py:246`
-  - `wild_igor/igor/tools/ops.py:322`
-  - `wild_igor/igor/tools/ops.py:418`
-  - `wild_igor/igor/tools/ops.py:486`
-  - `wild_igor/igor/tools/ops.py:517`
-  - `wild_igor/igor/tools/ops.py:608`
+  - `wild_igor/igor/tools/ops.py:247`
+  - `wild_igor/igor/tools/ops.py:323`
+  - `wild_igor/igor/tools/ops.py:419`
+  - `wild_igor/igor/tools/ops.py:487`
+  - `wild_igor/igor/tools/ops.py:518`
+  - `wild_igor/igor/tools/ops.py:609`
   - `wild_igor/igor/tools/os_primitives.py:429`
   - `wild_igor/igor/tools/os_primitives.py:433`
   - `wild_igor/igor/tools/output_trainer.py:351`
@@ -3536,8 +3566,8 @@ Conventions:
   - `wild_igor/igor/tools/habit_health_audit.py:327`
   - `wild_igor/igor/tools/memory_query.py:118`
   - `wild_igor/igor/tools/metrics.py:182`
-  - `wild_igor/igor/tools/ops.py:348`
-  - `wild_igor/igor/tools/ops.py:587`
+  - `wild_igor/igor/tools/ops.py:349`
+  - `wild_igor/igor/tools/ops.py:588`
   - `wild_igor/igor/tools/os_primitives.py:488`
   - `wild_igor/igor/tools/output_trainer.py:230`
   - `wild_igor/igor/tools/pe_chain.py:1004`
@@ -3873,7 +3903,7 @@ Conventions:
 
 - **Defined:** `lab/claudecode/map_igor.py:277`
 - **Callers** (13):
-  - `lab/claudecode/cert_worker_freeze.py:128`
+  - `lab/claudecode/cert_worker_freeze.py:140`
   - `lab/claudecode/map_igor.py:347`
   - `wild_igor/igor/cognition/job_manager.py:129`
   - `wild_igor/igor/cognition/job_manager.py:165`
@@ -4240,7 +4270,7 @@ Conventions:
 ### `send`
 
 - **Defined:** `lab/claudecode/run_phrase_test.py:46`
-- **Callers** (51):
+- **Callers** (52):
   - `lab/claudecode/cc_bridge.py:137`
   - `lab/claudecode/cc_bridge.py:181`
   - `lab/claudecode/cc_inbox.py:190`
@@ -4292,6 +4322,7 @@ Conventions:
   - `tests/test_or_chat_transport.py:187`
   - `wild_igor/igor/main.py:3930`
   - `wild_igor/igor/network/discord_bot.py:188`
+  - `wild_igor/tools/swadl_flows/gmail.py:107`
 
 ## `lab.claudecode.scan_for_rest_drafter`
 
@@ -6558,8 +6589,8 @@ Conventions:
   - `lab/claudecode/book_learner.py:426`
   - `lab/claudecode/cc_inbox.py:173`
   - `lab/claudecode/cc_inbox.py:220`
-  - `lab/claudecode/cc_queue.py:156`
-  - `lab/claudecode/cc_queue.py:173`
+  - `lab/claudecode/cc_queue.py:209`
+  - `lab/claudecode/cc_queue.py:226`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/chat_log_formatter.py:142`
   - `lab/claudecode/chat_log_formatter.py:143`
@@ -6669,9 +6700,9 @@ Conventions:
   - `wild_igor/igor/tools/memory_sync.py:90`
   - `wild_igor/igor/tools/misfire_counter.py:140`
   - `wild_igor/igor/tools/misfire_counter.py:227`
-  - `wild_igor/igor/tools/ops.py:287`
-  - `wild_igor/igor/tools/ops.py:339`
-  - `wild_igor/igor/tools/ops.py:435`
+  - `wild_igor/igor/tools/ops.py:288`
+  - `wild_igor/igor/tools/ops.py:340`
+  - `wild_igor/igor/tools/ops.py:436`
   - `wild_igor/igor/tools/pr_accretion.py:45`
   - `wild_igor/igor/tools/pr_consolidation.py:79`
   - `wild_igor/igor/tools/reading_benchmark.py:324`
@@ -6834,8 +6865,8 @@ Conventions:
   - `wild_igor/igor/tools/inner_cc.py:300`
   - `wild_igor/igor/tools/openrouter_reasoner.py:39`
   - `wild_igor/igor/tools/self_edit.py:243`
-  - `wild_igor/igor/tools/worker_foreman.py:151`
-  - `wild_igor/igor/tools/worker_foreman.py:153`
+  - `wild_igor/igor/tools/worker_foreman.py:159`
+  - `wild_igor/igor/tools/worker_foreman.py:161`
 
 ### `encode`
 
@@ -6851,9 +6882,9 @@ Conventions:
   - `lab/claudecode/book_learner.py:652`
   - `lab/claudecode/book_learner.py:705`
   - `lab/claudecode/cc_deposit.py:66`
-  - `lab/claudecode/cc_queue.py:602`
-  - `lab/claudecode/cc_queue.py:715`
-  - `lab/claudecode/cc_queue.py:797`
+  - `lab/claudecode/cc_queue.py:655`
+  - `lab/claudecode/cc_queue.py:768`
+  - `lab/claudecode/cc_queue.py:850`
   - `lab/claudecode/consolidate_memories.py:51`
   - `lab/claudecode/docs_sync.py:111`
   - `lab/claudecode/drain_learn_queue.py:211`
@@ -6875,15 +6906,15 @@ Conventions:
   - `wild_igor/igor/brainstem/core_patterns.py:806`
   - `wild_igor/igor/cognition/consult.py:250`
   - `wild_igor/igor/cognition/embedder.py:34`
-  - `wild_igor/igor/cognition/inference_gateway.py:824`
-  - `wild_igor/igor/cognition/inference_gateway.py:864`
+  - `wild_igor/igor/cognition/inference_gateway.py:869`
+  - `wild_igor/igor/cognition/inference_gateway.py:909`
   - `wild_igor/igor/cognition/milieu.py:424`
   - `wild_igor/igor/cognition/push_sources.py:1534`
   - `wild_igor/igor/cognition/reading_indexer.py:92`
   - `wild_igor/igor/cognition/reading_indexer.py:130`
   - `wild_igor/igor/cognition/reasoners/base.py:592`
   - `wild_igor/igor/cognition/reasoners/base.py:670`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:1035`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:1046`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:86`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:204`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:732`
@@ -7039,8 +7070,8 @@ Conventions:
   - `lab/claudecode/book_learner.py:426`
   - `lab/claudecode/cc_inbox.py:173`
   - `lab/claudecode/cc_inbox.py:220`
-  - `lab/claudecode/cc_queue.py:156`
-  - `lab/claudecode/cc_queue.py:173`
+  - `lab/claudecode/cc_queue.py:209`
+  - `lab/claudecode/cc_queue.py:226`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/chat_log_formatter.py:142`
   - `lab/claudecode/chat_log_formatter.py:143`
@@ -7150,9 +7181,9 @@ Conventions:
   - `wild_igor/igor/tools/memory_sync.py:90`
   - `wild_igor/igor/tools/misfire_counter.py:140`
   - `wild_igor/igor/tools/misfire_counter.py:227`
-  - `wild_igor/igor/tools/ops.py:287`
-  - `wild_igor/igor/tools/ops.py:339`
-  - `wild_igor/igor/tools/ops.py:435`
+  - `wild_igor/igor/tools/ops.py:288`
+  - `wild_igor/igor/tools/ops.py:340`
+  - `wild_igor/igor/tools/ops.py:436`
   - `wild_igor/igor/tools/pr_accretion.py:45`
   - `wild_igor/igor/tools/pr_consolidation.py:79`
   - `wild_igor/igor/tools/reading_benchmark.py:324`
@@ -7236,8 +7267,8 @@ Conventions:
   - `wild_igor/igor/tools/inner_cc.py:300`
   - `wild_igor/igor/tools/openrouter_reasoner.py:39`
   - `wild_igor/igor/tools/self_edit.py:243`
-  - `wild_igor/igor/tools/worker_foreman.py:151`
-  - `wild_igor/igor/tools/worker_foreman.py:153`
+  - `wild_igor/igor/tools/worker_foreman.py:159`
+  - `wild_igor/igor/tools/worker_foreman.py:161`
 
 ### `encode`
 
@@ -7253,9 +7284,9 @@ Conventions:
   - `lab/claudecode/book_learner.py:652`
   - `lab/claudecode/book_learner.py:705`
   - `lab/claudecode/cc_deposit.py:66`
-  - `lab/claudecode/cc_queue.py:602`
-  - `lab/claudecode/cc_queue.py:715`
-  - `lab/claudecode/cc_queue.py:797`
+  - `lab/claudecode/cc_queue.py:655`
+  - `lab/claudecode/cc_queue.py:768`
+  - `lab/claudecode/cc_queue.py:850`
   - `lab/claudecode/consolidate_memories.py:51`
   - `lab/claudecode/docs_sync.py:111`
   - `lab/claudecode/drain_learn_queue.py:211`
@@ -7277,15 +7308,15 @@ Conventions:
   - `wild_igor/igor/brainstem/core_patterns.py:806`
   - `wild_igor/igor/cognition/consult.py:250`
   - `wild_igor/igor/cognition/embedder.py:34`
-  - `wild_igor/igor/cognition/inference_gateway.py:824`
-  - `wild_igor/igor/cognition/inference_gateway.py:864`
+  - `wild_igor/igor/cognition/inference_gateway.py:869`
+  - `wild_igor/igor/cognition/inference_gateway.py:909`
   - `wild_igor/igor/cognition/milieu.py:424`
   - `wild_igor/igor/cognition/push_sources.py:1534`
   - `wild_igor/igor/cognition/reading_indexer.py:92`
   - `wild_igor/igor/cognition/reading_indexer.py:130`
   - `wild_igor/igor/cognition/reasoners/base.py:592`
   - `wild_igor/igor/cognition/reasoners/base.py:670`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:1035`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:1046`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:86`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:204`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:732`
@@ -7489,8 +7520,8 @@ Conventions:
   - `lab/claudecode/book_learner.py:426`
   - `lab/claudecode/cc_inbox.py:173`
   - `lab/claudecode/cc_inbox.py:220`
-  - `lab/claudecode/cc_queue.py:156`
-  - `lab/claudecode/cc_queue.py:173`
+  - `lab/claudecode/cc_queue.py:209`
+  - `lab/claudecode/cc_queue.py:226`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/chat_log_formatter.py:142`
   - `lab/claudecode/chat_log_formatter.py:143`
@@ -7600,9 +7631,9 @@ Conventions:
   - `wild_igor/igor/tools/memory_sync.py:90`
   - `wild_igor/igor/tools/misfire_counter.py:140`
   - `wild_igor/igor/tools/misfire_counter.py:227`
-  - `wild_igor/igor/tools/ops.py:287`
-  - `wild_igor/igor/tools/ops.py:339`
-  - `wild_igor/igor/tools/ops.py:435`
+  - `wild_igor/igor/tools/ops.py:288`
+  - `wild_igor/igor/tools/ops.py:340`
+  - `wild_igor/igor/tools/ops.py:436`
   - `wild_igor/igor/tools/pr_accretion.py:45`
   - `wild_igor/igor/tools/pr_consolidation.py:79`
   - `wild_igor/igor/tools/reading_benchmark.py:324`
@@ -7812,7 +7843,12 @@ Conventions:
 ### `read_inbox`
 
 - **Defined:** `wild_igor/igor/tools/gmail.py:68`
-- **Callers:** _(none found)_
+- **Callers** (5):
+  - `tests/test_swadl_flows_gmail.py:68`
+  - `tests/test_swadl_flows_gmail.py:80`
+  - `tests/test_swadl_flows_gmail.py:86`
+  - `tests/test_swadl_flows_gmail.py:91`
+  - `tests/test_swadl_flows_gmail.py:97`
 
 ### `search_email`
 
@@ -7822,7 +7858,10 @@ Conventions:
 ### `send_email`
 
 - **Defined:** `wild_igor/igor/tools/gmail.py:41`
-- **Callers:** _(none found)_
+- **Callers** (3):
+  - `tests/test_swadl_flows_gmail.py:29`
+  - `tests/test_swadl_flows_gmail.py:40`
+  - `tests/test_swadl_flows_gmail.py:48`
 
 ## `wild_igor.igor.tools.goal_continuation`
 
@@ -8505,13 +8544,13 @@ Conventions:
 
 ### `adopt_top_queue_ticket`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:660`
+- **Defined:** `wild_igor/igor/tools/ops.py:661`
 - **Callers** (1):
   - `tests/test_queue_consumer.py:185`
 
 ### `close_goal`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:449`
+- **Defined:** `wild_igor/igor/tools/ops.py:450`
 - **Callers** (5):
   - `tests/test_goal_close_habit.py:68`
   - `tests/test_goal_close_habit.py:70`
@@ -8521,44 +8560,44 @@ Conventions:
 
 ### `close_goal_by_ticket`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:495`
+- **Defined:** `wild_igor/igor/tools/ops.py:496`
 - **Callers** (1):
   - `tests/test_goal_close.py:57`
 
 ### `close_task_by_name`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:547`
+- **Defined:** `wild_igor/igor/tools/ops.py:548`
 - **Callers:** _(none found)_
 
 ### `flush_habit_cache`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:716`
+- **Defined:** `wild_igor/igor/tools/ops.py:717`
 - **Callers:** _(none found)_
 
 ### `goal_adopt`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:174`
+- **Defined:** `wild_igor/igor/tools/ops.py:175`
 - **Callers** (6):
   - `tests/test_goal_graph.py:333`
   - `tests/test_pr_secondary_attractor_nesting.py:73`
   - `tests/test_pr_secondary_attractor_nesting.py:86`
   - `tests/test_pr_secondary_attractor_nesting.py:103`
   - `tests/test_pr_secondary_attractor_nesting.py:127`
-  - `wild_igor/igor/tools/ops.py:707`
+  - `wild_igor/igor/tools/ops.py:708`
 
 ### `goal_close`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:398`
+- **Defined:** `wild_igor/igor/tools/ops.py:399`
 - **Callers:** _(none found)_
 
 ### `goal_fail_active`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:298`
+- **Defined:** `wild_igor/igor/tools/ops.py:299`
 - **Callers:** _(none found)_
 
 ### `goal_scan`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:373`
+- **Defined:** `wild_igor/igor/tools/ops.py:374`
 - **Callers:** _(none found)_
 
 ### `queue_task`
@@ -8568,7 +8607,7 @@ Conventions:
 
 ### `read_active_goal_plan`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1136`
+- **Defined:** `wild_igor/igor/tools/ops.py:1137`
 - **Callers** (4):
   - `tests/test_thread_context_persistence.py:94`
   - `tests/test_thread_context_persistence.py:124`
@@ -8577,14 +8616,14 @@ Conventions:
 
 ### `read_queue_top`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:622`
+- **Defined:** `wild_igor/igor/tools/ops.py:623`
 - **Callers** (2):
   - `tests/test_queue_consumer.py:87`
   - `tests/test_queue_consumer.py:146`
 
 ### `run_coding_sprint`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1016`
+- **Defined:** `wild_igor/igor/tools/ops.py:1017`
 - **Callers** (3):
   - `tests/test_coding_sprint.py:74`
   - `tests/test_coding_sprint.py:94`
@@ -8592,7 +8631,7 @@ Conventions:
 
 ### `run_tests`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1247`
+- **Defined:** `wild_igor/igor/tools/ops.py:1250`
 - **Callers** (4):
   - `tests/test_run_tests_tool.py:104`
   - `tests/test_run_tests_tool.py:120`
@@ -8611,7 +8650,7 @@ Conventions:
 
 ### `store_plan`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1106`
+- **Defined:** `wild_igor/igor/tools/ops.py:1107`
 - **Callers** (3):
   - `tests/test_thread_context_persistence.py:32`
   - `tests/test_thread_context_persistence.py:64`
@@ -9077,8 +9116,8 @@ Conventions:
   - `wild_igor/igor/cognition/daemon_supervisor.py:241`
   - `wild_igor/igor/cognition/job_manager.py:292`
   - `wild_igor/igor/cognition/job_manager.py:311`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:371`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:631`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:379`
+  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:642`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:540`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:596`
   - `wild_igor/igor/cognition/shadow_reasoner.py:249`
@@ -10421,38 +10460,38 @@ Conventions:
 
 ### `adopt_next_ticket`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:263`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:271`
 - **Callers** (2):
   - `wild_igor/igor/tools/worker_foreman.py:92`
-  - `wild_igor/igor/tools/worker_foreman.py:441`
+  - `wild_igor/igor/tools/worker_foreman.py:449`
 
 ### `check_worker_queue`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:167`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:175`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:359`
+  - `wild_igor/igor/tools/worker_foreman.py:367`
 
 ### `foreman_scan`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:206`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:214`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:412`
+  - `wild_igor/igor/tools/worker_foreman.py:420`
 
 ### `launch_next_worker`
 
 - **Defined:** `wild_igor/igor/tools/worker_foreman.py:70`
 - **Callers** (2):
-  - `wild_igor/igor/tools/worker_foreman.py:229`
-  - `wild_igor/igor/tools/worker_foreman.py:343`
+  - `wild_igor/igor/tools/worker_foreman.py:237`
+  - `wild_igor/igor/tools/worker_foreman.py:351`
 
 ### `queue_pending_count`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:249`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:257`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:426`
+  - `wild_igor/igor/tools/worker_foreman.py:434`
 
 ### `record_worker_closure`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:193`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:201`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:392`
+  - `wild_igor/igor/tools/worker_foreman.py:400`
