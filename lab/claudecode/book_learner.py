@@ -879,6 +879,7 @@ def _deposit_nodes(
                 )
             if campaign_id:
                 meta["campaign_id"] = campaign_id
+                meta["content_id"] = campaign_id
             if pass2:
                 meta["pass"] = 2
                 meta["extraction_type"] = ntype  # lever/mechanism/situated/tension
