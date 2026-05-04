@@ -74,7 +74,6 @@ EXCLUDE_PATTERNS = [
     r"^lab/claudecode/cc_skills/",  # mirror of ~/.claude/skills; avoid double-include
     r"^lab/claudecode/archive/",
     r"^lab/claudecode/cc_memory_seed/",  # data files
-    r"^lab/claude_chat_logs/",
     r"^lab/notes\.log$",
     r"^lab/ebook_candidates\.md$",  # reference list, not code
     r"^lab/design_docs/gap_analysis\.md$",  # auto-generated
