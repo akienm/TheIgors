@@ -1,5 +1,20 @@
 """gmail_inbox.py — InboxPage page object for Gmail.
 
+HARD REQUIREMENT — browser profile:
+  Gmail pages MUST run in Igor's pre-authenticated Chrome profile. Without
+  it, Chrome opens a fresh unauthenticated session and hits the login wall.
+
+  Set before creating any page or driver:
+      from SWADL.engine.swadl_cfg import cfgdict
+      from SWADL.engine.swadl_constants import SELENIUM_USER_DATA_DIR
+      cfgdict[SELENIUM_USER_DATA_DIR] = IGOR_PROFILE_PATH
+
+  Igor's profile on akiendelllinux:
+      ~/.agent_datacenter/Igor-wild-0001/accounts/chrome_igor_profile
+
+  Callers that skip this step will get a RuntimeError from load() rather
+  than a silent unauthenticated session that looks like it worked.
+
 Implements the InboxPage interface specified in GmailFlow:
   .load(), .open_compose(), .first_n_messages(n), .find_message(message_id)
 
@@ -21,9 +36,16 @@ and uses SWADL's global driver via self.driver.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Optional
 
 from SWADL.engine.swadl_base_section import SWADLPageSection
+
+# Igor's pre-authenticated Chrome profile. Set cfgdict[SELENIUM_USER_DATA_DIR]
+# to this path before creating the driver.
+IGOR_PROFILE_PATH = str(
+    Path.home() / ".agent_datacenter/Igor-wild-0001/accounts/chrome_igor_profile"
+)
 
 _INBOX_URL = "https://mail.google.com/mail/u/0/#inbox"
 
@@ -38,6 +60,10 @@ _ATTR_THREAD_ID = "data-legacy-thread-id"
 
 class InboxPage(SWADLPageSection):
     """Gmail inbox page object.
+
+    Requires Igor's Chrome profile to be configured in cfgdict before the
+    driver starts — see module docstring. load() raises RuntimeError if the
+    profile is not set, catching the silent-unauthenticated-session failure.
 
     Pass ``driver_override`` in tests to inject a mock selenium driver
     instead of relying on SWADL's global cfgdict driver.
@@ -59,6 +85,16 @@ class InboxPage(SWADLPageSection):
         )
 
     def load(self) -> None:
+        from SWADL.engine.swadl_cfg import cfgdict
+        from SWADL.engine.swadl_constants import SELENIUM_USER_DATA_DIR
+
+        if not cfgdict.get(SELENIUM_USER_DATA_DIR):
+            raise RuntimeError(
+                "InboxPage.load(): SELENIUM_USER_DATA_DIR not set in cfgdict. "
+                "Gmail requires Igor's pre-authenticated Chrome profile. "
+                f"Set cfgdict[SELENIUM_USER_DATA_DIR] = IGOR_PROFILE_PATH "
+                f"before creating the driver. Igor's profile: {IGOR_PROFILE_PATH}"
+            )
         self._drv.get(_INBOX_URL)
 
     def open_compose(self) -> "ComposePage":
