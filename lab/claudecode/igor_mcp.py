@@ -420,6 +420,52 @@ async def list_tools() -> list[types.Tool]:
                 "required": [],
             },
         ),
+        types.Tool(
+            name="db_query",
+            description=(
+                "Read-only SQL SELECT against the Igor Postgres DB. "
+                "Returns rows as JSON. Use instead of `psql -tAc` shell-outs. "
+                "Prefer mcp__igor__memory_get / memory_search for single-node reads."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sql": {
+                        "type": "string",
+                        "description": "SELECT statement to execute",
+                    },
+                    "params": {
+                        "type": "array",
+                        "description": "Positional parameters for %s placeholders (optional)",
+                        "items": {},
+                    },
+                },
+                "required": ["sql"],
+            },
+        ),
+        types.Tool(
+            name="db_dispatch",
+            description=(
+                "Write SQL (INSERT/UPDATE/DELETE) against the Igor Postgres DB. "
+                "Returns rowcount and a request_id. "
+                "Use for state changes; use db_query for reads."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sql": {
+                        "type": "string",
+                        "description": "INSERT, UPDATE, or DELETE statement",
+                    },
+                    "params": {
+                        "type": "array",
+                        "description": "Positional parameters for %s placeholders (optional)",
+                        "items": {},
+                    },
+                },
+                "required": ["sql"],
+            },
+        ),
     ]
 
 
@@ -484,6 +530,10 @@ def _dispatch(name: str, args: dict) -> str:
         return _request_compaction(args.get("preserve_instructions", ""))
     elif name == "audit_conversation_health":
         return _audit_conversation_health(args.get("hours", 24))
+    elif name == "db_query":
+        return _db_query(args["sql"], args.get("params", []))
+    elif name == "db_dispatch":
+        return _db_dispatch(args["sql"], args.get("params", []))
     else:
         return f"Unknown tool: {name}"
 
@@ -1114,6 +1164,26 @@ def _audit_conversation_health(hours: int = 24) -> str:
 
     report = audit_conversation_health(hours)
     return format_report(report)
+
+
+# ── db_query / db_dispatch ────────────────────────────────────────────────────
+
+
+def _db_query(sql: str, params: list = ()) -> str:
+    """Run a read-only SELECT; return JSON rows + count."""
+    import json as _json
+
+    rows = _q(sql, params)
+    return _json.dumps({"rows": rows, "count": len(rows)}, default=str)
+
+
+def _db_dispatch(sql: str, params: list = ()) -> str:
+    """Run a write SQL statement; return rowcount + opaque request_id."""
+    import json as _json
+    import uuid
+
+    rowcount = _exec(sql, params)
+    return _json.dumps({"rowcount": rowcount, "request_id": str(uuid.uuid4())})
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
