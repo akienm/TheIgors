@@ -25,3 +25,9 @@ ebook_candidates.md
 
 # T-cc-daily-chat-logs — local chat history, not repo content
 claude_chat_logs/
+
+# T-agent-datacenter-workspaces — workspace dirs are ephemeral; contents not committed
+agent_datacenter/workspaces/claude/*
+agent_datacenter/workspaces/igor/*
+!agent_datacenter/workspaces/claude/.gitkeep
+!agent_datacenter/workspaces/igor/.gitkeep
