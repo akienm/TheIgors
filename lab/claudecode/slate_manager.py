@@ -261,10 +261,13 @@ def cmd_show():
 def _queue_done_ids() -> set:
     """Return set of ticket IDs marked done in cc_queue (cross-reference for render)."""
     try:
-        q = Path.home() / ".TheIgors" / "cc_channel" / "queue.json"
-        import json as _json
+        import sys as _sys
+        from pathlib import Path as _Path
 
-        tasks = _json.loads(q.read_text())
+        _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+        from cc_queue import load_tasks
+
+        tasks = load_tasks()
         return {t["id"] for t in tasks if t.get("status") == "done"}
     except Exception:
         return set()

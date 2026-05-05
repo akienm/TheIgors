@@ -34,8 +34,6 @@ import re
 import sys
 from pathlib import Path
 
-QUEUE_PATH = Path.home() / ".TheIgors" / "cc_channel" / "queue.json"
-
 
 def get_full_desc(t: dict) -> str:
     """Description can live in description, body, or notes — concat all three."""
@@ -130,10 +128,14 @@ def classify(t: dict) -> str:
     return "no-test-plan"
 
 
-def audit_queue(queue_path: Path = QUEUE_PATH, verbose: bool = False) -> dict:
+def audit_queue(verbose: bool = False) -> dict:
     """Run shape audit across all pending tickets. Returns counts + lists."""
-    with open(queue_path) as f:
-        queue = json.load(f)
+    import sys as _sys
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from cc_queue import load_tasks
+
+    queue = load_tasks()
     pending = [t for t in queue if t.get("status") == "pending"]
 
     buckets: dict[str, list[str]] = {

@@ -219,7 +219,6 @@ def cmd_delta():
         print(f"  {mark} #{r['number']}: {r['title']}")
 
 
-QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/claudecode/closed_tickets.txt")
 
 
@@ -230,12 +229,13 @@ def cmd_push_queue():
     1. Creates a GH Issue titled "[T-xxx] <title>"
     2. Writes the returned issue number back via cc_queue.py set-github-issue
     """
-    if not os.path.exists(QUEUE_PATH):
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from cc_queue import load_tasks
+
+    tasks = load_tasks()
+    if not tasks:
         print("Queue empty — nothing to push.")
         return
-
-    with open(QUEUE_PATH) as f:
-        tasks = json.load(f)
 
     to_push = [
         t for t in tasks if t.get("status") != "done" and not t.get("github_issue")

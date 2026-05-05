@@ -261,13 +261,6 @@ def assemble_payload(repo: Path) -> tuple[str, int, int]:
             parts.append(read_text(recent))
             parts.append("\n=== END FILE ===\n\n")
             count += 1
-    # queue.json structure (echo of palace tickets subtree)
-    queue_json = Path.home() / ".TheIgors/cc_channel/queue.json"
-    if queue_json.exists():
-        parts.append("=== FILE queue.json (ticket queue echo) ===\n")
-        parts.append(read_text(queue_json, cap=400_000))
-        parts.append("\n=== END FILE ===\n\n")
-        count += 1
 
     payload = "".join(parts)
     return payload, count, len(payload)

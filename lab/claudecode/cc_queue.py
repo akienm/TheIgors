@@ -3,10 +3,8 @@
 cc_queue.py — Designer/Worker Claude task queue manager.
 
 Canonical storage: clan.memories where parent_id='TICKETS_ROOT' (FACTUAL rows,
-metadata.kind='ticket'). queue.json is a generated echo, regenerated on every
-save for downstream consumers that still read the file.
+metadata.kind='ticket').
 
-Echo file: ~/.TheIgors/cc_channel/queue.json
 Log file:  ~/.TheIgors/cc_channel/log.jsonl
 
 Usage:
@@ -51,7 +49,6 @@ def _ssl_ctx() -> ssl.SSLContext:
     return ctx
 
 
-QUEUE_PATH = os.path.expanduser("~/.TheIgors/cc_channel/queue.json")
 LOG_PATH = os.path.expanduser("~/.TheIgors/cc_channel/log.jsonl")
 CLOSED_TICKETS_PATH = os.path.expanduser("~/.TheIgors/claudecode/closed_tickets.txt")
 STATUS_ORDER = {
@@ -104,47 +101,8 @@ def _load():
         conn.close()
 
 
-def _write_queue_echo(tasks):
-    """Regenerate queue.json as echo for downstream readers (github_sync etc.)."""
-    os.makedirs(os.path.dirname(QUEUE_PATH), exist_ok=True)
-    with open(QUEUE_PATH, "w") as f:
-        json.dump(tasks, f, indent=2)
-
-
-def _check_drift(tasks_being_saved):
-    """T-cc-queue-write-race: surface bypass-writers before they cause silent
-    loss. Compares queue.json's id set against `tasks_being_saved` (which
-    came from Postgres via _load). Any id present in queue.json but absent
-    here is a ticket some bypass-writer added without going through _save —
-    the next echo (about to happen in _save) will overwrite it. Logs a
-    WARNING with the missing ids so the writer can be tracked down. Does
-    not block the save (that'd freeze all writes); just surfaces."""
-    try:
-        if not os.path.exists(QUEUE_PATH):
-            return
-        with open(QUEUE_PATH) as f:
-            existing = json.load(f)
-        if not isinstance(existing, list):
-            return
-        existing_ids = {t.get("id") for t in existing if isinstance(t, dict)}
-        saving_ids = {t.get("id") for t in tasks_being_saved if t.get("id")}
-        missing = existing_ids - saving_ids - {None}
-        if missing:
-            print(
-                f"WARNING: cc_queue drift detected — queue.json contains "
-                f"{len(missing)} id(s) not in Postgres "
-                f"(would be lost on this save): {sorted(missing)[:10]}"
-                f"{'...' if len(missing) > 10 else ''}",
-                file=sys.stderr,
-            )
-    except Exception as exc:
-        # Non-fatal — drift detection is belt-and-suspenders, not load-bearing.
-        print(f"WARNING: cc_queue drift check failed: {exc}", file=sys.stderr)
-
-
 def _save(tasks):
-    """Canonical write: UPSERT each ticket to clan.memories, then echo queue.json."""
-    _check_drift(tasks)
+    """Canonical write: UPSERT each ticket to clan.memories."""
     conn = _db_conn()
     try:
         cur = conn.cursor()
@@ -178,27 +136,18 @@ def _save(tasks):
         conn.commit()
     finally:
         conn.close()
-    _write_queue_echo(tasks)
 
 
-# ── Public API for bypass-writer migration (T-cc-queue-write-race) ────────
-# Igor runtime + admin scripts that previously load+modify+save queue.json
-# directly should call these instead. They go through Postgres canonically;
-# the queue.json echo is regenerated as a side effect. Same shape as the
-# private _load/_save (kept private for the script's own internal use).
+# ── Public API ────────────────────────────────────────────────────────────
 
 
 def load_tasks() -> list[dict]:
-    """Load all tickets from canonical Postgres. Use this from Igor runtime
-    or admin scripts instead of reading queue.json directly."""
+    """Load all tickets from canonical Postgres."""
     return _load()
 
 
 def save_tasks(tasks: list[dict]) -> None:
-    """Save tickets via canonical Postgres UPSERT (then echoes queue.json).
-    Use this from Igor runtime or admin scripts instead of writing queue.json
-    directly. Bypassing this and writing queue.json directly is the
-    drift-source class T-cc-queue-write-race fixes."""
+    """Save tickets via canonical Postgres UPSERT."""
     _save(tasks)
 
 

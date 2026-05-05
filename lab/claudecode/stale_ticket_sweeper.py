@@ -30,14 +30,18 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-QUEUE = Path.home() / ".TheIgors/cc_channel/queue.json"
 SLATE_DIR = Path.home() / ".TheIgors/claudecode"
 
 DEFAULT_WEEKS = 4
 
 
 def _load_queue() -> list[dict]:
-    return json.load(open(QUEUE))
+    import sys as _sys
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from cc_queue import load_tasks
+
+    return load_tasks()
 
 
 def _parse_iso(ts: str | None) -> datetime | None:

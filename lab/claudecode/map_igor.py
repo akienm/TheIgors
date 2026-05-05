@@ -95,12 +95,13 @@ class IgorMap(IgorBase):
         return {"content": rows[0][0][:2000] if rows else "(not found)"}
 
     def collect_tickets(self) -> dict:
-        queue_file = _IGOR_HOME.parent / "cc_channel" / "queue.json"
-        if not queue_file.exists():
-            queue_file = _REPO / "lab" / "claudecode" / "queue.json"
         try:
-            with open(queue_file) as f:
-                tasks = json.load(f)
+            import sys as _sys
+
+            _sys.path.insert(0, str(_REPO / "lab" / "claudecode"))
+            from cc_queue import load_tasks
+
+            tasks = load_tasks()
         except Exception as e:
             return {"error": str(e)}
         by_status: dict[str, list] = {}
