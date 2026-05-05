@@ -121,7 +121,7 @@ def fetch_openrouter_balance() -> dict | None:
         try:
             with _db_proxy()() as c:
                 c.execute(
-                    "INSERT INTO balance_history (timestamp, balance, purchased, used) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO balance_history (timestamp, balance, purchased, used) VALUES (%s, %s, %s, %s)",
                     (
                         datetime.fromtimestamp(now).isoformat(),
                         result["balance"],
@@ -155,7 +155,7 @@ def get_balance_trajectory(window_hours: float = 24.0) -> dict:
         cutoff = datetime.fromtimestamp(time.time() - window_hours * 3600).isoformat()
         with _db_proxy()() as c:
             rows = c.execute(
-                "SELECT timestamp, balance FROM balance_history WHERE timestamp >= ? ORDER BY timestamp ASC",
+                "SELECT timestamp, balance FROM balance_history WHERE timestamp >= %s ORDER BY timestamp ASC",
                 (cutoff,),
             ).fetchall()
     except Exception:
@@ -246,7 +246,7 @@ def set_spending_cap(usd: float) -> str:
     """Set local spending cap. Returns confirmation string."""
     with _db_proxy()() as c:
         c.execute(
-            "INSERT OR REPLACE INTO budget_config (key, value) VALUES ('spending_cap_usd', ?)",
+            "INSERT INTO budget_config (key, value) VALUES ('spending_cap_usd', %s) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
             (str(usd),),
         )
     return f"Local spending cap set to ${usd:.2f}"
@@ -268,7 +268,7 @@ def record_spend(usd: float, model: str = "unknown", note: str = "") -> None:
     """Record a spend event. Called by reasoners after each API call."""
     with _db_proxy()() as c:
         c.execute(
-            "INSERT INTO spend (timestamp, model, usd, note) VALUES (?, ?, ?, ?)",
+            "INSERT INTO spend (timestamp, model, usd, note) VALUES (%s, %s, %s, %s)",
             (datetime.now().isoformat(), model, usd, note),
         )
 
@@ -541,7 +541,7 @@ def _tool_set_spending_cap(amount_usd: float, **_) -> str:
 def _tool_spend_history(limit: int = 20, **_) -> str:
     with _db_proxy()() as c:
         rows = c.execute(
-            "SELECT timestamp, model, usd, note FROM spend ORDER BY id DESC LIMIT ?",
+            "SELECT timestamp, model, usd, note FROM spend ORDER BY id DESC LIMIT %s",
             (int(limit),),
         ).fetchall()
     if not rows:
