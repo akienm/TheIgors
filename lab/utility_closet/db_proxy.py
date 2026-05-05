@@ -278,7 +278,7 @@ class DatabaseProxy(IgorBase):
                     "columns TEXT, created_at TEXT)"
                 )
                 existing = conn.execute(
-                    "SELECT 1 FROM _cc_index_registry WHERE index_name = ?",
+                    "SELECT 1 FROM _cc_index_registry WHERE index_name = %s",
                     (idx_name,),
                 ).fetchone()
                 conn.execute(
@@ -287,8 +287,9 @@ class DatabaseProxy(IgorBase):
                 )
                 if not existing:
                     conn.execute(
-                        "INSERT OR IGNORE INTO _cc_index_registry "
-                        "(index_name, table_name, columns, created_at) VALUES (?,?,?,?)",
+                        "INSERT INTO _cc_index_registry "
+                        "(index_name, table_name, columns, created_at) VALUES (%s,%s,%s,%s) "
+                        "ON CONFLICT (index_name) DO NOTHING",
                         (
                             idx_name,
                             table,
