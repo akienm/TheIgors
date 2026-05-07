@@ -56,19 +56,8 @@ if [[ -n "${TMUX:-}" ]]; then
 else
     tmux new-session -d -s "$IGOR_TMUX_SESSION" 2>/dev/null || true
 
-    # Console capture via pipe-pane → rolling daily log (7-day retention).
-    # Strip ANSI escape sequences (CSI + OSC) so .log files render as plain
-    # text in editors like Kate. The live console retains its colors —
-    # this strip happens only on the file capture pipeline.
-    ADC_HOME="${AGENT_DATACENTER_HOME:-$HOME/.agent_datacenter}"
-    CONSOLE_DIR="$ADC_HOME/logs/Igor-wild-0001"
-    mkdir -p "$CONSOLE_DIR"
-    CONSOLE_LOG="$CONSOLE_DIR/$(date +%Y%m%d).console.log"
-    # GNU sed: -u unbuffered (live tail-friendly); regex strips CSI like
-    # \x1b[31m and OSC like \x1b]0;title\x07.
-    tmux pipe-pane -t "$IGOR_TMUX_SESSION" -o "sed -u -E 's/\x1b\[[0-9;?]*[a-zA-Z]//g; s/\x1b\][^\x07]*\x07//g' >> '$CONSOLE_LOG'" 2>/dev/null || true
-    # Prune console logs older than 7 days
-    find "$CONSOLE_DIR" -name "*.console.log" -mtime +7 -delete 2>/dev/null || true
+    # Console logging handled by DailyConsoleFileHandler in logging_setup.py —
+    # writes YYYYMMDD.console.log with ANSI color codes, no pipe-pane needed.
 
     IGOR_CMD="cd $(printf '%q' "$PWD") && $(printf '%q' "$0")"
     for arg in "$@"; do
