@@ -1191,26 +1191,71 @@ def cmd_set_decision(args):
 COMMANDS["set-decision"] = cmd_set_decision
 
 
+_IGOR_TAGS = {
+    "cognition",
+    "memory",
+    "habits",
+    "engrams",
+    "narrativeengine",
+    "twm",
+}
+_IGOR_REPO = "akienm/TheIgors"
+_ADC_REPO = "akienm/agent_datacenter"
+
+
+def _gh_repo_for(ticket: dict) -> str:
+    """Return the GitHub repo slug for a ticket based on worker and tags.
+
+    Routing rule: worker=igor OR tags intersect IGOR_TAGS → TheIgors.
+    Everything else → agent_datacenter.
+    """
+    if ticket.get("worker") == "igor":
+        return _IGOR_REPO
+    tags_lower = {t.lower() for t in (ticket.get("tags") or [])}
+    if tags_lower & _IGOR_TAGS:
+        return _IGOR_REPO
+    return _ADC_REPO
+
+
 def cmd_set_github_issue(args):
-    """Write a GitHub issue number back to a ticket: set-github-issue <id> <number>"""
+    """Write a GitHub issue number back to a ticket: set-github-issue <id> <number> [--repo owner/repo]"""
     if len(args) < 2:
-        print("Usage: set-github-issue <ticket-id> <github-issue-number>")
+        print(
+            "Usage: set-github-issue <ticket-id> <github-issue-number> [--repo owner/repo]"
+        )
         sys.exit(1)
-    tid, issue_num = args[0], args[1]
+    tid, issue_num_str = args[0], args[1]
+    repo_override = None
+    remaining = args[2:]
+    i = 0
+    while i < len(remaining):
+        if remaining[i] == "--repo" and i + 1 < len(remaining):
+            repo_override = remaining[i + 1]
+            i += 2
+        else:
+            i += 1
     try:
-        issue_num = int(issue_num)
+        issue_num = int(issue_num_str)
     except ValueError:
-        print(f"Issue number must be an integer, got: {issue_num}")
+        print(f"Issue number must be an integer, got: {issue_num_str}")
         sys.exit(1)
     tasks = _load()
     t = _find(tasks, tid)
     if not t:
         print(f"Task {tid} not found.")
         sys.exit(1)
+    repo = repo_override or _gh_repo_for(t)
     t["github_issue"] = issue_num
     _save(tasks)
-    _log({"action": "set_github_issue", "id": tid, "github_issue": issue_num})
-    print(f"Set {tid} github_issue → {issue_num}")
+    _log(
+        {
+            "action": "set_github_issue",
+            "id": tid,
+            "github_issue": issue_num,
+            "repo": repo,
+        }
+    )
+    print(f"Set {tid} github_issue → {issue_num} (repo: {repo})")
 
 
 COMMANDS["set-github-issue"] = cmd_set_github_issue
