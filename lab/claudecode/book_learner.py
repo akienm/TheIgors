@@ -99,7 +99,7 @@ def _should_use_local(explicit_local: bool = False) -> bool:
 
 
 from igor.memory.models import Memory, MemoryType
-from igor.tools.ebook_reader import open_book, read_chunk
+from igor.tools.ebook_reader import DRM_FAILED, open_book, read_chunk
 
 DB_PATH = Path(
     os.environ.get(
@@ -629,6 +629,60 @@ def _cp_affinity_score(narrative: str, parent_cp: str) -> float:
 # ── Completion record ─────────────────────────────────────────────────────────
 
 
+def _handle_drm_blocked(handle: dict, args) -> None:
+    """Mark reading_list failed and file BOOK_DRM_BLOCKED memory for a DRM-blocked book."""
+    title = handle.get("title", "unknown")
+    calibre_id = handle.get("calibre_id") or getattr(args, "calibre_id", None)
+    fmt = handle.get("fmt", "unknown")
+    print(
+        f"BOOK_DRM_BLOCKED: '{title}' (calibre_id={calibre_id}, fmt={fmt}) — DRM decryption failed"
+    )
+
+    if calibre_id and args.run:
+        try:
+            import psycopg2
+
+            conn = psycopg2.connect(IGOR_HOME_DB_URL)
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE reading_list SET status='failed', completed_at=NOW() WHERE calibre_id=%s",
+                (calibre_id,),
+            )
+            conn.commit()
+            conn.close()
+            print(f"reading_list: calibre://{calibre_id} → failed (DRM)")
+        except Exception as _e:
+            print(f"reading_list update failed: {_e}")
+
+    if args.run:
+        try:
+            from igor.paths import paths as _paths
+            from igor.memory.cortex import Cortex
+
+            cortex = Cortex(db_url=IGOR_HOME_DB_URL)
+            import hashlib, datetime
+
+            content = (
+                f"BOOK_DRM_BLOCKED: '{title}' (calibre_id={calibre_id}, fmt={fmt}) "
+                f"could not be read — DRM decryption failed. "
+                f"Use browse_as_employer to read on read.amazon.com."
+            )
+            node_id = (
+                "BOOK_DRM_BLOCKED_" + hashlib.md5(content.encode()).hexdigest()[:12]
+            )
+            mem = Memory(
+                id=node_id,
+                narrative=content[:200],
+                memory_type=MemoryType.FACTUAL,
+                source="book_learner",
+                metadata={"calibre_id": calibre_id, "fmt": fmt, "drm_blocked": True},
+            )
+            cortex.deposit(mem)
+            print(f"BOOK_DRM_BLOCKED memory deposited: {node_id}")
+        except Exception as _e:
+            print(f"BOOK_DRM_BLOCKED memory deposit failed: {_e}")
+
+
 def _deposit_completion_record(
     cortex: Cortex,
     book_title: str,
@@ -1017,6 +1071,10 @@ def run(args) -> None:
     if isinstance(handle, str):
         print(f"ERROR: {handle}")
         sys.exit(1)
+
+    if isinstance(handle, dict) and handle.get(DRM_FAILED):
+        _handle_drm_blocked(handle, args)
+        sys.exit(0)
 
     # open_book returns a serializable dict; the BookHandle lives in _HANDLE_CACHE
     book_title = handle["title"]
