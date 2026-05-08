@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 """
+DEPRECATED (2026-05-08): igor_mcp.py is superseded by the Librarian MCP server
+at agent_datacenter/devices/librarian/mcp_server.py. All tools have been ported
+and tested there. This file is kept for one sprint cycle to confirm no
+regressions, then will be deleted (T-igor-mcp-delete).
+
+Do not add new tools here. Add them to agent_datacenter instead.
+
 igor_mcp.py — MCP server exposing Igor's Postgres DB to Claude Code.
 
 Provides structured tool access to:
