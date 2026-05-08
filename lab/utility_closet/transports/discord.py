@@ -70,9 +70,6 @@ class DiscordTransport(Transport):
 
         channel_id = _extract_channel_id(channel.address)
         if channel_id is None:
-            # Try webhook path
-            if "webhook" in channel.address:
-                return self._send_webhook(bot, message)
             logger.warning(
                 "DiscordTransport: cannot parse channel ID from %s",
                 channel.address,
@@ -89,21 +86,6 @@ class DiscordTransport(Transport):
             return True
         except Exception as exc:
             logger.warning("DiscordTransport send failed: %s", exc)
-            return False
-
-    def _send_webhook(self, bot, message: ChannelMessage) -> bool:
-        """Send via Discord webhook if configured."""
-        try:
-            if hasattr(bot, "_send_via_webhook"):
-                import asyncio
-
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    # Can't await in sync context — queue it
-                    bot.send(0, message.payload)
-                    return True
-            return False
-        except Exception:
             return False
 
     def read(
