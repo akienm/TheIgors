@@ -23,10 +23,23 @@ Ref: T-cc-admin-consolidation
 import sys
 from pathlib import Path
 
-# Ensure lab/claudecode is importable without installing as a package
+# Ensure lab/claudecode is importable; also pull in ADC's claudecode via
+# the __path__ extension defined in lab/claudecode/__init__.py.
 _CC_DIR = Path(__file__).resolve().parent
+_THEIGORS_ROOT = _CC_DIR.parent.parent
+if str(_THEIGORS_ROOT) not in sys.path:
+    sys.path.insert(0, str(_THEIGORS_ROOT))
 if str(_CC_DIR) not in sys.path:
     sys.path.insert(0, str(_CC_DIR))
+
+# Trigger the __path__ extension and add every resolved claudecode location
+# so flat imports (e.g. `from cc_queue import ...`) find migrated files in ADC.
+import lab.claudecode as _cc_pkg
+
+for _d in _cc_pkg.__path__:
+    if _d not in sys.path:
+        sys.path.insert(0, _d)
+del _cc_pkg
 
 # ── cc_queue ──────────────────────────────────────────────────────────────────
 

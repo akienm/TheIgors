@@ -72,7 +72,15 @@ def _flush_to_igor(decision_id: str, description: str):
         subprocess.run(
             [
                 sys.executable,
-                str(Path.home() / "TheIgors" / "lab" / "claudecode" / "cc_queue.py"),
+                str(
+                    Path.home()
+                    / "dev"
+                    / "src"
+                    / "agent_datacenter"
+                    / "lab"
+                    / "claudecode"
+                    / "cc_queue.py"
+                ),
                 "flush_decision",
                 decision_id,
                 description,
