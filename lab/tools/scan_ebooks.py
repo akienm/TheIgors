@@ -36,7 +36,7 @@ from wild_igor.igor.paths import paths as _paths
 
 CALIBRE_DB = _paths().calibre_library / "metadata.db"
 EBOOKS_ROOT = _paths().ebooks_root
-OUTPUT = Path.home() / "TheIgors" / "ebook_candidates.md"
+OUTPUT = _paths().source_root / "ebook_candidates.md"
 
 # ── Priority matchers ──────────────────────────────────────────────────────────
 
