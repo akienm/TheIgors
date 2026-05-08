@@ -613,3 +613,5 @@ D-pass-condition-required-2026-05-04|pass-condition-required|decided|All tickets
 2026-05-07T11:58:40-06:00 | D-adc-db-module-rename-2026-05-07 | Rename db.py → db_proxy.py for logger clarity | tickets: T-adc-db-module-rename
 2026-05-07T18:07:23-06:00 | D-shared-palace-schema-2026-05-07 | Shared palace schema 4-consumer (Akien/CC/Igor/Rack-Minion): palace.shared.* + palace.projects.*; Igor federates via pointer; SummarizerDevice ADC-first | tickets: T-cc-palace-schema-design, T-cc-skills-triage, T-adc-summarizer-device
 2026-05-07T18:07:23-06:00 | D-slate-done-first-2026-05-07 | Day-close rearranges slate Done-section-first for future CC readability | tickets: T-slate-done-first-ordering
+2026-05-07T20:33:51-06:00 | D-palace-session-memory-2026-05-07 | Palace as primary agent-layer store for session context, transcripts, and day summaries | tickets: T-adc-palace-bootstrap, T-adc-palace-seed-decisions, T-adc-palace-session-writer, T-adc-palace-day-writer, T-adc-context-load-palace
+2026-05-07T20:33:51-06:00 | D-palace-flat-tags-2026-05-07 | Palace uses flat namespaces with tags, not nested project hierarchies | tickets: T-adc-palace-bootstrap
