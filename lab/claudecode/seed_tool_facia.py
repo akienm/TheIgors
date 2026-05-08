@@ -33,7 +33,7 @@ os.environ["IGOR_HOME_DB_URL"] = DB_URL
 
 from wild_igor.igor.memory.models import Memory, MemoryType
 from wild_igor.igor.memory.cortex import Cortex
-from wild_igor.igor.tools.registry import registry
+from lab.utility_closet.registry import registry
 import wild_igor.igor.tools  # noqa — loads all tools
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
