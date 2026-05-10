@@ -22,6 +22,11 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# cc_queue.py was migrated to ADC (T-lab-migration-to-agent-datacenter); import directly
+# instead of spawning a subprocess with the old hardcoded ~/TheIgors path.
+sys.path.insert(0, "/home/akien/dev/src/agent_datacenter")
+from lab.claudecode import cc_queue as _ccq  # noqa: E402
+
 REPO = "akienm/TheIgors"
 DB_URL = os.getenv("IGOR_HOME_DB_URL") or os.getenv("IGOR_DB_URL")
 OPEN_LIMIT = 100
@@ -286,23 +291,13 @@ def cmd_push_queue():
             print(f"  WARNING: could not parse issue number from: {url}")
             continue
 
-        # Write number back to queue
-        wb = subprocess.run(
-            [
-                "python3",
-                os.path.expanduser("~/TheIgors/lab/claudecode/cc_queue.py"),
-                "set-github-issue",
-                tid,
-                str(issue_num),
-            ],
-            capture_output=True,
-            text=True,
-        )
-        if wb.returncode != 0:
-            print(f"  WARNING: set-github-issue failed for {tid}: {wb.stderr.strip()}")
-        else:
+        # Write number back to queue via direct import (cc_queue.py lives in ADC now)
+        try:
+            _ccq.cmd_set_github_issue([tid, str(issue_num)])
             print(f"  {tid} → GH #{issue_num}  {url}")
             created += 1
+        except SystemExit as e:
+            print(f"  WARNING: set-github-issue failed for {tid} (exit {e.code})")
 
     print(f"\nDone — created {created} issue(s).")
 
