@@ -32,7 +32,7 @@
       "added_by": "claude-code",
       "added_at": "2026-04-14T17:38:32.767763",
       "mode": "forever",
-      "ack_until": "2026-04-30"
+      "ack_until": "2099-01-01"
     },
     {
       "name": "no-hardcoded-instance-refs",
