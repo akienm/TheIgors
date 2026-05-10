@@ -1,0 +1,8 @@
+# D-dreaming-patterns-2026-05-10
+**title:** Steal dreaming, outcomes/grader, playbook, and librarian patterns from Anthropic managed agents for Igor and CC
+**date:** 2026-05-10
+**status:** open
+**spawned_tickets:** T-igor-ne-grader-pass, T-igor-dreaming-module, T-igor-playbook-memory-type, T-igor-memory-librarian, T-cc-post-sprint-grader
+
+## Decision narrative
+Anthropic announced four composing mechanisms in Claude Managed Agents (May 2026): dreaming (cross-session pattern synthesis), outcomes/grader (fresh-context quality evaluation), playbooks (structured heuristics from experience), and implicit memory curation/pruning. Igor already has the raw inputs (psych_log, watch_problems, clan.memories) but no cross-session synthesis loop and no grader for NE output quality. CC has no post-sprint quality gate. This decision implements direct analogues: (1) NE grader pass in coa.py; (2) dreaming.py module for cross-session synthesis; (3) playbook.py for first-class playbook memory type loaded by NE; (4) librarian.py for ongoing clan.memories curation; (5) post-sprint grader step in /sprint-ticket. All Igor modules use direct psycopg2 (watch_problems.py pattern) to avoid touching HIGH-inertia cortex.py.
