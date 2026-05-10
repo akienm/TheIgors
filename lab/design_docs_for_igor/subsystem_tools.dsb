@@ -1,4 +1,4 @@
-DOC|subsystem_tools|v1|updated=2026-04-16
+DOC|subsystem_tools|v1|updated=2026-05-08
 META|inertia=LOW|parent=architecture_root.dsb|hot_reloadable=yes
 META|files=tools/*.py,tools/registry.py
 
