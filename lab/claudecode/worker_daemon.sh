@@ -74,12 +74,7 @@ while true; do
         unset WORKER_TICKET
         # session dead — loop immediately for next ticket
     else
-        # No pending CC tickets — exit cleanly (igor tickets handled by pe_chain)
-        PENDING=$(python3 "$QUEUE_SCRIPT" list 2>/dev/null | grep '⬜' | grep -v '\[igor\]' | wc -l)
-        if [ "$PENDING" -eq 0 ]; then
-            _post "queue empty (no cc tickets) — daemon exiting cleanly"
-            exit 0
-        fi
-        sleep "$POLL_INTERVAL"
+        # No pending CC tickets — slow-poll until one appears (igor handled by pe_chain)
+        sleep 60
     fi
 done
