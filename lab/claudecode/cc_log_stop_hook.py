@@ -3,9 +3,12 @@
 """
 cc_log_stop_hook.py — Stop hook driver: ingest CC session transcript via ChatLogHandler.
 
-Finds the most-recently-modified CC session JSONL across all project dirs,
-ingests it through ChatLogHandler, and flushes to date-partitioned markdown at
-~/.agent_datacenter/logs/CC.0/YYYY-MM-DD.md.
+Finds all CC session JSONLs modified within the last 48 hours across all project
+dirs, ingests them through ChatLogHandler, and flushes to date-partitioned markdown
+at ~/.agent_datacenter/logs/CC.0/YYYY-MM-DD.md.
+
+Ingesting all recent sessions (not just the newest) ensures that when multiple
+sessions touch the same day, none are lost on flush().
 
 Replaces chat_log_formatter.py. Safe to run manually.
 """
@@ -13,23 +16,23 @@ Replaces chat_log_formatter.py. Safe to run manually.
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 
 
-def _newest_jsonl() -> Path | None:
+def _recent_jsonls(hours: int = 48) -> list[Path]:
+    """Return all session jsonl files modified within the last `hours` hours."""
     projects_dir = Path.home() / ".claude" / "projects"
     if not projects_dir.exists():
-        return None
-    candidates = sorted(
-        projects_dir.glob("*/*.jsonl"),
-        key=lambda p: p.stat().st_mtime,
-    )
-    return candidates[-1] if candidates else None
+        return []
+    cutoff = time.time() - hours * 3600
+    files = [p for p in projects_dir.glob("*/*.jsonl") if p.stat().st_mtime >= cutoff]
+    return sorted(files, key=lambda p: p.stat().st_mtime)
 
 
 def main() -> int:
-    jsonl = _newest_jsonl()
-    if jsonl is None:
+    jsonls = _recent_jsonls()
+    if not jsonls:
         return 0
     try:
         from devices.claude.chat_log_handler import ChatLogHandler, ingest_session
@@ -37,7 +40,8 @@ def main() -> int:
         print(f"cc_log_stop_hook: import failed ({e})", file=sys.stderr)
         return 1
     handler = ChatLogHandler()
-    ingest_session(jsonl, handler)
+    for jsonl in jsonls:
+        ingest_session(jsonl, handler)
     handler.flush()
     return 0
 
