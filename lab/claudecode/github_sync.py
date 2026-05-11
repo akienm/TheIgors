@@ -242,12 +242,15 @@ def cmd_push_queue():
         print("Queue empty — nothing to push.")
         return
 
+    _TERMINAL = {"done", "closed", "cancelled"}
     to_push = [
-        t for t in tasks if t.get("status") != "done" and not t.get("github_issue")
+        t
+        for t in tasks
+        if t.get("status") not in _TERMINAL and not t.get("github_issue")
     ]
 
     if not to_push:
-        print("All non-done tickets already have github_issue numbers.")
+        print("All non-terminal tickets already have github_issue numbers.")
         return
 
     print(f"Creating GH Issues for {len(to_push)} ticket(s)...")
