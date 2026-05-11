@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Utility Closet Server — D335: shared agent platform layer.
+Rack Server — D335: shared agent platform layer.
 
 Standalone Starlette/uvicorn server that runs independently of any agent.
 Agents (Igor, future copilot, etc.) register as clients and push data.
@@ -574,7 +574,7 @@ async def _api_sessions(request: Request):
 _DASHBOARD_HTML = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — Agentic Utility Closet</title>
+<title>Dashboard — Rack Server</title>
 <style>
   body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 2rem; }
   h1 { color: #7ec8e3; margin-bottom: 1rem; font-size: 1.2rem; }
@@ -589,7 +589,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
   a { color: #7ec8e3; }
   #data { white-space: pre-wrap; }
 </style></head><body>
-<h1>Agentic Utility Closet — Dashboard</h1>
+<h1>Rack Server — Dashboard</h1>
 <div id="platform" class="card"><h2>Platform</h2><div id="plat-stats">loading...</div></div>
 <div id="agents" class="card"><h2>Attached Agents</h2><div id="agent-list">loading...</div></div>
 <div id="agent-data" class="card"><h2>Agent Data</h2><div id="data">loading...</div></div>
@@ -620,7 +620,7 @@ refresh(); setInterval(refresh, 3000);
 _METRICS_HTML = """<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Metrics — Agentic Utility Closet</title>
+<title>Metrics — Rack Server</title>
 <style>
   body { font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 2rem; }
   h1 { color: #7ec8e3; margin-bottom: 1rem; font-size: 1.2rem; }
@@ -628,7 +628,7 @@ _METRICS_HTML = """<!DOCTYPE html>
         overflow-x: auto; font-size: 0.9rem; }
   a { color: #7ec8e3; }
 </style></head><body>
-<h1>Agentic Utility Closet — Metrics</h1>
+<h1>Rack Server — Metrics</h1>
 <pre id="data">loading...</pre>
 <p style="margin-top:1rem;font-size:0.8rem;color:#555"><a href="/">Chat</a> | <a href="/dashboard">Dashboard</a> | <a href="/metrics">Metrics</a></p>
 <script>
@@ -1042,7 +1042,7 @@ def _remove_pid():
 
 
 def check_running() -> dict | None:
-    """Check if another utility closet instance is running.
+    """Check if another rack server instance is running.
 
     Returns health dict if running and healthy, None otherwise.
     Kills stalled instances (PID exists but health check fails).
@@ -1094,7 +1094,7 @@ def check_running() -> dict | None:
             log.debug("health check %s failed (pid=%d): %s", url, pid, e)
 
     # Process exists but health check failed — stalled
-    log.warning("Stalled utility closet (pid=%d), killing", pid)
+    log.warning("Stalled rack server (pid=%d), killing", pid)
     _kill_process(pid)
     PID_FILE.unlink(missing_ok=True)
     return None
@@ -1106,7 +1106,7 @@ def check_running() -> dict | None:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Utility Closet Server (D335)")
+    parser = argparse.ArgumentParser(description="Rack Server (D335)")
     parser.add_argument(
         "--port", type=int, default=int(os.environ.get("IGOR_UC_PORT", "8080"))
     )
@@ -1143,7 +1143,7 @@ def main():
     health = check_running()
     if health:
         log.info(
-            "Utility closet already running (pid=%s, uptime=%ss)",
+            "Rack server already running (pid=%s, uptime=%ss)",
             health.get("pid"),
             health.get("uptime_s"),
         )
@@ -1152,7 +1152,7 @@ def main():
     # Start server
     _write_pid()
     _ensure_dirs()
-    log.info("Utility closet starting on port %d", args.port)
+    log.info("Rack server starting on port %d", args.port)
 
     def _shutdown(signum, frame):
         log.info("Received signal %d, shutting down", signum)
@@ -1234,7 +1234,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agentic Utility Closet</title>
+  <title>Rack Server</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: monospace; background: #1a1a2e; color: #e0e0e0;
@@ -1499,7 +1499,7 @@ _FALLBACK_HTML = r"""<!DOCTYPE html>
       ws = new WebSocket((location.protocol==='https:'?'wss://':'ws://') + location.host + '/ws');
       ws.onopen = () => {
         setLed(true); _retryDelay = 2000;
-        if (!_connectedOnce) { addMsg('system','','Connected to Agentic Utility Closet.'); _connectedOnce=true; }
+        if (!_connectedOnce) { addMsg('system','','Connected to Rack Server.'); _connectedOnce=true; }
         else { addMsg('system','','Reconnected.'); }
         _disconnectedMsgShown = false;
         const _cookieName = _loadName();
