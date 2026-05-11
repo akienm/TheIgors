@@ -74,10 +74,10 @@ while true; do
         unset WORKER_TICKET
         # session dead — loop immediately for next ticket
     else
-        # No pending tickets — exit if nothing actionable remains
-        PENDING=$(python3 "$QUEUE_SCRIPT" list 2>/dev/null | grep '⬜' | wc -l)
+        # No pending CC tickets — exit cleanly (igor tickets handled by pe_chain)
+        PENDING=$(python3 "$QUEUE_SCRIPT" list 2>/dev/null | grep '⬜' | grep -v '\[igor\]' | wc -l)
         if [ "$PENDING" -eq 0 ]; then
-            _post "queue empty — daemon exiting cleanly"
+            _post "queue empty (no cc tickets) — daemon exiting cleanly"
             exit 0
         fi
         sleep "$POLL_INTERVAL"
