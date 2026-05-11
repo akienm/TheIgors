@@ -627,3 +627,10 @@ D-pass-condition-required-2026-05-04|pass-condition-required|decided|All tickets
 2026-05-10T16:22:49-06:00 | D-librarian-elevation-2026-05-10 | Librarian device hosts curation; focus quality log; MCP wired to CC | tickets: T-librarian-curation-tools, T-librarian-focus-quality-log, T-librarian-mcp-cc-wiring
 2026-05-10T16:22:49-06:00 | D-cc-session-hygiene-2026-05-10 | CC autocompact at 50% + test prefilter + path-scoped rules | tickets: T-cc-autocompact-config, T-cc-test-prefilter, T-cc-path-scoped-rules
 2026-05-10T16:22:49-06:00 | D-igor-memory-depth-2026-05-10 | proposals occurrence signal + recursive CTE + task boundary + grader decompose | tickets: T-igor-proposals-occurrence-signal, T-igor-recursive-edge-traversal, T-igor-ne-task-boundary, T-igor-ne-grader-decompose
+2026-05-11T08:13:30-06:00 | D-hermes-patterns-2026-05-11 | steal Hermes do-learn-improve patterns — palace FTS, pe_chain skill-gen, depth-over-breadth rule | tickets: T-palace-fts-index, T-pe-chain-skill-gen, T-depth-over-breadth-rule
+2026-05-11T10:00:13-06:00 | D-igor-synthetic-intelligence-2026-05-11 | Igor is a Synthetic Intelligence — canonical term for palace docs | tickets: T-igor-synthetic-intelligence-term
+2026-05-11T10:13:19-06:00 | D-librarian-external-fetch-2026-05-11 | wire external doc fetch into librarian _research_deep | tickets: T-librarian-external-doc-fetch
+2026-05-11T10:13:19-06:00 | D-cc-sprint-improvements-2026-05-11 | autonomous sprint loop + ultrathink plan review | tickets: T-cc-autonomous-sprint-loop, T-sprint-ticket-ultrathink
+2026-05-11T10:23:09-06:00 | D-research-breadth-depth-2026-05-11 | librarian research API: breadth + depth floats 0.0-1.0, two-pass pattern | tickets: T-research-api-breadth-depth
+2026-05-11T11:09:37-06:00 | D-dreaming-enhancements-2026-05-11 | CC /dream command + Hebbian co-activation edge strengthening in dreaming pass | tickets: T-cc-dream-command, T-dreaming-wg-hebbian
+2026-05-11T11:23:08-06:00 | D-xmemory-patterns-2026-05-11 | xMemory paper — three patterns for Igor memory | tickets: T-igor-uncertainty-gated-recall, T-igor-memory-decay-dreaming, T-igor-consolidation-theme-palace
