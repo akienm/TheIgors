@@ -506,6 +506,7 @@ async def _api_health(request: Request):
             "status": "ok",
             "uptime_s": uptime_s,
             "boot_ts": _boot_wall,
+            "started_at": _boot_wall,  # stable epoch for restart detection (T-adc-registration-recovery)
             "last_input_ago_s": last_input_ago_s,
             "active_threads": threading.active_count(),
             "ws_clients": ws_clients,
