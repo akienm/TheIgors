@@ -6,7 +6,8 @@ his web and Discord traffic a comms:// address (comms://akien/) the ADC
 bus can route like any other device.
 
 Data home: ~/.agent_datacenter/akien/  (inbox/, outbox/, ideas/ already exist)
-No comms:// routing wired here — that is T-web-akien-comms.
+Web routing: messages sent via the browser are wrapped as comms://akien/web
+  by utility_closet_server before being appended to channel_messages.
 Design rules: no-sqlite, no-TheIgors-imports.
 """
 
@@ -25,6 +26,7 @@ _IDENTITY: dict = {
         "inbox": "comms://akien/inbox",
         "outbox": "comms://akien/outbox",
         "ideas": "comms://akien/ideas",
+        "web": "comms://akien/web",
     },
     "online": False,
 }

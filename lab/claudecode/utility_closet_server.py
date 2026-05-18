@@ -164,6 +164,12 @@ _agent_stats: dict = {}  # agent_id → last stats dict pushed by agent
 # Initialized in _init_comms(). Provides channel routing for all UC messaging.
 _comms = None  # set by _init_comms()
 
+# Canonical comms:// address for Akien's web browser traffic.
+# All messages received via WebSocket from a browser tab are appended to
+# channel_messages under this author so they're indistinguishable from
+# Discord traffic at the bus level (same envelope, same address scheme).
+_AKIEN_WEB_CHANNEL = "comms://akien/web"
+
 
 def _init_comms():
     """Initialize the comms module with default channels."""
@@ -195,7 +201,17 @@ def _init_comms():
         notify=False,  # subscribers opt in
         retention="1y",
     )
-    log.info("Comms: initialized with comms://shared channel")
+    # Akien's web channel — web browser messages route here (T-web-akien-comms)
+    _comms.ensure_channel(
+        _AKIEN_WEB_CHANNEL,
+        direction=Direction.READ_WRITE,
+        delivery=Delivery.PULL,
+        notify=True,
+        retention="1y",
+    )
+    log.info(
+        "Comms: initialized with comms://shared and %s channels", _AKIEN_WEB_CHANNEL
+    )
 
 
 # ── WebSocket session management ─────────────────────────────────────────────
@@ -897,7 +913,7 @@ async def _ws_endpoint(ws: WebSocket):
                         }
                         _add_to_history(current_session, umsg)
                         _broadcast_to_session(current_session, json.dumps(umsg))
-                        _channel_append(author, content)
+                        _channel_append(_AKIEN_WEB_CHANNEL, content)
         except Exception as e:
             log.debug("ws receive error: %s", e)
 
