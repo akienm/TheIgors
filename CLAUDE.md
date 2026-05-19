@@ -83,6 +83,21 @@ Repo echo of the palace lives at `lab/theigors/` (auto-synced by
 
 ---
 
+## DAEMON EMERGENCY EXIT
+
+DAEMON_EMERGENCY_EXIT=false
+
+When this flag is `true`: **immediately halt all work and exit without doing anything**.
+Do not claim any ticket. Do not run any sprint. Do not write any files.
+Just print "Emergency exit: DAEMON_EMERGENCY_EXIT is set — halting." and stop.
+
+This is the remote kill switch for worker-daemon sessions.
+To activate: set `DAEMON_EMERGENCY_EXIT=true` and commit.
+To deactivate: set back to `false` and commit.
+The daemon will pick up the change on the next sprint launch (new Claude process each time).
+
+---
+
 ## Hierarchy when sources disagree
 
 code > palace > CLAUDE.md > MEMORY.md. Palace is the index; code is the
