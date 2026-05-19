@@ -28,10 +28,12 @@ _post() {
 }
 
 _next_ticket() {
-    # Only pick up worker=cc (or unworked) tickets — worker=igor tickets
-    # are handled by Igor's pe_chain via PROC_WORKER_FOREMAN internally.
+    # Only pick up unworked tickets (no [worker] tag).
+    # worker=igor → Igor's pe_chain handles internally.
+    # worker=claude → interactive CC session; daemon must not touch these.
     python3 "$QUEUE_SCRIPT" list 2>/dev/null \
-        | grep '⬜' | grep -v '\[igor\]' | head -1 | sed 's/^[^[]*\[\([^]]*\)\].*/\1/'
+        | grep '⬜' | grep -v '\[igor\]' | grep -v '\[claude\]' | head -1 \
+        | sed 's/^[^[]*\[\([^]]*\)\].*/\1/'
 }
 
 # Reset any tickets left in_progress by a prior daemon run
