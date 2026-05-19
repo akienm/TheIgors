@@ -21,6 +21,7 @@ SLATE_DIR = Path.home() / ".TheIgors" / "claudecode"
 SLATE_RE = re.compile(r"^(\d{8})\.slate\.txt$")
 CLOSED_MARKER = "✅ CLOSED"
 OPEN_SECTION_HEADINGS = ("## Next up", "## Blocked", "## After that")
+DAYCLOSE_MARKER_PREFIX = "## Day-close for "
 
 
 def find_latest_slate_before(today: date, slate_dir: Path = SLATE_DIR) -> Path | None:
@@ -72,14 +73,27 @@ def format_slate_date(filename: str) -> str:
     return f"{filename[:4]}-{filename[4:6]}-{filename[6:8]}"
 
 
+def today_slate_has_dayclose_for(
+    closing_date: str, slate_dir: Path = SLATE_DIR
+) -> bool:
+    """True when today's slate contains a Day-close completion marker for closing_date (YYYY-MM-DD)."""
+    today_path = slate_dir / f"{date.today().strftime('%Y%m%d')}.slate.txt"
+    if not today_path.exists():
+        return False
+    return f"{DAYCLOSE_MARKER_PREFIX}{closing_date}: complete" in today_path.read_text()
+
+
 def main() -> int:
     today = date.today()
     slate = find_latest_slate_before(today)
     if slate is None:
         return 0
+    slate_date = format_slate_date(slate.name)
+    if today_slate_has_dayclose_for(slate_date):
+        print(f"✓ day-close for {slate_date}: already complete")
+        return 0
     if not slate_has_open_items(slate):
         return 0
-    slate_date = format_slate_date(slate.name)
     print(f"⚠ stale slate: {slate_date} has open items and no ✅ CLOSED marker")
     print(
         f"  run /day-close for {slate_date} before starting new work, or confirm skip"
