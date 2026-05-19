@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # worker_daemon.sh — CC worker daemon.
 #
-# Runs in one konsole. Polls the task queue for pending tickets and runs
-# `claude /sprint <id>` for each one. No xdotool injection needed.
+# Polls cc_queue.py next for the highest-priority unclaimed sprint ticket and
+# runs `claude /sprint <id>` for each one. Respects the queue gate file
+# (~/.TheIgors/cc_channel/queue_gate.json) — sleeps when gate is tripped.
+# Self-restarts via exec when this script is updated between iterations.
 #
 # Launch via: python3 cc_queue.py worker-launch
 # Or directly: bash ~/TheIgors/lab/claudecode/worker_daemon.sh
@@ -14,7 +16,6 @@ CHANNEL_SCRIPT="$HOME/TheIgors/lab/claudecode/channel.py"
 VENV="$HOME/TheIgors/venv/bin/activate"
 DAEMON_PID_FILE="$HOME/.TheIgors/cc_channel/worker_daemon.pid"
 DONE_FLAG="$HOME/.TheIgors/cc_channel/sprint_done.flag"
-POLL_INTERVAL=20
 SPRINT_TIMEOUT_SECS=1800   # 30 min hard ceiling — kill stalled session
 
 source "$VENV"
@@ -27,22 +28,24 @@ _post() {
     python3 "$CHANNEL_SCRIPT" post "$1" --as worker-daemon 2>/dev/null || true
 }
 
-_next_ticket() {
-    # Only pick up unworked tickets (no [worker] tag).
-    # worker=igor → Igor's pe_chain handles internally.
-    # worker=claude → interactive CC session; daemon must not touch these.
-    python3 "$QUEUE_SCRIPT" list 2>/dev/null \
-        | grep '⬜' | grep -v '\[igor\]' | grep -v '\[claude\]' | head -1 \
-        | sed 's/^[^[]*\[\([^]]*\)\].*/\1/'
-}
-
 # Reset any tickets left in_progress by a prior daemon run
 python3 "$QUEUE_SCRIPT" reset-stale 2>/dev/null | grep -v "^Reset 0" | while IFS= read -r line; do _post "startup: $line"; done || true
 
 _post "worker daemon started (PID $$)"
 
+# Capture our own path and mtime for self-restart detection
+SELF="$(realpath "${BASH_SOURCE[0]}")"
+SELF_MTIME=$(stat -c %Y "$SELF" 2>/dev/null || echo "0")
+
 while true; do
-    NEXT=$(_next_ticket)
+    # Self-restart: if script was updated since last iteration, exec to reload
+    CURRENT_MTIME=$(stat -c %Y "$SELF" 2>/dev/null || echo "0")
+    if [ "$SELF_MTIME" != "0" ] && [ "$CURRENT_MTIME" != "$SELF_MTIME" ]; then
+        _post "script updated — reloading (exec)"
+        exec bash "$SELF"
+    fi
+
+    NEXT=$(python3 "$QUEUE_SCRIPT" next 2>/dev/null)
     if [ -n "$NEXT" ]; then
         _post "starting sprint: $NEXT"
         rm -f "$DONE_FLAG"   # clear any stale flag before launch
@@ -65,7 +68,7 @@ while true; do
             if [ "$ELAPSED" -ge "$SPRINT_TIMEOUT_SECS" ]; then
                 _post "sprint timeout: $NEXT — killing stalled session (PID $CLAUDE_PID)"
                 kill "$CLAUDE_PID" 2>/dev/null || true
-                python3 "$QUEUE_SCRIPT" reset "$NEXT" 2>/dev/null && _post "reset to pending: $NEXT" || true
+                python3 "$QUEUE_SCRIPT" reset --timeout "$NEXT" 2>/dev/null && _post "timeout reset: $NEXT" || true
                 break
             fi
             sleep 5
@@ -76,7 +79,7 @@ while true; do
         unset WORKER_TICKET
         # session dead — loop immediately for next ticket
     else
-        # No pending CC tickets — slow-poll until one appears (igor handled by pe_chain)
+        # Gate tripped or queue empty — slow-poll
         sleep 60
     fi
 done
