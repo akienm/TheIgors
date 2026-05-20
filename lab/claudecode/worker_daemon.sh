@@ -17,6 +17,7 @@ VENV="$HOME/TheIgors/venv/bin/activate"
 DAEMON_PID_FILE="$HOME/.TheIgors/cc_channel/worker_daemon.pid"
 DONE_FLAG="$HOME/.TheIgors/cc_channel/sprint_done.flag"
 SPRINT_TIMEOUT_SECS=1800   # 30 min hard ceiling — kill stalled session
+SWITCHES_CFG="$HOME/.TheIgors/Igor-wild-0001/igor.switches.cfg"
 
 source "$VENV"
 
@@ -45,7 +46,10 @@ while true; do
         exec bash "$SELF"
     fi
 
-    NEXT=$(python3 "$QUEUE_SCRIPT" next 2>/dev/null)
+    _MAX_DIFF=$(grep -E '^IGOR_MAX_DIFFICULTY=' "$SWITCHES_CFG" 2>/dev/null | tail -1 | cut -d= -f2)
+    _NEXT_ARGS="next"
+    [ -n "$_MAX_DIFF" ] && _NEXT_ARGS="next --max-difficulty=$_MAX_DIFF"
+    NEXT=$(python3 "$QUEUE_SCRIPT" $_NEXT_ARGS 2>/dev/null)
     if [ -n "$NEXT" ]; then
         _post "starting sprint: $NEXT"
         rm -f "$DONE_FLAG"   # clear any stale flag before launch
