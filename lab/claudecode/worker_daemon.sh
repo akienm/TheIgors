@@ -47,8 +47,8 @@ while true; do
     fi
 
     _MAX_DIFF=$(grep -E '^IGOR_MAX_DIFFICULTY=' "$SWITCHES_CFG" 2>/dev/null | tail -1 | cut -d= -f2)
-    _NEXT_ARGS="next"
-    [ -n "$_MAX_DIFF" ] && _NEXT_ARGS="next --max-difficulty=$_MAX_DIFF"
+    _NEXT_ARGS="next --worker claude"
+    [ -n "$_MAX_DIFF" ] && _NEXT_ARGS="next --worker claude --max-difficulty=$_MAX_DIFF"
     NEXT=$(python3 "$QUEUE_SCRIPT" $_NEXT_ARGS 2>/dev/null)
     if [ -n "$NEXT" ]; then
         _post "starting sprint: $NEXT"

@@ -41,7 +41,12 @@ def cmd_ticket(args):
     elif sub == "add":
         api.add_ticket(args.source)
     elif sub == "claim":
-        api.claim_ticket([args.id])
+        print(
+            "ERROR: 'claim' subcommand is removed. "
+            "Workers must request tickets via: cc_queue.py next --worker <name>",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     elif sub == "done":
         api.done_ticket(args.id, args.msg)
     elif sub == "block":
@@ -195,9 +200,6 @@ def build_parser():
 
     tadd = tsub.add_parser("add", help="Add ticket(s) from JSON file or inline JSON")
     tadd.add_argument("source", help="JSON file path or inline JSON string")
-
-    tclaim = tsub.add_parser("claim", help="Claim a ticket (pending → in_progress)")
-    tclaim.add_argument("id", help="Ticket ID")
 
     tdone = tsub.add_parser("done", help="Mark ticket done")
     tdone.add_argument("id", help="Ticket ID")
