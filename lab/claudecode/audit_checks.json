@@ -66,6 +66,17 @@
       "added_at": "2026-05-03T16:22:49.694141",
       "mode": "forever",
       "ack_until": null
+    },
+    {
+      "name": "levers-doc-skill-sync",
+      "kind": "shell",
+      "pattern": "git log --oneline --since='25 hours ago' --name-only -- '.claude/skills/' | grep -q '\\.md$' && ! git log --oneline --since='25 hours ago' --name-only -- 'lab/docs/Deterministic_AI_Development_Levers_A_layer_on_top_of_skills.md' | grep -q 'Levers'; echo 'OK'",
+      "description": "When a skill file was modified in the last day, the levers doc should also be updated. Fires a warning if skill changed but levers doc unchanged.",
+      "severity": "low",
+      "added_by": "claude-code",
+      "added_at": "2026-05-21T12:12:53.172141",
+      "mode": "forever",
+      "ack_until": null
     }
   ],
   "history": [
