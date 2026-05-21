@@ -5,7 +5,7 @@ vs "what's *planned*?" vs "what's *known broken*?". Read this before
 proposing features. If the code disagrees with this doc, the code wins —
 update this doc and move on.
 
-**Last updated**: 2026-05-06
+**Last updated**: 2026-05-20
 **Owner**: Akien — accept PRs from any session that finds drift.
 
 **How this doc earns its keep**: Sonnet kept proposing files that already
@@ -161,6 +161,7 @@ Notable on:
 `IGOR_CALVING_ENABLED`, `IGOR_SELF_EDIT_ENABLED`,
 `IGOR_NODE_ADOPTION_ENABLED`, `IGOR_READING_EXTRACT`, `IGOR_HABIT_EXTRACT`,
 `IGOR_CLOUD_TRAINING_ENABLED`, `IGOR_CONTEXT_WINNOW`, `IGOR_TWO_PHASE_CALLS`.
+`IGOR_MAX_DIFFICULTY=1` — Igor only requests tickets at difficulty ≤1 (Apprentice) from the queue. Added 2026-05-20 (D-target-difficulty-tiers).
 
 Note: `IGOR_SINGLE_TICKET=NONE_BETWEEN_CERT_WALKS` — cert-walk mode. In
 autonomous operation this is `NONE_BETWEEN_CERT_WALKS` (passes all
