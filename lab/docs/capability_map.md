@@ -140,7 +140,7 @@ The list here mirrors palace nodes whose status is **not** marked
 
 These are user-facing slash commands the human collaborator uses:
 `/context-load`, `/savestateauto`, `/savestate`, `/day-close`,
-`/day-close-audit`, `/decided`, `/fixit`, `/review`, `/sprint`,
+`/day-close-audit`, `/sorted`, `/fixit`, `/review`, `/sprint`,
 `/sprint-batch`, `/ticket`. Live.
 
 ---
@@ -270,7 +270,7 @@ do X?" answers that have tripped sessions in the past.
 - ❌ **Concurrent Centers-of-Attention (COA) not built.**
   `T-concurrent-ne-spawn` (sprint). NE is single-threaded.
 - ❌ **Igor does not write to `decisions_log.dsb` directly.** That's
-  a structured echo via `/decided`. Direct writes corrupt the
+  a structured echo via `/sorted`. Direct writes corrupt the
   chronological record.
 - ❌ **CLAUDE.md is not the canonical rules file.** It's a pre-DB shim.
   Palace `theigors/rules/*` is canonical.

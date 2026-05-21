@@ -18,9 +18,9 @@ fire" doesn't fit the moment, the wrong command is being used.
 
 ```
 /context-load             │ Start of session         │ Palace briefing + slate + decisions + channel; 2000-token budget
-/design                   │ Start of design block    │ OPTIONAL marker — /decided can infer scope without it
-/decided                  │ Discussion conclusion    │ Summarize → draft tickets → /review each → file to queue + slate + palace
-/fixit                    │ Quick reactive fix       │ /decided + /sprint-batch on the just-filed tickets — single-session shortcut
+/design                   │ Start of design block    │ OPTIONAL marker — /sorted can infer scope without it
+/sorted                  │ Discussion conclusion    │ Summarize → draft tickets → /review each → file to queue + slate + palace
+/fixit                    │ Quick reactive fix       │ /sorted + /sprint-batch on the just-filed tickets — single-session shortcut
 /ticket                   │ Standalone filing        │ Create/update one ticket; arg "last" = thing just discussed
 /note                     │ Non-ticket milestone     │ Log to notes.log + slate (when there's no ticket-shaped output)
 /savestateauto            │ End of work block        │ Flush in-flight hypothesis to slate; emit compact preserve string
@@ -38,7 +38,7 @@ fire" doesn't fit the moment, the wrong command is being used.
 ```
 /sprint                   │ One ticket               │ context-load → claim → implement → /test-fix → /commit → close → loop
 /sprint-batch             │ Many tickets, one setup  │ Same loop with shared git/venv/env; takes a selector (today-slate, decision:..., tag:...)
-/review                   │ Filing-time + standalone │ Called by /decided per-ticket; standalone on diff/PR/plan
+/review                   │ Filing-time + standalone │ Called by /sorted per-ticket; standalone on diff/PR/plan
 /commit                   │ Ad-hoc outside sprint    │ test → stage by name → commit → pull → push
 /test-fix                 │ Run + fix + retry        │ pytest → fix failures → retry up to 3× → escalate
 ```
@@ -82,11 +82,11 @@ fire" doesn't fit the moment, the wrong command is being used.
 
 - `/context-load` before any work in a fresh session — palace + slate + channel state must be loaded.
 - `/day-close-audit` always inside `/day-close` — never skipped; it's the integrity gate.
-- `/review` fires per-ticket inside `/decided` — filing-time quality is the whole point.
+- `/review` fires per-ticket inside `/sorted` — filing-time quality is the whole point.
 - `/commit` lives inside `/sprint`, `/sprint-batch`, `/day-close`, or explicit ad-hoc only — never inline during a feature build.
 - `/savestateauto` at every work-block boundary; `/savestate` only when the session is actually ending.
-- `/fixit` infers scope implicitly from recent turns — use `/decided` (alone) when you want to file but not sprint yet.
-- HIGH-inertia file touches surface inline during `/decided` or `/review` for pre-approval; the stamp lands in the ticket body before filing.
+- `/fixit` infers scope implicitly from recent turns — use `/sorted` (alone) when you want to file but not sprint yet.
+- HIGH-inertia file touches surface inline during `/sorted` or `/review` for pre-approval; the stamp lands in the ticket body before filing.
 
 ---
 
@@ -94,9 +94,9 @@ fire" doesn't fit the moment, the wrong command is being used.
 
 | Old skill         | Now                                                                |
 |---|---|
-| `/slate`          | Manual file at `~/.TheIgors/claudecode/YYYYMMDD.slate.txt`; `/context-load` reads it; `/decided` and `/sprint` append to it. |
+| `/slate`          | Manual file at `~/.TheIgors/claudecode/YYYYMMDD.slate.txt`; `/context-load` reads it; `/sorted` and `/sprint` append to it. |
 | `/slateclose`     | Folded into `/day-close` (which closes the slate as Step 3).        |
-| `/filter`         | Folded into `/review` filing-time mode (called by `/decided`).      |
+| `/filter`         | Folded into `/review` filing-time mode (called by `/sorted`).      |
 | `/audit`          | Renamed to `/day-close-audit` (2026-04-20) — `/review` is now the skill for reviewing plans/code; `/day-close-audit` is the debris check. |
 | `/probe`          | Igor-side; not a CC slash-command. Use `mcp__igor__channel_send` + `mcp__igor__channel_read` for stimulus → response. |
 | `/igor`           | Igor-side ops; not a CC slash-command. Use `mcp__igor__*` tools for health/logs/reload from MCP. |
@@ -134,7 +134,7 @@ Current skills above still apply until the rename tickets land. Target shape:
 
 | New                  | Role                                                             |
 |---|---|
-| `/audit-design`      | Called by `/decided` before drafting tickets — catches a "decision" that isn't actually decided |
+| `/audit-design`      | Called by `/sorted` before drafting tickets — catches a "decision" that isn't actually decided |
 | `/audit-precode`     | Between `/sprint` plan and first edit — verifies file paths + symbols + HIGH-inertia gates exist |
 | `/audit-smell`       | Post-code, pre-test — bare try/except, silent-return-False, fix-one-leave-many call-graph walk, diff-drift AMEND-by-default, deprecated-paths, base-class inheritance |
 | `/audit-debris`      | Post-test, pre-commit — folds `/validate-files` + owns docs-update at PR time |

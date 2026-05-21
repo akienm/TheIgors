@@ -73,7 +73,7 @@
 - post-day-close: ran export_chat.py --all; 94 transcripts → 23 dated files (29MB, gitignored); T-chat-history-igor-backfill narrowed to Igor-side background job only
 - Pass 2 audit complete: 8 subagents, 149 candidates, 85 SHIP; AGGREGATE.md on disk; in-flight NONE
 - Session close: transcript exported (1.3MB); audit artifacts committed (ceeae924, 8a9d4a19); in-flight NONE
-**Next session**: Next: re-disposition 85 SHIP → 5-10 cap using AGGREGATE.md + run /decided batch; then start the deletion-first sprints (db_proxy SQLite shim, cc_skills mirror, ENGRAM_CODE_* dead chain)
+**Next session**: Next: re-disposition 85 SHIP → 5-10 cap using AGGREGATE.md + run /sorted batch; then start the deletion-first sprints (db_proxy SQLite shim, cc_skills mirror, ENGRAM_CODE_* dead chain)
 **In-flight**: In-flight: NONE
 
 ## Session 2026-04-19a
@@ -931,10 +931,10 @@
 ## Session 2026-03-26a
 **Theme**: Continue 25q: commit synthesis fallback, inject tool name fix to Igor memory
 **Key changes**:
-- /review skill built and registered at ~/.claude/skills/review/SKILL.md — pre-decision design check, runs before /decided
+- /review skill built and registered at ~/.claude/skills/review/SKILL.md — pre-decision design check, runs before /sorted
 - feedback_no_sqlite.md memory saved — DB is Postgres only, never sqlite3
 - cognition pipeline interview: discovered PROC_WHAT_TIME fires at BG scoring before heat field propagates — inhibitory context never checked; D227 TWM heat field model is the right frame for fix
-**Next session**: 1. Finish PROC_WHAT_TIME design: how does it become a heat-field-aware node rather than BG dispatch? 2. Lock cognition unit test architecture (test corpus, self-verification, pass criterion). 3. /decided → /filter → implement.
+**Next session**: 1. Finish PROC_WHAT_TIME design: how does it become a heat-field-aware node rather than BG dispatch? 2. Lock cognition unit test architecture (test corpus, self-verification, pass criterion). 3. /sorted → /filter → implement.
 **In-flight**: PROC_WHAT_TIME needs to surface from TWM heat field after propagation — D227 frame. Design interview was mid-flight when savestate called; no code touched.
 
 ## Session 2026-03-25q
@@ -1424,7 +1424,7 @@
 - decided/savestate/context-load skills updated to use incremental session accumulation
 - session_manager.py: state file + ID-free append-change/append-decision
 - decision_manager.py: new — atomic DSB+DB+Igor flush in one CLI call
-- workstep/sprint/savestate/decided/context-load skills: updated for incremental session accumulation
+- workstep/sprint/savestate/sorted/context-load skills: updated for incremental session accumulation
 - T-sessions-in-db closed, T-decided-habit closed
 - day-close skill: new — docs sync + gap_analysis + subsystem DSBs + GitHub discussion + commit
 - commit skill: docs_sync pre-step added for staged .dsb files
@@ -1539,7 +1539,7 @@
 **Theme**: Process Development Tools crystallization + D126 execution plan locked
 **Decisions**: none new (concept capture + planning)
 **Key changes**:
-- SIXTH crystallization: Process Development Tools — services→habits→Claude skills; 5-phase loop with 3 human touchpoints; /decided replaces savestate; single root node for Claude startup; matrix debugger future; saved to project_process_development_tools.md
+- SIXTH crystallization: Process Development Tools — services→habits→Claude skills; 5-phase loop with 3 human touchpoints; /sorted replaces savestate; single root node for Claude startup; matrix debugger future; saved to project_process_development_tools.md
 - Reading validation test defined: 5 already-absorbed language books + Watcher pre-filter; delta nodes = acceptance test for all of D126+multi-box+extraction work; saved to project_reading_validation_test.md
 - D126 completion plan approved: IGOR_HOME_DB_URL+IGOR_LOCAL_DB_URL env vars + PendingReplyStore wiring into WordGraph/GraphCache + 29M wg_cooccur rows migrated from word_graph.db → Postgres; execution next
 **Next session**: Execute D126 completion (env vars → wiring → migration → Igor restart + verify)
