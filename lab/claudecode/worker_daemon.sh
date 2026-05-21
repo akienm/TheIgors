@@ -81,9 +81,13 @@ while true; do
         wait "$CLAUDE_PID" 2>/dev/null || true
 
         unset WORKER_TICKET
-        # session dead — loop immediately for next ticket
+        # Sloped retry: brief pause after completing a ticket before polling again.
+        # Prevents hammering the queue and gives Postgres writes a moment to settle.
+        sleep 20
     else
-        # Gate tripped or queue empty — slow-poll
-        sleep 60
+        # Gate tripped or queue empty — slow-poll (5 min).
+        # No point checking again sooner — if nothing was available this cycle,
+        # the queue won't change in under a minute.
+        sleep 300
     fi
 done
