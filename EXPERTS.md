@@ -27,6 +27,7 @@
 - Where is coupling higher than the architecture intends, and what is the blast radius?
 - Are module boundaries enforced by code structure or only by convention?
 - Is load-bearing code identifiable without a palace lookup?
+- Are there subsystems reaching across interfaces they shouldn't — knowing another component's internals when a service or dispatcher would suffice? What could be extracted into a named service?
 
 ## Security Engineer
 **Lens:** What can break from adversarial or unexpected inputs?
@@ -41,6 +42,7 @@
 - Is the audit → ticket → sprint cycle closing tickets faster than it opens them?
 - Where is tech debt accumulating silently without a corresponding ticket?
 - Are skill and workflow changes compound-positive or creating downstream friction?
+- Is the development process itself encapsulated — are design decisions being made at the right layer, or are implementation details leaking into the design conversation?
 
 ## Product Manager
 **Lens:** Is Igor making measurable progress toward autonomous ticket processing?
