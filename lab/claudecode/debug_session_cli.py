@@ -11,15 +11,12 @@ Usage:
 Skills call this instead of `touch debug_session.flag` / `rm debug_session.flag`.
 When mcp__igor__cognition_debug is available, skills will call that instead.
 """
+
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.expanduser("~/TheIgors"))
-os.environ.setdefault(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
 os.environ.setdefault(
     "IGOR_DB_PATH",
     os.path.expanduser("~/.TheIgors/Igor-wild-0001/wild-0001.db"),

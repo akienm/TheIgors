@@ -154,11 +154,7 @@ def seed_watchlist(cortex: Cortex) -> dict[str, Any]:
 def main():
     import os
 
-    db_url = os.getenv(
-        "IGOR_HOME_DB_URL",
-        "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-    )
-    os.environ["IGOR_HOME_DB_URL"] = db_url
+    db_url = os.environ["IGOR_HOME_DB_URL"]
 
     db_path = Path(
         os.path.expanduser(

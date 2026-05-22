@@ -115,11 +115,7 @@ _SCHEMA_INDEXES = [
 def _conn():
     import psycopg2
 
-    url = os.getenv(
-        "IGOR_HOME_DB_URL",
-        "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-    )
-    return psycopg2.connect(url)
+    return psycopg2.connect(os.environ["IGOR_HOME_DB_URL"])
 
 
 def _now_iso() -> str:

@@ -45,10 +45,6 @@ def _assign_prefix(desc: str) -> str:
 
 
 def main(dry_run: bool = False) -> None:
-    os.environ.setdefault(
-        "IGOR_HOME_DB_URL",
-        "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-    )
     from lab.claudecode.cc_queue import load_tasks, save_tasks
 
     tasks = load_tasks()

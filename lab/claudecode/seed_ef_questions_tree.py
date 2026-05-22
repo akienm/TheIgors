@@ -31,11 +31,7 @@ os.environ.setdefault(
     "IGOR_DB_PATH",
     str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
-DB_URL = os.environ.get(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
-os.environ["IGOR_HOME_DB_URL"] = DB_URL
+DB_URL = os.environ["IGOR_HOME_DB_URL"]
 
 from wild_igor.igor.memory.models import Memory, MemoryType
 from wild_igor.igor.memory.cortex import Cortex

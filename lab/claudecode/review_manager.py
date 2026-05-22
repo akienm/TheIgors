@@ -36,10 +36,7 @@ from psycopg2.extras import execute_values
 
 def get_db_url() -> str:
     """Get Postgres connection URL from env or default."""
-    return os.environ.get(
-        "IGOR_HOME_DB_URL",
-        "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-    )
+    return os.environ["IGOR_HOME_DB_URL"]
 
 
 def write_findings(

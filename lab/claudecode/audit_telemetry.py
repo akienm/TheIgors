@@ -30,11 +30,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-
-_DB_URL = os.environ.get(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
+_DB_URL = os.environ["IGOR_HOME_DB_URL"]
 _SEARCH_PATH = os.environ.get("IGOR_HOME_SEARCH_PATH") or "clan,infra,public"
 
 VALID_LEVELS = frozenset(
@@ -55,7 +51,11 @@ class AuditFinding:
 @dataclass
 class AuditRunRecord:
     level: str
-    ran_at: str = field(default_factory=lambda: datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    ran_at: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+    )
     inputs_examined: int = 0
     checks_fired: int = 0
     checks_passed: int = 0
@@ -108,6 +108,7 @@ class AuditRunRecord:
 
 def _connect():
     import psycopg2
+
     conn = psycopg2.connect(_DB_URL)
     conn.autocommit = True
     cur = conn.cursor()
@@ -125,7 +126,14 @@ def _ensure_palace_node(conn, path: str, parent_path: str, title: str, content: 
         ON CONFLICT (path) DO UPDATE
           SET content = EXCLUDED.content, updated_at = EXCLUDED.updated_at
         """,
-        (path, parent_path, title, content, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "audit_telemetry"),
+        (
+            path,
+            parent_path,
+            title,
+            content,
+            datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "audit_telemetry",
+        ),
     )
     cur.close()
 
@@ -137,27 +145,46 @@ def emit_run_record(level: str, record: AuditRunRecord) -> str:
     Raises ValueError for unknown levels.
     """
     if level not in VALID_LEVELS:
-        raise ValueError(f"Unknown audit level {level!r}. Valid: {sorted(VALID_LEVELS)}")
+        raise ValueError(
+            f"Unknown audit level {level!r}. Valid: {sorted(VALID_LEVELS)}"
+        )
 
-    ts = record.ran_at.replace(":", "").replace("-", "").replace("T", "-").replace("Z", "")
+    ts = (
+        record.ran_at.replace(":", "")
+        .replace("-", "")
+        .replace("T", "-")
+        .replace("Z", "")
+    )
     run_id = ts[:15]  # YYYYMMDD-HHMMSS
     path = f"theigors/audits/{level}/runs/{run_id}"
     parent = f"theigors/audits/{level}/runs"
 
     conn = _connect()
     # Ensure parent nodes exist
-    _ensure_palace_node(conn, f"theigors/audits/{level}", "theigors/audits",
-                        f"audit-{level} records", f"Run records and watch_next for audit-{level}.")
-    _ensure_palace_node(conn, parent, f"theigors/audits/{level}",
-                        f"audit-{level} runs", "Per-run records indexed by timestamp.")
-    _ensure_palace_node(conn, path, parent,
-                        f"audit-{level} run {run_id}",
-                        record.to_yaml())
+    _ensure_palace_node(
+        conn,
+        f"theigors/audits/{level}",
+        "theigors/audits",
+        f"audit-{level} records",
+        f"Run records and watch_next for audit-{level}.",
+    )
+    _ensure_palace_node(
+        conn,
+        parent,
+        f"theigors/audits/{level}",
+        f"audit-{level} runs",
+        "Per-run records indexed by timestamp.",
+    )
+    _ensure_palace_node(
+        conn, path, parent, f"audit-{level} run {run_id}", record.to_yaml()
+    )
     conn.close()
     return path
 
 
-def emit_watch_next(level: str, note: str, ttl_days: int = 14, watch_id: str | None = None) -> str:
+def emit_watch_next(
+    level: str, note: str, ttl_days: int = 14, watch_id: str | None = None
+) -> str:
     """
     Write a watch-for note under theigors/audits/<level>/watch_next/<id>.
     TTL is stored in content; expiry is enforced by read_watch_next().
@@ -178,10 +205,20 @@ def emit_watch_next(level: str, note: str, ttl_days: int = 14, watch_id: str | N
         f"aged: false\n"
     )
     conn = _connect()
-    _ensure_palace_node(conn, f"theigors/audits/{level}", "theigors/audits",
-                        f"audit-{level} records", f"Run records and watch_next for audit-{level}.")
-    _ensure_palace_node(conn, parent, f"theigors/audits/{level}",
-                        f"audit-{level} watch_next", "Watch-for notes for next run.")
+    _ensure_palace_node(
+        conn,
+        f"theigors/audits/{level}",
+        "theigors/audits",
+        f"audit-{level} records",
+        f"Run records and watch_next for audit-{level}.",
+    )
+    _ensure_palace_node(
+        conn,
+        parent,
+        f"theigors/audits/{level}",
+        f"audit-{level} watch_next",
+        "Watch-for notes for next run.",
+    )
     _ensure_palace_node(conn, path, parent, f"watch {wid}", content)
     conn.close()
     return path
@@ -196,7 +233,10 @@ def read_runs(level: str, since_days: int = 7) -> list[dict[str, Any]]:
         raise ValueError(f"Unknown audit level {level!r}")
 
     from datetime import timedelta
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=since_days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=since_days)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
     prefix = f"theigors/audits/{level}/runs/"
     conn = _connect()
     cur = conn.cursor()
@@ -205,7 +245,10 @@ def read_runs(level: str, since_days: int = 7) -> list[dict[str, Any]]:
         "WHERE path LIKE %s AND updated_at >= %s ORDER BY path DESC",
         (prefix + "%", cutoff),
     )
-    rows = [{"path": r[0], "title": r[1], "content": r[2], "updated_at": r[3]} for r in cur.fetchall()]
+    rows = [
+        {"path": r[0], "title": r[1], "content": r[2], "updated_at": r[3]}
+        for r in cur.fetchall()
+    ]
     cur.close()
     conn.close()
     return rows
@@ -233,14 +276,21 @@ def read_watch_next(level: str, include_expired: bool = False) -> list[dict[str,
     results = []
     now = datetime.now(timezone.utc)
     for path, title, content, updated_at in rows:
-        entry = {"path": path, "title": title, "content": content, "updated_at": updated_at}
+        entry = {
+            "path": path,
+            "title": title,
+            "content": content,
+            "updated_at": updated_at,
+        }
         # Parse written_at + ttl_days from YAML content (simple line scan)
         written_at = None
         ttl_days = 14
         for line in content.splitlines():
             if line.startswith("written_at:"):
                 try:
-                    written_at = datetime.fromisoformat(line.split(":", 1)[1].strip().replace("Z", "+00:00"))
+                    written_at = datetime.fromisoformat(
+                        line.split(":", 1)[1].strip().replace("Z", "+00:00")
+                    )
                 except ValueError:
                     pass
             if line.startswith("ttl_days:"):
@@ -250,6 +300,7 @@ def read_watch_next(level: str, include_expired: bool = False) -> list[dict[str,
                     pass
         if written_at:
             from datetime import timedelta
+
             expired = now > written_at + timedelta(days=ttl_days)
             entry["expired"] = expired
             if expired and not include_expired:

@@ -116,10 +116,7 @@ def _save_queue(q: list) -> None:
     QUEUE_FILE.write_text(json.dumps(q, indent=2))
 
 
-_IGOR_HOME_DB_URL = os.environ.get(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
+_IGOR_HOME_DB_URL = os.environ["IGOR_HOME_DB_URL"]
 
 
 def _set_reading_list_in_progress(calibre_id: int) -> bool:

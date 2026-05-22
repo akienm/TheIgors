@@ -106,10 +106,7 @@ DB_PATH = Path(
         "IGOR_DB_PATH", Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"
     )
 )
-IGOR_HOME_DB_URL = os.environ.get(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
+IGOR_HOME_DB_URL = os.environ["IGOR_HOME_DB_URL"]
 PROGRESS_DIR = Path.home() / ".TheIgors" / "book_learner_progress"
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_REFERER = "https://github.com/akienm/TheIgors"

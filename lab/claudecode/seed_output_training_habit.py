@@ -16,10 +16,7 @@ import json
 import os
 from datetime import datetime
 
-DB_URL = os.environ.get(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
+DB_URL = os.environ["IGOR_HOME_DB_URL"]
 
 HABIT = {
     "id": "PROC_OUTPUT_TRAINING",

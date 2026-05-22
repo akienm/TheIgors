@@ -18,10 +18,7 @@ import re
 
 from wild_igor.igor.igor_base import IgorBase
 
-_DB_URL = os.environ.get(
-    "IGOR_HOME_DB_URL",
-    "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-)
+_DB_URL = os.environ["IGOR_HOME_DB_URL"]
 _SEARCH_PATH = os.environ.get("IGOR_HOME_SEARCH_PATH") or "clan,infra,public"
 
 KNOWN_AREAS = frozenset(

@@ -131,10 +131,7 @@ def seed_machines(db_url: str) -> dict:
 
 
 def main():
-    db_url = os.getenv(
-        "IGOR_HOME_DB_URL",
-        "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-    )
+    db_url = os.environ["IGOR_HOME_DB_URL"]
     report = seed_machines(db_url)
     print(
         f"seed_machines: upserted={report['inserted_or_updated']} "

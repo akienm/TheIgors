@@ -112,11 +112,7 @@ def seed(db_url: str) -> dict:
 
 
 def main():
-    db_url = os.getenv(
-        "IGOR_HOME_DB_URL",
-        "postgresql://igor:choose_a_password@127.0.0.1/Igor-wild-0001",
-    )
-    report = seed(db_url)
+    report = seed(os.environ["IGOR_HOME_DB_URL"])
     print(
         f"seed_subsystem_index: upserted={report['upserted']} source={report['source']}"
     )
