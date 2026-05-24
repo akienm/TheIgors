@@ -48,31 +48,31 @@ Conventions:
 
 ### `cmd_ack`
 
-- **Defined:** `lab/claudecode/audit_add.py:130`
+- **Defined:** `lab/claudecode/audit_add.py:140`
 - **Callers:** _(none found)_
 
 ### `cmd_add`
 
-- **Defined:** `lab/claudecode/audit_add.py:69`
+- **Defined:** `lab/claudecode/audit_add.py:78`
 - **Callers** (2):
   - `lab/claudecode/decision_manager.py:298`
   - `lab/claudecode/session_manager.py:481`
 
 ### `cmd_drain`
 
-- **Defined:** `lab/claudecode/audit_add.py:146`
+- **Defined:** `lab/claudecode/audit_add.py:156`
 - **Callers:** _(none found)_
 
 ### `cmd_list`
 
-- **Defined:** `lab/claudecode/audit_add.py:94`
+- **Defined:** `lab/claudecode/audit_add.py:104`
 - **Callers** (2):
   - `lab/claudecode/docs_sync.py:292`
   - `lab/claudecode/github_sync.py:326`
 
 ### `cmd_rm`
 
-- **Defined:** `lab/claudecode/audit_add.py:115`
+- **Defined:** `lab/claudecode/audit_add.py:125`
 - **Callers:** _(none found)_
 
 ## `lab.claudecode.audit_check_author_model_tag`
@@ -465,7 +465,7 @@ Conventions:
   - `lab/claudecode/cc_hook_pending.py:45`
   - `lab/claudecode/cc_hook_pending.py:59`
   - `lab/claudecode/cc_hook_pending.py:142`
-  - `lab/claudecode/cc_queue.py:560`
+  - `lab/claudecode/cc_queue.py:598`
   - `lab/claudecode/cron_graph_cache_refresh.py:34`
   - `lab/claudecode/cron_graph_cache_refresh.py:58`
   - `lab/claudecode/decision_manager.py:105`
@@ -682,14 +682,14 @@ Conventions:
 
 ### `run_grep`
 
-- **Defined:** `lab/claudecode/audit_runner.py:61`
+- **Defined:** `lab/claudecode/audit_runner.py:63`
 - **Callers:** _(none found)_
 
 ### `run_one`
 
-- **Defined:** `lab/claudecode/audit_runner.py:153`
+- **Defined:** `lab/claudecode/audit_runner.py:155`
 - **Callers** (13):
-  - `lab/claudecode/audit_runner.py:189`
+  - `lab/claudecode/audit_runner.py:191`
   - `tests/test_experiment_scheduler.py:132`
   - `tests/test_experiment_scheduler.py:147`
   - `tests/test_experiment_scheduler.py:161`
@@ -705,17 +705,17 @@ Conventions:
 
 ### `run_python`
 
-- **Defined:** `lab/claudecode/audit_runner.py:133`
+- **Defined:** `lab/claudecode/audit_runner.py:135`
 - **Callers:** _(none found)_
 
 ### `run_shell`
 
-- **Defined:** `lab/claudecode/audit_runner.py:105`
+- **Defined:** `lab/claudecode/audit_runner.py:107`
 - **Callers:** _(none found)_
 
 ### `run_sql`
 
-- **Defined:** `lab/claudecode/audit_runner.py:85`
+- **Defined:** `lab/claudecode/audit_runner.py:87`
 - **Callers:** _(none found)_
 
 ## `lab.claudecode.audit_telemetry`
@@ -985,7 +985,7 @@ Conventions:
 
 ### `cmd_add`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1095`
+- **Defined:** `lab/claudecode/cc_queue.py:1133`
 - **Callers** (6):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -996,35 +996,35 @@ Conventions:
 
 ### `cmd_approve`
 
-- **Defined:** `lab/claudecode/cc_queue.py:942`
+- **Defined:** `lab/claudecode/cc_queue.py:980`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_backfill_dates`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1859`
+- **Defined:** `lab/claudecode/cc_queue.py:1897`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_backfill_prefixes`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1836`
+- **Defined:** `lab/claudecode/cc_queue.py:1874`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_block`
 
-- **Defined:** `lab/claudecode/cc_queue.py:895`
+- **Defined:** `lab/claudecode/cc_queue.py:933`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_claim`
 
-- **Defined:** `lab/claudecode/cc_queue.py:390`
+- **Defined:** `lab/claudecode/cc_queue.py:428`
 - **Callers** (10):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1039,49 +1039,49 @@ Conventions:
 
 ### `cmd_close`
 
-- **Defined:** `lab/claudecode/cc_queue.py:870`
+- **Defined:** `lab/claudecode/cc_queue.py:908`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_dispatch`
 
-- **Defined:** `lab/claudecode/cc_queue.py:405`
+- **Defined:** `lab/claudecode/cc_queue.py:443`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_done`
 
-- **Defined:** `lab/claudecode/cc_queue.py:786`
+- **Defined:** `lab/claudecode/cc_queue.py:824`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_flush_decision`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1177`
+- **Defined:** `lab/claudecode/cc_queue.py:1215`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_flush_session`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1192`
+- **Defined:** `lab/claudecode/cc_queue.py:1230`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_gate`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1674`
+- **Defined:** `lab/claudecode/cc_queue.py:1712`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_list`
 
-- **Defined:** `lab/claudecode/cc_queue.py:311`
+- **Defined:** `lab/claudecode/cc_queue.py:349`
 - **Callers** (6):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1092,28 +1092,28 @@ Conventions:
 
 ### `cmd_log`
 
-- **Defined:** `lab/claudecode/cc_queue.py:993`
+- **Defined:** `lab/claudecode/cc_queue.py:1031`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_migrate_statuses`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1539`
+- **Defined:** `lab/claudecode/cc_queue.py:1577`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_needs_review`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1654`
+- **Defined:** `lab/claudecode/cc_queue.py:1692`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_next`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1357`
+- **Defined:** `lab/claudecode/cc_queue.py:1395`
 - **Callers** (12):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1130,21 +1130,21 @@ Conventions:
 
 ### `cmd_notify_igor`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1237`
+- **Defined:** `lab/claudecode/cc_queue.py:1275`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_propose`
 
-- **Defined:** `lab/claudecode/cc_queue.py:914`
+- **Defined:** `lab/claudecode/cc_queue.py:952`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_reset`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1444`
+- **Defined:** `lab/claudecode/cc_queue.py:1482`
 - **Callers** (6):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1155,56 +1155,56 @@ Conventions:
 
 ### `cmd_reset_stale`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1480`
+- **Defined:** `lab/claudecode/cc_queue.py:1518`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_retitle`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1812`
+- **Defined:** `lab/claudecode/cc_queue.py:1850`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_decision`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1722`
+- **Defined:** `lab/claudecode/cc_queue.py:1760`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_epic`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1611`
+- **Defined:** `lab/claudecode/cc_queue.py:1649`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_github_issue`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1768`
+- **Defined:** `lab/claudecode/cc_queue.py:1806`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_worker`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1631`
+- **Defined:** `lab/claudecode/cc_queue.py:1669`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_setstatus`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1500`
+- **Defined:** `lab/claudecode/cc_queue.py:1538`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_show`
 
-- **Defined:** `lab/claudecode/cc_queue.py:368`
+- **Defined:** `lab/claudecode/cc_queue.py:406`
 - **Callers** (5):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1214,14 +1214,14 @@ Conventions:
 
 ### `cmd_ungate`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1695`
+- **Defined:** `lab/claudecode/cc_queue.py:1733`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_worker_launch`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1258`
+- **Defined:** `lab/claudecode/cc_queue.py:1296`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1243,13 +1243,20 @@ Conventions:
 
 ### `next_ticket_id_for_worker`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1320`
+- **Defined:** `lab/claudecode/cc_queue.py:1358`
 - **Callers** (5):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
-  - `lab/claudecode/cc_queue.py:1396`
+  - `lab/claudecode/cc_queue.py:1434`
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `tests/test_cc_queue_dispatch_is_assignment.py:46`
   - `tests/test_cc_queue_next_difficulty.py:45`
+
+### `reset_stale_in_progress`
+
+- **Defined:** `lab/claudecode/cc_queue.py:241`
+- **Callers** (2):
+  - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
+  - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `save_tasks`
 
@@ -1403,10 +1410,10 @@ Conventions:
   - `lab/claudecode/audit_pass1_run.py:313`
   - `lab/claudecode/book_learner.py:497`
   - `lab/claudecode/book_learner.py:581`
-  - `lab/claudecode/cc_queue.py:260`
-  - `lab/claudecode/cc_queue.py:612`
-  - `lab/claudecode/cc_queue.py:1230`
-  - `lab/claudecode/cc_queue.py:1333`
+  - `lab/claudecode/cc_queue.py:298`
+  - `lab/claudecode/cc_queue.py:650`
+  - `lab/claudecode/cc_queue.py:1268`
+  - `lab/claudecode/cc_queue.py:1371`
   - `lab/claudecode/channel.py:324`
   - `lab/claudecode/consolidate_memories.py:59`
   - `lab/claudecode/swarm_ollama_cleanup.py:72`
@@ -4769,8 +4776,8 @@ Conventions:
 - **Callers** (148):
   - `lab/claudecode/book_learner.py:395`
   - `lab/claudecode/book_learner.py:424`
-  - `lab/claudecode/cc_queue.py:245`
-  - `lab/claudecode/cc_queue.py:262`
+  - `lab/claudecode/cc_queue.py:283`
+  - `lab/claudecode/cc_queue.py:300`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/drain_learn_queue.py:101`
   - `lab/claudecode/launch_overnight_reading.py:36`
@@ -5063,9 +5070,9 @@ Conventions:
   - `lab/claudecode/book_learner.py:704`
   - `lab/claudecode/book_learner.py:757`
   - `lab/claudecode/cc_deposit.py:66`
-  - `lab/claudecode/cc_queue.py:981`
-  - `lab/claudecode/cc_queue.py:1161`
-  - `lab/claudecode/cc_queue.py:1243`
+  - `lab/claudecode/cc_queue.py:1019`
+  - `lab/claudecode/cc_queue.py:1199`
+  - `lab/claudecode/cc_queue.py:1281`
   - `lab/claudecode/consolidate_memories.py:51`
   - `lab/claudecode/docs_sync.py:111`
   - `lab/claudecode/drain_learn_queue.py:208`
@@ -5244,8 +5251,8 @@ Conventions:
 - **Callers** (148):
   - `lab/claudecode/book_learner.py:395`
   - `lab/claudecode/book_learner.py:424`
-  - `lab/claudecode/cc_queue.py:245`
-  - `lab/claudecode/cc_queue.py:262`
+  - `lab/claudecode/cc_queue.py:283`
+  - `lab/claudecode/cc_queue.py:300`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/drain_learn_queue.py:101`
   - `lab/claudecode/launch_overnight_reading.py:36`
@@ -5459,9 +5466,9 @@ Conventions:
   - `lab/claudecode/book_learner.py:704`
   - `lab/claudecode/book_learner.py:757`
   - `lab/claudecode/cc_deposit.py:66`
-  - `lab/claudecode/cc_queue.py:981`
-  - `lab/claudecode/cc_queue.py:1161`
-  - `lab/claudecode/cc_queue.py:1243`
+  - `lab/claudecode/cc_queue.py:1019`
+  - `lab/claudecode/cc_queue.py:1199`
+  - `lab/claudecode/cc_queue.py:1281`
   - `lab/claudecode/consolidate_memories.py:51`
   - `lab/claudecode/docs_sync.py:111`
   - `lab/claudecode/drain_learn_queue.py:208`
@@ -5688,8 +5695,8 @@ Conventions:
 - **Callers** (148):
   - `lab/claudecode/book_learner.py:395`
   - `lab/claudecode/book_learner.py:424`
-  - `lab/claudecode/cc_queue.py:245`
-  - `lab/claudecode/cc_queue.py:262`
+  - `lab/claudecode/cc_queue.py:283`
+  - `lab/claudecode/cc_queue.py:300`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/drain_learn_queue.py:101`
   - `lab/claudecode/launch_overnight_reading.py:36`
@@ -6793,7 +6800,7 @@ Conventions:
 ### `NetworkProxy.get`
 
 - **Defined:** `wild_igor/igor/tools/network_proxy.py:113`
-- **Callers** (2670):
+- **Callers** (2671):
   - `lab/benchmarks/benchmark.py:426`
   - `lab/benchmarks/benchmark.py:429`
   - `lab/benchmarks/benchmark.py:432`
@@ -6808,10 +6815,10 @@ Conventions:
   - `lab/benchmarks/benchmark.py:673`
   - `lab/benchmarks/benchmark.py:682`
   - `lab/benchmarks/benchmark.py:683`
-  - `lab/claudecode/audit_add.py:98`
-  - `lab/claudecode/audit_add.py:100`
-  - `lab/claudecode/audit_add.py:106`
-  - `lab/claudecode/audit_add.py:111`
+  - `lab/claudecode/audit_add.py:108`
+  - `lab/claudecode/audit_add.py:110`
+  - `lab/claudecode/audit_add.py:116`
+  - `lab/claudecode/audit_add.py:121`
   - `lab/claudecode/audit_check_igorbase.py:155`
   - `lab/claudecode/audit_cognition_modules.py:281`
   - `lab/claudecode/audit_cognition_modules.py:289`
@@ -6838,9 +6845,10 @@ Conventions:
   - `lab/claudecode/audit_pass1_run.py:417`
   - `lab/claudecode/audit_runner.py:47`
   - `lab/claudecode/audit_runner.py:57`
-  - `lab/claudecode/audit_runner.py:156`
-  - `lab/claudecode/audit_runner.py:173`
-  - `lab/claudecode/audit_runner.py:174`
+  - `lab/claudecode/audit_runner.py:58`
+  - `lab/claudecode/audit_runner.py:158`
+  - `lab/claudecode/audit_runner.py:175`
+  - `lab/claudecode/audit_runner.py:176`
   - `lab/claudecode/audit_ticket_shape.py:42`
   - `lab/claudecode/audit_ticket_shape.py:105`
   - `lab/claudecode/audit_ticket_shape.py:108`
@@ -6897,69 +6905,69 @@ Conventions:
   - `lab/claudecode/cc_queue.py:132`
   - `lab/claudecode/cc_queue.py:133`
   - `lab/claudecode/cc_queue.py:165`
-  - `lab/claudecode/cc_queue.py:292`
-  - `lab/claudecode/cc_queue.py:293`
-  - `lab/claudecode/cc_queue.py:294`
-  - `lab/claudecode/cc_queue.py:295`
-  - `lab/claudecode/cc_queue.py:296`
-  - `lab/claudecode/cc_queue.py:297`
-  - `lab/claudecode/cc_queue.py:298`
-  - `lab/claudecode/cc_queue.py:299`
-  - `lab/claudecode/cc_queue.py:305`
-  - `lab/claudecode/cc_queue.py:307`
-  - `lab/claudecode/cc_queue.py:325`
-  - `lab/claudecode/cc_queue.py:326`
-  - `lab/claudecode/cc_queue.py:327`
   - `lab/claudecode/cc_queue.py:330`
+  - `lab/claudecode/cc_queue.py:331`
+  - `lab/claudecode/cc_queue.py:332`
   - `lab/claudecode/cc_queue.py:333`
-  - `lab/claudecode/cc_queue.py:340`
-  - `lab/claudecode/cc_queue.py:348`
-  - `lab/claudecode/cc_queue.py:358`
-  - `lab/claudecode/cc_queue.py:450`
-  - `lab/claudecode/cc_queue.py:452`
-  - `lab/claudecode/cc_queue.py:523`
-  - `lab/claudecode/cc_queue.py:527`
-  - `lab/claudecode/cc_queue.py:540`
-  - `lab/claudecode/cc_queue.py:550`
-  - `lab/claudecode/cc_queue.py:551`
-  - `lab/claudecode/cc_queue.py:583`
-  - `lab/claudecode/cc_queue.py:614`
-  - `lab/claudecode/cc_queue.py:615`
-  - `lab/claudecode/cc_queue.py:646`
-  - `lab/claudecode/cc_queue.py:697`
-  - `lab/claudecode/cc_queue.py:699`
+  - `lab/claudecode/cc_queue.py:334`
+  - `lab/claudecode/cc_queue.py:335`
+  - `lab/claudecode/cc_queue.py:336`
+  - `lab/claudecode/cc_queue.py:337`
+  - `lab/claudecode/cc_queue.py:343`
+  - `lab/claudecode/cc_queue.py:345`
+  - `lab/claudecode/cc_queue.py:363`
+  - `lab/claudecode/cc_queue.py:364`
+  - `lab/claudecode/cc_queue.py:365`
+  - `lab/claudecode/cc_queue.py:368`
+  - `lab/claudecode/cc_queue.py:371`
+  - `lab/claudecode/cc_queue.py:378`
+  - `lab/claudecode/cc_queue.py:386`
+  - `lab/claudecode/cc_queue.py:396`
+  - `lab/claudecode/cc_queue.py:488`
+  - `lab/claudecode/cc_queue.py:490`
+  - `lab/claudecode/cc_queue.py:561`
+  - `lab/claudecode/cc_queue.py:565`
+  - `lab/claudecode/cc_queue.py:578`
+  - `lab/claudecode/cc_queue.py:588`
+  - `lab/claudecode/cc_queue.py:589`
+  - `lab/claudecode/cc_queue.py:621`
+  - `lab/claudecode/cc_queue.py:652`
+  - `lab/claudecode/cc_queue.py:653`
+  - `lab/claudecode/cc_queue.py:684`
+  - `lab/claudecode/cc_queue.py:735`
   - `lab/claudecode/cc_queue.py:737`
-  - `lab/claudecode/cc_queue.py:742`
-  - `lab/claudecode/cc_queue.py:754`
-  - `lab/claudecode/cc_queue.py:765`
   - `lab/claudecode/cc_queue.py:775`
-  - `lab/claudecode/cc_queue.py:884`
-  - `lab/claudecode/cc_queue.py:958`
-  - `lab/claudecode/cc_queue.py:1029`
-  - `lab/claudecode/cc_queue.py:1033`
-  - `lab/claudecode/cc_queue.py:1038`
-  - `lab/claudecode/cc_queue.py:1039`
-  - `lab/claudecode/cc_queue.py:1065`
-  - `lab/claudecode/cc_queue.py:1069`
-  - `lab/claudecode/cc_queue.py:1118`
-  - `lab/claudecode/cc_queue.py:1145`
-  - `lab/claudecode/cc_queue.py:1310`
-  - `lab/claudecode/cc_queue.py:1334`
-  - `lab/claudecode/cc_queue.py:1343`
-  - `lab/claudecode/cc_queue.py:1344`
-  - `lab/claudecode/cc_queue.py:1345`
-  - `lab/claudecode/cc_queue.py:1349`
-  - `lab/claudecode/cc_queue.py:1416`
-  - `lab/claudecode/cc_queue.py:1470`
-  - `lab/claudecode/cc_queue.py:1544`
-  - `lab/claudecode/cc_queue.py:1546`
-  - `lab/claudecode/cc_queue.py:1547`
-  - `lab/claudecode/cc_queue.py:1707`
-  - `lab/claudecode/cc_queue.py:1760`
-  - `lab/claudecode/cc_queue.py:1762`
-  - `lab/claudecode/cc_queue.py:1841`
-  - `lab/claudecode/cc_queue.py:1842`
-  - `lab/claudecode/cc_queue.py:1865`
+  - `lab/claudecode/cc_queue.py:780`
+  - `lab/claudecode/cc_queue.py:792`
+  - `lab/claudecode/cc_queue.py:803`
+  - `lab/claudecode/cc_queue.py:813`
+  - `lab/claudecode/cc_queue.py:922`
+  - `lab/claudecode/cc_queue.py:996`
+  - `lab/claudecode/cc_queue.py:1067`
+  - `lab/claudecode/cc_queue.py:1071`
+  - `lab/claudecode/cc_queue.py:1076`
+  - `lab/claudecode/cc_queue.py:1077`
+  - `lab/claudecode/cc_queue.py:1103`
+  - `lab/claudecode/cc_queue.py:1107`
+  - `lab/claudecode/cc_queue.py:1156`
+  - `lab/claudecode/cc_queue.py:1183`
+  - `lab/claudecode/cc_queue.py:1348`
+  - `lab/claudecode/cc_queue.py:1372`
+  - `lab/claudecode/cc_queue.py:1381`
+  - `lab/claudecode/cc_queue.py:1382`
+  - `lab/claudecode/cc_queue.py:1383`
+  - `lab/claudecode/cc_queue.py:1387`
+  - `lab/claudecode/cc_queue.py:1454`
+  - `lab/claudecode/cc_queue.py:1508`
+  - `lab/claudecode/cc_queue.py:1582`
+  - `lab/claudecode/cc_queue.py:1584`
+  - `lab/claudecode/cc_queue.py:1585`
+  - `lab/claudecode/cc_queue.py:1745`
+  - `lab/claudecode/cc_queue.py:1798`
+  - `lab/claudecode/cc_queue.py:1800`
+  - `lab/claudecode/cc_queue.py:1879`
+  - `lab/claudecode/cc_queue.py:1880`
+  - `lab/claudecode/cc_queue.py:1903`
   - `lab/claudecode/cert_worker_freeze.py:51`
   - `lab/claudecode/cert_worker_freeze.py:53`
   - `lab/claudecode/cert_worker_freeze.py:56`
