@@ -662,3 +662,4 @@ D-pass-condition-required-2026-05-04|pass-condition-required|decided|All tickets
 2026-05-21T15:20:49 | D-cognition-proof-tooling-2026-05-21 | Systematize cognition validation: trace review + behavioral invariants before graph-tree migration | tickets: T-cognition-proof-spec, T-pe-eval-trace-review
 2026-05-20T20:31:41 | D-audit-feedback-2026-05-20 | Add /audit-feedback skill to enforce feedback-loop completeness | tickets: T-audit-feedback-build, T-audit-ticket-integrate-feedback, T-consequence-audit-feedback
 2026-05-21T16:15:23 | D-deferred-inference-2026-05-21 | Add deferred-resolution node state to Igor inference engine | tickets: T-igor-deferred-node-state, T-consequence-deferred-inference
+2026-05-24T11:48:40 | D-rename-adc-to-unseen-university-2026-05-24 | Rename agent_datacenter repo to UnseenUniversity | tickets: T-gh-rename-adc-to-uu, T-codebase-refs-adc-to-uu, T-local-dir-rename-adc-to-uu, T-consequence-rename-adc-to-uu
