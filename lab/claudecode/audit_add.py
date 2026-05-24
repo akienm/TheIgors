@@ -51,9 +51,15 @@ def _now() -> str:
 
 
 def _entry(
-    name: str, kind: str, pattern: str, description: str, severity: str, mode: str
+    name: str,
+    kind: str,
+    pattern: str,
+    description: str,
+    severity: str,
+    mode: str,
+    code: str = "",
 ) -> dict:
-    return {
+    entry: dict = {
         "name": name,
         "kind": kind,
         "pattern": pattern,
@@ -64,6 +70,9 @@ def _entry(
         "mode": mode,
         "ack_until": None,
     }
+    if code:
+        entry["code"] = code
+    return entry
 
 
 def cmd_add(args) -> int:
@@ -84,6 +93,7 @@ def cmd_add(args) -> int:
             args.description or "",
             args.severity,
             args.mode,
+            code=getattr(args, "code", "") or "",
         )
     )
     _save(data)
@@ -174,6 +184,7 @@ def main() -> int:
     p_add.add_argument(
         "--severity", "--sev", default="med", choices=["high", "med", "low"]
     )
+    p_add.add_argument("--code", default="", help="stable finding code, e.g. AR-008")
     p_add.set_defaults(func=cmd_add)
 
     p_list = sub.add_parser("list", help="show registered checks")

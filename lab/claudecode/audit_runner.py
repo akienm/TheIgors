@@ -55,7 +55,9 @@ def _is_acked(entry: dict) -> bool:
 
 def _format(entry: dict, status: str, detail: str) -> str:
     sev = (entry.get("severity") or "med").upper()
-    return f"[{sev:<5}] {entry['name']}: {status}{(' — ' + detail) if detail else ''}"
+    code = entry.get("code", "")
+    code_prefix = f"{code} " if code else ""
+    return f"[{sev:<5}] {code_prefix}{entry['name']}: {status}{(' — ' + detail) if detail else ''}"
 
 
 def run_grep(entry: dict) -> tuple[str, str]:
