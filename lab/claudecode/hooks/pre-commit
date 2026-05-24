@@ -54,7 +54,7 @@ if [ "$bad" -eq 1 ]; then
 fi
 
 # ── Skills sync — RETIRED 2026-05-02 (T-skills-content-migrate-to-master) ──
-# Skills now live in agent_datacenter (canonical). Edit them there, then run
+# Skills now live in UnseenUniversity (canonical). Edit them there, then run
 # `agentctl skills deploy` to push to ~/.claude/skills/ on this box.
 # map-igor and readigor remain TheIgors-internal under lab/claudecode/cc_skills/
 # (they read Igor-specific runtime state and are not agent skills).

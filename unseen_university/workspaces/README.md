@@ -1,4 +1,4 @@
-# agent_datacenter/workspaces
+# UnseenUniversity/workspaces
 
 Ephemeral per-agent scratch space. Files here are machine-local and gitignored.
 

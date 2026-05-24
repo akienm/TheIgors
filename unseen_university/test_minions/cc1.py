@@ -7,7 +7,7 @@ Smoke-test fidelity: passing means haiku would call the right things; failing
 means something in the skill text is ambiguous or broken.
 
 Usage:
-    from agent_datacenter.test_minions.cc1 import CC1Minion
+    from unseen_university.test_minions.cc1 import CC1Minion
     minion = CC1Minion()
     result = minion.run_skill(
         task="Claim T-test-id",

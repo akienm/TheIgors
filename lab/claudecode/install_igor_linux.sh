@@ -166,21 +166,21 @@ PYEOF
 
 step "Step 6 — Install Claude Code skills"
 
-# Master skills live in agent_datacenter/skills/ (T-skills-content-migrate-to-master,
+# Master skills live in UnseenUniversity/skills/ (T-skills-content-migrate-to-master,
 # 2026-05-02). Two TheIgors-internal exceptions live under lab/claudecode/cc_skills/.
 
 SKILLS_DST="$HOME/.claude/skills"
 mkdir -p "$SKILLS_DST"
 
-# 1) Master skills from agent_datacenter (if present on this box)
-DATACENTER_SKILLS="$HOME/dev/src/agent_datacenter/skills"
+# 1) Master skills from unseen_university (if present on this box)
+DATACENTER_SKILLS="$HOME/dev/src/UnseenUniversity/skills"
 if [[ -d "$DATACENTER_SKILLS" ]]; then
     # Mirror manifest-listed dirs (everything except manifest.json itself)
     rsync -a --exclude=manifest.json "$DATACENTER_SKILLS/" "$SKILLS_DST/"
     green "  Master skills installed from $DATACENTER_SKILLS"
 else
-    yellow "  agent_datacenter not found at $DATACENTER_SKILLS — master skills SKIPPED"
-    yellow "  Install agent_datacenter first, then re-run, OR run 'agentctl skills deploy'"
+    yellow "  UnseenUniversity not found at $DATACENTER_SKILLS — master skills SKIPPED"
+    yellow "  Install UnseenUniversity first, then re-run, OR run 'agentctl skills deploy'"
 fi
 
 # 2) TheIgors-internal skills (map-igor, readigor — read Igor runtime state)

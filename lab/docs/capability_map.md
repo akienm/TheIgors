@@ -202,8 +202,8 @@ These are designed and ready to claim — not yet built:
 
 ### Active projects
 
-- **agent_datacenter** — portable runtime substrate, live at
-  `~/dev/src/agent_datacenter`. Phase 0 in progress (lab/claudecode
+- **UnseenUniversity** — portable runtime substrate, live at
+  `~/dev/src/UnseenUniversity`. Phase 0 in progress (lab/claudecode
   migration underway, `T-lab-migration-to-agent-datacenter`).
 
 Full list: `python3 ~/TheIgors/lab/claudecode/cc_queue.py list`.
@@ -261,7 +261,7 @@ do X?" answers that have tripped sessions in the past.
   ticket-level `approval`. Don't conflate.
 - ❌ **No background heartbeat for health checks.** Health is polled on
   demand. Don't propose periodic-heartbeat patterns without reading
-  the agent_datacenter spec first.
+  the UnseenUniversity spec first.
 - ❌ **No own GitHub identity yet.** `GH-187` (sprint). Igor commits as Akien.
 - ❌ **Self-directed rollback not implemented.** `GH-210` (sprint).
   Igor cannot revert its own bad changes today.

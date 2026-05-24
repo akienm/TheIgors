@@ -16,7 +16,7 @@ daemon or maintain a live process.
 | `id` | str | `"akien"` |
 | `entity_type` | str | `"human"` — not a daemon or agent |
 | `address` | str | `"comms://akien/"` |
-| `data_home` | str | `~/.agent_datacenter/akien/` |
+| `data_home` | str | `~/.unseen_university/akien/` |
 | `channels` | dict | named comms:// sub-addresses (see below) |
 | `online` | bool | always `False` — Akien is not a process |
 
@@ -26,7 +26,7 @@ Channels:
 - `ideas` → `comms://akien/ideas`
 
 The `inbox/`, `outbox/`, and `ideas/` directories exist at
-`~/.agent_datacenter/akien/` and are used by the web server and Discord
+`~/.unseen_university/akien/` and are used by the web server and Discord
 transport to queue messages. This shim does not read or write them.
 
 ## What this is NOT

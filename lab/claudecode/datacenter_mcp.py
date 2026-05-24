@@ -2,7 +2,7 @@
 """
 datacenter_mcp.py — MCP server exposing the announce protocol to Claude Code.
 
-Wraps agent_datacenter.announce.AnnounceMcpServer and registers its three
+Wraps unseen_university.announce.AnnounceMcpServer and registers its three
 methods as MCP tools so a CC session can announce itself, read its
 manifest, and react to invalidates from inside Claude Code.
 
@@ -43,7 +43,7 @@ def _adapter():
     """Lazy-construct the AnnounceMcpServer singleton."""
     global _ADAPTER
     if _ADAPTER is None:
-        from agent_datacenter.announce import AnnounceMcpServer
+        from unseen_university.announce import AnnounceMcpServer
 
         _ADAPTER = AnnounceMcpServer(
             agent_id=os.environ.get("CC_AGENT_ID", "cc"),

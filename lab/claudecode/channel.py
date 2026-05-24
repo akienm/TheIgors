@@ -4,7 +4,7 @@ channel.py — Shared coordination channel for Claude Code sessions and Igor.
 
 DEPRECATED: Migrate callers to comms://Shared (Router.send) directly.
 This shim is dual-write: every post() goes to both the JSONL file and the
-IMAP Shared mailbox (if agent_datacenter IMAP is reachable). The JSONL file
+IMAP Shared mailbox (if unseen_university IMAP is reachable). The JSONL file
 is the authoritative read source until the IMAP migration is verified;
 after verification, the JSONL backend will be removed (Phase 5).
 
@@ -49,10 +49,10 @@ def _get_imap_router():
         import sys as _sys
 
         _sys.path.insert(
-            0, str(Path(__file__).parents[3] / "dev" / "src" / "agent_datacenter")
+            0, str(Path(__file__).parents[3] / "dev" / "src" / "unseen_university")
         )
         from bus.imap_server import IMAPServer
-        from agent_datacenter.bus.router import Router
+        from unseen_university.bus.router import Router
 
         s = IMAPServer()
         s.start()
@@ -161,7 +161,7 @@ def post(content: str, author: str = "", msg_type: str = "message") -> dict:
     }
     _append(entry)
     # Mirror to IMAP Shared mailbox (dual-write shim). Silently skipped if
-    # agent_datacenter IMAP is not reachable.
+    # unseen_university IMAP is not reachable.
     _, router = _get_imap_router()
     if router is not None:
         try:

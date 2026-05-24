@@ -2,7 +2,7 @@
 
 Deliverable for T-swarm-port-audit. Enumerates all current port bindings on
 akiendelllinux (the primary active swarm box as of this date) and maps each
-to its proposed agent_datacenter bus address or flags conflicts. Other swarm
+to its proposed UnseenUniversity bus address or flags conflicts. Other swarm
 boxes (akienyoga9i, akienyogai7, akienasus, akienpi) are offline or dormant
 and not enumerated here — their bindings should be checked when brought up
 and confirmed against this template.
@@ -18,7 +18,7 @@ and confirmed against this template.
 | 8080 | 0.0.0.0 | UC web server (WebSocket + HTTP) | `lab/claudecode/utility_closet_server.py` | Controlled by `IGOR_UC_PORT` (default 8080). Primary agent platform layer (D335). Chat, WS hub, dashboard, metrics. |
 | 8082 | 0.0.0.0 | UC web server (pure HTTP fallback) | `lab/claudecode/utility_closet_server.py` | Controlled by `IGOR_UC_HTTP_PORT` (default 8082). Non-WS fallback for the same UC server. |
 | 8384 | 127.0.0.1 | Syncthing web UI | syncthing | Localhost-only. File sync service. Not agent-datacenter-related. |
-| 10143 | (IMAP/Dovecot) | agent_datacenter bus backbone | dovecot | Not shown in ss output because Dovecot binds its own; `imap_server.py` connects to it. Default 10143 (test: in-process stub). This IS the bus — not a service on the bus. |
+| 10143 | (IMAP/Dovecot) | UnseenUniversity bus backbone | dovecot | Not shown in ss output because Dovecot binds its own; `imap_server.py` connects to it. Default 10143 (test: in-process stub). This IS the bus — not a service on the bus. |
 | 11434 | 0.0.0.0 + [::] | Ollama (LLM inference) | ollama | Local inference backend. Referenced by `devices/inference/device.py` (`_OLLAMA_DEFAULT = "http://127.0.0.1:11434"`). External binding — should confirm firewall gate. |
 | 22 | 0.0.0.0 + [::] | SSH | sshd | Standard. Not agent-datacenter-related. |
 | 22000 | [::] | Syncthing data transport | syncthing | Cross-machine file sync. Not agent-datacenter-related. |
@@ -31,7 +31,7 @@ and confirmed against this template.
 
 ---
 
-## Mapping to agent_datacenter bus
+## Mapping to UnseenUniversity bus
 
 | Service | Current binding | Proposed bus address | Device | Status |
 |---------|----------------|---------------------|--------|--------|
@@ -46,7 +46,7 @@ and confirmed against this template.
 | Tailscale | 50970 | n/a | n/a | VPN fabric — cross-box transport substrate, not a bus participant. |
 | KDE Connect | 1716 | n/a | n/a | Mobile integration, not agent-related. |
 | Discord bridge | (not running) | `comms://discord-bot` | `devices/discord_bot/` | Device exists; shim exists. Not currently bound — service not running. |
-| Matter shelf | (not running) | `comms://matter-shelf` | TBD | Not running. Not yet a device in agent_datacenter. Future: home automation shelf. |
+| Matter shelf | (not running) | `comms://matter-shelf` | TBD | Not running. Not yet a device in unseen_university. Future: home automation shelf. |
 | SensorTree | (not running) | `comms://sensor-tree` | TBD | Not running. Not yet a device. Future: sensor aggregation. |
 
 ---

@@ -5,7 +5,7 @@ cc_log_stop_hook.py — Stop hook driver: ingest CC session transcript via ChatL
 
 Finds all CC session JSONLs modified within the last 48 hours across all project
 dirs, ingests them through ChatLogHandler, and flushes to date-partitioned markdown
-at ~/.agent_datacenter/logs/CC.0/YYYY-MM-DD.md.
+at ~/.unseen_university/logs/CC.0/YYYY-MM-DD.md.
 
 Ingesting all recent sessions (not just the newest) ensures that when multiple
 sessions touch the same day, none are lost on flush().

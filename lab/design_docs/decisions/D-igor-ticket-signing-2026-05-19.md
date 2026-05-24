@@ -5,7 +5,7 @@
 **spawned_tickets:** T-scraps-device, T-ticket-created-by, T-cc-queue-scraps-gate
 
 ## Decision narrative
-Igor files placeholder tickets with no body (T-claude-1: "HIGH work", T-nw-1: "legacy ticket") that waste sprint cycles and are unattributable. Build Scraps — a new rack device in agent_datacenter named after one of the Igors' dogs — as a queue gatekeeper that validates ticket content before state transitions. Rule-based V1 with optional Qwen 8 (via InferenceDevice) for fuzzy usefulness check. Passing tickets get a `scraps_validated` sign-off stamp. Separately, add `created_by` field to ticket schema with auto-injection at the filing source.
+Igor files placeholder tickets with no body (T-claude-1: "HIGH work", T-nw-1: "legacy ticket") that waste sprint cycles and are unattributable. Build Scraps — a new rack device in UnseenUniversity named after one of the Igors' dogs — as a queue gatekeeper that validates ticket content before state transitions. Rule-based V1 with optional Qwen 8 (via InferenceDevice) for fuzzy usefulness check. Passing tickets get a `scraps_validated` sign-off stamp. Separately, add `created_by` field to ticket schema with auto-injection at the filing source.
 
 Alternative considered: inline validation in cc_queue.py — rejected because it embeds gatekeeper logic in a tool rather than a composable rack device.
 

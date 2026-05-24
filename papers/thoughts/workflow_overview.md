@@ -316,6 +316,6 @@ Changes pass through a layered review process keyed to failure class and model t
 
 ## For Additional Background
 
-- [GitHub -- akienm/agent_datacenter](https://github.com/akienm/agent_datacenter) -- runtime substrate: IMAP bus, device model, rack, installer
+- [GitHub -- akienm/UnseenUniversity](https://github.com/akienm/UnseenUniversity) -- runtime substrate: IMAP bus, device model, rack, installer
 - [GitHub -- akienm/TheIgors](https://github.com/akienm/TheIgors) -- Igor: graph-matrix reasoning engine, persistent Postgres memory, habit scoring
 - [TheIgors -- working_with_claude.md](https://github.com/akienm/TheIgors/blob/main/papers/thoughts/working_with_claude.md)

@@ -5,7 +5,7 @@ Akien is not a daemon. This shim is a static identity record that gives
 his web and Discord traffic a comms:// address (comms://akien/) the ADC
 bus can route like any other device.
 
-Data home: ~/.agent_datacenter/akien/  (inbox/, outbox/, ideas/ already exist)
+Data home: ~/.unseen_university/akien/  (inbox/, outbox/, ideas/ already exist)
 Web routing: messages sent via the browser are wrapped as comms://akien/web
   by utility_closet_server before being appended to channel_messages.
 Design rules: no-sqlite, no-TheIgors-imports.
@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_DATA_HOME = Path.home() / ".agent_datacenter" / "akien"
+_DATA_HOME = Path.home() / ".unseen_university" / "akien"
 
 _IDENTITY: dict = {
     "id": "akien",

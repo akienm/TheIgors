@@ -2,7 +2,7 @@
 
 > **Note:** `cc_mcp_server.py` is deprecated (T-adc-cc-mcp-server-deprecation, 2026-04-27).
 > `request_compaction` is now exposed via **`wild_igor/igor/mcp/igor_mcp.py`** using
-> the real MCP SDK. The skeleton MCP aggregator at `agent_datacenter` is the
+> the real MCP SDK. The skeleton MCP aggregator at `UnseenUniversity` is the
 > authoritative MCP endpoint. Do not start `cc_mcp_server.py` — it will conflict.
 
 ## Current setup

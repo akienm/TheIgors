@@ -13,7 +13,7 @@
 - **Any agent can be built on top.** Igor is one tenant. CC is another. Future agents are more.
 - **Migration goal:** move everything we can out of Igor into the datacenter. Igor shrinks to pure cognition.
 - **Lab split:**
-  - `agent_datacenter/` = cross-project lab (substrate for any agent)
+  - `UnseenUniversity/` = cross-project lab (substrate for any agent)
   - `ClaudeAndAkienWorkshop/` = cross-project workshop tooling and skills
   - `TheIgors/lab/` = Igor-only lab (cognition-specific tooling and design)
 
@@ -29,7 +29,7 @@ Every component connects via whichever transport is most ergonomic for what it i
 |---|---|
 | **MCP** | AI agents in their tool-call-native shape |
 | **HTTP** | browsers, dashboards, programmatic clients |
-| **IMAP** | async / durable messaging — mailbox semantics, the agent_datacenter Phase 1 bus |
+| **IMAP** | async / durable messaging — mailbox semantics, the UnseenUniversity Phase 1 bus |
 
 All three share:
 - Device registry (who's up, what they expose)
@@ -38,7 +38,7 @@ All three share:
 
 A single client may use multiple transports for different purposes — e.g., MCP for "send envelope to peer COA," IMAP for "subscribe to long-running notifications." Same bus, different doors.
 
-This isn't a new bus — it's a multi-protocol facade *on top of* the agent_datacenter substrate (Phase 1 IMAP, registry, envelope, router). The "home web server" is where the HTTP face terminates.
+This isn't a new bus — it's a multi-protocol facade *on top of* the UnseenUniversity substrate (Phase 1 IMAP, registry, envelope, router). The "home web server" is where the HTTP face terminates.
 
 A 4th transport face, **tmux**, is a special observability shape (see below).
 
@@ -82,7 +82,7 @@ A channel is a **meeting of IMAP inboxes** — a logical room backed by per-part
 
 ### Built-in channels
 
-- **`shared`** — comes with the rack. Always on every box's web server. Has the enter-hook notify-on-mail behavior already wired (this is what wrote yesterday's chat export to `~/.agent_datacenter/logs/CC.0/`).
+- **`shared`** — comes with the rack. Always on every box's web server. Has the enter-hook notify-on-mail behavior already wired (this is what wrote yesterday's chat export to `~/.unseen_university/logs/CC.0/`).
 - **Per-instance channels** — each interactive surface of each instance can be a channel.
 - **Multi-party channels** — e.g., the `igor-cc0` channel where CC and Igor chat over MCP; the bus delivers copies to each, and the web server renders the unified room.
 
@@ -139,7 +139,7 @@ Both directions work without ceremony when both processes share the user (CC and
 
 ### The cute trick: agent's CLI session IS a chat channel
 
-Each agent's terminal pane streams through the agent's **shim** (the existing transport adapter in agent_datacenter). The shim:
+Each agent's terminal pane streams through the agent's **shim** (the existing transport adapter in UnseenUniversity). The shim:
 
 - **Outbound:** parses turn boundaries / message events from the stream → emits as channel envelopes onto the bus → web server renders the channel as a tab.
 - **Inbound:** takes incoming envelopes from the bus → injects into the agent's session via `tmux send-keys` (with attribution so the agent knows it's not the primary user).
@@ -188,7 +188,7 @@ Anything that flashes on screen (an API key in an error message, a token in a de
 
 ## Existing state
 
-- **Already shipped (agent_datacenter):**
+- **Already shipped (UnseenUniversity):**
   - Phase 1: registry, IMAP bus, envelope/router, skeleton, access control, health rollup
   - Phase 2-3: igor + inference + claude devices + YGM nudge pipeline
   - Phase 4: DiscordBot + SWADL + browser-use devices + shims

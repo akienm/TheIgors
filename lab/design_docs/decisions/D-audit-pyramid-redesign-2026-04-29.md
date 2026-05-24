@@ -32,7 +32,7 @@ Two Opus seats: design audit and expert panel. Both low-volume, high-leverage, a
 
 ### Logging foundation
 
-Corrected framing (Akien): there is no logger to import. The basemost class IS the logging+introspection layer for both Igor and agent_datacenter. **Every non-library class inherits from it.** This rule is promoted from informal-and-implicit to first-class palace rule (`theigors/rules/inherit-base-class`) with a corresponding audit-ticket check shape. Detailed single-run logging audit deferred to `T-detailed-logging-audit` (gated until the pyramid restructure ships).
+Corrected framing (Akien): there is no logger to import. The basemost class IS the logging+introspection layer for both Igor and unseen_university. **Every non-library class inherits from it.** This rule is promoted from informal-and-implicit to first-class palace rule (`theigors/rules/inherit-base-class`) with a corresponding audit-ticket check shape. Detailed single-run logging audit deferred to `T-detailed-logging-audit` (gated until the pyramid restructure ships).
 
 ### Telemetry shape
 
@@ -60,7 +60,7 @@ Conversation since context-load (no `/design` marker; treated whole conversation
 ### Shipped via
 - T-audit-design-skill (M) — Build audit-design skill — called by /decided  `done` — Built ~/.claude/skills/audit-design/SKILL.md with 9 positive checks (approach-frame goal, runtime-observable success, alternatives, constraints, missing-pass, 30d conflicts, palace-rule conflicts, dec
 - T-audit-rename-pyramid (S) — Rename all audit skills to audit-<scope> shape  `done` — pe_chain autonomous: pass
-- T-rule-inherit-base-class (S) — Promote inherit-base-class to first-class palace rule  `done` — Promoted to first-class palace rule. Added theigors/rules/inherit-base-class (narrative covering: basemost class IS the logging+introspection layer for both Igor and agent_datacenter; lineage AgentBas
+- T-rule-inherit-base-class (S) — Promote inherit-base-class to first-class palace rule  `done` — Promoted to first-class palace rule. Added theigors/rules/inherit-base-class (narrative covering: basemost class IS the logging+introspection layer for both Igor and UnseenUniversity; lineage AgentBas
 - T-rule-preferred-paths-seed (S) — Palace rule preferred_paths — initial seed of deprecated→preferred pairs  `done` — Seeded 7 palace nodes: theigors/rules/preferred_paths/* with 6 deprecated→preferred pairs (raw-psql, channel-direct-write, direct-db-write, print-statement, new-memory-type, feature-flag) plus parent 
 - T-audit-model-routing (S) — Codify per-audit model routing — Opus at design + expert tiers  `done` — Seeded theigors/audits and theigors/audits/model_routing palace nodes with per-audit model table (opus: design+expert, haiku: ticket+debris+precode, sonnet: smell+day+audits). Existing skill frontmatt
 - T-audit-smell-skill (L) — Build audit-smell skill — post-code, pre-test code-quality layer  `done` — Built ~/.claude/skills/audit-smell/SKILL.md describing 17 checks (bare except, silent-return-False, shape-names, dead code, what-comments, mocked DB, speculative flags, new memory tables, SQLite, back

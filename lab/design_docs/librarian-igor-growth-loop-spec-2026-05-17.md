@@ -118,8 +118,8 @@ to `palace_writer.py`. Call it from `PalaceWriter.write()` on every outcome
 (written, rejected, escalated, protected). Also add a `emit_research_failure(topic)`
 call from `ResearchEngine` when synthesis yields no answer.
 
-**Affected files:** `agent_datacenter/devices/librarian/palace_writer.py`,
-`agent_datacenter/devices/librarian/research.py`
+**Affected files:** `UnseenUniversity/devices/librarian/palace_writer.py`,
+`UnseenUniversity/devices/librarian/research.py`
 
 **DB:** writes to `instance.proposals` via `psycopg2` (same connection string
 as PalaceWriter already uses). Must call `_ensure_proposals` on first write.

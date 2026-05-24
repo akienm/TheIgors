@@ -10,7 +10,7 @@ passes:
    class. Cross-check inheritance against IgorBase/AgentBase via shared
    logic with audit_check_igorbase.py.
 
-2. RUNTIME (--runtime): Walk ~/.TheIgors/logs/ + ~/.agent_datacenter/logs/
+2. RUNTIME (--runtime): Walk ~/.TheIgors/logs/ + ~/.unseen_university/logs/
    over a window. Per logger, count lines, compute rate. Flag noisy/quiet
    sources and slot-misrouted writes.
 
@@ -25,7 +25,7 @@ Patterns classified (severity in parens):
   - SMELL      print(...)                         (non-CLI use)
 
 Goal: produce a punch list driving the migration to the universal
-agent_datacenter base class + rackmount-slot logging pattern. Migration
+unseen_university base class + rackmount-slot logging pattern. Migration
 itself ships as separate tickets, queued after this audit.
 
 Inertia: LOW — read-only audit script. Writes report; does not edit code.
@@ -818,7 +818,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.runtime:
         log_dirs = [
             Path("/home/akien/.TheIgors/logs"),
-            Path("/home/akien/.agent_datacenter/logs"),
+            Path("/home/akien/.unseen_university/logs"),
         ]
         if args.log_dir:
             log_dirs.extend(Path(d) for d in args.log_dir)

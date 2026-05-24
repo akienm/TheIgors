@@ -10,7 +10,7 @@ HARD REQUIREMENT — browser profile:
       cfgdict[SELENIUM_USER_DATA_DIR] = IGOR_PROFILE_PATH
 
   Igor's profile on akiendelllinux:
-      ~/.agent_datacenter/Igor-wild-0001/accounts/chrome_igor_profile
+      ~/.unseen_university/Igor-wild-0001/accounts/chrome_igor_profile
 
   Callers that skip this step will get a RuntimeError from load() rather
   than a silent unauthenticated session that looks like it worked.
@@ -44,7 +44,7 @@ from SWADL.engine.swadl_base_section import SWADLPageSection
 # Igor's pre-authenticated Chrome profile. Set cfgdict[SELENIUM_USER_DATA_DIR]
 # to this path before creating the driver.
 IGOR_PROFILE_PATH = str(
-    Path.home() / ".agent_datacenter/Igor-wild-0001/accounts/chrome_igor_profile"
+    Path.home() / ".unseen_university/Igor-wild-0001/accounts/chrome_igor_profile"
 )
 
 _INBOX_URL = "https://mail.google.com/mail/u/0/#inbox"

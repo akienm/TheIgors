@@ -4,7 +4,7 @@
 **Updated:** 2026-04-29T17:55:55.489114+00:00 by claude-opus-4-7-T-rule-inherit-base-class
 
 The basemost class IS the logging and introspection layer for both Igor
-and the agent_datacenter. Every non-library class inherits from it. This
+and the unseen_university. Every non-library class inherits from it. This
 rule, currently enforced by the D125 audit check, is canonical: it gives
 us logging "as easy as print" via inheritance — no `import logging`, no
 separate logger handle, no per-file boilerplate.
@@ -17,7 +17,7 @@ Lineage:
 - `wild_igor/igor/igor_base.py` defines `IgorBase(AgentBase)` — Igor-side
   extension that adds `paths().logs` log_dir and `get_timer()`. Every
   Igor-side class inherits from this.
-- agent_datacenter has its own equivalent that descends from `AgentBase`
+- UnseenUniversity has its own equivalent that descends from `AgentBase`
   in the same lineage.
 
 What inheritance buys you (no import needed):

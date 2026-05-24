@@ -17,7 +17,7 @@ Akien reviewed the 12 unclear cases in lab/design_docs/reorg-plan-2026-05-01-opu
 - **#4 TheIgorsProject/skills/** — DELETE (executed inline; predecessors, git preserves)
 - **#8 utility_closet/** — coordinated under T-capability-extraction-from-igor (already filed)
 - **#9 TheIgorsProject root** — STAY (dump bucket pattern intentional)
-- **#10 imap_stub_spike.py** — MOVE → agent_datacenter/lab/spikes/ (executed inline)
+- **#10 imap_stub_spike.py** — MOVE → UnseenUniversity/lab/spikes/ (executed inline)
 - **#12 hosted_igor.txt** — MOVE → TheIgorsProject (executed inline)
 
 #4, #10, #12 executed inline (3 simple moves, no cross-tree code deps); the bucket archive moves and .db migrations are tracked through the spawned tickets.

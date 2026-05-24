@@ -1,7 +1,7 @@
 """
 prune_console_logs.py — remove console log files older than RETENTION_DAYS.
 
-Scans $AGENT_DATACENTER_HOME/logs/*/YYYYMMDD.console.log and deletes any
+Scans $UNSEEN_UNIVERSITY_HOME/logs/*/YYYYMMDD.console.log and deletes any
 file whose date is older than RETENTION_DAYS (default 7) days ago.
 
 Safe to run as a cron job or on each session start. Idempotent.
@@ -20,7 +20,7 @@ from pathlib import Path
 
 
 def _log_root() -> Path:
-    home = os.environ.get("AGENT_DATACENTER_HOME", str(Path.home() / ".agent_datacenter"))
+    home = os.environ.get("UNSEEN_UNIVERSITY_HOME", str(Path.home() / ".unseen_university"))
     return Path(home) / "logs"
 
 

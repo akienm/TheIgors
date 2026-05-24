@@ -28,7 +28,7 @@ The palace stores hierarchical nodes at paths like:
 ```
 palace.decisions.D-foo-2026-05-08
 palace.shared.akien.goals
-palace.projects.agent_datacenter.summary
+palace.projects.unseen_university.summary
 palace.days.20260508
 ```
 
@@ -37,7 +37,7 @@ the schema. What's missing:
 
 - **Tree traversal**: "show me everything under palace.projects.*"
 - **Path-aware read**: "read palace.shared.akien.goals in full"
-- **Inline edit**: "update the content of palace.projects.agent_datacenter.summary"
+- **Inline edit**: "update the content of palace.projects.unseen_university.summary"
 - **Tag-based search**: "find all nodes tagged ['decision', 'adc']"
 
 ---
@@ -46,16 +46,16 @@ the schema. What's missing:
 
 ### Surface 1 — Librarian MCP tools (in-session)
 
-Four new tools in `agent_datacenter/devices/librarian/tools/palace_tools.py`:
+Four new tools in `UnseenUniversity/devices/librarian/tools/palace_tools.py`:
 
 **`palace_ls(prefix="", limit=50)`**
 List all nodes under a path prefix, indented tree view:
 ```
 palace.projects
-  palace.projects.agent_datacenter
-    palace.projects.agent_datacenter.map          [doc]    2026-05-08
-    palace.projects.agent_datacenter.summary      [doc]    2026-05-08
-    palace.projects.agent_datacenter.standards    [doc]    2026-05-08
+  palace.projects.unseen_university
+    palace.projects.unseen_university.map          [doc]    2026-05-08
+    palace.projects.unseen_university.summary      [doc]    2026-05-08
+    palace.projects.unseen_university.standards    [doc]    2026-05-08
   palace.projects.theigors                        [pointer] 2026-05-08
 ```
 
@@ -99,7 +99,7 @@ python3 scripts/palace_cli.py search "capability extraction"
 python3 scripts/palace_cli.py search --tag decision --limit 20
 
 # Edit (opens $EDITOR or takes --content inline)
-python3 scripts/palace_cli.py edit palace.projects.agent_datacenter.summary
+python3 scripts/palace_cli.py edit palace.projects.unseen_university.summary
 python3 scripts/palace_cli.py edit palace.foo --content "new content" --title "New Title"
 
 # Delete (with confirmation prompt)
