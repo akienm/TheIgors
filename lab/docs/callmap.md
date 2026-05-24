@@ -181,12 +181,11 @@ Conventions:
 ### `classify`
 
 - **Defined:** `lab/claudecode/audit_cognition_modules.py:191`
-- **Callers** (5):
+- **Callers** (4):
   - `lab/claudecode/audit_cognition_modules.py:262`
   - `lab/claudecode/audit_immobile_tickets.py:127`
   - `lab/claudecode/audit_ticket_shape.py:150`
   - `lab/tools/scan_ebooks.py:381`
-  - `wild_igor/igor/tools/preflight_heal.py:243`
 
 ### `write_report`
 
@@ -266,12 +265,11 @@ Conventions:
 ### `classify`
 
 - **Defined:** `lab/claudecode/audit_immobile_tickets.py:89`
-- **Callers** (5):
+- **Callers** (4):
   - `lab/claudecode/audit_cognition_modules.py:262`
   - `lab/claudecode/audit_immobile_tickets.py:127`
   - `lab/claudecode/audit_ticket_shape.py:150`
   - `lab/tools/scan_ebooks.py:381`
-  - `wild_igor/igor/tools/preflight_heal.py:243`
 
 ## `lab.claudecode.audit_logging`
 
@@ -438,7 +436,7 @@ Conventions:
 ### `read_text`
 
 - **Defined:** `lab/claudecode/audit_pass1_run.py:210`
-- **Callers** (248):
+- **Callers** (234):
   - `lab/benchmarks/benchmark.py:529`
   - `lab/benchmarks/benchmark.py:680`
   - `lab/claudecode/audit_add.py:42`
@@ -456,10 +454,10 @@ Conventions:
   - `lab/claudecode/audit_pass1_run.py:251`
   - `lab/claudecode/audit_pass1_run.py:261`
   - `lab/claudecode/audit_pass1_run.py:271`
-  - `lab/claudecode/audit_runner.py:42`
+  - `lab/claudecode/audit_runner.py:39`
   - `lab/claudecode/book_learner.py:62`
   - `lab/claudecode/book_learner.py:87`
-  - `lab/claudecode/book_learner.py:328`
+  - `lab/claudecode/book_learner.py:325`
   - `lab/claudecode/callmap.py:184`
   - `lab/claudecode/callmap.py:361`
   - `lab/claudecode/callmap.py:514`
@@ -467,7 +465,7 @@ Conventions:
   - `lab/claudecode/cc_hook_pending.py:45`
   - `lab/claudecode/cc_hook_pending.py:59`
   - `lab/claudecode/cc_hook_pending.py:142`
-  - `lab/claudecode/cc_queue.py:486`
+  - `lab/claudecode/cc_queue.py:560`
   - `lab/claudecode/cron_graph_cache_refresh.py:34`
   - `lab/claudecode/cron_graph_cache_refresh.py:58`
   - `lab/claudecode/decision_manager.py:105`
@@ -479,18 +477,18 @@ Conventions:
   - `lab/claudecode/drain_learn_queue.py:80`
   - `lab/claudecode/drain_learn_queue.py:109`
   - `lab/claudecode/log_rotate.py:43`
-  - `lab/claudecode/map_igor.py:130`
-  - `lab/claudecode/map_igor.py:139`
-  - `lab/claudecode/map_igor.py:147`
-  - `lab/claudecode/map_igor.py:159`
-  - `lab/claudecode/map_igor.py:169`
-  - `lab/claudecode/map_igor.py:180`
-  - `lab/claudecode/map_igor.py:353`
+  - `lab/claudecode/map_igor.py:127`
+  - `lab/claudecode/map_igor.py:136`
+  - `lab/claudecode/map_igor.py:144`
+  - `lab/claudecode/map_igor.py:156`
+  - `lab/claudecode/map_igor.py:166`
+  - `lab/claudecode/map_igor.py:177`
+  - `lab/claudecode/map_igor.py:350`
   - `lab/claudecode/palace_sync.py:112`
   - `lab/claudecode/palace_sync.py:135`
   - `lab/claudecode/phrase_regression.py:43`
   - `lab/claudecode/phrase_regression.py:96`
-  - `lab/claudecode/reading_campaign.py:458`
+  - `lab/claudecode/reading_campaign.py:454`
   - `lab/claudecode/reading_integrator.py:44`
   - `lab/claudecode/reading_integrator.py:67`
   - `lab/claudecode/reorder_slate_sections.py:165`
@@ -565,16 +563,7 @@ Conventions:
   - `tests/test_llm_peer_advisor.py:148`
   - `tests/test_llm_peer_advisor.py:171`
   - `tests/test_memory_snapshot.py:73`
-  - `tests/test_pe_chain_consult.py:297`
-  - `tests/test_pe_chain_consult.py:316`
-  - `tests/test_pe_chain_consult_multi_turn.py:155`
-  - `tests/test_pe_chain_consult_multi_turn.py:170`
-  - `tests/test_pe_entry_nodes.py:741`
-  - `tests/test_pe_entry_nodes.py:1017`
-  - `tests/test_pe_entry_nodes.py:1064`
   - `tests/test_pr_consolidation_source.py:177`
-  - `tests/test_preflight_heal.py:157`
-  - `tests/test_preflight_heal.py:245`
   - `tests/test_reasoning_consult.py:196`
   - `tests/test_relationship_drift.py:302`
   - `tests/test_request_compaction.py:53`
@@ -590,10 +579,10 @@ Conventions:
   - `tests/test_training_corpus_lock.py:50`
   - `tests/test_twm_boot_singletons.py:98`
   - `tests/test_twm_boot_singletons.py:108`
-  - `tests/test_utility_closet_server.py:68`
-  - `tests/test_utility_closet_server.py:117`
-  - `tests/test_utility_closet_server.py:132`
-  - `tests/test_utility_closet_server.py:416`
+  - `tests/test_utility_closet_server.py:74`
+  - `tests/test_utility_closet_server.py:123`
+  - `tests/test_utility_closet_server.py:138`
+  - `tests/test_utility_closet_server.py:422`
   - `tests/test_web_identify_handshake.py:77`
   - `wild_igor/igor/arbiter/queue.py:82`
   - `wild_igor/igor/boot_check.py:54`
@@ -658,11 +647,6 @@ Conventions:
   - `wild_igor/igor/tools/memory_snapshot.py:48`
   - `wild_igor/igor/tools/metrics.py:121`
   - `wild_igor/igor/tools/metrics.py:177`
-  - `wild_igor/igor/tools/pe_chain.py:1532`
-  - `wild_igor/igor/tools/pe_chain.py:3462`
-  - `wild_igor/igor/tools/pe_chain.py:3674`
-  - `wild_igor/igor/tools/preflight_heal.py:111`
-  - `wild_igor/igor/tools/preflight_heal.py:191`
   - `wild_igor/igor/tools/reading_engine.py:174`
   - `wild_igor/igor/tools/reading_engine.py:216`
   - `wild_igor/igor/tools/reading_engine.py:339`
@@ -679,7 +663,7 @@ Conventions:
   - `wild_igor/igor/tools/sudo_relay.py:103`
   - `wild_igor/igor/tools/sudo_relay.py:132`
   - `wild_igor/igor/tools/training_pass.py:78`
-  - `wild_igor/igor/tools/worker_foreman.py:119`
+  - `wild_igor/igor/tools/worker_foreman.py:134`
   - `wild_igor/setup_assets/installer.py:124`
   - `wild_igor/setup_assets/installer.py:144`
   - `wild_igor/setup_assets/installer.py:159`
@@ -698,14 +682,14 @@ Conventions:
 
 ### `run_grep`
 
-- **Defined:** `lab/claudecode/audit_runner.py:64`
+- **Defined:** `lab/claudecode/audit_runner.py:61`
 - **Callers:** _(none found)_
 
 ### `run_one`
 
-- **Defined:** `lab/claudecode/audit_runner.py:156`
+- **Defined:** `lab/claudecode/audit_runner.py:153`
 - **Callers** (13):
-  - `lab/claudecode/audit_runner.py:192`
+  - `lab/claudecode/audit_runner.py:189`
   - `tests/test_experiment_scheduler.py:132`
   - `tests/test_experiment_scheduler.py:147`
   - `tests/test_experiment_scheduler.py:161`
@@ -721,17 +705,17 @@ Conventions:
 
 ### `run_python`
 
-- **Defined:** `lab/claudecode/audit_runner.py:136`
+- **Defined:** `lab/claudecode/audit_runner.py:133`
 - **Callers:** _(none found)_
 
 ### `run_shell`
 
-- **Defined:** `lab/claudecode/audit_runner.py:108`
+- **Defined:** `lab/claudecode/audit_runner.py:105`
 - **Callers:** _(none found)_
 
 ### `run_sql`
 
-- **Defined:** `lab/claudecode/audit_runner.py:88`
+- **Defined:** `lab/claudecode/audit_runner.py:85`
 - **Callers:** _(none found)_
 
 ## `lab.claudecode.audit_telemetry`
@@ -740,7 +724,7 @@ Conventions:
 
 - **Defined:** `lab/claudecode/audit_telemetry.py:74`
 - **Callers** (5):
-  - `lab/claudecode/audit_telemetry.py:155`
+  - `lab/claudecode/audit_telemetry.py:179`
   - `tests/test_audit_telemetry.py:38`
   - `tests/test_audit_telemetry.py:59`
   - `tests/test_audit_telemetry.py:69`
@@ -748,27 +732,27 @@ Conventions:
 
 ### `emit_run_record`
 
-- **Defined:** `lab/claudecode/audit_telemetry.py:133`
+- **Defined:** `lab/claudecode/audit_telemetry.py:141`
 - **Callers** (2):
   - `tests/test_audit_telemetry.py:86`
   - `tests/test_audit_telemetry.py:121`
 
 ### `emit_watch_next`
 
-- **Defined:** `lab/claudecode/audit_telemetry.py:160`
+- **Defined:** `lab/claudecode/audit_telemetry.py:185`
 - **Callers** (1):
   - `tests/test_audit_telemetry.py:134`
 
 ### `read_runs`
 
-- **Defined:** `lab/claudecode/audit_telemetry.py:190`
+- **Defined:** `lab/claudecode/audit_telemetry.py:227`
 - **Callers** (2):
   - `tests/test_audit_telemetry.py:91`
   - `tests/test_audit_telemetry.py:124`
 
 ### `read_watch_next`
 
-- **Defined:** `lab/claudecode/audit_telemetry.py:214`
+- **Defined:** `lab/claudecode/audit_telemetry.py:257`
 - **Callers** (3):
   - `tests/test_audit_telemetry.py:136`
   - `tests/test_audit_telemetry.py:166`
@@ -785,12 +769,11 @@ Conventions:
 ### `classify`
 
 - **Defined:** `lab/claudecode/audit_ticket_shape.py:115`
-- **Callers** (5):
+- **Callers** (4):
   - `lab/claudecode/audit_cognition_modules.py:262`
   - `lab/claudecode/audit_immobile_tickets.py:127`
   - `lab/claudecode/audit_ticket_shape.py:150`
   - `lab/tools/scan_ebooks.py:381`
-  - `wild_igor/igor/tools/preflight_heal.py:243`
 
 ### `get_full_desc`
 
@@ -1002,7 +985,7 @@ Conventions:
 
 ### `cmd_add`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1021`
+- **Defined:** `lab/claudecode/cc_queue.py:1095`
 - **Callers** (6):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1013,85 +996,92 @@ Conventions:
 
 ### `cmd_approve`
 
-- **Defined:** `lab/claudecode/cc_queue.py:868`
+- **Defined:** `lab/claudecode/cc_queue.py:942`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_backfill_dates`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1784`
+- **Defined:** `lab/claudecode/cc_queue.py:1859`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_backfill_prefixes`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1761`
+- **Defined:** `lab/claudecode/cc_queue.py:1836`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_block`
 
-- **Defined:** `lab/claudecode/cc_queue.py:821`
+- **Defined:** `lab/claudecode/cc_queue.py:895`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_claim`
 
-- **Defined:** `lab/claudecode/cc_queue.py:394`
+- **Defined:** `lab/claudecode/cc_queue.py:390`
 - **Callers** (10):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
-  - `tests/test_cc_queue_claim_worker.py:57`
+  - `tests/test_cc_queue_claim_worker.py:59`
   - `tests/test_cc_queue_scraps_gate.py:142`
   - `tests/test_cc_queue_scraps_gate.py:149`
   - `tests/test_cc_queue_strict_claim.py:32`
-  - `tests/test_cc_queue_strict_claim.py:46`
-  - `tests/test_cc_queue_strict_claim.py:55`
-  - `tests/test_cc_queue_strict_claim.py:67`
-  - `tests/test_cc_queue_strict_claim.py:78`
+  - `tests/test_cc_queue_strict_claim.py:45`
+  - `tests/test_cc_queue_strict_claim.py:54`
+  - `tests/test_cc_queue_strict_claim.py:66`
+  - `tests/test_cc_queue_strict_claim.py:77`
 
 ### `cmd_close`
 
-- **Defined:** `lab/claudecode/cc_queue.py:796`
+- **Defined:** `lab/claudecode/cc_queue.py:870`
+- **Callers** (2):
+  - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
+  - `lab/claudecode/decision_manager.py:72` (subprocess)
+
+### `cmd_dispatch`
+
+- **Defined:** `lab/claudecode/cc_queue.py:405`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_done`
 
-- **Defined:** `lab/claudecode/cc_queue.py:712`
+- **Defined:** `lab/claudecode/cc_queue.py:786`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_flush_decision`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1103`
+- **Defined:** `lab/claudecode/cc_queue.py:1177`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_flush_session`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1118`
+- **Defined:** `lab/claudecode/cc_queue.py:1192`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_gate`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1599`
+- **Defined:** `lab/claudecode/cc_queue.py:1674`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_list`
 
-- **Defined:** `lab/claudecode/cc_queue.py:316`
+- **Defined:** `lab/claudecode/cc_queue.py:311`
 - **Callers** (6):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1102,28 +1092,28 @@ Conventions:
 
 ### `cmd_log`
 
-- **Defined:** `lab/claudecode/cc_queue.py:919`
+- **Defined:** `lab/claudecode/cc_queue.py:993`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_migrate_statuses`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1465`
+- **Defined:** `lab/claudecode/cc_queue.py:1539`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_needs_review`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1579`
+- **Defined:** `lab/claudecode/cc_queue.py:1654`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_next`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1283`
+- **Defined:** `lab/claudecode/cc_queue.py:1357`
 - **Callers** (12):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1140,21 +1130,21 @@ Conventions:
 
 ### `cmd_notify_igor`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1163`
+- **Defined:** `lab/claudecode/cc_queue.py:1237`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_propose`
 
-- **Defined:** `lab/claudecode/cc_queue.py:840`
+- **Defined:** `lab/claudecode/cc_queue.py:914`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_reset`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1370`
+- **Defined:** `lab/claudecode/cc_queue.py:1444`
 - **Callers** (6):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1165,56 +1155,56 @@ Conventions:
 
 ### `cmd_reset_stale`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1406`
+- **Defined:** `lab/claudecode/cc_queue.py:1480`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_retitle`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1737`
+- **Defined:** `lab/claudecode/cc_queue.py:1812`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_decision`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1647`
+- **Defined:** `lab/claudecode/cc_queue.py:1722`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_epic`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1536`
+- **Defined:** `lab/claudecode/cc_queue.py:1611`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_github_issue`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1693`
+- **Defined:** `lab/claudecode/cc_queue.py:1768`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_set_worker`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1556`
+- **Defined:** `lab/claudecode/cc_queue.py:1631`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_setstatus`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1426`
+- **Defined:** `lab/claudecode/cc_queue.py:1500`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_show`
 
-- **Defined:** `lab/claudecode/cc_queue.py:373`
+- **Defined:** `lab/claudecode/cc_queue.py:368`
 - **Callers** (5):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1224,55 +1214,54 @@ Conventions:
 
 ### `cmd_ungate`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1620`
+- **Defined:** `lab/claudecode/cc_queue.py:1695`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `cmd_worker_launch`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1184`
+- **Defined:** `lab/claudecode/cc_queue.py:1258`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
 
 ### `load_tasks`
 
-- **Defined:** `lab/claudecode/cc_queue.py:203`
-- **Callers** (11):
+- **Defined:** `lab/claudecode/cc_queue.py:198`
+- **Callers** (10):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/audit_ticket_shape.py:138`
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `lab/claudecode/github_sync.py:240`
-  - `lab/claudecode/map_igor.py:104`
+  - `lab/claudecode/map_igor.py:101`
   - `lab/claudecode/slate_manager.py:270`
   - `lab/claudecode/stale_ticket_sweeper.py:44`
-  - `lab/claudecode/ticket_prefix_refit.py:54`
+  - `lab/claudecode/ticket_prefix_refit.py:50`
   - `wild_igor/igor/dashboard/terminal.py:368`
-  - `wild_igor/igor/tools/goal_continuation.py:123`
-  - `wild_igor/igor/tools/pe_chain.py:362`
+  - `wild_igor/igor/tools/goal_continuation.py:120`
 
 ### `next_ticket_id_for_worker`
 
-- **Defined:** `lab/claudecode/cc_queue.py:1246`
+- **Defined:** `lab/claudecode/cc_queue.py:1320`
 - **Callers** (5):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
-  - `lab/claudecode/cc_queue.py:1322`
+  - `lab/claudecode/cc_queue.py:1396`
   - `lab/claudecode/decision_manager.py:72` (subprocess)
   - `tests/test_cc_queue_dispatch_is_assignment.py:46`
   - `tests/test_cc_queue_next_difficulty.py:45`
 
 ### `save_tasks`
 
-- **Defined:** `lab/claudecode/cc_queue.py:208`
+- **Defined:** `lab/claudecode/cc_queue.py:203`
 - **Callers** (3):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
-  - `lab/claudecode/ticket_prefix_refit.py:69`
+  - `lab/claudecode/ticket_prefix_refit.py:65`
 
 ### `set_status_in_progress`
 
-- **Defined:** `lab/claudecode/cc_queue.py:213`
+- **Defined:** `lab/claudecode/cc_queue.py:208`
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
@@ -1310,7 +1299,7 @@ Conventions:
 - **Defined:** `lab/claudecode/cert_worker_freeze.py:41`
 - **Callers** (13):
   - `lab/claudecode/cert_worker_freeze.py:129`
-  - `lab/claudecode/map_igor.py:348`
+  - `lab/claudecode/map_igor.py:345`
   - `wild_igor/igor/cognition/job_manager.py:129`
   - `wild_igor/igor/cognition/job_manager.py:165`
   - `wild_igor/igor/cognition/job_manager.py:193`
@@ -1393,18 +1382,18 @@ Conventions:
   - `lab/claudecode/channel.py:314`
   - `tests/test_learning_regression.py:361` (subprocess)
   - `tests/test_network_proxy.py:164`
-  - `tests/test_utility_closet_server.py:227`
-  - `tests/test_utility_closet_server.py:253`
-  - `tests/test_utility_closet_server.py:275`
-  - `tests/test_utility_closet_server.py:297`
-  - `tests/test_utility_closet_server.py:319`
-  - `tests/test_utility_closet_server.py:335`
-  - `tests/test_utility_closet_server.py:345`
+  - `tests/test_utility_closet_server.py:233`
+  - `tests/test_utility_closet_server.py:259`
+  - `tests/test_utility_closet_server.py:281`
+  - `tests/test_utility_closet_server.py:303`
+  - `tests/test_utility_closet_server.py:325`
+  - `tests/test_utility_closet_server.py:341`
+  - `tests/test_utility_closet_server.py:351`
 
 ### `read`
 
 - **Defined:** `lab/claudecode/channel.py:182`
-- **Callers** (101):
+- **Callers** (97):
   - `lab/benchmarks/benchmark.py:423`
   - `lab/benchmarks/benchmark.py:500`
   - `lab/benchmarks/benchmark.py:520`
@@ -1412,12 +1401,12 @@ Conventions:
   - `lab/claudecode/audit_logging.py:543`
   - `lab/claudecode/audit_pass1_run.py:311`
   - `lab/claudecode/audit_pass1_run.py:313`
-  - `lab/claudecode/book_learner.py:500`
-  - `lab/claudecode/book_learner.py:584`
-  - `lab/claudecode/cc_queue.py:265`
-  - `lab/claudecode/cc_queue.py:538`
-  - `lab/claudecode/cc_queue.py:1156`
-  - `lab/claudecode/cc_queue.py:1259`
+  - `lab/claudecode/book_learner.py:497`
+  - `lab/claudecode/book_learner.py:581`
+  - `lab/claudecode/cc_queue.py:260`
+  - `lab/claudecode/cc_queue.py:612`
+  - `lab/claudecode/cc_queue.py:1230`
+  - `lab/claudecode/cc_queue.py:1333`
   - `lab/claudecode/channel.py:324`
   - `lab/claudecode/consolidate_memories.py:59`
   - `lab/claudecode/swarm_ollama_cleanup.py:72`
@@ -1450,7 +1439,6 @@ Conventions:
   - `tests/test_inference_transport.py:146`
   - `tests/test_inference_transport.py:164`
   - `tests/test_learning_regression.py:361` (subprocess)
-  - `tests/test_pe_chain_qwen_tier.py:38`
   - `tests/test_queue_gate.py:349`
   - `tests/test_queue_gate.py:411`
   - `wild_igor/igor/boot_check.py:73`
@@ -1493,15 +1481,12 @@ Conventions:
   - `wild_igor/igor/tools/openrouter_reasoner.py:39`
   - `wild_igor/igor/tools/or_model_refresh.py:55`
   - `wild_igor/igor/tools/os_primitives.py:216`
-  - `wild_igor/igor/tools/pe_chain.py:1758`
-  - `wild_igor/igor/tools/pe_chain.py:2886`
-  - `wild_igor/igor/tools/pe_chain.py:3017`
   - `wild_igor/igor/tools/senses.py:78`
   - `wild_igor/igor/tools/senses.py:108`
   - `wild_igor/igor/tools/template_tools.py:385`
   - `wild_igor/igor/tools/want_tracker.py:84`
-  - `wild_igor/igor/tools/worker_foreman.py:175`
-  - `wild_igor/igor/tools/worker_foreman.py:177`
+  - `wild_igor/igor/tools/worker_foreman.py:190`
+  - `wild_igor/igor/tools/worker_foreman.py:192`
   - `wild_igor/igor/web/adc_shim.py:49`
   - `wild_igor/igor/web/utility_closet_client.py:82`
   - `wild_igor/igor/web/utility_closet_client.py:141`
@@ -1807,97 +1792,97 @@ Conventions:
 
 ### `IgorMap.collect`
 
-- **Defined:** `lab/claudecode/map_igor.py:262`
+- **Defined:** `lab/claudecode/map_igor.py:259`
 - **Callers** (1):
-  - `lab/claudecode/map_igor.py:347`
+  - `lab/claudecode/map_igor.py:344`
 
 ### `IgorMap.collect_channels`
 
-- **Defined:** `lab/claudecode/map_igor.py:164`
+- **Defined:** `lab/claudecode/map_igor.py:161`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_code_map`
 
-- **Defined:** `lab/claudecode/map_igor.py:225`
+- **Defined:** `lab/claudecode/map_igor.py:222`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_db_schema`
 
-- **Defined:** `lab/claudecode/map_igor.py:212`
+- **Defined:** `lab/claudecode/map_igor.py:209`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_decisions`
 
-- **Defined:** `lab/claudecode/map_igor.py:135`
+- **Defined:** `lab/claudecode/map_igor.py:132`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_gates`
 
-- **Defined:** `lab/claudecode/map_igor.py:142`
+- **Defined:** `lab/claudecode/map_igor.py:139`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_inbox`
 
-- **Defined:** `lab/claudecode/map_igor.py:174`
+- **Defined:** `lab/claudecode/map_igor.py:171`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_logs`
 
-- **Defined:** `lab/claudecode/map_igor.py:197`
+- **Defined:** `lab/claudecode/map_igor.py:194`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_mcp_servers`
 
-- **Defined:** `lab/claudecode/map_igor.py:154`
+- **Defined:** `lab/claudecode/map_igor.py:151`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_palace_tree`
 
-- **Defined:** `lab/claudecode/map_igor.py:74`
+- **Defined:** `lab/claudecode/map_igor.py:71`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_processes`
 
-- **Defined:** `lab/claudecode/map_igor.py:235`
+- **Defined:** `lab/claudecode/map_igor.py:232`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_rules`
 
-- **Defined:** `lab/claudecode/map_igor.py:85`
+- **Defined:** `lab/claudecode/map_igor.py:82`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_runtime`
 
-- **Defined:** `lab/claudecode/map_igor.py:218`
+- **Defined:** `lab/claudecode/map_igor.py:215`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_slates`
 
-- **Defined:** `lab/claudecode/map_igor.py:120`
+- **Defined:** `lab/claudecode/map_igor.py:117`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_subsystem_index`
 
-- **Defined:** `lab/claudecode/map_igor.py:91`
+- **Defined:** `lab/claudecode/map_igor.py:88`
 - **Callers:** _(none found)_
 
 ### `IgorMap.collect_tickets`
 
-- **Defined:** `lab/claudecode/map_igor.py:97`
+- **Defined:** `lab/claudecode/map_igor.py:94`
 - **Callers:** _(none found)_
 
 ### `IgorMap.render_summary`
 
-- **Defined:** `lab/claudecode/map_igor.py:291`
+- **Defined:** `lab/claudecode/map_igor.py:288`
 - **Callers** (1):
-  - `lab/claudecode/map_igor.py:358`
+  - `lab/claudecode/map_igor.py:355`
 
 ### `IgorMap.save`
 
-- **Defined:** `lab/claudecode/map_igor.py:278`
+- **Defined:** `lab/claudecode/map_igor.py:275`
 - **Callers** (13):
   - `lab/claudecode/cert_worker_freeze.py:129`
-  - `lab/claudecode/map_igor.py:348`
+  - `lab/claudecode/map_igor.py:345`
   - `wild_igor/igor/cognition/job_manager.py:129`
   - `wild_igor/igor/cognition/job_manager.py:165`
   - `wild_igor/igor/cognition/job_manager.py:193`
@@ -1912,9 +1897,9 @@ Conventions:
 
 ### `diff_snapshots`
 
-- **Defined:** `lab/claudecode/map_igor.py:325`
+- **Defined:** `lab/claudecode/map_igor.py:322`
 - **Callers** (1):
-  - `lab/claudecode/map_igor.py:354`
+  - `lab/claudecode/map_igor.py:351`
 
 ## `lab.claudecode.minion_workspace`
 
@@ -2017,7 +2002,7 @@ Conventions:
 - **Defined:** `lab/claudecode/preferred_paths_scan.py:116`
 - **Callers** (16):
   - `lab/claudecode/preferred_paths_scan.py:176`
-  - `lab/claudecode/sprint_infrastructure_brief.py:119`
+  - `lab/claudecode/sprint_infrastructure_brief.py:116`
   - `tests/test_voice_ab.py:67`
   - `tests/test_voice_ab.py:75`
   - `tests/test_voice_ab.py:82`
@@ -2086,31 +2071,31 @@ Conventions:
 
 ### `campaign_budget_remaining`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:186`
+- **Defined:** `lab/claudecode/reading_campaign.py:182`
 - **Callers** (2):
-  - `lab/claudecode/reading_campaign.py:719`
+  - `lab/claudecode/reading_campaign.py:715`
   - `tests/test_reading_campaign.py:186`
 
 ### `campaign_spent`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:171`
+- **Defined:** `lab/claudecode/reading_campaign.py:167`
 - **Callers** (2):
-  - `lab/claudecode/reading_campaign.py:201`
+  - `lab/claudecode/reading_campaign.py:197`
   - `tests/test_reading_campaign.py:185`
 
 ### `campaign_status`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:367`
+- **Defined:** `lab/claudecode/reading_campaign.py:363`
 - **Callers** (3):
-  - `lab/claudecode/reading_campaign.py:774`
+  - `lab/claudecode/reading_campaign.py:770`
   - `tests/test_reading_campaign.py:151`
   - `tests/test_reading_campaign.py:166`
 
 ### `claim_next_block`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:254`
+- **Defined:** `lab/claudecode/reading_campaign.py:250`
 - **Callers** (6):
-  - `lab/claudecode/reading_campaign.py:653`
+  - `lab/claudecode/reading_campaign.py:649`
   - `tests/test_reading_campaign.py:88`
   - `tests/test_reading_campaign.py:131`
   - `tests/test_reading_campaign.py:143`
@@ -2119,16 +2104,16 @@ Conventions:
 
 ### `create_campaign`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:147`
+- **Defined:** `lab/claudecode/reading_campaign.py:143`
 - **Callers** (1):
   - `tests/test_reading_campaign.py:64`
 
 ### `enqueue_item_blocks`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:207`
+- **Defined:** `lab/claudecode/reading_campaign.py:203`
 - **Callers** (9):
-  - `lab/claudecode/reading_campaign.py:546`
-  - `lab/claudecode/reading_campaign.py:677`
+  - `lab/claudecode/reading_campaign.py:542`
+  - `lab/claudecode/reading_campaign.py:673`
   - `tests/test_reading_campaign.py:70`
   - `tests/test_reading_campaign.py:78`
   - `tests/test_reading_campaign.py:112`
@@ -2139,44 +2124,44 @@ Conventions:
 
 ### `expand_campaign_from_master_list`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:526`
+- **Defined:** `lab/claudecode/reading_campaign.py:522`
 - **Callers:** _(none found)_
 
 ### `item_cost_rollup`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:407`
+- **Defined:** `lab/claudecode/reading_campaign.py:403`
 - **Callers:** _(none found)_
 
 ### `mark_block_done`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:300`
+- **Defined:** `lab/claudecode/reading_campaign.py:296`
 - **Callers** (6):
-  - `lab/claudecode/reading_campaign.py:694`
-  - `lab/claudecode/reading_campaign.py:704`
-  - `lab/claudecode/reading_campaign.py:743`
+  - `lab/claudecode/reading_campaign.py:690`
+  - `lab/claudecode/reading_campaign.py:700`
+  - `lab/claudecode/reading_campaign.py:739`
   - `tests/test_reading_campaign.py:92`
   - `tests/test_reading_campaign.py:144`
   - `tests/test_reading_campaign.py:178`
 
 ### `mark_block_failed`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:329`
+- **Defined:** `lab/claudecode/reading_campaign.py:325`
 - **Callers** (4):
-  - `lab/claudecode/reading_campaign.py:721`
-  - `lab/claudecode/reading_campaign.py:736`
-  - `lab/claudecode/reading_campaign.py:753`
+  - `lab/claudecode/reading_campaign.py:717`
+  - `lab/claudecode/reading_campaign.py:732`
+  - `lab/claudecode/reading_campaign.py:749`
   - `tests/test_reading_campaign.py:165`
 
 ### `mark_block_retry_cloud`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:345`
+- **Defined:** `lab/claudecode/reading_campaign.py:341`
 - **Callers:** _(none found)_
 
 ### `worker_loop`
 
-- **Defined:** `lab/claudecode/reading_campaign.py:620`
+- **Defined:** `lab/claudecode/reading_campaign.py:616`
 - **Callers** (1):
-  - `lab/claudecode/reading_campaign.py:772`
+  - `lab/claudecode/reading_campaign.py:768`
 
 ## `lab.claudecode.redis_migrate_wg`
 
@@ -2252,29 +2237,29 @@ Conventions:
 
 ### `get_check_confidence`
 
-- **Defined:** `lab/claudecode/review_manager.py:93`
+- **Defined:** `lab/claudecode/review_manager.py:90`
 - **Callers** (1):
-  - `lab/claudecode/review_manager.py:236`
+  - `lab/claudecode/review_manager.py:233`
 
 ### `get_db_url`
 
 - **Defined:** `lab/claudecode/review_manager.py:37`
 - **Callers** (3):
-  - `lab/claudecode/review_manager.py:58`
-  - `lab/claudecode/review_manager.py:99`
-  - `lab/claudecode/review_manager.py:141`
+  - `lab/claudecode/review_manager.py:55`
+  - `lab/claudecode/review_manager.py:96`
+  - `lab/claudecode/review_manager.py:138`
 
 ### `get_stats`
 
-- **Defined:** `lab/claudecode/review_manager.py:139`
+- **Defined:** `lab/claudecode/review_manager.py:136`
 - **Callers** (1):
-  - `lab/claudecode/review_manager.py:231`
+  - `lab/claudecode/review_manager.py:228`
 
 ### `write_findings`
 
-- **Defined:** `lab/claudecode/review_manager.py:45`
+- **Defined:** `lab/claudecode/review_manager.py:42`
 - **Callers** (1):
-  - `lab/claudecode/review_manager.py:215`
+  - `lab/claudecode/review_manager.py:212`
 
 ## `lab.claudecode.run_inner_cc_curriculum`
 
@@ -2379,48 +2364,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_code_a_ticket.py:37`
+- **Defined:** `lab/claudecode/seed_code_a_ticket.py:33`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2436,46 +2421,46 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_coding_engrams.py:90`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2489,57 +2474,57 @@ Conventions:
 
 ### `seed_pg`
 
-- **Defined:** `lab/claudecode/seed_coding_sprint_habit.py:68`
+- **Defined:** `lab/claudecode/seed_coding_sprint_habit.py:64`
 - **Callers** (2):
-  - `lab/claudecode/seed_coding_sprint_habit.py:108`
-  - `lab/claudecode/seed_goal_close_habit.py:71`
+  - `lab/claudecode/seed_coding_sprint_habit.py:104`
+  - `lab/claudecode/seed_goal_close_habit.py:67`
 
 ## `lab.claudecode.seed_ef_questions_tree`
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_ef_questions_tree.py:50`
+- **Defined:** `lab/claudecode/seed_ef_questions_tree.py:46`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2555,46 +2540,46 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_foreman_habit.py:135`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2608,10 +2593,10 @@ Conventions:
 
 ### `seed_pg`
 
-- **Defined:** `lab/claudecode/seed_goal_close_habit.py:33`
+- **Defined:** `lab/claudecode/seed_goal_close_habit.py:29`
 - **Callers** (2):
-  - `lab/claudecode/seed_coding_sprint_habit.py:108`
-  - `lab/claudecode/seed_goal_close_habit.py:71`
+  - `lab/claudecode/seed_coding_sprint_habit.py:104`
+  - `lab/claudecode/seed_goal_close_habit.py:67`
 
 ## `lab.claudecode.seed_greeting_space`
 
@@ -2619,46 +2604,46 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_greeting_space.py:232`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2672,48 +2657,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_constrain.py:330`
+- **Defined:** `lab/claudecode/seed_layer3_constrain.py:327`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2727,48 +2712,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_decompose.py:341`
+- **Defined:** `lab/claudecode/seed_layer3_decompose.py:338`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2782,48 +2767,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_hypothesize.py:337`
+- **Defined:** `lab/claudecode/seed_layer3_hypothesize.py:334`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2837,48 +2822,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_observe.py:343`
+- **Defined:** `lab/claudecode/seed_layer3_observe.py:340`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2892,48 +2877,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_parse_goal.py:292`
+- **Defined:** `lab/claudecode/seed_layer3_parse_goal.py:289`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -2947,48 +2932,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_replan.py:336`
+- **Defined:** `lab/claudecode/seed_layer3_replan.py:333`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3002,48 +2987,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_scope_check.py:322`
+- **Defined:** `lab/claudecode/seed_layer3_scope_check.py:319`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3057,48 +3042,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer3_situate.py:311`
+- **Defined:** `lab/claudecode/seed_layer3_situate.py:308`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3112,48 +3097,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer4_patch_file.py:178`
+- **Defined:** `lab/claudecode/seed_layer4_patch_file.py:175`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3167,48 +3152,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer4_read_codebase.py:224`
+- **Defined:** `lab/claudecode/seed_layer4_read_codebase.py:221`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3222,48 +3207,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer4_run_bash.py:179`
+- **Defined:** `lab/claudecode/seed_layer4_run_bash.py:176`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3277,48 +3262,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer4_verify_result.py:179`
+- **Defined:** `lab/claudecode/seed_layer4_verify_result.py:176`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3332,48 +3317,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_layer4_write_test.py:200`
+- **Defined:** `lab/claudecode/seed_layer4_write_test.py:197`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3389,54 +3374,54 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_machines.py:104`
 - **Callers** (1):
-  - `lab/claudecode/seed_machines.py:138`
+  - `lab/claudecode/seed_machines.py:135`
 
 ## `lab.claudecode.seed_output_training_habit`
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_output_training_habit.py:52`
+- **Defined:** `lab/claudecode/seed_output_training_habit.py:49`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3450,48 +3435,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_pattern_extractor_habits.py:182`
+- **Defined:** `lab/claudecode/seed_pattern_extractor_habits.py:177`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3505,48 +3490,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_self_training_habit.py:54`
+- **Defined:** `lab/claudecode/seed_self_training_habit.py:51`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3562,46 +3547,46 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_subsystem_index.py:82`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3623,46 +3608,46 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_templates.py:1671`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3676,48 +3661,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_tool_facia.py:47`
+- **Defined:** `lab/claudecode/seed_tool_facia.py:43`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3731,48 +3716,48 @@ Conventions:
 
 ### `seed`
 
-- **Defined:** `lab/claudecode/seed_topics_tree.py:52`
+- **Defined:** `lab/claudecode/seed_topics_tree.py:48`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -3788,7 +3773,7 @@ Conventions:
 
 - **Defined:** `lab/claudecode/seed_watchlist.py:102`
 - **Callers** (1):
-  - `lab/claudecode/seed_watchlist.py:170`
+  - `lab/claudecode/seed_watchlist.py:166`
 
 ## `lab.claudecode.session_manager`
 
@@ -4081,16 +4066,16 @@ Conventions:
 
 ### `InfrastructureBrief.detect_areas`
 
-- **Defined:** `lab/claudecode/sprint_infrastructure_brief.py:49`
+- **Defined:** `lab/claudecode/sprint_infrastructure_brief.py:46`
 - **Callers** (1):
-  - `lab/claudecode/sprint_infrastructure_brief.py:87`
+  - `lab/claudecode/sprint_infrastructure_brief.py:84`
 
 ### `InfrastructureBrief.render`
 
-- **Defined:** `lab/claudecode/sprint_infrastructure_brief.py:82`
+- **Defined:** `lab/claudecode/sprint_infrastructure_brief.py:79`
 - **Callers** (16):
   - `lab/claudecode/preferred_paths_scan.py:176`
-  - `lab/claudecode/sprint_infrastructure_brief.py:119`
+  - `lab/claudecode/sprint_infrastructure_brief.py:116`
   - `tests/test_voice_ab.py:67`
   - `tests/test_voice_ab.py:75`
   - `tests/test_voice_ab.py:82`
@@ -4223,7 +4208,7 @@ Conventions:
   - `lab/claudecode/utility_closet_server.py:780`
   - `tests/test_uc_delivery_telemetry.py:135`
   - `tests/test_uc_delivery_telemetry.py:151`
-  - `tests/test_utility_closet_server.py:157`
+  - `tests/test_utility_closet_server.py:163`
 
 ### `check_running`
 
@@ -4231,8 +4216,8 @@ Conventions:
 - **Callers** (4):
   - `lab/claudecode/utility_closet_server.py:1137`
   - `lab/claudecode/utility_closet_server.py:1160`
-  - `tests/test_utility_closet_server.py:89`
-  - `tests/test_utility_closet_server.py:98`
+  - `tests/test_utility_closet_server.py:95`
+  - `tests/test_utility_closet_server.py:104`
 
 ## `lab.claudecode.wiring_check`
 
@@ -4782,10 +4767,10 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/ebook_drm/k4mobidedrm.py:101`
 - **Callers** (148):
-  - `lab/claudecode/book_learner.py:398`
-  - `lab/claudecode/book_learner.py:427`
-  - `lab/claudecode/cc_queue.py:250`
-  - `lab/claudecode/cc_queue.py:267`
+  - `lab/claudecode/book_learner.py:395`
+  - `lab/claudecode/book_learner.py:424`
+  - `lab/claudecode/cc_queue.py:245`
+  - `lab/claudecode/cc_queue.py:262`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/drain_learn_queue.py:101`
   - `lab/claudecode/launch_overnight_reading.py:36`
@@ -4868,14 +4853,14 @@ Conventions:
   - `wild_igor/igor/cognition/forensic_logger.py:944`
   - `wild_igor/igor/cognition/forensic_logger.py:1007`
   - `wild_igor/igor/cognition/llm_peer_advisor.py:225`
-  - `wild_igor/igor/cognition/narrative_engine.py:2420`
+  - `wild_igor/igor/cognition/narrative_engine.py:2416`
   - `wild_igor/igor/cognition/node_executor.py:271`
   - `wild_igor/igor/cognition/response_coherence_inhibitor.py:212`
   - `wild_igor/igor/cognition/self_test.py:121`
   - `wild_igor/igor/cognition/user_context.py:166`
   - `wild_igor/igor/cognition/voice_ab.py:371`
-  - `wild_igor/igor/igor_base.py:134`
-  - `wild_igor/igor/igor_base.py:163`
+  - `wild_igor/igor/igor_base.py:231`
+  - `wild_igor/igor/igor_base.py:251`
   - `wild_igor/igor/main.py:285`
   - `wild_igor/igor/main.py:425`
   - `wild_igor/igor/main.py:447`
@@ -5060,41 +5045,39 @@ Conventions:
   - `wild_igor/igor/tools/inner_cc.py:300`
   - `wild_igor/igor/tools/openrouter_reasoner.py:39`
   - `wild_igor/igor/tools/self_edit.py:222`
-  - `wild_igor/igor/tools/worker_foreman.py:175`
-  - `wild_igor/igor/tools/worker_foreman.py:177`
+  - `wild_igor/igor/tools/worker_foreman.py:190`
+  - `wild_igor/igor/tools/worker_foreman.py:192`
 
 ### `encode`
 
 - **Defined:** `wild_igor/igor/tools/ebook_drm/kgenpids.py:51`
-- **Callers** (92):
+- **Callers** (87):
   - `lab/benchmarks/benchmark.py:407`
   - `lab/benchmarks/benchmark.py:489`
   - `lab/claudecode/audit_pass1_run.py:295`
-  - `lab/claudecode/book_learner.py:319`
-  - `lab/claudecode/book_learner.py:347`
-  - `lab/claudecode/book_learner.py:472`
-  - `lab/claudecode/book_learner.py:562`
-  - `lab/claudecode/book_learner.py:671`
-  - `lab/claudecode/book_learner.py:707`
-  - `lab/claudecode/book_learner.py:760`
+  - `lab/claudecode/book_learner.py:316`
+  - `lab/claudecode/book_learner.py:344`
+  - `lab/claudecode/book_learner.py:469`
+  - `lab/claudecode/book_learner.py:559`
+  - `lab/claudecode/book_learner.py:668`
+  - `lab/claudecode/book_learner.py:704`
+  - `lab/claudecode/book_learner.py:757`
   - `lab/claudecode/cc_deposit.py:66`
-  - `lab/claudecode/cc_queue.py:907`
-  - `lab/claudecode/cc_queue.py:1087`
-  - `lab/claudecode/cc_queue.py:1169`
+  - `lab/claudecode/cc_queue.py:981`
+  - `lab/claudecode/cc_queue.py:1161`
+  - `lab/claudecode/cc_queue.py:1243`
   - `lab/claudecode/consolidate_memories.py:51`
   - `lab/claudecode/docs_sync.py:111`
-  - `lab/claudecode/drain_learn_queue.py:211`
+  - `lab/claudecode/drain_learn_queue.py:208`
   - `lab/claudecode/phrase_regression.py:51`
   - `lab/claudecode/reading_integrator.py:77`
   - `lab/claudecode/run_phrase_test.py:47`
   - `lab/claudecode/swarm_ollama_cleanup.py:83`
-  - `lab/tools/build_ebook_index.py:55`
+  - `lab/tools/build_ebook_index.py:51`
   - `tests/test_context_format.py:136`
   - `tests/test_docs_sync_freshness.py:71`
   - `tests/test_inner_cc.py:23`
   - `tests/test_network_proxy.py:173`
-  - `tests/test_pe_plan_filter_probe.py:184`
-  - `tests/test_pe_plan_filter_probe.py:208`
   - `tests/test_utility_closet_client.py:28`
   - `wild_igor/igor/acquisition/browser_use.py:120`
   - `wild_igor/igor/acquisition/calibre.py:82`
@@ -5102,12 +5085,12 @@ Conventions:
   - `wild_igor/igor/boot_check.py:87`
   - `wild_igor/igor/brainstem/core_patterns.py:806`
   - `wild_igor/igor/cognition/consult.py:250`
-  - `wild_igor/igor/cognition/dreaming.py:70`
+  - `wild_igor/igor/cognition/dreaming.py:69`
   - `wild_igor/igor/cognition/embedder.py:34`
   - `wild_igor/igor/cognition/inference_gateway.py:876`
   - `wild_igor/igor/cognition/inference_gateway.py:916`
   - `wild_igor/igor/cognition/milieu.py:424`
-  - `wild_igor/igor/cognition/proposals.py:63`
+  - `wild_igor/igor/cognition/proposals.py:62`
   - `wild_igor/igor/cognition/push_sources.py:1549`
   - `wild_igor/igor/cognition/reading_indexer.py:92`
   - `wild_igor/igor/cognition/reading_indexer.py:130`
@@ -5151,9 +5134,6 @@ Conventions:
   - `wild_igor/igor/tools/inner_cc.py:279`
   - `wild_igor/igor/tools/network_proxy.py:149`
   - `wild_igor/igor/tools/notebook.py:91`
-  - `wild_igor/igor/tools/pe_chain.py:1741`
-  - `wild_igor/igor/tools/pe_chain.py:2867`
-  - `wild_igor/igor/tools/pe_chain.py:2998`
   - `wild_igor/igor/tools/reading_engine.py:64`
   - `wild_igor/igor/tools/template_tools.py:362`
   - `wild_igor/igor/tools/want_tracker.py:63`
@@ -5262,10 +5242,10 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/ebook_drm/kindlekey.py:53`
 - **Callers** (148):
-  - `lab/claudecode/book_learner.py:398`
-  - `lab/claudecode/book_learner.py:427`
-  - `lab/claudecode/cc_queue.py:250`
-  - `lab/claudecode/cc_queue.py:267`
+  - `lab/claudecode/book_learner.py:395`
+  - `lab/claudecode/book_learner.py:424`
+  - `lab/claudecode/cc_queue.py:245`
+  - `lab/claudecode/cc_queue.py:262`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/drain_learn_queue.py:101`
   - `lab/claudecode/launch_overnight_reading.py:36`
@@ -5348,14 +5328,14 @@ Conventions:
   - `wild_igor/igor/cognition/forensic_logger.py:944`
   - `wild_igor/igor/cognition/forensic_logger.py:1007`
   - `wild_igor/igor/cognition/llm_peer_advisor.py:225`
-  - `wild_igor/igor/cognition/narrative_engine.py:2420`
+  - `wild_igor/igor/cognition/narrative_engine.py:2416`
   - `wild_igor/igor/cognition/node_executor.py:271`
   - `wild_igor/igor/cognition/response_coherence_inhibitor.py:212`
   - `wild_igor/igor/cognition/self_test.py:121`
   - `wild_igor/igor/cognition/user_context.py:166`
   - `wild_igor/igor/cognition/voice_ab.py:371`
-  - `wild_igor/igor/igor_base.py:134`
-  - `wild_igor/igor/igor_base.py:163`
+  - `wild_igor/igor/igor_base.py:231`
+  - `wild_igor/igor/igor_base.py:251`
   - `wild_igor/igor/main.py:285`
   - `wild_igor/igor/main.py:425`
   - `wild_igor/igor/main.py:447`
@@ -5461,41 +5441,39 @@ Conventions:
   - `wild_igor/igor/tools/inner_cc.py:300`
   - `wild_igor/igor/tools/openrouter_reasoner.py:39`
   - `wild_igor/igor/tools/self_edit.py:222`
-  - `wild_igor/igor/tools/worker_foreman.py:175`
-  - `wild_igor/igor/tools/worker_foreman.py:177`
+  - `wild_igor/igor/tools/worker_foreman.py:190`
+  - `wild_igor/igor/tools/worker_foreman.py:192`
 
 ### `encode`
 
 - **Defined:** `wild_igor/igor/tools/ebook_drm/kindlekey.py:148`
-- **Callers** (92):
+- **Callers** (87):
   - `lab/benchmarks/benchmark.py:407`
   - `lab/benchmarks/benchmark.py:489`
   - `lab/claudecode/audit_pass1_run.py:295`
-  - `lab/claudecode/book_learner.py:319`
-  - `lab/claudecode/book_learner.py:347`
-  - `lab/claudecode/book_learner.py:472`
-  - `lab/claudecode/book_learner.py:562`
-  - `lab/claudecode/book_learner.py:671`
-  - `lab/claudecode/book_learner.py:707`
-  - `lab/claudecode/book_learner.py:760`
+  - `lab/claudecode/book_learner.py:316`
+  - `lab/claudecode/book_learner.py:344`
+  - `lab/claudecode/book_learner.py:469`
+  - `lab/claudecode/book_learner.py:559`
+  - `lab/claudecode/book_learner.py:668`
+  - `lab/claudecode/book_learner.py:704`
+  - `lab/claudecode/book_learner.py:757`
   - `lab/claudecode/cc_deposit.py:66`
-  - `lab/claudecode/cc_queue.py:907`
-  - `lab/claudecode/cc_queue.py:1087`
-  - `lab/claudecode/cc_queue.py:1169`
+  - `lab/claudecode/cc_queue.py:981`
+  - `lab/claudecode/cc_queue.py:1161`
+  - `lab/claudecode/cc_queue.py:1243`
   - `lab/claudecode/consolidate_memories.py:51`
   - `lab/claudecode/docs_sync.py:111`
-  - `lab/claudecode/drain_learn_queue.py:211`
+  - `lab/claudecode/drain_learn_queue.py:208`
   - `lab/claudecode/phrase_regression.py:51`
   - `lab/claudecode/reading_integrator.py:77`
   - `lab/claudecode/run_phrase_test.py:47`
   - `lab/claudecode/swarm_ollama_cleanup.py:83`
-  - `lab/tools/build_ebook_index.py:55`
+  - `lab/tools/build_ebook_index.py:51`
   - `tests/test_context_format.py:136`
   - `tests/test_docs_sync_freshness.py:71`
   - `tests/test_inner_cc.py:23`
   - `tests/test_network_proxy.py:173`
-  - `tests/test_pe_plan_filter_probe.py:184`
-  - `tests/test_pe_plan_filter_probe.py:208`
   - `tests/test_utility_closet_client.py:28`
   - `wild_igor/igor/acquisition/browser_use.py:120`
   - `wild_igor/igor/acquisition/calibre.py:82`
@@ -5503,12 +5481,12 @@ Conventions:
   - `wild_igor/igor/boot_check.py:87`
   - `wild_igor/igor/brainstem/core_patterns.py:806`
   - `wild_igor/igor/cognition/consult.py:250`
-  - `wild_igor/igor/cognition/dreaming.py:70`
+  - `wild_igor/igor/cognition/dreaming.py:69`
   - `wild_igor/igor/cognition/embedder.py:34`
   - `wild_igor/igor/cognition/inference_gateway.py:876`
   - `wild_igor/igor/cognition/inference_gateway.py:916`
   - `wild_igor/igor/cognition/milieu.py:424`
-  - `wild_igor/igor/cognition/proposals.py:63`
+  - `wild_igor/igor/cognition/proposals.py:62`
   - `wild_igor/igor/cognition/push_sources.py:1549`
   - `wild_igor/igor/cognition/reading_indexer.py:92`
   - `wild_igor/igor/cognition/reading_indexer.py:130`
@@ -5552,9 +5530,6 @@ Conventions:
   - `wild_igor/igor/tools/inner_cc.py:279`
   - `wild_igor/igor/tools/network_proxy.py:149`
   - `wild_igor/igor/tools/notebook.py:91`
-  - `wild_igor/igor/tools/pe_chain.py:1741`
-  - `wild_igor/igor/tools/pe_chain.py:2867`
-  - `wild_igor/igor/tools/pe_chain.py:2998`
   - `wild_igor/igor/tools/reading_engine.py:64`
   - `wild_igor/igor/tools/template_tools.py:362`
   - `wild_igor/igor/tools/want_tracker.py:63`
@@ -5711,10 +5686,10 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/ebook_drm/mobidedrm.py:94`
 - **Callers** (148):
-  - `lab/claudecode/book_learner.py:398`
-  - `lab/claudecode/book_learner.py:427`
-  - `lab/claudecode/cc_queue.py:250`
-  - `lab/claudecode/cc_queue.py:267`
+  - `lab/claudecode/book_learner.py:395`
+  - `lab/claudecode/book_learner.py:424`
+  - `lab/claudecode/cc_queue.py:245`
+  - `lab/claudecode/cc_queue.py:262`
   - `lab/claudecode/channel.py:104`
   - `lab/claudecode/drain_learn_queue.py:101`
   - `lab/claudecode/launch_overnight_reading.py:36`
@@ -5797,14 +5772,14 @@ Conventions:
   - `wild_igor/igor/cognition/forensic_logger.py:944`
   - `wild_igor/igor/cognition/forensic_logger.py:1007`
   - `wild_igor/igor/cognition/llm_peer_advisor.py:225`
-  - `wild_igor/igor/cognition/narrative_engine.py:2420`
+  - `wild_igor/igor/cognition/narrative_engine.py:2416`
   - `wild_igor/igor/cognition/node_executor.py:271`
   - `wild_igor/igor/cognition/response_coherence_inhibitor.py:212`
   - `wild_igor/igor/cognition/self_test.py:121`
   - `wild_igor/igor/cognition/user_context.py:166`
   - `wild_igor/igor/cognition/voice_ab.py:371`
-  - `wild_igor/igor/igor_base.py:134`
-  - `wild_igor/igor/igor_base.py:163`
+  - `wild_igor/igor/igor_base.py:231`
+  - `wild_igor/igor/igor_base.py:251`
   - `wild_igor/igor/main.py:285`
   - `wild_igor/igor/main.py:425`
   - `wild_igor/igor/main.py:447`
@@ -5933,8 +5908,8 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/ebook_reader.py:434`
 - **Callers** (10):
-  - `lab/claudecode/book_learner.py:1067`
-  - `lab/claudecode/book_learner.py:1069`
+  - `lab/claudecode/book_learner.py:1064`
+  - `lab/claudecode/book_learner.py:1066`
   - `wild_igor/igor/acquisition/calibre.py:70`
   - `wild_igor/igor/tools/ebook_reader.py:693`
   - `wild_igor/igor/tools/ebook_reader.py:1634`
@@ -5953,7 +5928,7 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/ebook_reader.py:1396`
 - **Callers** (5):
-  - `lab/claudecode/book_learner.py:1065`
+  - `lab/claudecode/book_learner.py:1062`
   - `wild_igor/igor/tools/ebook_reader.py:1447`
   - `wild_igor/igor/tools/ebook_reader.py:1469`
   - `wild_igor/igor/tools/ebook_reader.py:1632`
@@ -5963,7 +5938,7 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/ebook_reader.py:699`
 - **Callers** (6):
-  - `lab/claudecode/book_learner.py:1174`
+  - `lab/claudecode/book_learner.py:1171`
   - `wild_igor/igor/acquisition/calibre.py:73`
   - `wild_igor/igor/tools/ebook_reader.py:818`
   - `wild_igor/igor/tools/ebook_reader.py:1542`
@@ -6084,15 +6059,15 @@ Conventions:
 
 ### `GoalContinuation.run_goal_continuation`
 
-- **Defined:** `wild_igor/igor/tools/goal_continuation.py:147`
+- **Defined:** `wild_igor/igor/tools/goal_continuation.py:144`
 - **Callers** (1):
-  - `wild_igor/igor/tools/goal_continuation.py:369`
+  - `wild_igor/igor/tools/goal_continuation.py:310`
 
 ### `run_goal_continuation`
 
-- **Defined:** `wild_igor/igor/tools/goal_continuation.py:367`
+- **Defined:** `wild_igor/igor/tools/goal_continuation.py:308`
 - **Callers** (1):
-  - `wild_igor/igor/tools/goal_continuation.py:369`
+  - `wild_igor/igor/tools/goal_continuation.py:310`
 
 ## `wild_igor.igor.tools.goal_graph`
 
@@ -6328,20 +6303,19 @@ Conventions:
 
 ### `bucket_of`
 
-- **Defined:** `wild_igor/igor/tools/inertia_map.py:56`
-- **Callers** (1):
-  - `tests/test_scope_guard.py:152`
+- **Defined:** `wild_igor/igor/tools/inertia_map.py:55`
+- **Callers:** _(none found)_
 
 ### `weight_of`
 
-- **Defined:** `wild_igor/igor/tools/inertia_map.py:65`
+- **Defined:** `wild_igor/igor/tools/inertia_map.py:64`
 - **Callers:** _(none found)_
 
 ## `wild_igor.igor.tools.inhibition_seeder`
 
 ### `run_inhibition_seed_pass`
 
-- **Defined:** `wild_igor/igor/tools/inhibition_seeder.py:204`
+- **Defined:** `wild_igor/igor/tools/inhibition_seeder.py:203`
 - **Callers:** _(none found)_
 
 ## `wild_igor.igor.tools.inner_cc`
@@ -6360,7 +6334,7 @@ Conventions:
 - **Defined:** `wild_igor/igor/tools/inner_cc.py:363`
 - **Callers** (5):
   - `wild_igor/igor/cognition/coa.py:458`
-  - `wild_igor/igor/cognition/dreaming.py:273`
+  - `wild_igor/igor/cognition/dreaming.py:272`
   - `wild_igor/igor/memory/purpose_annotator.py:37`
   - `wild_igor/igor/tools/inner_cc.py:327`
   - `wild_igor/igor/tools/training_pass.py:167`
@@ -6417,12 +6391,12 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/interpretive.py:28`
 - **Callers** (16):
-  - `wild_igor/igor/cognition/basal_ganglia.py:573`
+  - `wild_igor/igor/cognition/basal_ganglia.py:571`
   - `wild_igor/igor/cognition/factual_compression.py:433`
   - `wild_igor/igor/cognition/graph_integrator.py:220`
   - `wild_igor/igor/cognition/graph_integrator.py:243`
   - `wild_igor/igor/cognition/graph_integrator.py:252`
-  - `wild_igor/igor/cognition/narrative_engine.py:2157`
+  - `wild_igor/igor/cognition/narrative_engine.py:2153`
   - `wild_igor/igor/cognition/reading_indexer.py:231`
   - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:326`
   - `wild_igor/igor/main.py:5580`
@@ -6438,7 +6412,7 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/interpretive.py:116`
 - **Callers** (3):
-  - `wild_igor/igor/cognition/basal_ganglia.py:567`
+  - `wild_igor/igor/cognition/basal_ganglia.py:565`
   - `wild_igor/igor/memory/cortex.py:5678`
   - `wild_igor/igor/tools/interpretive.py:124`
 
@@ -6480,7 +6454,7 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/learner.py:1911`
 - **Callers** (1):
-  - `lab/claudecode/cron_feed_reading.py:29`
+  - `lab/claudecode/cron_feed_reading.py:26`
 
 ### `flag_top_gap`
 
@@ -6819,7 +6793,7 @@ Conventions:
 ### `NetworkProxy.get`
 
 - **Defined:** `wild_igor/igor/tools/network_proxy.py:113`
-- **Callers** (2936):
+- **Callers** (2670):
   - `lab/benchmarks/benchmark.py:426`
   - `lab/benchmarks/benchmark.py:429`
   - `lab/benchmarks/benchmark.py:432`
@@ -6862,11 +6836,11 @@ Conventions:
   - `lab/claudecode/audit_pass1_run.py:412`
   - `lab/claudecode/audit_pass1_run.py:415`
   - `lab/claudecode/audit_pass1_run.py:417`
-  - `lab/claudecode/audit_runner.py:50`
-  - `lab/claudecode/audit_runner.py:60`
-  - `lab/claudecode/audit_runner.py:159`
-  - `lab/claudecode/audit_runner.py:176`
-  - `lab/claudecode/audit_runner.py:177`
+  - `lab/claudecode/audit_runner.py:47`
+  - `lab/claudecode/audit_runner.py:57`
+  - `lab/claudecode/audit_runner.py:156`
+  - `lab/claudecode/audit_runner.py:173`
+  - `lab/claudecode/audit_runner.py:174`
   - `lab/claudecode/audit_ticket_shape.py:42`
   - `lab/claudecode/audit_ticket_shape.py:105`
   - `lab/claudecode/audit_ticket_shape.py:108`
@@ -6877,32 +6851,32 @@ Conventions:
   - `lab/claudecode/audit_ticket_shape.py:153`
   - `lab/claudecode/book_learner.py:88`
   - `lab/claudecode/book_learner.py:90`
-  - `lab/claudecode/book_learner.py:501`
-  - `lab/claudecode/book_learner.py:623`
-  - `lab/claudecode/book_learner.py:634`
-  - `lab/claudecode/book_learner.py:635`
-  - `lab/claudecode/book_learner.py:636`
-  - `lab/claudecode/book_learner.py:710`
-  - `lab/claudecode/book_learner.py:762`
-  - `lab/claudecode/book_learner.py:789`
-  - `lab/claudecode/book_learner.py:880`
-  - `lab/claudecode/book_learner.py:882`
+  - `lab/claudecode/book_learner.py:498`
+  - `lab/claudecode/book_learner.py:620`
+  - `lab/claudecode/book_learner.py:631`
+  - `lab/claudecode/book_learner.py:632`
+  - `lab/claudecode/book_learner.py:633`
+  - `lab/claudecode/book_learner.py:707`
+  - `lab/claudecode/book_learner.py:759`
+  - `lab/claudecode/book_learner.py:786`
+  - `lab/claudecode/book_learner.py:877`
+  - `lab/claudecode/book_learner.py:879`
+  - `lab/claudecode/book_learner.py:907`
+  - `lab/claudecode/book_learner.py:908`
+  - `lab/claudecode/book_learner.py:909`
   - `lab/claudecode/book_learner.py:910`
   - `lab/claudecode/book_learner.py:911`
-  - `lab/claudecode/book_learner.py:912`
-  - `lab/claudecode/book_learner.py:913`
-  - `lab/claudecode/book_learner.py:914`
-  - `lab/claudecode/book_learner.py:920`
-  - `lab/claudecode/book_learner.py:950`
-  - `lab/claudecode/book_learner.py:1075`
-  - `lab/claudecode/book_learner.py:1081`
-  - `lab/claudecode/book_learner.py:1107`
-  - `lab/claudecode/book_learner.py:1108`
-  - `lab/claudecode/book_learner.py:1175`
-  - `lab/claudecode/book_learner.py:1182`
-  - `lab/claudecode/book_learner.py:1221`
-  - `lab/claudecode/book_learner.py:1222`
-  - `lab/claudecode/book_learner.py:1246`
+  - `lab/claudecode/book_learner.py:917`
+  - `lab/claudecode/book_learner.py:947`
+  - `lab/claudecode/book_learner.py:1072`
+  - `lab/claudecode/book_learner.py:1078`
+  - `lab/claudecode/book_learner.py:1104`
+  - `lab/claudecode/book_learner.py:1105`
+  - `lab/claudecode/book_learner.py:1172`
+  - `lab/claudecode/book_learner.py:1179`
+  - `lab/claudecode/book_learner.py:1218`
+  - `lab/claudecode/book_learner.py:1219`
+  - `lab/claudecode/book_learner.py:1243`
   - `lab/claudecode/calibre_catalog.py:276`
   - `lab/claudecode/calibre_catalog.py:277`
   - `lab/claudecode/calibre_catalog.py:280`
@@ -6920,70 +6894,72 @@ Conventions:
   - `lab/claudecode/cc_hook_pending.py:111`
   - `lab/claudecode/cc_hook_pending.py:112`
   - `lab/claudecode/cc_hook_pending.py:189`
-  - `lab/claudecode/cc_queue.py:137`
-  - `lab/claudecode/cc_queue.py:138`
-  - `lab/claudecode/cc_queue.py:170`
+  - `lab/claudecode/cc_queue.py:132`
+  - `lab/claudecode/cc_queue.py:133`
+  - `lab/claudecode/cc_queue.py:165`
+  - `lab/claudecode/cc_queue.py:292`
+  - `lab/claudecode/cc_queue.py:293`
+  - `lab/claudecode/cc_queue.py:294`
+  - `lab/claudecode/cc_queue.py:295`
+  - `lab/claudecode/cc_queue.py:296`
   - `lab/claudecode/cc_queue.py:297`
   - `lab/claudecode/cc_queue.py:298`
   - `lab/claudecode/cc_queue.py:299`
-  - `lab/claudecode/cc_queue.py:300`
-  - `lab/claudecode/cc_queue.py:301`
-  - `lab/claudecode/cc_queue.py:302`
-  - `lab/claudecode/cc_queue.py:303`
-  - `lab/claudecode/cc_queue.py:304`
-  - `lab/claudecode/cc_queue.py:310`
-  - `lab/claudecode/cc_queue.py:312`
+  - `lab/claudecode/cc_queue.py:305`
+  - `lab/claudecode/cc_queue.py:307`
+  - `lab/claudecode/cc_queue.py:325`
+  - `lab/claudecode/cc_queue.py:326`
+  - `lab/claudecode/cc_queue.py:327`
   - `lab/claudecode/cc_queue.py:330`
-  - `lab/claudecode/cc_queue.py:331`
-  - `lab/claudecode/cc_queue.py:332`
-  - `lab/claudecode/cc_queue.py:335`
-  - `lab/claudecode/cc_queue.py:338`
-  - `lab/claudecode/cc_queue.py:345`
-  - `lab/claudecode/cc_queue.py:353`
-  - `lab/claudecode/cc_queue.py:363`
-  - `lab/claudecode/cc_queue.py:449`
-  - `lab/claudecode/cc_queue.py:453`
-  - `lab/claudecode/cc_queue.py:466`
-  - `lab/claudecode/cc_queue.py:476`
-  - `lab/claudecode/cc_queue.py:477`
-  - `lab/claudecode/cc_queue.py:509`
+  - `lab/claudecode/cc_queue.py:333`
+  - `lab/claudecode/cc_queue.py:340`
+  - `lab/claudecode/cc_queue.py:348`
+  - `lab/claudecode/cc_queue.py:358`
+  - `lab/claudecode/cc_queue.py:450`
+  - `lab/claudecode/cc_queue.py:452`
+  - `lab/claudecode/cc_queue.py:523`
+  - `lab/claudecode/cc_queue.py:527`
   - `lab/claudecode/cc_queue.py:540`
-  - `lab/claudecode/cc_queue.py:541`
-  - `lab/claudecode/cc_queue.py:572`
-  - `lab/claudecode/cc_queue.py:623`
-  - `lab/claudecode/cc_queue.py:625`
-  - `lab/claudecode/cc_queue.py:663`
-  - `lab/claudecode/cc_queue.py:668`
-  - `lab/claudecode/cc_queue.py:680`
-  - `lab/claudecode/cc_queue.py:691`
-  - `lab/claudecode/cc_queue.py:701`
-  - `lab/claudecode/cc_queue.py:810`
+  - `lab/claudecode/cc_queue.py:550`
+  - `lab/claudecode/cc_queue.py:551`
+  - `lab/claudecode/cc_queue.py:583`
+  - `lab/claudecode/cc_queue.py:614`
+  - `lab/claudecode/cc_queue.py:615`
+  - `lab/claudecode/cc_queue.py:646`
+  - `lab/claudecode/cc_queue.py:697`
+  - `lab/claudecode/cc_queue.py:699`
+  - `lab/claudecode/cc_queue.py:737`
+  - `lab/claudecode/cc_queue.py:742`
+  - `lab/claudecode/cc_queue.py:754`
+  - `lab/claudecode/cc_queue.py:765`
+  - `lab/claudecode/cc_queue.py:775`
   - `lab/claudecode/cc_queue.py:884`
-  - `lab/claudecode/cc_queue.py:955`
-  - `lab/claudecode/cc_queue.py:959`
-  - `lab/claudecode/cc_queue.py:964`
-  - `lab/claudecode/cc_queue.py:965`
-  - `lab/claudecode/cc_queue.py:991`
-  - `lab/claudecode/cc_queue.py:995`
-  - `lab/claudecode/cc_queue.py:1044`
-  - `lab/claudecode/cc_queue.py:1071`
-  - `lab/claudecode/cc_queue.py:1236`
-  - `lab/claudecode/cc_queue.py:1260`
-  - `lab/claudecode/cc_queue.py:1269`
-  - `lab/claudecode/cc_queue.py:1270`
-  - `lab/claudecode/cc_queue.py:1271`
-  - `lab/claudecode/cc_queue.py:1275`
-  - `lab/claudecode/cc_queue.py:1342`
-  - `lab/claudecode/cc_queue.py:1396`
+  - `lab/claudecode/cc_queue.py:958`
+  - `lab/claudecode/cc_queue.py:1029`
+  - `lab/claudecode/cc_queue.py:1033`
+  - `lab/claudecode/cc_queue.py:1038`
+  - `lab/claudecode/cc_queue.py:1039`
+  - `lab/claudecode/cc_queue.py:1065`
+  - `lab/claudecode/cc_queue.py:1069`
+  - `lab/claudecode/cc_queue.py:1118`
+  - `lab/claudecode/cc_queue.py:1145`
+  - `lab/claudecode/cc_queue.py:1310`
+  - `lab/claudecode/cc_queue.py:1334`
+  - `lab/claudecode/cc_queue.py:1343`
+  - `lab/claudecode/cc_queue.py:1344`
+  - `lab/claudecode/cc_queue.py:1345`
+  - `lab/claudecode/cc_queue.py:1349`
+  - `lab/claudecode/cc_queue.py:1416`
   - `lab/claudecode/cc_queue.py:1470`
-  - `lab/claudecode/cc_queue.py:1472`
-  - `lab/claudecode/cc_queue.py:1473`
-  - `lab/claudecode/cc_queue.py:1632`
-  - `lab/claudecode/cc_queue.py:1685`
-  - `lab/claudecode/cc_queue.py:1687`
-  - `lab/claudecode/cc_queue.py:1766`
-  - `lab/claudecode/cc_queue.py:1767`
-  - `lab/claudecode/cc_queue.py:1790`
+  - `lab/claudecode/cc_queue.py:1544`
+  - `lab/claudecode/cc_queue.py:1546`
+  - `lab/claudecode/cc_queue.py:1547`
+  - `lab/claudecode/cc_queue.py:1707`
+  - `lab/claudecode/cc_queue.py:1760`
+  - `lab/claudecode/cc_queue.py:1762`
+  - `lab/claudecode/cc_queue.py:1841`
+  - `lab/claudecode/cc_queue.py:1842`
+  - `lab/claudecode/cc_queue.py:1865`
   - `lab/claudecode/cert_worker_freeze.py:51`
   - `lab/claudecode/cert_worker_freeze.py:53`
   - `lab/claudecode/cert_worker_freeze.py:56`
@@ -7008,20 +6984,20 @@ Conventions:
   - `lab/claudecode/diag.py:75`
   - `lab/claudecode/drain_learn_queue.py:81`
   - `lab/claudecode/drain_learn_queue.py:83`
-  - `lab/claudecode/drain_learn_queue.py:176`
-  - `lab/claudecode/drain_learn_queue.py:196`
-  - `lab/claudecode/drain_learn_queue.py:208`
-  - `lab/claudecode/drain_learn_queue.py:212`
-  - `lab/claudecode/drain_learn_queue.py:232`
-  - `lab/claudecode/drain_learn_queue.py:246`
-  - `lab/claudecode/drain_learn_queue.py:247`
-  - `lab/claudecode/drain_learn_queue.py:264`
-  - `lab/claudecode/drain_learn_queue.py:274`
+  - `lab/claudecode/drain_learn_queue.py:173`
+  - `lab/claudecode/drain_learn_queue.py:193`
+  - `lab/claudecode/drain_learn_queue.py:205`
+  - `lab/claudecode/drain_learn_queue.py:209`
+  - `lab/claudecode/drain_learn_queue.py:229`
+  - `lab/claudecode/drain_learn_queue.py:243`
+  - `lab/claudecode/drain_learn_queue.py:244`
+  - `lab/claudecode/drain_learn_queue.py:261`
+  - `lab/claudecode/drain_learn_queue.py:271`
+  - `lab/claudecode/drain_learn_queue.py:272`
   - `lab/claudecode/drain_learn_queue.py:275`
-  - `lab/claudecode/drain_learn_queue.py:278`
-  - `lab/claudecode/drain_learn_queue.py:353`
-  - `lab/claudecode/drain_learn_queue.py:360`
-  - `lab/claudecode/drain_learn_queue.py:386`
+  - `lab/claudecode/drain_learn_queue.py:350`
+  - `lab/claudecode/drain_learn_queue.py:357`
+  - `lab/claudecode/drain_learn_queue.py:383`
   - `lab/claudecode/export_chat.py:61`
   - `lab/claudecode/export_chat.py:62`
   - `lab/claudecode/export_chat.py:68`
@@ -7067,38 +7043,38 @@ Conventions:
   - `lab/claudecode/igor_talk.py:117`
   - `lab/claudecode/igor_talk.py:118`
   - `lab/claudecode/igor_talk.py:119`
-  - `lab/claudecode/map_igor.py:109`
-  - `lab/claudecode/map_igor.py:113`
-  - `lab/claudecode/map_igor.py:114`
-  - `lab/claudecode/map_igor.py:115`
-  - `lab/claudecode/map_igor.py:160`
-  - `lab/claudecode/map_igor.py:182`
-  - `lab/claudecode/map_igor.py:186`
-  - `lab/claudecode/map_igor.py:188`
-  - `lab/claudecode/map_igor.py:190`
-  - `lab/claudecode/map_igor.py:269`
-  - `lab/claudecode/map_igor.py:292`
+  - `lab/claudecode/map_igor.py:106`
+  - `lab/claudecode/map_igor.py:110`
+  - `lab/claudecode/map_igor.py:111`
+  - `lab/claudecode/map_igor.py:112`
+  - `lab/claudecode/map_igor.py:157`
+  - `lab/claudecode/map_igor.py:179`
+  - `lab/claudecode/map_igor.py:183`
+  - `lab/claudecode/map_igor.py:185`
+  - `lab/claudecode/map_igor.py:187`
+  - `lab/claudecode/map_igor.py:266`
+  - `lab/claudecode/map_igor.py:289`
+  - `lab/claudecode/map_igor.py:290`
   - `lab/claudecode/map_igor.py:293`
-  - `lab/claudecode/map_igor.py:296`
-  - `lab/claudecode/map_igor.py:301`
-  - `lab/claudecode/map_igor.py:309`
-  - `lab/claudecode/map_igor.py:311`
-  - `lab/claudecode/map_igor.py:316`
-  - `lab/claudecode/map_igor.py:328`
-  - `lab/claudecode/map_igor.py:330`
-  - `lab/claudecode/map_igor.py:334`
+  - `lab/claudecode/map_igor.py:298`
+  - `lab/claudecode/map_igor.py:306`
+  - `lab/claudecode/map_igor.py:308`
+  - `lab/claudecode/map_igor.py:313`
+  - `lab/claudecode/map_igor.py:325`
+  - `lab/claudecode/map_igor.py:327`
+  - `lab/claudecode/map_igor.py:331`
   - `lab/claudecode/palace_sync.py:49`
   - `lab/claudecode/palace_sync.py:50`
-  - `lab/claudecode/reading_campaign.py:544`
-  - `lab/claudecode/reading_campaign.py:673`
-  - `lab/claudecode/reading_campaign.py:692`
-  - `lab/claudecode/reading_campaign.py:697`
-  - `lab/claudecode/reading_campaign.py:698`
-  - `lab/claudecode/reading_campaign.py:706`
-  - `lab/claudecode/reading_campaign.py:707`
-  - `lab/claudecode/reading_campaign.py:708`
-  - `lab/claudecode/reading_campaign.py:745`
-  - `lab/claudecode/reading_campaign.py:746`
+  - `lab/claudecode/reading_campaign.py:540`
+  - `lab/claudecode/reading_campaign.py:669`
+  - `lab/claudecode/reading_campaign.py:688`
+  - `lab/claudecode/reading_campaign.py:693`
+  - `lab/claudecode/reading_campaign.py:694`
+  - `lab/claudecode/reading_campaign.py:702`
+  - `lab/claudecode/reading_campaign.py:703`
+  - `lab/claudecode/reading_campaign.py:704`
+  - `lab/claudecode/reading_campaign.py:741`
+  - `lab/claudecode/reading_campaign.py:742`
   - `lab/claudecode/reading_integrator.py:89`
   - `lab/claudecode/reading_integrator.py:112`
   - `lab/claudecode/reading_integrator.py:189`
@@ -7115,11 +7091,11 @@ Conventions:
   - `lab/claudecode/run_inner_cc_curriculum.py:81`
   - `lab/claudecode/run_inner_cc_curriculum.py:82`
   - `lab/claudecode/run_inner_cc_curriculum.py:83`
-  - `lab/claudecode/seed_code_a_ticket.py:38`
-  - `lab/claudecode/seed_coding_sprint_habit.py:90`
-  - `lab/claudecode/seed_coding_sprint_habit.py:91`
-  - `lab/claudecode/seed_coding_sprint_habit.py:92`
-  - `lab/claudecode/seed_ef_questions_tree.py:52`
+  - `lab/claudecode/seed_code_a_ticket.py:34`
+  - `lab/claudecode/seed_coding_sprint_habit.py:86`
+  - `lab/claudecode/seed_coding_sprint_habit.py:87`
+  - `lab/claudecode/seed_coding_sprint_habit.py:88`
+  - `lab/claudecode/seed_ef_questions_tree.py:48`
   - `lab/claudecode/seed_foreman_habit.py:141`
   - `lab/claudecode/seed_foreman_habit.py:146`
   - `lab/claudecode/seed_foreman_habit.py:147`
@@ -7129,9 +7105,9 @@ Conventions:
   - `lab/claudecode/seed_foreman_habit.py:168`
   - `lab/claudecode/seed_foreman_habit.py:169`
   - `lab/claudecode/seed_foreman_habit.py:170`
-  - `lab/claudecode/seed_goal_close_habit.py:55`
-  - `lab/claudecode/seed_goal_close_habit.py:56`
-  - `lab/claudecode/seed_goal_close_habit.py:57`
+  - `lab/claudecode/seed_goal_close_habit.py:51`
+  - `lab/claudecode/seed_goal_close_habit.py:52`
+  - `lab/claudecode/seed_goal_close_habit.py:53`
   - `lab/claudecode/seed_greeting_space.py:238`
   - `lab/claudecode/seed_greeting_space.py:244`
   - `lab/claudecode/seed_greeting_space.py:249`
@@ -7159,8 +7135,8 @@ Conventions:
   - `lab/claudecode/seed_machines.py:98`
   - `lab/claudecode/seed_machines.py:99`
   - `lab/claudecode/seed_machines.py:112`
-  - `lab/claudecode/seed_machines.py:141`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:174`
+  - `lab/claudecode/seed_machines.py:138`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:169`
   - `lab/claudecode/seed_reader_habits.py:135`
   - `lab/claudecode/seed_reader_habits.py:171`
   - `lab/claudecode/seed_reader_habits.py:176`
@@ -7168,8 +7144,8 @@ Conventions:
   - `lab/claudecode/seed_reader_habits.py:178`
   - `lab/claudecode/seed_reader_habits.py:179`
   - `lab/claudecode/seed_reader_habits.py:181`
-  - `lab/claudecode/seed_reading_facia.py:93`
-  - `lab/claudecode/seed_routing_habits.py:103`
+  - `lab/claudecode/seed_reading_facia.py:90`
+  - `lab/claudecode/seed_routing_habits.py:98`
   - `lab/claudecode/seed_subsystem_index.py:49`
   - `lab/claudecode/seed_subsystem_index.py:50`
   - `lab/claudecode/seed_subsystem_index.py:59`
@@ -7182,14 +7158,14 @@ Conventions:
   - `lab/claudecode/seed_templates.py:1678`
   - `lab/claudecode/seed_templates.py:1701`
   - `lab/claudecode/seed_templates.py:1704`
-  - `lab/claudecode/seed_tool_facia.py:49`
-  - `lab/claudecode/seed_topics_tree.py:54`
+  - `lab/claudecode/seed_tool_facia.py:45`
+  - `lab/claudecode/seed_topics_tree.py:50`
   - `lab/claudecode/seed_traversal_context.py:59`
   - `lab/claudecode/seed_watchlist.py:108`
   - `lab/claudecode/seed_watchlist.py:113`
   - `lab/claudecode/seed_watchlist.py:129`
   - `lab/claudecode/seed_watchlist.py:134`
-  - `lab/claudecode/seed_worker_foreman.py:76`
+  - `lab/claudecode/seed_worker_foreman.py:70`
   - `lab/claudecode/session_manager.py:379`
   - `lab/claudecode/session_manager.py:381`
   - `lab/claudecode/session_manager.py:384`
@@ -7238,10 +7214,10 @@ Conventions:
   - `lab/claudecode/swarm_ollama_cleanup.py:109`
   - `lab/claudecode/swarm_ollama_cleanup.py:129`
   - `lab/claudecode/swarm_ollama_cleanup.py:130`
-  - `lab/claudecode/ticket_prefix_refit.py:58`
-  - `lab/claudecode/ticket_prefix_refit.py:60`
-  - `lab/claudecode/ticket_prefix_refit.py:61`
-  - `lab/claudecode/ticket_prefix_refit.py:63`
+  - `lab/claudecode/ticket_prefix_refit.py:54`
+  - `lab/claudecode/ticket_prefix_refit.py:56`
+  - `lab/claudecode/ticket_prefix_refit.py:57`
+  - `lab/claudecode/ticket_prefix_refit.py:59`
   - `lab/claudecode/utility_closet_server.py:345`
   - `lab/claudecode/utility_closet_server.py:351`
   - `lab/claudecode/utility_closet_server.py:446`
@@ -7271,10 +7247,10 @@ Conventions:
   - `lab/claudecode/utility_closet_server.py:1108`
   - `lab/claudecode/utility_closet_server.py:1164`
   - `lab/claudecode/utility_closet_server.py:1165`
+  - `lab/tools/build_ebook_index.py:303`
+  - `lab/tools/build_ebook_index.py:305`
+  - `lab/tools/build_ebook_index.py:306`
   - `lab/tools/build_ebook_index.py:307`
-  - `lab/tools/build_ebook_index.py:309`
-  - `lab/tools/build_ebook_index.py:310`
-  - `lab/tools/build_ebook_index.py:311`
   - `lab/tools/scan_ebooks.py:272`
   - `lab/tools/scan_ebooks.py:312`
   - `lab/tools/scan_ebooks.py:313`
@@ -7352,8 +7328,7 @@ Conventions:
   - `tests/test_capability_awareness_source.py:73`
   - `tests/test_cc1_minion.py:152`
   - `tests/test_cc1_minion.py:175`
-  - `tests/test_cc_inbox_producer.py:162`
-  - `tests/test_cc_queue_strict_claim.py:80`
+  - `tests/test_cc_queue_strict_claim.py:79`
   - `tests/test_channels.py:116`
   - `tests/test_channels.py:280`
   - `tests/test_channels.py:284`
@@ -7389,8 +7364,6 @@ Conventions:
   - `tests/test_gate_primitive.py:213`
   - `tests/test_goal_close_habit.py:306`
   - `tests/test_goal_continuation.py:130`
-  - `tests/test_goal_continuation.py:268`
-  - `tests/test_goal_continuation.py:269`
   - `tests/test_graph_write.py:55`
   - `tests/test_graph_write.py:59`
   - `tests/test_graph_write.py:71`
@@ -7489,18 +7462,15 @@ Conventions:
   - `tests/test_layer3_situate.py:482`
   - `tests/test_layer3_situate.py:490`
   - `tests/test_layer3_situate.py:503`
-  - `tests/test_layer4_nodes.py:289`
-  - `tests/test_layer4_nodes.py:290`
-  - `tests/test_layer4_nodes.py:405`
-  - `tests/test_layer4_nodes.py:447`
-  - `tests/test_layer4_nodes.py:453`
-  - `tests/test_layer4_nodes.py:532`
-  - `tests/test_layer4_nodes.py:538`
-  - `tests/test_layer4_nodes.py:563`
-  - `tests/test_layer4_nodes.py:569`
-  - `tests/test_layer4_nodes.py:596`
-  - `tests/test_layer4_nodes.py:603`
-  - `tests/test_layer4_nodes.py:609`
+  - `tests/test_layer4_nodes.py:286`
+  - `tests/test_layer4_nodes.py:287`
+  - `tests/test_layer4_nodes.py:402`
+  - `tests/test_layer4_nodes.py:444`
+  - `tests/test_layer4_nodes.py:450`
+  - `tests/test_layer4_nodes.py:529`
+  - `tests/test_layer4_nodes.py:535`
+  - `tests/test_layer4_nodes.py:560`
+  - `tests/test_layer4_nodes.py:566`
   - `tests/test_learning_regression.py:128`
   - `tests/test_learning_regression.py:134`
   - `tests/test_learning_regression.py:150`
@@ -7510,7 +7480,7 @@ Conventions:
   - `tests/test_llm_peer_advisor.py:103`
   - `tests/test_llm_peer_advisor.py:114`
   - `tests/test_llm_peer_advisor.py:229`
-  - `tests/test_load_igor_env.py:84`
+  - `tests/test_load_igor_env.py:88`
   - `tests/test_local_inference_no_timeouts.py:101`
   - `tests/test_machine_lookup.py:154`
   - `tests/test_machine_lookup.py:155`
@@ -7575,34 +7545,6 @@ Conventions:
   - `tests/test_node_executor.py:1074`
   - `tests/test_node_executor.py:1214`
   - `tests/test_non_terminal_emission.py:94`
-  - `tests/test_pe_chain.py:92`
-  - `tests/test_pe_chain_consult.py:97`
-  - `tests/test_pe_chain_consult.py:110`
-  - `tests/test_pe_chain_consult_multi_turn.py:123`
-  - `tests/test_pe_chain_description_gate.py:95`
-  - `tests/test_pe_chain_description_gate.py:96`
-  - `tests/test_pe_chain_empty_close_guard.py:35`
-  - `tests/test_pe_chain_empty_close_guard.py:53`
-  - `tests/test_pe_chain_empty_close_guard.py:108`
-  - `tests/test_pe_chain_empty_close_guard.py:123`
-  - `tests/test_pe_chain_empty_close_guard.py:137`
-  - `tests/test_pe_chain_empty_close_guard.py:163`
-  - `tests/test_pe_chain_inertia_gate.py:140`
-  - `tests/test_pe_chain_inertia_gate.py:141`
-  - `tests/test_pe_chain_qwen_tier.py:39`
-  - `tests/test_pe_chain_qwen_tier.py:148`
-  - `tests/test_pe_chain_qwen_tier.py:149`
-  - `tests/test_pe_chain_typed_contracts.py:71`
-  - `tests/test_pe_chain_typed_contracts.py:85`
-  - `tests/test_pe_chain_typed_contracts.py:86`
-  - `tests/test_pe_chain_typed_contracts.py:111`
-  - `tests/test_pe_chain_typed_contracts.py:145`
-  - `tests/test_pe_chain_typed_contracts.py:146`
-  - `tests/test_pe_entry_nodes.py:572`
-  - `tests/test_pe_entry_nodes.py:573`
-  - `tests/test_pe_entry_nodes.py:846`
-  - `tests/test_pe_entry_nodes.py:985`
-  - `tests/test_pe_entry_nodes.py:986`
   - `tests/test_persistent_relationships.py:61`
   - `tests/test_persistent_relationships.py:99`
   - `tests/test_persistent_relationships.py:100`
@@ -7640,7 +7582,7 @@ Conventions:
   - `tests/test_pursuits.py:34`
   - `tests/test_pursuits.py:58`
   - `tests/test_pursuits.py:71`
-  - `tests/test_queue_consumer.py:260`
+  - `tests/test_queue_consumer.py:180`
   - `tests/test_queue_gate.py:363`
   - `tests/test_rack.py:123`
   - `tests/test_rack.py:127`
@@ -7667,10 +7609,6 @@ Conventions:
   - `tests/test_salience_residue_scan.py:164`
   - `tests/test_salience_residue_scan.py:165`
   - `tests/test_salience_residue_scan.py:168`
-  - `tests/test_scope_guard.py:83`
-  - `tests/test_scope_guard.py:99`
-  - `tests/test_scope_guard.py:106`
-  - `tests/test_scope_guard.py:114`
   - `tests/test_search_widen.py:62`
   - `tests/test_search_widen.py:113`
   - `tests/test_search_widen.py:119`
@@ -7678,7 +7616,6 @@ Conventions:
   - `tests/test_search_widen.py:216`
   - `tests/test_sensor_tree.py:33`
   - `tests/test_sensor_tree.py:34`
-  - `tests/test_situate_new_files.py:105`
   - `tests/test_sleep_consolidation.py:77`
   - `tests/test_sleep_consolidation.py:82`
   - `tests/test_sleep_consolidation.py:85`
@@ -7716,22 +7653,22 @@ Conventions:
   - `tests/test_uc_watchdog.py:150`
   - `tests/test_utility_closet_client.py:404`
   - `tests/test_utility_closet_client.py:405`
-  - `tests/test_utility_closet_server.py:102`
-  - `tests/test_utility_closet_server.py:162`
-  - `tests/test_utility_closet_server.py:177`
-  - `tests/test_utility_closet_server.py:193`
-  - `tests/test_utility_closet_server.py:206`
-  - `tests/test_utility_closet_server.py:366`
-  - `tests/test_utility_closet_server.py:382`
-  - `tests/test_utility_closet_server.py:420`
+  - `tests/test_utility_closet_server.py:108`
+  - `tests/test_utility_closet_server.py:168`
+  - `tests/test_utility_closet_server.py:183`
+  - `tests/test_utility_closet_server.py:199`
+  - `tests/test_utility_closet_server.py:212`
+  - `tests/test_utility_closet_server.py:372`
+  - `tests/test_utility_closet_server.py:388`
+  - `tests/test_utility_closet_server.py:426`
   - `tests/test_verify_retrieval.py:49`
   - `tests/test_voice_ab.py:152`
   - `tests/test_wandering_search.py:58`
   - `tests/test_wandering_search.py:205`
-  - `tests/test_worker_foreman.py:181`
-  - `tests/test_worker_foreman.py:193`
-  - `tests/test_worker_foreman.py:206`
-  - `tests/test_worker_foreman.py:219`
+  - `tests/test_worker_foreman.py:185`
+  - `tests/test_worker_foreman.py:197`
+  - `tests/test_worker_foreman.py:210`
+  - `tests/test_worker_foreman.py:223`
   - `wild_igor/igor/acquisition/__init__.py:181`
   - `wild_igor/igor/acquisition/direct_url.py:120`
   - `wild_igor/igor/acquisition/direct_url.py:171`
@@ -7749,16 +7686,16 @@ Conventions:
   - `wild_igor/igor/brainstem/core_patterns.py:230`
   - `wild_igor/igor/brainstem/core_patterns.py:755`
   - `wild_igor/igor/cognition/action_claim_verifier.py:120`
+  - `wild_igor/igor/cognition/activate.py:130`
   - `wild_igor/igor/cognition/activate.py:131`
   - `wild_igor/igor/cognition/activate.py:132`
   - `wild_igor/igor/cognition/activate.py:133`
   - `wild_igor/igor/cognition/activate.py:134`
-  - `wild_igor/igor/cognition/activate.py:135`
-  - `wild_igor/igor/cognition/activate.py:159`
-  - `wild_igor/igor/cognition/activate.py:167`
-  - `wild_igor/igor/cognition/activate.py:176`
+  - `wild_igor/igor/cognition/activate.py:158`
+  - `wild_igor/igor/cognition/activate.py:166`
+  - `wild_igor/igor/cognition/activate.py:175`
+  - `wild_igor/igor/cognition/activate.py:182`
   - `wild_igor/igor/cognition/activate.py:183`
-  - `wild_igor/igor/cognition/activate.py:184`
   - `wild_igor/igor/cognition/anticipation.py:137`
   - `wild_igor/igor/cognition/anticipation.py:144`
   - `wild_igor/igor/cognition/anticipation.py:196`
@@ -7775,25 +7712,25 @@ Conventions:
   - `wild_igor/igor/cognition/backchannel.py:117`
   - `wild_igor/igor/cognition/backchannel.py:132`
   - `wild_igor/igor/cognition/backchannel.py:133`
-  - `wild_igor/igor/cognition/basal_ganglia.py:249`
-  - `wild_igor/igor/cognition/basal_ganglia.py:276`
+  - `wild_igor/igor/cognition/basal_ganglia.py:247`
+  - `wild_igor/igor/cognition/basal_ganglia.py:274`
+  - `wild_igor/igor/cognition/basal_ganglia.py:281`
   - `wild_igor/igor/cognition/basal_ganglia.py:283`
-  - `wild_igor/igor/cognition/basal_ganglia.py:285`
-  - `wild_igor/igor/cognition/basal_ganglia.py:315`
-  - `wild_igor/igor/cognition/basal_ganglia.py:322`
-  - `wild_igor/igor/cognition/basal_ganglia.py:365`
-  - `wild_igor/igor/cognition/basal_ganglia.py:381`
-  - `wild_igor/igor/cognition/basal_ganglia.py:411`
-  - `wild_igor/igor/cognition/basal_ganglia.py:417`
-  - `wild_igor/igor/cognition/basal_ganglia.py:420`
+  - `wild_igor/igor/cognition/basal_ganglia.py:313`
+  - `wild_igor/igor/cognition/basal_ganglia.py:320`
+  - `wild_igor/igor/cognition/basal_ganglia.py:363`
+  - `wild_igor/igor/cognition/basal_ganglia.py:379`
+  - `wild_igor/igor/cognition/basal_ganglia.py:409`
+  - `wild_igor/igor/cognition/basal_ganglia.py:415`
+  - `wild_igor/igor/cognition/basal_ganglia.py:418`
+  - `wild_igor/igor/cognition/basal_ganglia.py:442`
+  - `wild_igor/igor/cognition/basal_ganglia.py:443`
   - `wild_igor/igor/cognition/basal_ganglia.py:444`
-  - `wild_igor/igor/cognition/basal_ganglia.py:445`
-  - `wild_igor/igor/cognition/basal_ganglia.py:446`
-  - `wild_igor/igor/cognition/basal_ganglia.py:513`
-  - `wild_igor/igor/cognition/basal_ganglia.py:782`
-  - `wild_igor/igor/cognition/basal_ganglia.py:786`
-  - `wild_igor/igor/cognition/basal_ganglia.py:809`
-  - `wild_igor/igor/cognition/basal_ganglia.py:868`
+  - `wild_igor/igor/cognition/basal_ganglia.py:511`
+  - `wild_igor/igor/cognition/basal_ganglia.py:780`
+  - `wild_igor/igor/cognition/basal_ganglia.py:784`
+  - `wild_igor/igor/cognition/basal_ganglia.py:807`
+  - `wild_igor/igor/cognition/basal_ganglia.py:866`
   - `wild_igor/igor/cognition/blob_store.py:303`
   - `wild_igor/igor/cognition/boredom.py:76`
   - `wild_igor/igor/cognition/cloud_mode.py:57`
@@ -7881,27 +7818,27 @@ Conventions:
   - `wild_igor/igor/cognition/distillation.py:430`
   - `wild_igor/igor/cognition/distillation.py:431`
   - `wild_igor/igor/cognition/distillation.py:490`
+  - `wild_igor/igor/cognition/dreaming.py:181`
   - `wild_igor/igor/cognition/dreaming.py:182`
   - `wild_igor/igor/cognition/dreaming.py:183`
   - `wild_igor/igor/cognition/dreaming.py:184`
-  - `wild_igor/igor/cognition/dreaming.py:185`
+  - `wild_igor/igor/cognition/dreaming.py:216`
   - `wild_igor/igor/cognition/dreaming.py:217`
-  - `wild_igor/igor/cognition/dreaming.py:218`
+  - `wild_igor/igor/cognition/dreaming.py:228`
   - `wild_igor/igor/cognition/dreaming.py:229`
   - `wild_igor/igor/cognition/dreaming.py:230`
   - `wild_igor/igor/cognition/dreaming.py:231`
   - `wild_igor/igor/cognition/dreaming.py:232`
-  - `wild_igor/igor/cognition/dreaming.py:233`
-  - `wild_igor/igor/cognition/dreaming.py:274`
+  - `wild_igor/igor/cognition/dreaming.py:273`
+  - `wild_igor/igor/cognition/dreaming.py:286`
   - `wild_igor/igor/cognition/dreaming.py:287`
-  - `wild_igor/igor/cognition/dreaming.py:288`
-  - `wild_igor/igor/cognition/dreaming.py:290`
-  - `wild_igor/igor/cognition/dreaming.py:390`
-  - `wild_igor/igor/cognition/dreaming.py:462`
-  - `wild_igor/igor/cognition/dreaming.py:465`
+  - `wild_igor/igor/cognition/dreaming.py:289`
+  - `wild_igor/igor/cognition/dreaming.py:389`
+  - `wild_igor/igor/cognition/dreaming.py:461`
+  - `wild_igor/igor/cognition/dreaming.py:464`
+  - `wild_igor/igor/cognition/dreaming.py:540`
   - `wild_igor/igor/cognition/dreaming.py:541`
-  - `wild_igor/igor/cognition/dreaming.py:542`
-  - `wild_igor/igor/cognition/dreaming.py:547`
+  - `wild_igor/igor/cognition/dreaming.py:546`
   - `wild_igor/igor/cognition/emit_channels.py:76`
   - `wild_igor/igor/cognition/emit_channels.py:101`
   - `wild_igor/igor/cognition/emit_channels.py:115`
@@ -7938,7 +7875,7 @@ Conventions:
   - `wild_igor/igor/cognition/factual_compression.py:398`
   - `wild_igor/igor/cognition/factual_compression.py:411`
   - `wild_igor/igor/cognition/factual_compression.py:473`
-  - `wild_igor/igor/cognition/focus_state.py:230`
+  - `wild_igor/igor/cognition/focus_state.py:229`
   - `wild_igor/igor/cognition/forensic_logger.py:155`
   - `wild_igor/igor/cognition/forensic_logger.py:156`
   - `wild_igor/igor/cognition/forensic_logger.py:157`
@@ -8050,82 +7987,82 @@ Conventions:
   - `wild_igor/igor/cognition/milieu.py:618`
   - `wild_igor/igor/cognition/milieu.py:742`
   - `wild_igor/igor/cognition/milieu.py:743`
-  - `wild_igor/igor/cognition/narrative_engine.py:343`
-  - `wild_igor/igor/cognition/narrative_engine.py:348`
-  - `wild_igor/igor/cognition/narrative_engine.py:417`
-  - `wild_igor/igor/cognition/narrative_engine.py:541`
-  - `wild_igor/igor/cognition/narrative_engine.py:551`
-  - `wild_igor/igor/cognition/narrative_engine.py:575`
-  - `wild_igor/igor/cognition/narrative_engine.py:583`
+  - `wild_igor/igor/cognition/narrative_engine.py:344`
+  - `wild_igor/igor/cognition/narrative_engine.py:349`
+  - `wild_igor/igor/cognition/narrative_engine.py:418`
+  - `wild_igor/igor/cognition/narrative_engine.py:542`
+  - `wild_igor/igor/cognition/narrative_engine.py:552`
+  - `wild_igor/igor/cognition/narrative_engine.py:576`
   - `wild_igor/igor/cognition/narrative_engine.py:584`
-  - `wild_igor/igor/cognition/narrative_engine.py:586`
-  - `wild_igor/igor/cognition/narrative_engine.py:642`
-  - `wild_igor/igor/cognition/narrative_engine.py:662`
-  - `wild_igor/igor/cognition/narrative_engine.py:664`
-  - `wild_igor/igor/cognition/narrative_engine.py:712`
-  - `wild_igor/igor/cognition/narrative_engine.py:714`
-  - `wild_igor/igor/cognition/narrative_engine.py:777`
+  - `wild_igor/igor/cognition/narrative_engine.py:585`
+  - `wild_igor/igor/cognition/narrative_engine.py:587`
+  - `wild_igor/igor/cognition/narrative_engine.py:643`
+  - `wild_igor/igor/cognition/narrative_engine.py:663`
+  - `wild_igor/igor/cognition/narrative_engine.py:665`
+  - `wild_igor/igor/cognition/narrative_engine.py:713`
+  - `wild_igor/igor/cognition/narrative_engine.py:715`
   - `wild_igor/igor/cognition/narrative_engine.py:778`
   - `wild_igor/igor/cognition/narrative_engine.py:779`
-  - `wild_igor/igor/cognition/narrative_engine.py:794`
-  - `wild_igor/igor/cognition/narrative_engine.py:812`
+  - `wild_igor/igor/cognition/narrative_engine.py:780`
+  - `wild_igor/igor/cognition/narrative_engine.py:795`
   - `wild_igor/igor/cognition/narrative_engine.py:813`
   - `wild_igor/igor/cognition/narrative_engine.py:814`
-  - `wild_igor/igor/cognition/narrative_engine.py:826`
-  - `wild_igor/igor/cognition/narrative_engine.py:835`
-  - `wild_igor/igor/cognition/narrative_engine.py:842`
-  - `wild_igor/igor/cognition/narrative_engine.py:864`
-  - `wild_igor/igor/cognition/narrative_engine.py:904`
-  - `wild_igor/igor/cognition/narrative_engine.py:928`
+  - `wild_igor/igor/cognition/narrative_engine.py:815`
+  - `wild_igor/igor/cognition/narrative_engine.py:827`
+  - `wild_igor/igor/cognition/narrative_engine.py:836`
+  - `wild_igor/igor/cognition/narrative_engine.py:843`
+  - `wild_igor/igor/cognition/narrative_engine.py:865`
+  - `wild_igor/igor/cognition/narrative_engine.py:905`
   - `wild_igor/igor/cognition/narrative_engine.py:929`
-  - `wild_igor/igor/cognition/narrative_engine.py:935`
-  - `wild_igor/igor/cognition/narrative_engine.py:937`
-  - `wild_igor/igor/cognition/narrative_engine.py:965`
-  - `wild_igor/igor/cognition/narrative_engine.py:970`
+  - `wild_igor/igor/cognition/narrative_engine.py:930`
+  - `wild_igor/igor/cognition/narrative_engine.py:936`
+  - `wild_igor/igor/cognition/narrative_engine.py:938`
+  - `wild_igor/igor/cognition/narrative_engine.py:966`
   - `wild_igor/igor/cognition/narrative_engine.py:971`
   - `wild_igor/igor/cognition/narrative_engine.py:972`
   - `wild_igor/igor/cognition/narrative_engine.py:973`
-  - `wild_igor/igor/cognition/narrative_engine.py:1068`
-  - `wild_igor/igor/cognition/narrative_engine.py:1115`
-  - `wild_igor/igor/cognition/narrative_engine.py:1117`
-  - `wild_igor/igor/cognition/narrative_engine.py:1173`
-  - `wild_igor/igor/cognition/narrative_engine.py:1210`
-  - `wild_igor/igor/cognition/narrative_engine.py:1364`
-  - `wild_igor/igor/cognition/narrative_engine.py:1439`
-  - `wild_igor/igor/cognition/narrative_engine.py:1458`
-  - `wild_igor/igor/cognition/narrative_engine.py:1472`
-  - `wild_igor/igor/cognition/narrative_engine.py:1473`
-  - `wild_igor/igor/cognition/narrative_engine.py:1481`
-  - `wild_igor/igor/cognition/narrative_engine.py:1507`
-  - `wild_igor/igor/cognition/narrative_engine.py:1526`
+  - `wild_igor/igor/cognition/narrative_engine.py:974`
+  - `wild_igor/igor/cognition/narrative_engine.py:1069`
+  - `wild_igor/igor/cognition/narrative_engine.py:1116`
+  - `wild_igor/igor/cognition/narrative_engine.py:1118`
+  - `wild_igor/igor/cognition/narrative_engine.py:1174`
+  - `wild_igor/igor/cognition/narrative_engine.py:1211`
+  - `wild_igor/igor/cognition/narrative_engine.py:1360`
+  - `wild_igor/igor/cognition/narrative_engine.py:1435`
+  - `wild_igor/igor/cognition/narrative_engine.py:1454`
+  - `wild_igor/igor/cognition/narrative_engine.py:1468`
+  - `wild_igor/igor/cognition/narrative_engine.py:1469`
+  - `wild_igor/igor/cognition/narrative_engine.py:1477`
+  - `wild_igor/igor/cognition/narrative_engine.py:1503`
+  - `wild_igor/igor/cognition/narrative_engine.py:1522`
+  - `wild_igor/igor/cognition/narrative_engine.py:1533`
   - `wild_igor/igor/cognition/narrative_engine.py:1537`
-  - `wild_igor/igor/cognition/narrative_engine.py:1541`
-  - `wild_igor/igor/cognition/narrative_engine.py:1579`
-  - `wild_igor/igor/cognition/narrative_engine.py:1586`
-  - `wild_igor/igor/cognition/narrative_engine.py:1599`
-  - `wild_igor/igor/cognition/narrative_engine.py:1600`
-  - `wild_igor/igor/cognition/narrative_engine.py:1601`
-  - `wild_igor/igor/cognition/narrative_engine.py:1689`
-  - `wild_igor/igor/cognition/narrative_engine.py:1706`
-  - `wild_igor/igor/cognition/narrative_engine.py:1711`
-  - `wild_igor/igor/cognition/narrative_engine.py:1712`
-  - `wild_igor/igor/cognition/narrative_engine.py:1747`
+  - `wild_igor/igor/cognition/narrative_engine.py:1575`
+  - `wild_igor/igor/cognition/narrative_engine.py:1582`
+  - `wild_igor/igor/cognition/narrative_engine.py:1595`
+  - `wild_igor/igor/cognition/narrative_engine.py:1596`
+  - `wild_igor/igor/cognition/narrative_engine.py:1597`
+  - `wild_igor/igor/cognition/narrative_engine.py:1685`
+  - `wild_igor/igor/cognition/narrative_engine.py:1702`
+  - `wild_igor/igor/cognition/narrative_engine.py:1707`
+  - `wild_igor/igor/cognition/narrative_engine.py:1708`
+  - `wild_igor/igor/cognition/narrative_engine.py:1743`
+  - `wild_igor/igor/cognition/narrative_engine.py:1751`
+  - `wild_igor/igor/cognition/narrative_engine.py:1752`
   - `wild_igor/igor/cognition/narrative_engine.py:1755`
-  - `wild_igor/igor/cognition/narrative_engine.py:1756`
-  - `wild_igor/igor/cognition/narrative_engine.py:1759`
-  - `wild_igor/igor/cognition/narrative_engine.py:1766`
-  - `wild_igor/igor/cognition/narrative_engine.py:1775`
-  - `wild_igor/igor/cognition/narrative_engine.py:1823`
-  - `wild_igor/igor/cognition/narrative_engine.py:1824`
-  - `wild_igor/igor/cognition/narrative_engine.py:1842`
-  - `wild_igor/igor/cognition/narrative_engine.py:1896`
-  - `wild_igor/igor/cognition/narrative_engine.py:1917`
-  - `wild_igor/igor/cognition/narrative_engine.py:1988`
-  - `wild_igor/igor/cognition/narrative_engine.py:2072`
-  - `wild_igor/igor/cognition/narrative_engine.py:2142`
-  - `wild_igor/igor/cognition/narrative_engine.py:2143`
-  - `wild_igor/igor/cognition/narrative_engine.py:2288`
-  - `wild_igor/igor/cognition/narrative_engine.py:2291`
+  - `wild_igor/igor/cognition/narrative_engine.py:1762`
+  - `wild_igor/igor/cognition/narrative_engine.py:1771`
+  - `wild_igor/igor/cognition/narrative_engine.py:1819`
+  - `wild_igor/igor/cognition/narrative_engine.py:1820`
+  - `wild_igor/igor/cognition/narrative_engine.py:1838`
+  - `wild_igor/igor/cognition/narrative_engine.py:1892`
+  - `wild_igor/igor/cognition/narrative_engine.py:1913`
+  - `wild_igor/igor/cognition/narrative_engine.py:1984`
+  - `wild_igor/igor/cognition/narrative_engine.py:2068`
+  - `wild_igor/igor/cognition/narrative_engine.py:2138`
+  - `wild_igor/igor/cognition/narrative_engine.py:2139`
+  - `wild_igor/igor/cognition/narrative_engine.py:2284`
+  - `wild_igor/igor/cognition/narrative_engine.py:2287`
   - `wild_igor/igor/cognition/node_executor.py:109`
   - `wild_igor/igor/cognition/node_executor.py:111`
   - `wild_igor/igor/cognition/node_executor.py:139`
@@ -8142,11 +8079,11 @@ Conventions:
   - `wild_igor/igor/cognition/planning.py:215`
   - `wild_igor/igor/cognition/planning.py:220`
   - `wild_igor/igor/cognition/planning.py:251`
+  - `wild_igor/igor/cognition/playbook.py:100`
   - `wild_igor/igor/cognition/playbook.py:101`
   - `wild_igor/igor/cognition/playbook.py:102`
-  - `wild_igor/igor/cognition/playbook.py:103`
-  - `wild_igor/igor/cognition/playbook.py:142`
-  - `wild_igor/igor/cognition/playbook.py:144`
+  - `wild_igor/igor/cognition/playbook.py:141`
+  - `wild_igor/igor/cognition/playbook.py:143`
   - `wild_igor/igor/cognition/preparse_router.py:274`
   - `wild_igor/igor/cognition/preparse_router.py:277`
   - `wild_igor/igor/cognition/preparse_router.py:280`
@@ -8469,7 +8406,7 @@ Conventions:
   - `wild_igor/igor/env_sync.py:233`
   - `wild_igor/igor/env_sync.py:234`
   - `wild_igor/igor/env_sync.py:325`
-  - `wild_igor/igor/igor_base.py:83`
+  - `wild_igor/igor/igor_base.py:192`
   - `wild_igor/igor/logging_setup.py:139`
   - `wild_igor/igor/logging_setup.py:201`
   - `wild_igor/igor/main.py:248`
@@ -9028,19 +8965,17 @@ Conventions:
   - `wild_igor/igor/tools/gmail.py:89`
   - `wild_igor/igor/tools/gmail.py:132`
   - `wild_igor/igor/tools/gmail.py:133`
-  - `wild_igor/igor/tools/goal_continuation.py:105`
-  - `wild_igor/igor/tools/goal_continuation.py:106`
-  - `wild_igor/igor/tools/goal_continuation.py:125`
-  - `wild_igor/igor/tools/goal_continuation.py:170`
+  - `wild_igor/igor/tools/goal_continuation.py:102`
+  - `wild_igor/igor/tools/goal_continuation.py:103`
+  - `wild_igor/igor/tools/goal_continuation.py:122`
+  - `wild_igor/igor/tools/goal_continuation.py:167`
+  - `wild_igor/igor/tools/goal_continuation.py:173`
+  - `wild_igor/igor/tools/goal_continuation.py:175`
   - `wild_igor/igor/tools/goal_continuation.py:176`
-  - `wild_igor/igor/tools/goal_continuation.py:178`
-  - `wild_igor/igor/tools/goal_continuation.py:179`
-  - `wild_igor/igor/tools/goal_continuation.py:188`
-  - `wild_igor/igor/tools/goal_continuation.py:253`
-  - `wild_igor/igor/tools/goal_continuation.py:270`
-  - `wild_igor/igor/tools/goal_continuation.py:291`
-  - `wild_igor/igor/tools/goal_continuation.py:324`
-  - `wild_igor/igor/tools/goal_continuation.py:340`
+  - `wild_igor/igor/tools/goal_continuation.py:185`
+  - `wild_igor/igor/tools/goal_continuation.py:250`
+  - `wild_igor/igor/tools/goal_continuation.py:267`
+  - `wild_igor/igor/tools/goal_continuation.py:288`
   - `wild_igor/igor/tools/goal_graph.py:85`
   - `wild_igor/igor/tools/goal_graph.py:99`
   - `wild_igor/igor/tools/goal_graph.py:158`
@@ -9230,49 +9165,34 @@ Conventions:
   - `wild_igor/igor/tools/openrouter_reasoner.py:151`
   - `wild_igor/igor/tools/openrouter_reasoner.py:152`
   - `wild_igor/igor/tools/ops.py:161`
-  - `wild_igor/igor/tools/ops.py:318`
-  - `wild_igor/igor/tools/ops.py:323`
-  - `wild_igor/igor/tools/ops.py:325`
-  - `wild_igor/igor/tools/ops.py:327`
-  - `wild_igor/igor/tools/ops.py:388`
-  - `wild_igor/igor/tools/ops.py:393`
-  - `wild_igor/igor/tools/ops.py:394`
-  - `wild_igor/igor/tools/ops.py:395`
+  - `wild_igor/igor/tools/ops.py:335`
+  - `wild_igor/igor/tools/ops.py:340`
+  - `wild_igor/igor/tools/ops.py:342`
+  - `wild_igor/igor/tools/ops.py:344`
+  - `wild_igor/igor/tools/ops.py:405`
+  - `wild_igor/igor/tools/ops.py:410`
+  - `wild_igor/igor/tools/ops.py:411`
   - `wild_igor/igor/tools/ops.py:412`
-  - `wild_igor/igor/tools/ops.py:415`
-  - `wild_igor/igor/tools/ops.py:430`
-  - `wild_igor/igor/tools/ops.py:465`
-  - `wild_igor/igor/tools/ops.py:468`
-  - `wild_igor/igor/tools/ops.py:472`
-  - `wild_igor/igor/tools/ops.py:475`
-  - `wild_igor/igor/tools/ops.py:479`
-  - `wild_igor/igor/tools/ops.py:506`
-  - `wild_igor/igor/tools/ops.py:508`
-  - `wild_igor/igor/tools/ops.py:580`
-  - `wild_igor/igor/tools/ops.py:589`
-  - `wild_igor/igor/tools/ops.py:634`
-  - `wild_igor/igor/tools/ops.py:640`
-  - `wild_igor/igor/tools/ops.py:643`
-  - `wild_igor/igor/tools/ops.py:645`
-  - `wild_igor/igor/tools/ops.py:649`
-  - `wild_igor/igor/tools/ops.py:670`
-  - `wild_igor/igor/tools/ops.py:675`
-  - `wild_igor/igor/tools/ops.py:695`
-  - `wild_igor/igor/tools/ops.py:696`
-  - `wild_igor/igor/tools/ops.py:697`
-  - `wild_igor/igor/tools/ops.py:698`
-  - `wild_igor/igor/tools/ops.py:699`
-  - `wild_igor/igor/tools/ops.py:705`
-  - `wild_igor/igor/tools/ops.py:710`
-  - `wild_igor/igor/tools/ops.py:712`
-  - `wild_igor/igor/tools/ops.py:1064`
-  - `wild_igor/igor/tools/ops.py:1075`
-  - `wild_igor/igor/tools/ops.py:1078`
-  - `wild_igor/igor/tools/ops.py:1083`
-  - `wild_igor/igor/tools/ops.py:1088`
-  - `wild_igor/igor/tools/ops.py:1169`
-  - `wild_igor/igor/tools/ops.py:1175`
-  - `wild_igor/igor/tools/ops.py:1178`
+  - `wild_igor/igor/tools/ops.py:429`
+  - `wild_igor/igor/tools/ops.py:432`
+  - `wild_igor/igor/tools/ops.py:447`
+  - `wild_igor/igor/tools/ops.py:482`
+  - `wild_igor/igor/tools/ops.py:485`
+  - `wild_igor/igor/tools/ops.py:489`
+  - `wild_igor/igor/tools/ops.py:492`
+  - `wild_igor/igor/tools/ops.py:496`
+  - `wild_igor/igor/tools/ops.py:523`
+  - `wild_igor/igor/tools/ops.py:525`
+  - `wild_igor/igor/tools/ops.py:597`
+  - `wild_igor/igor/tools/ops.py:606`
+  - `wild_igor/igor/tools/ops.py:651`
+  - `wild_igor/igor/tools/ops.py:657`
+  - `wild_igor/igor/tools/ops.py:660`
+  - `wild_igor/igor/tools/ops.py:662`
+  - `wild_igor/igor/tools/ops.py:666`
+  - `wild_igor/igor/tools/ops.py:1045`
+  - `wild_igor/igor/tools/ops.py:1051`
+  - `wild_igor/igor/tools/ops.py:1054`
   - `wild_igor/igor/tools/or_model_refresh.py:56`
   - `wild_igor/igor/tools/os_primitives.py:212`
   - `wild_igor/igor/tools/os_primitives.py:426`
@@ -9285,208 +9205,6 @@ Conventions:
   - `wild_igor/igor/tools/os_primitives.py:783`
   - `wild_igor/igor/tools/os_primitives.py:784`
   - `wild_igor/igor/tools/os_primitives.py:785`
-  - `wild_igor/igor/tools/pe_chain.py:370`
-  - `wild_igor/igor/tools/pe_chain.py:446`
-  - `wild_igor/igor/tools/pe_chain.py:447`
-  - `wild_igor/igor/tools/pe_chain.py:451`
-  - `wild_igor/igor/tools/pe_chain.py:453`
-  - `wild_igor/igor/tools/pe_chain.py:455`
-  - `wild_igor/igor/tools/pe_chain.py:457`
-  - `wild_igor/igor/tools/pe_chain.py:459`
-  - `wild_igor/igor/tools/pe_chain.py:464`
-  - `wild_igor/igor/tools/pe_chain.py:488`
-  - `wild_igor/igor/tools/pe_chain.py:492`
-  - `wild_igor/igor/tools/pe_chain.py:499`
-  - `wild_igor/igor/tools/pe_chain.py:501`
-  - `wild_igor/igor/tools/pe_chain.py:585`
-  - `wild_igor/igor/tools/pe_chain.py:597`
-  - `wild_igor/igor/tools/pe_chain.py:616`
-  - `wild_igor/igor/tools/pe_chain.py:656`
-  - `wild_igor/igor/tools/pe_chain.py:659`
-  - `wild_igor/igor/tools/pe_chain.py:672`
-  - `wild_igor/igor/tools/pe_chain.py:675`
-  - `wild_igor/igor/tools/pe_chain.py:676`
-  - `wild_igor/igor/tools/pe_chain.py:680`
-  - `wild_igor/igor/tools/pe_chain.py:707`
-  - `wild_igor/igor/tools/pe_chain.py:708`
-  - `wild_igor/igor/tools/pe_chain.py:760`
-  - `wild_igor/igor/tools/pe_chain.py:763`
-  - `wild_igor/igor/tools/pe_chain.py:767`
-  - `wild_igor/igor/tools/pe_chain.py:768`
-  - `wild_igor/igor/tools/pe_chain.py:771`
-  - `wild_igor/igor/tools/pe_chain.py:784`
-  - `wild_igor/igor/tools/pe_chain.py:832`
-  - `wild_igor/igor/tools/pe_chain.py:835`
-  - `wild_igor/igor/tools/pe_chain.py:836`
-  - `wild_igor/igor/tools/pe_chain.py:837`
-  - `wild_igor/igor/tools/pe_chain.py:839`
-  - `wild_igor/igor/tools/pe_chain.py:841`
-  - `wild_igor/igor/tools/pe_chain.py:882`
-  - `wild_igor/igor/tools/pe_chain.py:908`
-  - `wild_igor/igor/tools/pe_chain.py:915`
-  - `wild_igor/igor/tools/pe_chain.py:919`
-  - `wild_igor/igor/tools/pe_chain.py:923`
-  - `wild_igor/igor/tools/pe_chain.py:944`
-  - `wild_igor/igor/tools/pe_chain.py:974`
-  - `wild_igor/igor/tools/pe_chain.py:977`
-  - `wild_igor/igor/tools/pe_chain.py:982`
-  - `wild_igor/igor/tools/pe_chain.py:1011`
-  - `wild_igor/igor/tools/pe_chain.py:1061`
-  - `wild_igor/igor/tools/pe_chain.py:1106`
-  - `wild_igor/igor/tools/pe_chain.py:1109`
-  - `wild_igor/igor/tools/pe_chain.py:1110`
-  - `wild_igor/igor/tools/pe_chain.py:1151`
-  - `wild_igor/igor/tools/pe_chain.py:1179`
-  - `wild_igor/igor/tools/pe_chain.py:1182`
-  - `wild_igor/igor/tools/pe_chain.py:1188`
-  - `wild_igor/igor/tools/pe_chain.py:1208`
-  - `wild_igor/igor/tools/pe_chain.py:1211`
-  - `wild_igor/igor/tools/pe_chain.py:1212`
-  - `wild_igor/igor/tools/pe_chain.py:1213`
-  - `wild_igor/igor/tools/pe_chain.py:1214`
-  - `wild_igor/igor/tools/pe_chain.py:1215`
-  - `wild_igor/igor/tools/pe_chain.py:1263`
-  - `wild_igor/igor/tools/pe_chain.py:1267`
-  - `wild_igor/igor/tools/pe_chain.py:1272`
-  - `wild_igor/igor/tools/pe_chain.py:1278`
-  - `wild_igor/igor/tools/pe_chain.py:1280`
-  - `wild_igor/igor/tools/pe_chain.py:1300`
-  - `wild_igor/igor/tools/pe_chain.py:1303`
-  - `wild_igor/igor/tools/pe_chain.py:1304`
-  - `wild_igor/igor/tools/pe_chain.py:1313`
-  - `wild_igor/igor/tools/pe_chain.py:1463`
-  - `wild_igor/igor/tools/pe_chain.py:1494`
-  - `wild_igor/igor/tools/pe_chain.py:1497`
-  - `wild_igor/igor/tools/pe_chain.py:1498`
-  - `wild_igor/igor/tools/pe_chain.py:1500`
-  - `wild_igor/igor/tools/pe_chain.py:1587`
-  - `wild_igor/igor/tools/pe_chain.py:1615`
-  - `wild_igor/igor/tools/pe_chain.py:1654`
-  - `wild_igor/igor/tools/pe_chain.py:1670`
-  - `wild_igor/igor/tools/pe_chain.py:1723`
-  - `wild_igor/igor/tools/pe_chain.py:1726`
-  - `wild_igor/igor/tools/pe_chain.py:1727`
-  - `wild_igor/igor/tools/pe_chain.py:1731`
-  - `wild_igor/igor/tools/pe_chain.py:1759`
-  - `wild_igor/igor/tools/pe_chain.py:1761`
-  - `wild_igor/igor/tools/pe_chain.py:1809`
-  - `wild_igor/igor/tools/pe_chain.py:1835`
-  - `wild_igor/igor/tools/pe_chain.py:1836`
-  - `wild_igor/igor/tools/pe_chain.py:1838`
-  - `wild_igor/igor/tools/pe_chain.py:1872`
-  - `wild_igor/igor/tools/pe_chain.py:1875`
-  - `wild_igor/igor/tools/pe_chain.py:1876`
-  - `wild_igor/igor/tools/pe_chain.py:1885`
-  - `wild_igor/igor/tools/pe_chain.py:1890`
-  - `wild_igor/igor/tools/pe_chain.py:1897`
-  - `wild_igor/igor/tools/pe_chain.py:1900`
-  - `wild_igor/igor/tools/pe_chain.py:1909`
-  - `wild_igor/igor/tools/pe_chain.py:1912`
-  - `wild_igor/igor/tools/pe_chain.py:1922`
-  - `wild_igor/igor/tools/pe_chain.py:1927`
-  - `wild_igor/igor/tools/pe_chain.py:1945`
-  - `wild_igor/igor/tools/pe_chain.py:1948`
-  - `wild_igor/igor/tools/pe_chain.py:1951`
-  - `wild_igor/igor/tools/pe_chain.py:1952`
-  - `wild_igor/igor/tools/pe_chain.py:1953`
-  - `wild_igor/igor/tools/pe_chain.py:1964`
-  - `wild_igor/igor/tools/pe_chain.py:1966`
-  - `wild_igor/igor/tools/pe_chain.py:1967`
-  - `wild_igor/igor/tools/pe_chain.py:1973`
-  - `wild_igor/igor/tools/pe_chain.py:1976`
-  - `wild_igor/igor/tools/pe_chain.py:1988`
-  - `wild_igor/igor/tools/pe_chain.py:1989`
-  - `wild_igor/igor/tools/pe_chain.py:1996`
-  - `wild_igor/igor/tools/pe_chain.py:1997`
-  - `wild_igor/igor/tools/pe_chain.py:1998`
-  - `wild_igor/igor/tools/pe_chain.py:2003`
-  - `wild_igor/igor/tools/pe_chain.py:2005`
-  - `wild_igor/igor/tools/pe_chain.py:2006`
-  - `wild_igor/igor/tools/pe_chain.py:2009`
-  - `wild_igor/igor/tools/pe_chain.py:2050`
-  - `wild_igor/igor/tools/pe_chain.py:2053`
-  - `wild_igor/igor/tools/pe_chain.py:2054`
-  - `wild_igor/igor/tools/pe_chain.py:2055`
-  - `wild_igor/igor/tools/pe_chain.py:2057`
-  - `wild_igor/igor/tools/pe_chain.py:2061`
-  - `wild_igor/igor/tools/pe_chain.py:2093`
-  - `wild_igor/igor/tools/pe_chain.py:2094`
-  - `wild_igor/igor/tools/pe_chain.py:2098`
-  - `wild_igor/igor/tools/pe_chain.py:2099`
-  - `wild_igor/igor/tools/pe_chain.py:2100`
-  - `wild_igor/igor/tools/pe_chain.py:2109`
-  - `wild_igor/igor/tools/pe_chain.py:2160`
-  - `wild_igor/igor/tools/pe_chain.py:2173`
-  - `wild_igor/igor/tools/pe_chain.py:2182`
-  - `wild_igor/igor/tools/pe_chain.py:2203`
-  - `wild_igor/igor/tools/pe_chain.py:2207`
-  - `wild_igor/igor/tools/pe_chain.py:2208`
-  - `wild_igor/igor/tools/pe_chain.py:2209`
-  - `wild_igor/igor/tools/pe_chain.py:2248`
-  - `wild_igor/igor/tools/pe_chain.py:2250`
-  - `wild_igor/igor/tools/pe_chain.py:2262`
-  - `wild_igor/igor/tools/pe_chain.py:2263`
-  - `wild_igor/igor/tools/pe_chain.py:2266`
-  - `wild_igor/igor/tools/pe_chain.py:2267`
-  - `wild_igor/igor/tools/pe_chain.py:2275`
-  - `wild_igor/igor/tools/pe_chain.py:2284`
-  - `wild_igor/igor/tools/pe_chain.py:2311`
-  - `wild_igor/igor/tools/pe_chain.py:2312`
-  - `wild_igor/igor/tools/pe_chain.py:2315`
-  - `wild_igor/igor/tools/pe_chain.py:2316`
-  - `wild_igor/igor/tools/pe_chain.py:2328`
-  - `wild_igor/igor/tools/pe_chain.py:2329`
-  - `wild_igor/igor/tools/pe_chain.py:2331`
-  - `wild_igor/igor/tools/pe_chain.py:2369`
-  - `wild_igor/igor/tools/pe_chain.py:2386`
-  - `wild_igor/igor/tools/pe_chain.py:2499`
-  - `wild_igor/igor/tools/pe_chain.py:2501`
-  - `wild_igor/igor/tools/pe_chain.py:2504`
-  - `wild_igor/igor/tools/pe_chain.py:2511`
-  - `wild_igor/igor/tools/pe_chain.py:2514`
-  - `wild_igor/igor/tools/pe_chain.py:2517`
-  - `wild_igor/igor/tools/pe_chain.py:2521`
-  - `wild_igor/igor/tools/pe_chain.py:2524`
-  - `wild_igor/igor/tools/pe_chain.py:2527`
-  - `wild_igor/igor/tools/pe_chain.py:2535`
-  - `wild_igor/igor/tools/pe_chain.py:2539`
-  - `wild_igor/igor/tools/pe_chain.py:2549`
-  - `wild_igor/igor/tools/pe_chain.py:2560`
-  - `wild_igor/igor/tools/pe_chain.py:2572`
-  - `wild_igor/igor/tools/pe_chain.py:2574`
-  - `wild_igor/igor/tools/pe_chain.py:2585`
-  - `wild_igor/igor/tools/pe_chain.py:2604`
-  - `wild_igor/igor/tools/pe_chain.py:2610`
-  - `wild_igor/igor/tools/pe_chain.py:2623`
-  - `wild_igor/igor/tools/pe_chain.py:2624`
-  - `wild_igor/igor/tools/pe_chain.py:2631`
-  - `wild_igor/igor/tools/pe_chain.py:2633`
-  - `wild_igor/igor/tools/pe_chain.py:2637`
-  - `wild_igor/igor/tools/pe_chain.py:2640`
-  - `wild_igor/igor/tools/pe_chain.py:2643`
-  - `wild_igor/igor/tools/pe_chain.py:2756`
-  - `wild_igor/igor/tools/pe_chain.py:2759`
-  - `wild_igor/igor/tools/pe_chain.py:2888`
-  - `wild_igor/igor/tools/pe_chain.py:3018`
-  - `wild_igor/igor/tools/pe_chain.py:3187`
-  - `wild_igor/igor/tools/pe_chain.py:3194`
-  - `wild_igor/igor/tools/pe_chain.py:3670`
-  - `wild_igor/igor/tools/pe_chain.py:3672`
-  - `wild_igor/igor/tools/pe_chain.py:3690`
-  - `wild_igor/igor/tools/pe_chain.py:3706`
-  - `wild_igor/igor/tools/pe_chain.py:3707`
-  - `wild_igor/igor/tools/pe_chain.py:3708`
-  - `wild_igor/igor/tools/pe_chain.py:3813`
-  - `wild_igor/igor/tools/pe_chain.py:3850`
-  - `wild_igor/igor/tools/pe_chain.py:3854`
-  - `wild_igor/igor/tools/pe_chain.py:3857`
-  - `wild_igor/igor/tools/pe_chain.py:3858`
-  - `wild_igor/igor/tools/pe_chain.py:3863`
-  - `wild_igor/igor/tools/pe_chain.py:3864`
-  - `wild_igor/igor/tools/pe_chain.py:3923`
-  - `wild_igor/igor/tools/pe_chain.py:3932`
-  - `wild_igor/igor/tools/pe_chain.py:3941`
-  - `wild_igor/igor/tools/pe_chain_debugger.py:113`
   - `wild_igor/igor/tools/persistent_relationships.py:163`
   - `wild_igor/igor/tools/persistent_relationships.py:164`
   - `wild_igor/igor/tools/persistent_relationships.py:186`
@@ -9651,16 +9369,6 @@ Conventions:
   - `wild_igor/igor/tools/schema_runner.py:465`
   - `wild_igor/igor/tools/schema_runner.py:475`
   - `wild_igor/igor/tools/schema_runner.py:479`
-  - `wild_igor/igor/tools/scope_guard.py:169`
-  - `wild_igor/igor/tools/scope_guard.py:170`
-  - `wild_igor/igor/tools/scope_guard.py:171`
-  - `wild_igor/igor/tools/scope_guard.py:179`
-  - `wild_igor/igor/tools/scope_guard.py:182`
-  - `wild_igor/igor/tools/scope_guard.py:184`
-  - `wild_igor/igor/tools/scope_guard.py:206`
-  - `wild_igor/igor/tools/scope_guard.py:207`
-  - `wild_igor/igor/tools/scope_guard.py:209`
-  - `wild_igor/igor/tools/scope_guard.py:245`
   - `wild_igor/igor/tools/self_inspect.py:283`
   - `wild_igor/igor/tools/share_pattern.py:75`
   - `wild_igor/igor/tools/share_pattern.py:76`
@@ -9729,18 +9437,18 @@ Conventions:
   - `wild_igor/igor/tools/worker_foreman.py:63`
   - `wild_igor/igor/tools/worker_foreman.py:68`
   - `wild_igor/igor/tools/worker_foreman.py:70`
-  - `wild_igor/igor/tools/worker_foreman.py:103`
-  - `wild_igor/igor/tools/worker_foreman.py:105`
-  - `wild_igor/igor/tools/worker_foreman.py:120`
-  - `wild_igor/igor/tools/worker_foreman.py:121`
-  - `wild_igor/igor/tools/worker_foreman.py:152`
-  - `wild_igor/igor/tools/worker_foreman.py:203`
-  - `wild_igor/igor/tools/worker_foreman.py:204`
-  - `wild_igor/igor/tools/worker_foreman.py:248`
-  - `wild_igor/igor/tools/worker_foreman.py:249`
-  - `wild_igor/igor/tools/worker_foreman.py:281`
-  - `wild_igor/igor/tools/worker_foreman.py:308`
-  - `wild_igor/igor/tools/worker_foreman.py:310`
+  - `wild_igor/igor/tools/worker_foreman.py:102`
+  - `wild_igor/igor/tools/worker_foreman.py:104`
+  - `wild_igor/igor/tools/worker_foreman.py:111`
+  - `wild_igor/igor/tools/worker_foreman.py:118`
+  - `wild_igor/igor/tools/worker_foreman.py:135`
+  - `wild_igor/igor/tools/worker_foreman.py:136`
+  - `wild_igor/igor/tools/worker_foreman.py:167`
+  - `wild_igor/igor/tools/worker_foreman.py:218`
+  - `wild_igor/igor/tools/worker_foreman.py:219`
+  - `wild_igor/igor/tools/worker_foreman.py:263`
+  - `wild_igor/igor/tools/worker_foreman.py:264`
+  - `wild_igor/igor/tools/worker_foreman.py:296`
   - `wild_igor/igor/web/server.py:83`
   - `wild_igor/igor/web/server.py:84`
   - `wild_igor/igor/web/server.py:85`
@@ -9774,13 +9482,13 @@ Conventions:
 - **Callers** (9):
   - `lab/claudecode/channel.py:314`
   - `tests/test_network_proxy.py:164`
-  - `tests/test_utility_closet_server.py:227`
-  - `tests/test_utility_closet_server.py:253`
-  - `tests/test_utility_closet_server.py:275`
-  - `tests/test_utility_closet_server.py:297`
-  - `tests/test_utility_closet_server.py:319`
-  - `tests/test_utility_closet_server.py:335`
-  - `tests/test_utility_closet_server.py:345`
+  - `tests/test_utility_closet_server.py:233`
+  - `tests/test_utility_closet_server.py:259`
+  - `tests/test_utility_closet_server.py:281`
+  - `tests/test_utility_closet_server.py:303`
+  - `tests/test_utility_closet_server.py:325`
+  - `tests/test_utility_closet_server.py:341`
+  - `tests/test_utility_closet_server.py:351`
 
 ### `NetworkProxy.post_json`
 
@@ -9849,13 +9557,13 @@ Conventions:
 
 ### `adopt_top_queue_ticket`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:657`
+- **Defined:** `wild_igor/igor/tools/ops.py:674`
 - **Callers** (1):
-  - `tests/test_queue_consumer.py:171`
+  - `tests/test_queue_consumer.py:154`
 
 ### `close_goal`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:447`
+- **Defined:** `wild_igor/igor/tools/ops.py:464`
 - **Callers** (5):
   - `tests/test_goal_close_habit.py:68`
   - `tests/test_goal_close_habit.py:70`
@@ -9865,44 +9573,43 @@ Conventions:
 
 ### `close_goal_by_ticket`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:493`
+- **Defined:** `wild_igor/igor/tools/ops.py:510`
 - **Callers** (1):
   - `tests/test_goal_close.py:57`
 
 ### `close_task_by_name`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:545`
+- **Defined:** `wild_igor/igor/tools/ops.py:562`
 - **Callers:** _(none found)_
 
 ### `flush_habit_cache`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:734`
+- **Defined:** `wild_igor/igor/tools/ops.py:698`
 - **Callers:** _(none found)_
 
 ### `goal_adopt`
 
 - **Defined:** `wild_igor/igor/tools/ops.py:186`
-- **Callers** (6):
+- **Callers** (5):
   - `tests/test_goal_graph.py:336`
   - `tests/test_pr_secondary_attractor_nesting.py:76`
   - `tests/test_pr_secondary_attractor_nesting.py:89`
   - `tests/test_pr_secondary_attractor_nesting.py:106`
   - `tests/test_pr_secondary_attractor_nesting.py:130`
-  - `wild_igor/igor/tools/ops.py:725`
 
 ### `goal_close`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:402`
+- **Defined:** `wild_igor/igor/tools/ops.py:419`
 - **Callers:** _(none found)_
 
 ### `goal_fail_active`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:304`
+- **Defined:** `wild_igor/igor/tools/ops.py:321`
 - **Callers:** _(none found)_
 
 ### `goal_scan`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:377`
+- **Defined:** `wild_igor/igor/tools/ops.py:394`
 - **Callers:** _(none found)_
 
 ### `queue_task`
@@ -9914,7 +9621,7 @@ Conventions:
 
 ### `read_active_goal_plan`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1154`
+- **Defined:** `wild_igor/igor/tools/ops.py:1030`
 - **Callers** (4):
   - `tests/test_thread_context_persistence.py:94`
   - `tests/test_thread_context_persistence.py:124`
@@ -9923,22 +9630,14 @@ Conventions:
 
 ### `read_queue_top`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:620`
+- **Defined:** `wild_igor/igor/tools/ops.py:637`
 - **Callers** (2):
-  - `tests/test_queue_consumer.py:77`
-  - `tests/test_queue_consumer.py:136`
-
-### `run_coding_sprint`
-
-- **Defined:** `wild_igor/igor/tools/ops.py:1034`
-- **Callers** (3):
-  - `tests/test_coding_sprint.py:74`
-  - `tests/test_coding_sprint.py:94`
-  - `tests/test_coding_sprint.py:126`
+  - `tests/test_queue_consumer.py:76`
+  - `tests/test_queue_consumer.py:135`
 
 ### `run_tests`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1271`
+- **Defined:** `wild_igor/igor/tools/ops.py:1144`
 - **Callers** (4):
   - `tests/test_run_tests_tool.py:104`
   - `tests/test_run_tests_tool.py:120`
@@ -9957,7 +9656,7 @@ Conventions:
 
 ### `store_plan`
 
-- **Defined:** `wild_igor/igor/tools/ops.py:1124`
+- **Defined:** `wild_igor/igor/tools/ops.py:1000`
 - **Callers** (3):
   - `tests/test_thread_context_persistence.py:32`
   - `tests/test_thread_context_persistence.py:64`
@@ -10136,624 +9835,6 @@ Conventions:
 - **Callers** (1):
   - `wild_igor/igor/tools/palace_metric.py:139`
 
-## `wild_igor.igor.tools.pe_chain`
-
-### `PeChain.pe_claim`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:639`
-- **Callers** (1):
-  - `tests/test_pe_entry_nodes.py:164`
-
-### `PeChain.pe_close_loop`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1849`
-- **Callers** (10):
-  - `tests/test_pe_entry_nodes.py:1203`
-  - `tests/test_pe_entry_nodes.py:1218`
-  - `tests/test_pe_entry_nodes.py:1233`
-  - `tests/test_pe_entry_nodes.py:1258`
-  - `tests/test_pe_entry_nodes.py:1266`
-  - `tests/test_pe_entry_nodes.py:1280`
-  - `wild_igor/igor/tools/pe_chain.py:1915`
-  - `wild_igor/igor/tools/pe_chain.py:1981`
-  - `wild_igor/igor/tools/pe_chain.py:2645`
-  - `wild_igor/igor/tools/pe_chain.py:2709`
-
-### `PeChain.pe_entry_init`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:571`
-- **Callers** (13):
-  - `tests/test_pe_entry_nodes.py:90`
-  - `tests/test_pe_entry_nodes.py:96`
-  - `tests/test_pe_entry_nodes.py:100`
-  - `tests/test_pe_entry_nodes.py:105`
-  - `tests/test_pe_entry_nodes.py:121`
-  - `tests/test_pe_entry_nodes.py:138`
-  - `tests/test_pe_entry_nodes.py:143`
-  - `tests/test_pe_entry_nodes.py:150`
-  - `wild_igor/igor/tools/pe_chain.py:2498`
-  - `wild_igor/igor/tools/pe_chain.py:2655`
-  - `wild_igor/igor/tools/pe_chain.py:3920`
-  - `wild_igor/igor/tools/pe_chain.py:3928`
-  - `wild_igor/igor/tools/pe_chain.py:3938`
-
-### `PeChain.pe_evaluate`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1793`
-- **Callers** (2):
-  - `wild_igor/igor/tools/pe_chain.py:1895`
-  - `wild_igor/igor/tools/pe_chain.py:2705`
-
-### `PeChain.pe_filter`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:892`
-- **Callers** (10):
-  - `tests/test_pe_plan_filter_probe.py:106`
-  - `tests/test_pe_plan_filter_probe.py:111`
-  - `tests/test_pe_plan_filter_probe.py:119`
-  - `tests/test_pe_plan_filter_probe.py:125`
-  - `tests/test_pe_plan_filter_probe.py:131`
-  - `tests/test_pe_plan_filter_probe.py:139`
-  - `tests/test_pe_plan_filter_probe.py:144`
-  - `wild_igor/igor/tools/pe_chain.py:2516`
-  - `wild_igor/igor/tools/pe_chain.py:2673`
-  - `wild_igor/igor/tools/pe_chain.py:3931`
-
-### `PeChain.pe_hypothesize`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1242`
-- **Callers** (12):
-  - `tests/test_pe_chain_priors.py:215`
-  - `tests/test_pe_chain_priors.py:257`
-  - `tests/test_pe_entry_nodes.py:932`
-  - `tests/test_pe_entry_nodes.py:938`
-  - `tests/test_pe_entry_nodes.py:944`
-  - `tests/test_pe_entry_nodes.py:955`
-  - `tests/test_pe_entry_nodes.py:963`
-  - `tests/test_pe_entry_nodes.py:973`
-  - `tests/test_pe_entry_nodes.py:983`
-  - `tests/test_pe_entry_nodes.py:994`
-  - `wild_igor/igor/tools/pe_chain.py:2603`
-  - `wild_igor/igor/tools/pe_chain.py:2693`
-
-### `PeChain.pe_implement`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1481`
-- **Callers** (10):
-  - `tests/test_pe_entry_nodes.py:1014`
-  - `tests/test_pe_entry_nodes.py:1021`
-  - `tests/test_pe_entry_nodes.py:1030`
-  - `tests/test_pe_entry_nodes.py:1035`
-  - `tests/test_pe_entry_nodes.py:1051`
-  - `tests/test_pe_entry_nodes.py:1063`
-  - `wild_igor/igor/tools/pe_chain.py:1911`
-  - `wild_igor/igor/tools/pe_chain.py:1975`
-  - `wild_igor/igor/tools/pe_chain.py:2636`
-  - `wild_igor/igor/tools/pe_chain.py:2697`
-
-### `PeChain.pe_observe`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1086`
-- **Callers** (9):
-  - `tests/test_pe_entry_nodes.py:709`
-  - `tests/test_pe_entry_nodes.py:717`
-  - `tests/test_pe_entry_nodes.py:728`
-  - `tests/test_pe_entry_nodes.py:743`
-  - `tests/test_pe_entry_nodes.py:752`
-  - `tests/test_pe_entry_nodes.py:762`
-  - `tests/test_pe_entry_nodes.py:774`
-  - `wild_igor/igor/tools/pe_chain.py:2523`
-  - `wild_igor/igor/tools/pe_chain.py:2681`
-
-### `PeChain.pe_plan`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:818`
-- **Callers** (9):
-  - `tests/test_pe_plan_filter_probe.py:49`
-  - `tests/test_pe_plan_filter_probe.py:60`
-  - `tests/test_pe_plan_filter_probe.py:69`
-  - `tests/test_pe_plan_filter_probe.py:76`
-  - `tests/test_pe_plan_filter_probe.py:85`
-  - `wild_igor/igor/tools/pe_chain.py:2513`
-  - `wild_igor/igor/tools/pe_chain.py:2669`
-  - `wild_igor/igor/tools/pe_chain.py:3922`
-  - `wild_igor/igor/tools/pe_chain.py:3930`
-
-### `PeChain.pe_probe`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1710`
-- **Callers** (8):
-  - `tests/test_pe_plan_filter_probe.py:161`
-  - `tests/test_pe_plan_filter_probe.py:165`
-  - `tests/test_pe_plan_filter_probe.py:189`
-  - `tests/test_pe_plan_filter_probe.py:213`
-  - `tests/test_pe_plan_filter_probe.py:223`
-  - `wild_igor/igor/tools/pe_chain.py:2642`
-  - `wild_igor/igor/tools/pe_chain.py:2701`
-  - `wild_igor/igor/tools/pe_chain.py:3940`
-
-### `PeChain.pe_read_ticket`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:646`
-- **Callers** (12):
-  - `tests/test_pe_entry_nodes.py:176`
-  - `tests/test_pe_entry_nodes.py:184`
-  - `tests/test_pe_entry_nodes.py:192`
-  - `tests/test_pe_entry_nodes.py:202`
-  - `tests/test_pe_entry_nodes.py:207`
-  - `tests/test_pe_entry_nodes.py:213`
-  - `tests/test_pe_entry_nodes.py:228`
-  - `wild_igor/igor/tools/pe_chain.py:2510`
-  - `wild_igor/igor/tools/pe_chain.py:2665`
-  - `wild_igor/igor/tools/pe_chain.py:3921`
-  - `wild_igor/igor/tools/pe_chain.py:3929`
-  - `wild_igor/igor/tools/pe_chain.py:3939`
-
-### `PeChain.pe_run_bash`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1168`
-- **Callers** (6):
-  - `tests/test_layer4_nodes.py:583`
-  - `tests/test_layer4_nodes.py:589`
-  - `tests/test_layer4_nodes.py:595`
-  - `tests/test_layer4_nodes.py:602`
-  - `tests/test_layer4_nodes.py:607`
-  - `wild_igor/igor/tools/pe_chain.py:2685`
-
-### `PeChain.pe_situate`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:948`
-- **Callers** (15):
-  - `tests/test_pe_entry_nodes.py:344`
-  - `tests/test_pe_entry_nodes.py:362`
-  - `tests/test_pe_entry_nodes.py:371`
-  - `tests/test_pe_entry_nodes.py:378`
-  - `tests/test_pe_entry_nodes.py:384`
-  - `tests/test_pe_entry_nodes.py:437`
-  - `tests/test_pe_entry_nodes.py:460`
-  - `tests/test_pe_entry_nodes.py:476`
-  - `tests/test_pe_entry_nodes.py:491`
-  - `tests/test_pe_entry_nodes.py:1332`
-  - `tests/test_pe_entry_nodes.py:1353`
-  - `tests/test_situate_new_files.py:102`
-  - `tests/test_situate_new_files.py:116`
-  - `wild_igor/igor/tools/pe_chain.py:2520`
-  - `wild_igor/igor/tools/pe_chain.py:2677`
-
-### `PeChain.pe_store_observe_results`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1193`
-- **Callers** (7):
-  - `tests/test_pe_entry_nodes.py:792`
-  - `tests/test_pe_entry_nodes.py:803`
-  - `tests/test_pe_entry_nodes.py:808`
-  - `tests/test_pe_entry_nodes.py:824`
-  - `tests/test_pe_entry_nodes.py:844`
-  - `wild_igor/igor/tools/pe_chain.py:2526`
-  - `wild_igor/igor/tools/pe_chain.py:2689`
-
-### `PeChain.pe_test`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:1573`
-- **Callers** (13):
-  - `tests/test_pe_entry_nodes.py:1086`
-  - `tests/test_pe_entry_nodes.py:1096`
-  - `tests/test_pe_entry_nodes.py:1102`
-  - `tests/test_pe_entry_nodes.py:1113`
-  - `tests/test_pe_entry_nodes.py:1128`
-  - `tests/test_pe_entry_nodes.py:1141`
-  - `tests/test_pe_entry_nodes.py:1154`
-  - `wild_igor/igor/tools/pe_chain.py:1914`
-  - `wild_igor/igor/tools/pe_chain.py:1978`
-  - `wild_igor/igor/tools/pe_chain.py:2534`
-  - `wild_igor/igor/tools/pe_chain.py:2548`
-  - `wild_igor/igor/tools/pe_chain.py:2639`
-  - `wild_igor/igor/tools/pe_chain.py:2713`
-
-### `pe_claim`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2658`
-- **Callers** (1):
-  - `tests/test_pe_entry_nodes.py:164`
-
-### `pe_close_loop`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2708`
-- **Callers** (10):
-  - `tests/test_pe_entry_nodes.py:1203`
-  - `tests/test_pe_entry_nodes.py:1218`
-  - `tests/test_pe_entry_nodes.py:1233`
-  - `tests/test_pe_entry_nodes.py:1258`
-  - `tests/test_pe_entry_nodes.py:1266`
-  - `tests/test_pe_entry_nodes.py:1280`
-  - `wild_igor/igor/tools/pe_chain.py:1915`
-  - `wild_igor/igor/tools/pe_chain.py:1981`
-  - `wild_igor/igor/tools/pe_chain.py:2645`
-  - `wild_igor/igor/tools/pe_chain.py:2709`
-
-### `pe_entry_init`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2654`
-- **Callers** (13):
-  - `tests/test_pe_entry_nodes.py:90`
-  - `tests/test_pe_entry_nodes.py:96`
-  - `tests/test_pe_entry_nodes.py:100`
-  - `tests/test_pe_entry_nodes.py:105`
-  - `tests/test_pe_entry_nodes.py:121`
-  - `tests/test_pe_entry_nodes.py:138`
-  - `tests/test_pe_entry_nodes.py:143`
-  - `tests/test_pe_entry_nodes.py:150`
-  - `wild_igor/igor/tools/pe_chain.py:2498`
-  - `wild_igor/igor/tools/pe_chain.py:2655`
-  - `wild_igor/igor/tools/pe_chain.py:3920`
-  - `wild_igor/igor/tools/pe_chain.py:3928`
-  - `wild_igor/igor/tools/pe_chain.py:3938`
-
-### `pe_evaluate`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2704`
-- **Callers** (2):
-  - `wild_igor/igor/tools/pe_chain.py:1895`
-  - `wild_igor/igor/tools/pe_chain.py:2705`
-
-### `pe_filter`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2672`
-- **Callers** (10):
-  - `tests/test_pe_plan_filter_probe.py:106`
-  - `tests/test_pe_plan_filter_probe.py:111`
-  - `tests/test_pe_plan_filter_probe.py:119`
-  - `tests/test_pe_plan_filter_probe.py:125`
-  - `tests/test_pe_plan_filter_probe.py:131`
-  - `tests/test_pe_plan_filter_probe.py:139`
-  - `tests/test_pe_plan_filter_probe.py:144`
-  - `wild_igor/igor/tools/pe_chain.py:2516`
-  - `wild_igor/igor/tools/pe_chain.py:2673`
-  - `wild_igor/igor/tools/pe_chain.py:3931`
-
-### `pe_hypothesize`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2692`
-- **Callers** (12):
-  - `tests/test_pe_chain_priors.py:215`
-  - `tests/test_pe_chain_priors.py:257`
-  - `tests/test_pe_entry_nodes.py:932`
-  - `tests/test_pe_entry_nodes.py:938`
-  - `tests/test_pe_entry_nodes.py:944`
-  - `tests/test_pe_entry_nodes.py:955`
-  - `tests/test_pe_entry_nodes.py:963`
-  - `tests/test_pe_entry_nodes.py:973`
-  - `tests/test_pe_entry_nodes.py:983`
-  - `tests/test_pe_entry_nodes.py:994`
-  - `wild_igor/igor/tools/pe_chain.py:2603`
-  - `wild_igor/igor/tools/pe_chain.py:2693`
-
-### `pe_implement`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2696`
-- **Callers** (10):
-  - `tests/test_pe_entry_nodes.py:1014`
-  - `tests/test_pe_entry_nodes.py:1021`
-  - `tests/test_pe_entry_nodes.py:1030`
-  - `tests/test_pe_entry_nodes.py:1035`
-  - `tests/test_pe_entry_nodes.py:1051`
-  - `tests/test_pe_entry_nodes.py:1063`
-  - `wild_igor/igor/tools/pe_chain.py:1911`
-  - `wild_igor/igor/tools/pe_chain.py:1975`
-  - `wild_igor/igor/tools/pe_chain.py:2636`
-  - `wild_igor/igor/tools/pe_chain.py:2697`
-
-### `pe_observe`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2680`
-- **Callers** (9):
-  - `tests/test_pe_entry_nodes.py:709`
-  - `tests/test_pe_entry_nodes.py:717`
-  - `tests/test_pe_entry_nodes.py:728`
-  - `tests/test_pe_entry_nodes.py:743`
-  - `tests/test_pe_entry_nodes.py:752`
-  - `tests/test_pe_entry_nodes.py:762`
-  - `tests/test_pe_entry_nodes.py:774`
-  - `wild_igor/igor/tools/pe_chain.py:2523`
-  - `wild_igor/igor/tools/pe_chain.py:2681`
-
-### `pe_plan`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2668`
-- **Callers** (9):
-  - `tests/test_pe_plan_filter_probe.py:49`
-  - `tests/test_pe_plan_filter_probe.py:60`
-  - `tests/test_pe_plan_filter_probe.py:69`
-  - `tests/test_pe_plan_filter_probe.py:76`
-  - `tests/test_pe_plan_filter_probe.py:85`
-  - `wild_igor/igor/tools/pe_chain.py:2513`
-  - `wild_igor/igor/tools/pe_chain.py:2669`
-  - `wild_igor/igor/tools/pe_chain.py:3922`
-  - `wild_igor/igor/tools/pe_chain.py:3930`
-
-### `pe_probe`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2700`
-- **Callers** (8):
-  - `tests/test_pe_plan_filter_probe.py:161`
-  - `tests/test_pe_plan_filter_probe.py:165`
-  - `tests/test_pe_plan_filter_probe.py:189`
-  - `tests/test_pe_plan_filter_probe.py:213`
-  - `tests/test_pe_plan_filter_probe.py:223`
-  - `wild_igor/igor/tools/pe_chain.py:2642`
-  - `wild_igor/igor/tools/pe_chain.py:2701`
-  - `wild_igor/igor/tools/pe_chain.py:3940`
-
-### `pe_read_ticket`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2664`
-- **Callers** (12):
-  - `tests/test_pe_entry_nodes.py:176`
-  - `tests/test_pe_entry_nodes.py:184`
-  - `tests/test_pe_entry_nodes.py:192`
-  - `tests/test_pe_entry_nodes.py:202`
-  - `tests/test_pe_entry_nodes.py:207`
-  - `tests/test_pe_entry_nodes.py:213`
-  - `tests/test_pe_entry_nodes.py:228`
-  - `wild_igor/igor/tools/pe_chain.py:2510`
-  - `wild_igor/igor/tools/pe_chain.py:2665`
-  - `wild_igor/igor/tools/pe_chain.py:3921`
-  - `wild_igor/igor/tools/pe_chain.py:3929`
-  - `wild_igor/igor/tools/pe_chain.py:3939`
-
-### `pe_run_bash`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2684`
-- **Callers** (6):
-  - `tests/test_layer4_nodes.py:583`
-  - `tests/test_layer4_nodes.py:589`
-  - `tests/test_layer4_nodes.py:595`
-  - `tests/test_layer4_nodes.py:602`
-  - `tests/test_layer4_nodes.py:607`
-  - `wild_igor/igor/tools/pe_chain.py:2685`
-
-### `pe_situate`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2676`
-- **Callers** (15):
-  - `tests/test_pe_entry_nodes.py:344`
-  - `tests/test_pe_entry_nodes.py:362`
-  - `tests/test_pe_entry_nodes.py:371`
-  - `tests/test_pe_entry_nodes.py:378`
-  - `tests/test_pe_entry_nodes.py:384`
-  - `tests/test_pe_entry_nodes.py:437`
-  - `tests/test_pe_entry_nodes.py:460`
-  - `tests/test_pe_entry_nodes.py:476`
-  - `tests/test_pe_entry_nodes.py:491`
-  - `tests/test_pe_entry_nodes.py:1332`
-  - `tests/test_pe_entry_nodes.py:1353`
-  - `tests/test_situate_new_files.py:102`
-  - `tests/test_situate_new_files.py:116`
-  - `wild_igor/igor/tools/pe_chain.py:2520`
-  - `wild_igor/igor/tools/pe_chain.py:2677`
-
-### `pe_store_observe_results`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2688`
-- **Callers** (7):
-  - `tests/test_pe_entry_nodes.py:792`
-  - `tests/test_pe_entry_nodes.py:803`
-  - `tests/test_pe_entry_nodes.py:808`
-  - `tests/test_pe_entry_nodes.py:824`
-  - `tests/test_pe_entry_nodes.py:844`
-  - `wild_igor/igor/tools/pe_chain.py:2526`
-  - `wild_igor/igor/tools/pe_chain.py:2689`
-
-### `pe_test`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:2712`
-- **Callers** (13):
-  - `tests/test_pe_entry_nodes.py:1086`
-  - `tests/test_pe_entry_nodes.py:1096`
-  - `tests/test_pe_entry_nodes.py:1102`
-  - `tests/test_pe_entry_nodes.py:1113`
-  - `tests/test_pe_entry_nodes.py:1128`
-  - `tests/test_pe_entry_nodes.py:1141`
-  - `tests/test_pe_entry_nodes.py:1154`
-  - `wild_igor/igor/tools/pe_chain.py:1914`
-  - `wild_igor/igor/tools/pe_chain.py:1978`
-  - `wild_igor/igor/tools/pe_chain.py:2534`
-  - `wild_igor/igor/tools/pe_chain.py:2548`
-  - `wild_igor/igor/tools/pe_chain.py:2639`
-  - `wild_igor/igor/tools/pe_chain.py:2713`
-
-### `run_engram_cursor`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:3788`
-- **Callers:** _(none found)_
-
-### `run_pe_chain`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:3841`
-- **Callers:** _(none found)_
-
-### `run_pe_entry_chain`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain.py:3782`
-- **Callers** (5):
-  - `tests/test_pe_entry_nodes.py:268`
-  - `tests/test_pe_entry_nodes.py:285`
-  - `tests/test_pe_entry_nodes.py:296`
-  - `tests/test_pe_entry_nodes.py:325`
-  - `wild_igor/igor/tools/pe_chain.py:3848`
-
-## `wild_igor.igor.tools.pe_chain_debugger`
-
-### `DebugSession.next_step_name`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:96`
-- **Callers** (1):
-  - `wild_igor/igor/tools/pe_chain_debugger.py:140`
-
-### `abandon`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:295`
-- **Callers:** _(none found)_
-
-### `history`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:282`
-- **Callers:** _(none found)_
-
-### `list_sessions`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:302`
-- **Callers:** _(none found)_
-
-### `snapshot`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:273`
-- **Callers** (19):
-  - `lab/utility_closet/system_proxy.py:196`
-  - `lab/utility_closet/system_proxy.py:199`
-  - `lab/utility_closet/system_proxy.py:202`
-  - `lab/utility_closet/system_proxy.py:208`
-  - `lab/utility_closet/system_proxy.py:214`
-  - `lab/utility_closet/system_proxy.py:247`
-  - `tests/test_system_proxy.py:62`
-  - `tests/test_system_proxy.py:94`
-  - `tests/test_system_proxy.py:95`
-  - `tests/test_system_proxy.py:100`
-  - `tests/test_system_proxy.py:101`
-  - `wild_igor/igor/cognition/milieu.py:572`
-  - `wild_igor/igor/cognition/milieu.py:622`
-  - `wild_igor/igor/cognition/milieu.py:650`
-  - `wild_igor/igor/cognition/milieu.py:732`
-  - `wild_igor/igor/cognition/milieu.py:780`
-  - `wild_igor/igor/cognition/milieu.py:927`
-  - `wild_igor/igor/cognition/push_sources.py:1014`
-  - `wild_igor/igor/cognition/push_sources.py:1025`
-
-### `start`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:187`
-- **Callers** (70):
-  - `lab/claudecode/audit_findings_to_tickets.py:115`
-  - `lab/claudecode/audit_findings_to_tickets.py:117`
-  - `lab/claudecode/channel.py:58`
-  - `lab/claudecode/utility_closet_server.py:1236`
-  - `lab/utility_closet/rack.py:126`
-  - `tests/test_adc_shim.py:102`
-  - `tests/test_adc_shim.py:116`
-  - `tests/test_adc_shim.py:142`
-  - `tests/test_boredom_concurrency.py:36`
-  - `tests/test_boredom_concurrency.py:63`
-  - `tests/test_boredom_concurrency.py:88`
-  - `tests/test_comms.py:186`
-  - `tests/test_daemon_supervisor.py:35`
-  - `tests/test_daemon_supervisor.py:42`
-  - `tests/test_igor_datacenter_boot.py:70`
-  - `tests/test_igor_datacenter_boot.py:100`
-  - `tests/test_igor_datacenter_boot.py:119`
-  - `tests/test_matter_shelf.py:90`
-  - `tests/test_node_id.py:128`
-  - `tests/test_pe_chain_consult.py:371`
-  - `tests/test_pe_chain_consult.py:397`
-  - `tests/test_predictive_coding.py:64`
-  - `tests/test_predictive_coding.py:67`
-  - `tests/test_predictive_coding.py:213`
-  - `tests/test_rack.py:87`
-  - `tests/test_rack.py:220`
-  - `tests/test_training_corpus_lock.py:42`
-  - `tests/test_training_corpus_lock.py:43`
-  - `tests/test_training_corpus_lock.py:63`
-  - `tests/test_training_corpus_lock.py:64`
-  - `wild_igor/igor/boot_check.py:190`
-  - `wild_igor/igor/cognition/chunker.py:159`
-  - `wild_igor/igor/cognition/coa.py:135`
-  - `wild_igor/igor/cognition/coa.py:404`
-  - `wild_igor/igor/cognition/consolidation.py:351`
-  - `wild_igor/igor/cognition/daemon_supervisor.py:241`
-  - `wild_igor/igor/cognition/job_manager.py:292`
-  - `wild_igor/igor/cognition/job_manager.py:311`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:379`
-  - `wild_igor/igor/cognition/reasoners/ollama_reasoner.py:642`
-  - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:540`
-  - `wild_igor/igor/cognition/reasoners/openrouter_reasoner.py:596`
-  - `wild_igor/igor/cognition/shadow_reasoner.py:249`
-  - `wild_igor/igor/cognition/thalamus.py:55`
-  - `wild_igor/igor/main.py:741`
-  - `wild_igor/igor/main.py:754`
-  - `wild_igor/igor/main.py:925`
-  - `wild_igor/igor/main.py:2535`
-  - `wild_igor/igor/main.py:3079`
-  - `wild_igor/igor/main.py:3147`
-  - `wild_igor/igor/main.py:6520`
-  - `wild_igor/igor/main.py:6901`
-  - `wild_igor/igor/main.py:6965`
-  - `wild_igor/igor/main.py:7019`
-  - `wild_igor/igor/main.py:7077`
-  - `wild_igor/igor/main.py:7653`
-  - `wild_igor/igor/main.py:7695`
-  - `wild_igor/igor/tools/browser.py:87`
-  - `wild_igor/igor/tools/ebook_reader.py:795`
-  - `wild_igor/igor/tools/ebook_reader.py:1664`
-  - `wild_igor/igor/tools/pe_chain.py:3175`
-  - `wild_igor/igor/tools/pe_chain_debugger.py:330`
-  - `wild_igor/igor/tools/preflight_heal.py:122`
-  - `wild_igor/igor/tools/preflight_heal.py:123`
-  - `wild_igor/igor/tools/skill_importer.py:77`
-  - `wild_igor/igor/tools/thread_anchor.py:52`
-  - `wild_igor/igor/tools/want_tracker.py:159`
-  - `wild_igor/igor/web/adc_shim.py:191`
-  - `wild_igor/igor/web/server.py:123`
-  - `wild_igor/igor/web/utility_closet_client.py:401`
-
-### `step_names`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:78`
-- **Callers:** _(none found)_
-
-### `step_next`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_debugger.py:247`
-- **Callers** (1):
-  - `wild_igor/igor/tools/pe_chain_debugger.py:338`
-
-## `wild_igor.igor.tools.pe_chain_priors`
-
-### `append_prior`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_priors.py:65`
-- **Callers** (3):
-  - `tests/test_pe_chain_priors.py:24`
-  - `tests/test_pe_chain_priors.py:38`
-  - `tests/test_pe_chain_priors.py:51`
-
-### `build_priors_prompt_block`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_priors.py:125`
-- **Callers** (2):
-  - `tests/test_pe_chain_priors.py:111`
-  - `tests/test_pe_chain_priors.py:136`
-
-### `get_top_priors`
-
-- **Defined:** `wild_igor/igor/tools/pe_chain_priors.py:98`
-- **Callers** (3):
-  - `tests/test_pe_chain_priors.py:90`
-  - `tests/test_pe_chain_priors.py:102`
-  - `wild_igor/igor/tools/pe_chain_priors.py:130`
-
-## `wild_igor.igor.tools.pe_evaluator`
-
-### `evaluate_sprint_outcome`
-
-- **Defined:** `wild_igor/igor/tools/pe_evaluator.py:41`
-- **Callers** (1):
-  - `wild_igor/igor/tools/pe_chain.py:1834`
-
-### `extract_test_plan`
-
-- **Defined:** `wild_igor/igor/tools/pe_evaluator.py:33`
-- **Callers** (1):
-  - `wild_igor/igor/tools/pe_evaluator.py:64`
-
 ## `wild_igor.igor.tools.persistent_relationships`
 
 ### `pr_compute_frame_salience`
@@ -10901,82 +9982,6 @@ Conventions:
 - **Defined:** `wild_igor/igor/tools/pr_consolidation.py:197`
 - **Callers** (1):
   - `wild_igor/igor/cognition/pr_consolidation_source.py:74`
-
-## `wild_igor.igor.tools.preflight_heal`
-
-### `Recognizer.matches`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:65`
-- **Callers** (5):
-  - `tests/test_preflight_heal.py:61`
-  - `tests/test_preflight_heal.py:65`
-  - `tests/test_preflight_heal.py:69`
-  - `tests/test_preflight_heal.py:73`
-  - `wild_igor/igor/tools/preflight_heal.py:150`
-
-### `Recognizer.remedy`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:69`
-- **Callers** (5):
-  - `tests/test_preflight_heal.py:96`
-  - `tests/test_preflight_heal.py:118`
-  - `tests/test_preflight_heal.py:123`
-  - `tests/test_preflight_heal.py:129`
-  - `wild_igor/igor/tools/preflight_heal.py:152`
-
-### `SocketRecvNoMockRecognizer.matches`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:96`
-- **Callers** (5):
-  - `tests/test_preflight_heal.py:61`
-  - `tests/test_preflight_heal.py:65`
-  - `tests/test_preflight_heal.py:69`
-  - `tests/test_preflight_heal.py:73`
-  - `wild_igor/igor/tools/preflight_heal.py:150`
-
-### `SocketRecvNoMockRecognizer.remedy`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:99`
-- **Callers** (5):
-  - `tests/test_preflight_heal.py:96`
-  - `tests/test_preflight_heal.py:118`
-  - `tests/test_preflight_heal.py:123`
-  - `tests/test_preflight_heal.py:129`
-  - `wild_igor/igor/tools/preflight_heal.py:152`
-
-### `apply_heal`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:187`
-- **Callers** (3):
-  - `tests/test_preflight_heal.py:156`
-  - `tests/test_preflight_heal.py:174`
-  - `wild_igor/igor/tools/preflight_heal.py:246`
-
-### `classify`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:141`
-- **Callers** (8):
-  - `lab/claudecode/audit_cognition_modules.py:262`
-  - `lab/claudecode/audit_immobile_tickets.py:127`
-  - `lab/claudecode/audit_ticket_shape.py:150`
-  - `lab/tools/scan_ebooks.py:381`
-  - `tests/test_preflight_heal.py:138`
-  - `tests/test_preflight_heal.py:144`
-  - `tests/test_preflight_heal.py:155`
-  - `wild_igor/igor/tools/preflight_heal.py:243`
-
-### `commit_heal`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:201`
-- **Callers** (1):
-  - `wild_igor/igor/tools/preflight_heal.py:250`
-
-### `heal_and_commit`
-
-- **Defined:** `wild_igor/igor/tools/preflight_heal.py:241`
-- **Callers** (2):
-  - `tests/test_preflight_heal.py:240`
-  - `tests/test_preflight_heal.py:259`
 
 ## `wild_igor.igor.tools.rate_limiter`
 
@@ -11134,8 +10139,8 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/reading_engine.py:181`
 - **Callers** (2):
-  - `lab/claudecode/reading_campaign.py:592`
-  - `lab/claudecode/reading_campaign.py:611`
+  - `lab/claudecode/reading_campaign.py:588`
+  - `lab/claudecode/reading_campaign.py:607`
 
 ### `write_run_log_header`
 
@@ -11331,67 +10336,52 @@ Conventions:
 - **Callers** (1):
   - `wild_igor/igor/tools/schema_runner.py:186`
 
-## `wild_igor.igor.tools.scope_guard`
-
-### `run_scope_guard`
-
-- **Defined:** `wild_igor/igor/tools/scope_guard.py:160`
-- **Callers** (8):
-  - `tests/test_pe_chain_priors.py:171`
-  - `tests/test_scope_guard.py:81`
-  - `tests/test_scope_guard.py:87`
-  - `tests/test_scope_guard.py:95`
-  - `tests/test_scope_guard.py:103`
-  - `tests/test_scope_guard.py:111`
-  - `tests/test_scope_guard.py:120`
-  - `tests/test_scope_guard.py:129`
-
 ## `wild_igor.igor.tools.seed_cc_direction_habit`
 
 ### `seed`
 
 - **Defined:** `wild_igor/igor/tools/seed_cc_direction_habit.py:21`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -11407,46 +10397,46 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/seed_coding_standards.py:112`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -11470,46 +10460,46 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/seed_inhibit_mid_conv_greeting.py:29`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -11525,46 +10515,46 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/seed_persistent_relationships.py:61`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -11580,46 +10570,46 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/seed_reply_obligation_look.py:38`
 - **Callers** (48):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
   - `wild_igor/igor/tools/ebook_drm/kindlekey.py:674`
   - `wild_igor/igor/tools/seed_cc_direction_habit.py:85`
@@ -11635,46 +10625,46 @@ Conventions:
 
 - **Defined:** `wild_igor/igor/tools/seed_strategic_goals.py:93`
 - **Callers** (50):
-  - `lab/claudecode/seed_code_a_ticket.py:54`
-  - `lab/claudecode/seed_code_a_ticket.py:104`
+  - `lab/claudecode/seed_code_a_ticket.py:50`
+  - `lab/claudecode/seed_code_a_ticket.py:100`
   - `lab/claudecode/seed_coding_engrams.py:175`
-  - `lab/claudecode/seed_ef_questions_tree.py:70`
-  - `lab/claudecode/seed_ef_questions_tree.py:102`
-  - `lab/claudecode/seed_ef_questions_tree.py:130`
-  - `lab/claudecode/seed_ef_questions_tree.py:159`
-  - `lab/claudecode/seed_ef_questions_tree.py:192`
+  - `lab/claudecode/seed_ef_questions_tree.py:66`
+  - `lab/claudecode/seed_ef_questions_tree.py:98`
+  - `lab/claudecode/seed_ef_questions_tree.py:126`
+  - `lab/claudecode/seed_ef_questions_tree.py:155`
+  - `lab/claudecode/seed_ef_questions_tree.py:188`
   - `lab/claudecode/seed_foreman_habit.py:195`
   - `lab/claudecode/seed_greeting_space.py:287`
-  - `lab/claudecode/seed_layer3_constrain.py:379`
-  - `lab/claudecode/seed_layer3_decompose.py:390`
-  - `lab/claudecode/seed_layer3_hypothesize.py:392`
-  - `lab/claudecode/seed_layer3_observe.py:392`
-  - `lab/claudecode/seed_layer3_parse_goal.py:341`
-  - `lab/claudecode/seed_layer3_replan.py:385`
-  - `lab/claudecode/seed_layer3_scope_check.py:371`
-  - `lab/claudecode/seed_layer3_situate.py:360`
-  - `lab/claudecode/seed_layer4_patch_file.py:217`
-  - `lab/claudecode/seed_layer4_read_codebase.py:263`
-  - `lab/claudecode/seed_layer4_run_bash.py:218`
-  - `lab/claudecode/seed_layer4_verify_result.py:218`
-  - `lab/claudecode/seed_layer4_write_test.py:239`
-  - `lab/claudecode/seed_output_training_habit.py:92`
-  - `lab/claudecode/seed_pattern_extractor_habits.py:217`
-  - `lab/claudecode/seed_self_training_habit.py:94`
-  - `lab/claudecode/seed_subsystem_index.py:119`
+  - `lab/claudecode/seed_layer3_constrain.py:376`
+  - `lab/claudecode/seed_layer3_decompose.py:387`
+  - `lab/claudecode/seed_layer3_hypothesize.py:389`
+  - `lab/claudecode/seed_layer3_observe.py:389`
+  - `lab/claudecode/seed_layer3_parse_goal.py:338`
+  - `lab/claudecode/seed_layer3_replan.py:382`
+  - `lab/claudecode/seed_layer3_scope_check.py:368`
+  - `lab/claudecode/seed_layer3_situate.py:357`
+  - `lab/claudecode/seed_layer4_patch_file.py:214`
+  - `lab/claudecode/seed_layer4_read_codebase.py:260`
+  - `lab/claudecode/seed_layer4_run_bash.py:215`
+  - `lab/claudecode/seed_layer4_verify_result.py:215`
+  - `lab/claudecode/seed_layer4_write_test.py:236`
+  - `lab/claudecode/seed_output_training_habit.py:89`
+  - `lab/claudecode/seed_pattern_extractor_habits.py:212`
+  - `lab/claudecode/seed_self_training_habit.py:91`
+  - `lab/claudecode/seed_subsystem_index.py:115`
   - `lab/claudecode/seed_templates.py:1733`
-  - `lab/claudecode/seed_tool_facia.py:232`
-  - `lab/claudecode/seed_tool_facia.py:280`
-  - `lab/claudecode/seed_topics_tree.py:72`
-  - `lab/claudecode/seed_topics_tree.py:103`
-  - `lab/claudecode/seed_topics_tree.py:129`
-  - `lab/claudecode/seed_topics_tree.py:156`
-  - `lab/claudecode/seed_topics_tree.py:182`
-  - `lab/claudecode/seed_topics_tree.py:207`
-  - `lab/claudecode/seed_topics_tree.py:233`
-  - `lab/claudecode/seed_topics_tree.py:258`
-  - `lab/claudecode/seed_topics_tree.py:285`
-  - `lab/claudecode/seed_topics_tree.py:312`
+  - `lab/claudecode/seed_tool_facia.py:228`
+  - `lab/claudecode/seed_tool_facia.py:276`
+  - `lab/claudecode/seed_topics_tree.py:68`
+  - `lab/claudecode/seed_topics_tree.py:99`
+  - `lab/claudecode/seed_topics_tree.py:125`
+  - `lab/claudecode/seed_topics_tree.py:152`
+  - `lab/claudecode/seed_topics_tree.py:178`
+  - `lab/claudecode/seed_topics_tree.py:203`
+  - `lab/claudecode/seed_topics_tree.py:229`
+  - `lab/claudecode/seed_topics_tree.py:254`
+  - `lab/claudecode/seed_topics_tree.py:281`
+  - `lab/claudecode/seed_topics_tree.py:308`
   - `tests/test_goal_graph.py:132`
   - `tests/test_goal_graph.py:133`
   - `wild_igor/igor/tools/ebook_drm/aescbc.py:486`
@@ -12067,38 +11057,37 @@ Conventions:
 
 ### `adopt_next_ticket`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:287`
-- **Callers** (2):
-  - `wild_igor/igor/tools/worker_foreman.py:109`
-  - `wild_igor/igor/tools/worker_foreman.py:477`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:302`
+- **Callers** (1):
+  - `wild_igor/igor/tools/worker_foreman.py:435`
 
 ### `check_worker_queue`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:191`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:206`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:395`
+  - `wild_igor/igor/tools/worker_foreman.py:353`
 
 ### `foreman_scan`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:230`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:245`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:448`
+  - `wild_igor/igor/tools/worker_foreman.py:406`
 
 ### `launch_next_worker`
 
 - **Defined:** `wild_igor/igor/tools/worker_foreman.py:73`
 - **Callers** (2):
-  - `wild_igor/igor/tools/worker_foreman.py:253`
-  - `wild_igor/igor/tools/worker_foreman.py:379`
+  - `wild_igor/igor/tools/worker_foreman.py:268`
+  - `wild_igor/igor/tools/worker_foreman.py:337`
 
 ### `queue_pending_count`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:273`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:288`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:462`
+  - `wild_igor/igor/tools/worker_foreman.py:420`
 
 ### `record_worker_closure`
 
-- **Defined:** `wild_igor/igor/tools/worker_foreman.py:217`
+- **Defined:** `wild_igor/igor/tools/worker_foreman.py:232`
 - **Callers** (1):
-  - `wild_igor/igor/tools/worker_foreman.py:428`
+  - `wild_igor/igor/tools/worker_foreman.py:386`
