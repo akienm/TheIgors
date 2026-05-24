@@ -22,9 +22,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# cc_queue.py was migrated to ADC (T-lab-migration-to-agent-datacenter); import directly
+# cc_queue.py lives in UnseenUniversity (renamed from agent_datacenter); import directly
 # instead of spawning a subprocess with the old hardcoded ~/TheIgors path.
-sys.path.insert(0, "/home/akien/dev/src/agent_datacenter")
+sys.path.insert(0, "/home/akien/dev/src/UnseenUniversity")
 from lab.claudecode import cc_queue as _ccq  # noqa: E402
 
 REPO = "akienm/TheIgors"
