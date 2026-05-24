@@ -1,7 +1,7 @@
 # D-rename-adc-to-unseen-university-2026-05-24
-**title:** Rename UnseenUniversity repo to UnseenUniversity
+**title:** Rename agent_datacenter repo to UnseenUniversity
 **date:** 2026-05-24
-**status:** open
+**status:** closed
 **spawned_tickets:** T-gh-rename-adc-to-uu, T-codebase-refs-adc-to-uu, T-local-dir-rename-adc-to-uu, T-consequence-rename-adc-to-uu
 
 ## Hypothesis
