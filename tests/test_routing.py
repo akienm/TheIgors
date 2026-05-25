@@ -10,7 +10,6 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
 from lab.utility_closet.machine_manager import MachineRecord
 
@@ -180,7 +179,7 @@ class TestRoute(unittest.TestCase):
 
     def _route(self, machines, healthy_hosts=None, env_override=""):
         """Run route("tier2") with mocked machine list and health."""
-        from igor.cognition import cluster_router
+        from devices.igor.cognition import cluster_router
 
         if healthy_hosts is None:
             # All online machines are healthy by default
@@ -204,14 +203,14 @@ class TestRoute(unittest.TestCase):
                     return _real(hostname)
 
         with patch(
-            "igor.cognition.cluster_router.get_ranked_machines", return_value=machines
+            "devices.igor.cognition.cluster_router.get_ranked_machines", return_value=machines
         ):
             with patch(
-                "igor.cognition.cluster_router._is_ollama_healthy",
+                "devices.igor.cognition.cluster_router._is_ollama_healthy",
                 side_effect=_fake_healthy,
             ):
                 with patch(
-                    "igor.cognition.cluster_router.is_in_use", side_effect=_fake_in_use
+                    "devices.igor.cognition.cluster_router.is_in_use", side_effect=_fake_in_use
                 ):
                     with patch.dict(
                         "os.environ", {"IGOR_INFERENCE_OVERRIDE": env_override}
@@ -275,7 +274,7 @@ class TestRoute(unittest.TestCase):
         # 2026-04-18: post-collapse, extraction resolves to ollama_model
         # (the single local model on the machine), regardless of whether
         # an ollama_model_batch happens to be set on older rows.
-        from igor.cognition import cluster_router
+        from devices.igor.cognition import cluster_router
 
         machines = [
             _machine(
@@ -287,13 +286,13 @@ class TestRoute(unittest.TestCase):
             ),
         ]
         with patch(
-            "igor.cognition.cluster_router.get_ranked_machines", return_value=machines
+            "devices.igor.cognition.cluster_router.get_ranked_machines", return_value=machines
         ):
             with patch(
-                "igor.cognition.cluster_router._is_ollama_healthy", return_value=True
+                "devices.igor.cognition.cluster_router._is_ollama_healthy", return_value=True
             ):
                 with patch(
-                    "igor.cognition.cluster_router.is_in_use", return_value=False
+                    "devices.igor.cognition.cluster_router.is_in_use", return_value=False
                 ):
                     host, model = cluster_router.route("extraction")
         self.assertEqual(model, "qwen2.5:7b")
@@ -304,20 +303,20 @@ class TestRoute(unittest.TestCase):
 
 class TestRouteBatch(unittest.TestCase):
     def _route_batch(self, machines, n, healthy_hosts=None):
-        from igor.cognition import cluster_router
+        from devices.igor.cognition import cluster_router
 
         if healthy_hosts is None:
             healthy_hosts = {m.ollama_host for m in machines if m.status == "online"}
 
         with patch(
-            "igor.cognition.cluster_router.get_ranked_machines", return_value=machines
+            "devices.igor.cognition.cluster_router.get_ranked_machines", return_value=machines
         ):
             with patch(
-                "igor.cognition.cluster_router._is_ollama_healthy",
+                "devices.igor.cognition.cluster_router._is_ollama_healthy",
                 side_effect=lambda h: h in healthy_hosts,
             ):
                 with patch(
-                    "igor.cognition.cluster_router.is_in_use", return_value=False
+                    "devices.igor.cognition.cluster_router.is_in_use", return_value=False
                 ):
                     return cluster_router.route_batch(n, "extraction")
 

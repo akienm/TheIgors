@@ -16,7 +16,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from wild_igor.tools.swadl_flows.gmail import GmailFlow, MessageSummary
+from devices.igor.tools.swadl_flows.gmail import GmailFlow, MessageSummary
 
 # ── send_email ─────────────────────────────────────────────────────────────
 

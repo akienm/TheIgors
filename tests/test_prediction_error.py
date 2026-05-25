@@ -21,20 +21,19 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch, call
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
 # ── stub heavy imports before NE import ──────────────────────────────────────
 
 def _stub_modules():
     stubs = {
-        "igor.cognition.reasoning_cache": MagicMock(get=lambda *a: None, put=lambda *a: None),
-        "igor.cognition.forensic_logger": MagicMock(
+        "devices.igor.cognition.reasoning_cache": MagicMock(get=lambda *a: None, put=lambda *a: None),
+        "devices.igor.cognition.forensic_logger": MagicMock(
             log_ne_run=lambda **kw: None,
             cts=lambda: "",
             log_error=lambda **kw: None,
         ),
-        "igor.cognition.milieu": MagicMock(get=MagicMock(return_value=None)),
-        "igor.cognition.inference_gateway": MagicMock(),
+        "devices.igor.cognition.milieu": MagicMock(get=MagicMock(return_value=None)),
+        "devices.igor.cognition.inference_gateway": MagicMock(),
     }
     for name, stub in stubs.items():
         sys.modules.setdefault(name, stub)
@@ -43,7 +42,7 @@ _stub_modules()
 
 # ── import NE internals directly (no live DB needed) ─────────────────────────
 
-from igor.cognition.narrative_engine import (
+from devices.igor.cognition.narrative_engine import (
     NarrativeEngine,
     _PE_HEAT_THRESHOLD,
     _PE_REINFORCE_DELTA,
@@ -191,8 +190,8 @@ class TestApplyOutputReturnsPromotedIds(unittest.TestCase):
         # Patch milieu import inside _apply_output
         milieu_mock = MagicMock()
         milieu_mock.get.return_value = None
-        with patch.dict(sys.modules, {"igor.cognition.milieu": milieu_mock}):
-            from igor.memory.models import Memory, MemoryType
+        with patch.dict(sys.modules, {"devices.igor.cognition.milieu": milieu_mock}):
+            from devices.igor.memory.models import Memory, MemoryType
             result_dict = {
                 "summary_csb": "test",
                 "salience_updates": [],

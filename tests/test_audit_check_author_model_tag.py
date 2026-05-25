@@ -90,9 +90,16 @@ class TestIsRecognizedToken:
 
 
 class TestIsEnforcedPath:
-    def test_wild_igor_py_enforced(self, tmp_path):
-        # Create a path under wild_igor/
-        target = REPO_ROOT / "wild_igor" / "igor" / "_synthetic_for_test.py"
+    def test_devices_igor_py_enforced(self, tmp_path):
+        # Create a path under devices/igor/
+        from pathlib import Path
+
+        target = (
+            Path("/home/akien/dev/src/UnseenUniversity")
+            / "devices"
+            / "igor"
+            / "_synthetic_for_test.py"
+        )
         assert is_enforced_path(target) is True
 
     def test_lab_utility_closet_py_enforced(self):

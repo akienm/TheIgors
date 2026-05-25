@@ -33,9 +33,8 @@ import unittest.mock as mock
 from io import BytesIO
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
-from igor.tools.network_proxy import HostStats, NetworkProxy, _extract_host
+from devices.igor.tools.network_proxy import HostStats, NetworkProxy, _extract_host
 
 # ── HostStats unit tests ──────────────────────────────────────────────────────
 
@@ -132,7 +131,7 @@ class TestNetworkProxy(unittest.TestCase):
         px = NetworkProxy()
         mock_resp = _make_mock_resp(b'{"ok": true}')
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
         ):
             result = px.get("https://example.com/ping")
         self.assertEqual(result, b'{"ok": true}')
@@ -145,7 +144,7 @@ class TestNetworkProxy(unittest.TestCase):
     def test_get_failure_returns_none(self):
         px = NetworkProxy()
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen",
+            "devices.igor.tools.network_proxy.urllib.request.urlopen",
             side_effect=OSError("connection refused"),
         ):
             result = px.get("https://down.example.com/ping")
@@ -159,7 +158,7 @@ class TestNetworkProxy(unittest.TestCase):
         px = NetworkProxy()
         mock_resp = _make_mock_resp(b"pong")
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
         ):
             result = px.post("https://api.example.com/do", b'{"x":1}')
         self.assertEqual(result, b"pong")
@@ -172,7 +171,7 @@ class TestNetworkProxy(unittest.TestCase):
         payload = {"answer": 42}
         mock_resp = _make_mock_resp(json.dumps(payload).encode())
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
         ):
             result = px.post_json("https://api.example.com/json", {"q": "hi"})
         self.assertEqual(result, {"answer": 42})
@@ -181,7 +180,7 @@ class TestNetworkProxy(unittest.TestCase):
         px = NetworkProxy()
         mock_resp = _make_mock_resp(b"not json at all")
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
         ):
             result = px.post_json("https://api.example.com/bad", {})
         self.assertIsNone(result)
@@ -189,7 +188,7 @@ class TestNetworkProxy(unittest.TestCase):
     def test_post_json_returns_none_on_error(self):
         px = NetworkProxy()
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen",
+            "devices.igor.tools.network_proxy.urllib.request.urlopen",
             side_effect=OSError("timeout"),
         ):
             result = px.post_json("https://api.example.com/err", {})
@@ -200,11 +199,11 @@ class TestNetworkProxy(unittest.TestCase):
         mock_resp_a = _make_mock_resp(b"a")
         mock_resp_b = _make_mock_resp(b"b")
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp_a
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp_a
         ):
             px.get("https://alpha.com/x")
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp_b
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp_b
         ):
             px.get("https://beta.com/x")
             px.get("https://beta.com/y")
@@ -217,7 +216,7 @@ class TestNetworkProxy(unittest.TestCase):
         px = NetworkProxy()
         mock_resp = _make_mock_resp(b"ok")
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
         ):
             px.get("https://example.com/ping")
         stats = px.host_stats()
@@ -238,7 +237,7 @@ class TestNetworkProxyReport(unittest.TestCase):
         px = NetworkProxy()
         mock_resp = _make_mock_resp(b"ok")
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
+            "devices.igor.tools.network_proxy.urllib.request.urlopen", return_value=mock_resp
         ):
             px.get("https://openrouter.ai/test")
         report = px.report_str()
@@ -249,7 +248,7 @@ class TestNetworkProxyReport(unittest.TestCase):
     def test_report_shows_errors(self):
         px = NetworkProxy()
         with mock.patch(
-            "igor.tools.network_proxy.urllib.request.urlopen",
+            "devices.igor.tools.network_proxy.urllib.request.urlopen",
             side_effect=OSError("down"),
         ):
             px.get("https://broken.example.com/ping")
@@ -263,21 +262,21 @@ class TestNetworkProxyReport(unittest.TestCase):
 
 class TestGetNetworkProxyReportTool(unittest.TestCase):
     def test_returns_string(self):
-        from igor.tools.metrics import _get_network_proxy_report
+        from devices.igor.tools.metrics import _get_network_proxy_report
 
         result = _get_network_proxy_report()
         self.assertIsInstance(result, str)
 
     def test_no_calls_message_via_tool(self):
         """Patching global proxy to a fresh instance verifies the no-calls path."""
-        from igor.tools import metrics as metrics_mod
-        import igor.tools.network_proxy as proxy_mod
+        from devices.igor.tools import metrics as metrics_mod
+        import devices.igor.tools.network_proxy as proxy_mod
 
         fresh_proxy = NetworkProxy()
         original = proxy_mod.proxy
         proxy_mod.proxy = fresh_proxy
         try:
-            from igor.tools.metrics import _get_network_proxy_report
+            from devices.igor.tools.metrics import _get_network_proxy_report
 
             result = _get_network_proxy_report()
             self.assertIn("no outbound calls", result)

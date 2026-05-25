@@ -10,7 +10,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
 # Import MachineRecord for building test fixtures
 from lab.utility_closet.machine_manager import MachineRecord
@@ -60,7 +59,7 @@ def _call_endpoint(machines, healthy_map=None, in_use_map=None, override=""):
     from starlette.testclient import TestClient
     from starlette.applications import Starlette
     from starlette.routing import Route
-    import igor.web.server as srv
+    import devices.igor.web.server as srv
     import threading
 
     if healthy_map is None:
@@ -79,8 +78,8 @@ def _call_endpoint(machines, healthy_map=None, in_use_map=None, override=""):
             "lab.utility_closet.machine_manager.is_in_use",
             side_effect=lambda h: in_use_map.get(h, False),
         ):
-            with patch("igor.cognition.cluster_router._health_cache", fake_cache):
-                with patch("igor.cognition.cluster_router._health_lock", fake_lock):
+            with patch("devices.igor.cognition.cluster_router._health_cache", fake_cache):
+                with patch("devices.igor.cognition.cluster_router._health_lock", fake_lock):
                     with patch.dict(
                         "os.environ", {"IGOR_INFERENCE_OVERRIDE": override}
                     ):

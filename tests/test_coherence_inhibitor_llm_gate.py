@@ -15,7 +15,7 @@ Real-world cases verified:
 
 import pytest
 
-from wild_igor.igor.cognition.response_coherence_inhibitor import suppress_incoherent
+from devices.igor.cognition.response_coherence_inhibitor import suppress_incoherent
 
 
 def _flagged(score: float) -> dict:

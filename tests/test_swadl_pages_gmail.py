@@ -18,9 +18,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from wild_igor.tools.swadl_pages.gmail_compose import ComposePage
-from wild_igor.tools.swadl_pages.gmail_inbox import InboxPage
-from wild_igor.tools.swadl_pages.gmail_message_ref import MessageRef
+from devices.igor.tools.swadl_pages.gmail_compose import ComposePage
+from devices.igor.tools.swadl_pages.gmail_inbox import InboxPage
+from devices.igor.tools.swadl_pages.gmail_message_ref import MessageRef
 
 # ── helpers ───────────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ class TestMessageRef:
         assert ref.snippet == "snip"
 
     def test_as_summary_returns_message_summary(self):
-        from wild_igor.tools.swadl_flows.gmail import MessageSummary
+        from devices.igor.tools.swadl_flows.gmail import MessageSummary
 
         ref = MessageRef(id="t1", subject="s", from_addr="f@x", snippet="snip")
         s = ref.as_summary()

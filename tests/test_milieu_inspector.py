@@ -17,9 +17,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
-from igor.tools.metrics import _emotion_label, _get_milieu_state
+from devices.igor.tools.metrics import _emotion_label, _get_milieu_state
 
 
 class TestEmotionLabel(unittest.TestCase):
@@ -59,7 +58,7 @@ class TestEmotionLabel(unittest.TestCase):
 
 class TestGetMilieuState(unittest.TestCase):
     def test_not_initialized(self):
-        with patch("igor.cognition.milieu.get", return_value=None):
+        with patch("devices.igor.cognition.milieu.get", return_value=None):
             result = _get_milieu_state()
         self.assertIn("not initialized", result)
 
@@ -79,7 +78,7 @@ class TestGetMilieuState(unittest.TestCase):
             "sample_count": 10,
         }
 
-        with patch("igor.cognition.milieu.get", return_value=mock_milieu):
+        with patch("devices.igor.cognition.milieu.get", return_value=mock_milieu):
             result = _get_milieu_state()
 
         self.assertIn("MILIEU STATE", result)
@@ -91,7 +90,7 @@ class TestGetMilieuState(unittest.TestCase):
         self.assertIn("tick=42", result)
 
     def test_exception_handled(self):
-        with patch("igor.cognition.milieu.get", side_effect=RuntimeError("boom")):
+        with patch("devices.igor.cognition.milieu.get", side_effect=RuntimeError("boom")):
             result = _get_milieu_state()
         self.assertIn("Error reading milieu state", result)
 

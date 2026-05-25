@@ -21,6 +21,12 @@ Test schema lifecycle (T-test-postgres-schema):
 import os
 import time
 
+# Pre-import lab as TheIgors' namespace package before any devices.igor import
+# triggers igor_base.py's sys.path.insert(0, UU_root), which would otherwise
+# shadow TheIgors/lab with UnseenUniversity/lab (a regular package that lacks
+# utility_closet/).
+import lab  # noqa: F401 — side-effect import, must stay before any devices.* import
+
 import pytest
 
 
@@ -120,7 +126,7 @@ def _redirect_inbox_to_test_dir(tmp_path_factory):
     """
     test_inbox = tmp_path_factory.mktemp("igor_test_inbox")
 
-    from wild_igor.igor.paths import PathManager
+    from devices.igor.paths import PathManager
 
     orig_inbox = PathManager.inbox.fget
 
@@ -157,8 +163,8 @@ def _test_data_lifecycle():
 
     # Best-effort cleanup — never block the test session on failure
     try:
-        from wild_igor.igor.memory.cortex import Cortex
-        from wild_igor.igor.memory.test_data_lifecycle import cleanup_test_data
+        from devices.igor.memory.cortex import Cortex
+        from devices.igor.memory.test_data_lifecycle import cleanup_test_data
 
         cortex = Cortex()
         removed = cleanup_test_data(cortex)

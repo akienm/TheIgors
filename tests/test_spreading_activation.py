@@ -19,7 +19,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch, call
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
 
 # ── helper: minimal mock memory ───────────────────────────────────────────────
@@ -47,8 +46,7 @@ class TestWordGraphSpreadFromWords(unittest.TestCase):
 
     def _make_wg(self, edge_rows=None):
         """Return a WordGraph-like object with a mocked _db."""
-        sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
-        from igor.cognition.word_graph import WordGraph
+        from devices.igor.cognition.word_graph import WordGraph
 
         wg = MagicMock(spec=WordGraph)
         # Wire spread_from_words to the real implementation via unbound call
@@ -112,7 +110,7 @@ class TestWordGraphWordsToDocIds(unittest.TestCase):
     """Unit tests for WordGraph.words_to_doc_ids()"""
 
     def _make_wg(self, doc_rows=None):
-        from igor.cognition.word_graph import WordGraph
+        from devices.igor.cognition.word_graph import WordGraph
 
         wg = MagicMock(spec=WordGraph)
         wg.words_to_doc_ids = lambda *a, **kw: WordGraph.words_to_doc_ids(wg, *a, **kw)
@@ -152,7 +150,7 @@ class TestCortexSpreadingActivation(unittest.TestCase):
     """Unit tests for Cortex.spreading_activation()"""
 
     def _make_cortex(self):
-        from igor.memory.cortex import Cortex
+        from devices.igor.memory.cortex import Cortex
 
         cortex = MagicMock(spec=Cortex)
         cortex.spreading_activation = lambda *a, **kw: Cortex.spreading_activation(
@@ -184,7 +182,7 @@ class TestCortexSpreadingActivation(unittest.TestCase):
         self.assertEqual(result["ID2"], 1.0)
 
     def test_memory_neighbors_activated(self):
-        from igor.memory.cortex import Cortex
+        from devices.igor.memory.cortex import Cortex
         from unittest.mock import MagicMock, patch
 
         cortex, conn = self._make_cortex()
@@ -219,7 +217,7 @@ class TestCortexSpreadingActivation(unittest.TestCase):
         mock_wg.spread_from_words.return_value = {"memory": 0.5, "recall": 0.3}
         mock_wg.words_to_doc_ids.return_value = {"DOCX": 0.4}
 
-        with patch("igor.cognition.word_graph.tokenize", return_value=["memory", "recall", "testing"]):
+        with patch("devices.igor.cognition.word_graph.tokenize", return_value=["memory", "recall", "testing"]):
             result = cortex.spreading_activation(["ID1"], word_graph=mock_wg)
 
         mock_wg.spread_from_words.assert_called_once()

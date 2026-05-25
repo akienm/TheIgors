@@ -19,12 +19,11 @@ from unittest.mock import MagicMock, patch, mock_open
 import tempfile
 import os
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
 
 class TestParseInteractionLine(unittest.TestCase):
     def setUp(self):
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         self.trainer = SelfTrainer(db_url="unused", log_dir=Path("/tmp"))
 
@@ -59,7 +58,7 @@ class TestParseInteractionLine(unittest.TestCase):
 
 class TestReadCandidateTurns(unittest.TestCase):
     def setUp(self):
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         self.tmp = tempfile.mkdtemp()
         self.trainer = SelfTrainer(db_url="unused", log_dir=Path(self.tmp))
@@ -126,7 +125,7 @@ class TestReadCandidateTurns(unittest.TestCase):
 
 class TestQueryTokens(unittest.TestCase):
     def test_removes_stopwords(self):
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         trainer = SelfTrainer(db_url="unused", log_dir=Path("/tmp"))
         tokens = trainer._query_tokens("what is machine learning and how does it work")
@@ -136,7 +135,7 @@ class TestQueryTokens(unittest.TestCase):
         self.assertIn("learning", tokens)
 
     def test_min_length_four(self):
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         trainer = SelfTrainer(db_url="unused", log_dir=Path("/tmp"))
         tokens = trainer._query_tokens("run it go now fast slow")
@@ -148,7 +147,7 @@ class TestQueryTokens(unittest.TestCase):
 
 class TestMatrixCovers(unittest.TestCase):
     def setUp(self):
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         self.trainer = SelfTrainer(db_url="unused", log_dir=Path("/tmp"))
 
@@ -176,7 +175,7 @@ class TestMatrixCovers(unittest.TestCase):
 class TestRunTrainingPass(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         self.trainer = SelfTrainer(
             db_url="postgresql://test/test", log_dir=Path(self.tmp)
@@ -191,14 +190,14 @@ class TestRunTrainingPass(unittest.TestCase):
         path = Path(self.tmp) / f"interaction.{date_str}.log"
         path.write_text(line)
 
-    @patch("igor.tools.self_trainer.SelfTrainer._matrix_covers", return_value=False)
-    @patch("igor.tools.self_trainer.SelfTrainer._deposit", return_value="ST_mem001")
+    @patch("devices.igor.tools.self_trainer.SelfTrainer._matrix_covers", return_value=False)
+    @patch("devices.igor.tools.self_trainer.SelfTrainer._deposit", return_value="ST_mem001")
     @patch("psycopg2.connect")
-    @patch("igor.tools.self_trainer.log_cognition_metric", create=True)
+    @patch("devices.igor.tools.self_trainer.log_cognition_metric", create=True)
     def test_gap_gets_deposited(
         self, mock_log, mock_psycopg2, mock_deposit, mock_covers
     ):
-        from igor.tools.self_trainer import SelfTrainer
+        from devices.igor.tools.self_trainer import SelfTrainer
 
         # Patch the import inside the method
         with patch.dict("sys.modules", {"psycopg2": MagicMock()}):
@@ -212,11 +211,11 @@ class TestRunTrainingPass(unittest.TestCase):
             )
 
             with patch(
-                "igor.tools.self_trainer.SelfTrainer._matrix_covers", return_value=False
+                "devices.igor.tools.self_trainer.SelfTrainer._matrix_covers", return_value=False
             ), patch(
-                "igor.tools.self_trainer.SelfTrainer._deposit", return_value="ST_001"
+                "devices.igor.tools.self_trainer.SelfTrainer._deposit", return_value="ST_001"
             ), patch(
-                "igor.cognition.forensic_logger.log_cognition_metric"
+                "devices.igor.cognition.forensic_logger.log_cognition_metric"
             ):
                 stats = self.trainer.run_training_pass(
                     lookback_minutes=60, max_deposits=5
@@ -226,7 +225,7 @@ class TestRunTrainingPass(unittest.TestCase):
 
     def test_no_cloud_turns_zero_stats(self):
         # No log files written
-        with patch("igor.cognition.forensic_logger.log_cognition_metric"):
+        with patch("devices.igor.cognition.forensic_logger.log_cognition_metric"):
             stats = self.trainer.run_training_pass(lookback_minutes=60)
         self.assertEqual(stats["scanned"], 0)
         self.assertEqual(stats["deposited"], 0)
@@ -243,7 +242,7 @@ class TestRunTrainingPass(unittest.TestCase):
         mock_conn.cursor.return_value = mock_cur
         mock_cur.fetchone.return_value = (1,)  # every token "found" → covered
 
-        with patch("igor.cognition.forensic_logger.log_cognition_metric"):
+        with patch("devices.igor.cognition.forensic_logger.log_cognition_metric"):
             stats = self.trainer.run_training_pass(lookback_minutes=60)
 
         self.assertGreaterEqual(stats["covered"], 1)

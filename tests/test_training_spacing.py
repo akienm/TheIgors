@@ -20,9 +20,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "wild_igor"))
 
-from igor.cognition.training_corpus import (
+from devices.igor.cognition.training_corpus import (
     SPACING_INTERVALS_DAYS,
     _next_pass_ts,
     schedule_training_passes,
@@ -89,8 +88,8 @@ class TestScheduleTrainingPasses(unittest.TestCase):
     def test_schedules_complete_books(self):
         index = {"book1": self._index_with()}
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index") as mock_save:
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index") as mock_save:
             result = schedule_training_passes()
         self.assertIn("1 scheduled", result)
         # next_pass_ts should now be set
@@ -100,8 +99,8 @@ class TestScheduleTrainingPasses(unittest.TestCase):
     def test_skips_pending_books(self):
         index = {"book1": self._index_with(status="pending")}
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index") as mock_save:
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index") as mock_save:
             result = schedule_training_passes()
         self.assertIn("0 scheduled", result)
         mock_save.assert_not_called()
@@ -109,8 +108,8 @@ class TestScheduleTrainingPasses(unittest.TestCase):
     def test_idempotent_second_call(self):
         index = {"book1": self._index_with(next_pass_ts="2026-03-11T07:00:00")}
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index") as mock_save:
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index") as mock_save:
             result = schedule_training_passes()
         self.assertIn("0 scheduled", result)
         self.assertIn("1 already had a schedule", result)
@@ -125,8 +124,8 @@ class TestScheduleTrainingPasses(unittest.TestCase):
             )
         }
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index"):
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index"):
             schedule_training_passes(reset=True)
         # pass_count reset to 0, next_pass_ts recalculated from train_ts
         self.assertEqual(index["book1"]["pass_count"], 0)
@@ -144,8 +143,8 @@ class TestScheduleTrainingPasses(unittest.TestCase):
             }
         }
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index") as mock_save:
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index") as mock_save:
             result = schedule_training_passes()
         self.assertIn("0 scheduled", result)
         mock_save.assert_not_called()
@@ -167,8 +166,8 @@ class TestTrainDuePasses(unittest.TestCase):
     def test_dry_run_lists_due_books(self):
         index = self._make_due_index()
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index"):
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index"):
             result = train_due_passes(dry_run=True)
         self.assertIn("Due for re-training", result)
         self.assertIn("Due Book", result)
@@ -176,18 +175,18 @@ class TestTrainDuePasses(unittest.TestCase):
     def test_nothing_due_returns_message(self):
         future_ts = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%S")
         index = self._make_due_index(past_ts=future_ts)
-        with patch("igor.cognition.training_corpus._load_index", return_value=index):
+        with patch("devices.igor.cognition.training_corpus._load_index", return_value=index):
             result = train_due_passes(dry_run=False)
         self.assertIn("No training passes due", result)
 
     def test_missing_text_file_is_skipped(self):
         index = self._make_due_index()
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index"), patch(
-            "igor.cognition.training_corpus._disk_free_gb", return_value=5.0
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index"), patch(
+            "devices.igor.cognition.training_corpus._disk_free_gb", return_value=5.0
         ), patch(
-            "igor.cognition.word_graph.WordGraph", return_value=MagicMock()
+            "devices.igor.cognition.word_graph.WordGraph", return_value=MagicMock()
         ), patch(
             "pathlib.Path.exists", return_value=False
         ):
@@ -205,13 +204,13 @@ class TestTrainDuePasses(unittest.TestCase):
             return f"Trained '{index[book_id]['title']}': 50 paragraphs indexed"
 
         with patch(
-            "igor.cognition.training_corpus._load_index", return_value=index
-        ), patch("igor.cognition.training_corpus._save_index"), patch(
-            "igor.cognition.training_corpus._disk_free_gb", return_value=5.0
+            "devices.igor.cognition.training_corpus._load_index", return_value=index
+        ), patch("devices.igor.cognition.training_corpus._save_index"), patch(
+            "devices.igor.cognition.training_corpus._disk_free_gb", return_value=5.0
         ), patch(
-            "igor.cognition.training_corpus.train", side_effect=fake_train
+            "devices.igor.cognition.training_corpus.train", side_effect=fake_train
         ), patch(
-            "igor.cognition.word_graph.WordGraph", return_value=mock_wg
+            "devices.igor.cognition.word_graph.WordGraph", return_value=mock_wg
         ), patch.object(
             Path, "exists", return_value=True
         ):

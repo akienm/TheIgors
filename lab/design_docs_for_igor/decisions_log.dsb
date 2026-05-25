@@ -663,3 +663,4 @@ D-pass-condition-required-2026-05-04|pass-condition-required|decided|All tickets
 2026-05-20T20:31:41 | D-audit-feedback-2026-05-20 | Add /audit-feedback skill to enforce feedback-loop completeness | tickets: T-audit-feedback-build, T-audit-ticket-integrate-feedback, T-consequence-audit-feedback
 2026-05-21T16:15:23 | D-deferred-inference-2026-05-21 | Add deferred-resolution node state to Igor inference engine | tickets: T-igor-deferred-node-state, T-consequence-deferred-inference
 2026-05-24T11:48:40 | D-rename-adc-to-unseen-university-2026-05-24 | Rename agent_datacenter repo to UnseenUniversity | tickets: T-gh-rename-adc-to-uu, T-codebase-refs-adc-to-uu, T-local-dir-rename-adc-to-uu, T-consequence-rename-adc-to-uu
+2026-05-25T09:06:34 | D-igor-into-adc-2026-05-25 | Migrate wild_igor/ into devices/igor/ — Igor becomes an ADC device | tickets: T-igor-subtree-import, T-igor-import-rewrite, T-igor-theigers-archive, T-consequence-igor-migration

@@ -42,7 +42,7 @@ def test_web_chat_reply_surfacing():
     """Send message, assert non-empty Igor reply within 120s."""
     from SWADL.engine.swadl_base_automation import SWADLBaseAutomation
 
-    from wild_igor.tools.swadl_flows.web_chat import WebChatFlow
+    from devices.igor.tools.swadl_flows.web_chat import WebChatFlow
 
     class WebChatAutomation(SWADLBaseAutomation):
         pass

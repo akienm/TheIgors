@@ -18,7 +18,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from wild_igor.igor.tools import palace_metric
+from devices.igor.tools import palace_metric
 
 TEST_ROOT = "_test/palace_metric"
 TEST_COUNTER = f"{TEST_ROOT}/counter"
