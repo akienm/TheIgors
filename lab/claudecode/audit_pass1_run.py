@@ -35,7 +35,9 @@ OR_MODEL = "google/gemini-2.5-pro"
 # tests/ and lab/design_docs*/ dropped — Pass 1 fits 1M budget this way.
 # Pass 2 subagents can read tests + design docs directly via file access.
 INCLUDE_ROOTS = [
-    "wild_igor",
+    # Note: Igor source (formerly wild_igor/) now lives in UnseenUniversity at devices/igor/
+    # To include it in a future audit, add Path("/home/akien/dev/src/UnseenUniversity")
+    # as a second REPO and scan devices/igor from there.
     "lab/claudecode",
     "lab/utility_closet",
     "lab/tools",
@@ -68,8 +70,7 @@ EXCLUDE_PATTERNS = [
     r"^venv/",
     r"^\.venv/",
     r"node_modules/",
-    r"^wild_igor/web_ui/",  # frontend — not core cognition audit surface
-    r"^wild_igor/setup_assets/",  # installer, not cognition
+    # wild_igor/ was archived — Igor source now lives in UnseenUniversity/devices/igor/
     r"\.git/",
     r"^lab/claudecode/cc_skills/",  # mirror of ~/.claude/skills; avoid double-include
     r"^lab/claudecode/archive/",
@@ -80,8 +81,8 @@ EXCLUDE_PATTERNS = [
     r"^lab/design_docs/_snapshots/",
     r"^lab/design_docs_for_igor/gap_analysis\.dsb$",  # auto-generated
     r"^lab/docs/sessions\.md$",  # rendered from DB
-    r"^wild_igor/igor/tools/ebook_drm/",  # kindle DRM, not cognition
-    r"^wild_igor/igor/tools/browser_session/",  # browser session data
+    r"^devices/igor/tools/ebook_drm/",  # kindle DRM, not cognition
+    r"^devices/igor/tools/browser_session/",  # browser session data
     r"^lab/hosted_igor/",  # deploy config, not core
     r"^lab/deploy/",
     r"^lab/seed/",  # seed data, not code
@@ -90,11 +91,11 @@ EXCLUDE_PATTERNS = [
     r"^lab/claudecode/seed_",
     r"^lab/claudecode/migrate_",
     r"^lab/claudecode/audit_pass1_run\.py$",  # this file itself
-    # Out-of-scope wild_igor subtrees for Pass 1 (not cognition core)
-    r"^wild_igor/igor/network/",  # remote-instance daemon
-    r"^wild_igor/igor/dashboard/",
-    r"^wild_igor/igor/web/",  # gutted facade (UC is the server now)
-    r"^wild_igor/igor/arbiter/",  # disabled
+    # Out-of-scope devices/igor subtrees for Pass 1 (Igor now lives in UnseenUniversity)
+    r"^devices/igor/network/",  # remote-instance daemon
+    r"^devices/igor/dashboard/",
+    r"^devices/igor/web/",  # gutted facade (UC is the server now)
+    r"^devices/igor/arbiter/",  # disabled
     r"\.pdf$",
     r"\.epub$",
     r"\.mobi$",

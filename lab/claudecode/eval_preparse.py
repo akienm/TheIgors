@@ -19,8 +19,8 @@ from pathlib import Path
 REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
 
-from wild_igor.igor.cognition.reasoners.ollama_reasoner import _rule_based_csb, parse_preparse_csb
-from wild_igor.igor.cognition.thalamus import Thalamus
+from devices.igor.cognition.reasoners.ollama_reasoner import _rule_based_csb, parse_preparse_csb
+from devices.igor.cognition.thalamus import Thalamus
 
 _thalamus = Thalamus()
 
@@ -154,7 +154,7 @@ def run_thalamus(examples):
 
 
 def run_ollama_preparse(examples):
-    from wild_igor.igor.cognition.reasoners.ollama_reasoner import preparse
+    from devices.igor.cognition.reasoners.ollama_reasoner import preparse
 
     correct = 0
     misses = []
@@ -217,7 +217,7 @@ def main():
 
     # Ollama LLM preparse (optional)
     if args.ollama:
-        from wild_igor.igor.cognition.reasoners.ollama_reasoner import is_healthy
+        from devices.igor.cognition.reasoners.ollama_reasoner import is_healthy
         if not is_healthy():
             print("\n[SKIP] Ollama not running — skipping LLM preparse test")
         else:

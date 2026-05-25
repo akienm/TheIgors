@@ -144,7 +144,7 @@ class AgentBase:
         if not self.__class__._logger:
             _module = type(self).__module__ or ""
             # Strip common prefixes so names are clean
-            for prefix in ("wild_igor.", "lab.utility_closet."):
+            for prefix in ("devices.", "lab.utility_closet."):
                 if _module.startswith(prefix):
                     _module = _module[len(prefix) :]
                     break

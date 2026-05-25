@@ -13,7 +13,7 @@ Storage: lab/claudecode/audit_checks.json. Two top-level lists: next_sweep
 {name, kind, pattern, description, severity, added_by, added_at, ack_until}.
 
 Kinds:
-  grep     regex/literal search across wild_igor/ source via Grep tool
+  grep     regex/literal search across devices/igor/ source (in UnseenUniversity) via Grep tool
   sql      psql query against the home DB
   python   inline Python expression against the codebase or DB
   shell    bash one-liner

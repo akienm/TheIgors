@@ -53,7 +53,7 @@ class DiscordTransport(Transport):
         """Lazy-load the discord bot module."""
         if self._bot is None:
             try:
-                from wild_igor.igor.network.discord_bot import discord_bot
+                from devices.igor.network.discord_bot import discord_bot
 
                 self._bot = discord_bot
             except ImportError:

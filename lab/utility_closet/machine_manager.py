@@ -571,7 +571,7 @@ def export_to_machines_json(path: Optional["Path"] = None) -> bool:  # noqa: F82
     import json as _json
     from pathlib import Path as _Path
 
-    from wild_igor.igor.paths import paths as _paths
+    from devices.igor.paths import paths as _paths
 
     target = path or _paths().machines_json
     try:

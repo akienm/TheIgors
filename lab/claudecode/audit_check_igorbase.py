@@ -2,7 +2,7 @@
 """
 audit_check_igorbase.py — D125 enforcement helper.
 
-Walks wild_igor/igor/{cognition,memory,tools,network,brainstem}/ and finds
+Walks devices/igor/{cognition,memory,tools,network,brainstem}/ and finds
 class definitions whose bases don't include IgorBase AND aren't exclusively
 third-party (BaseModel, Enum, ABC, dataclass, Exception, Generic, Protocol,
 NamedTuple, TypedDict, object).
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_ROOT = REPO_ROOT / "wild_igor" / "igor"
+SOURCE_ROOT = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
 
 # Bases that exempt a class from the IgorBase requirement
 THIRD_PARTY_BASES = {

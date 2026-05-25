@@ -209,7 +209,7 @@ class MatterShelf(RackModule):
         watch_type="matter_device". The sensor evaluator checks device
         state via the controller.
         """
-        from wild_igor.igor.cognition.sensor_tree import (
+        from devices.igor.cognition.sensor_tree import (
             create_sensor,
             ensure_sensor_root,
         )

@@ -28,10 +28,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "wild_igor"))
-
-
-from igor.paths import paths as _paths  # noqa: E402
+from devices.igor.paths import paths as _paths  # noqa: E402
 
 _p = _paths()
 CALIBRE_LIBRARY = _p.calibre_library

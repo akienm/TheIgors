@@ -24,7 +24,6 @@ from typing import Any
 # Repo boot
 _REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO))
-sys.path.insert(0, str(_REPO / "wild_igor"))
 
 from igor.memory.cortex import Cortex
 from igor.memory.models import Memory, MemoryType

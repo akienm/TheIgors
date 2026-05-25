@@ -61,9 +61,9 @@ def _format(entry: dict, status: str, detail: str) -> str:
 
 
 def run_grep(entry: dict) -> tuple[str, str]:
-    """Search for pattern in wild_igor/igor/. Reports if pattern found."""
+    """Search for pattern in devices/igor/. Reports if pattern found."""
     pattern = entry["pattern"]
-    target = REPO_ROOT / "wild_igor" / "igor"
+    target = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
     if not target.exists():
         return "ERROR", f"target not found: {target}"
     try:

@@ -20,7 +20,7 @@ Any of these tokens count. The tag may live in the module docstring or as
 a top-of-file comment; case-insensitive.
 
 This check scans new files added in a diff range (default: last commit
-vs HEAD~1) and reports any new .py file under wild_igor/, lab/utility_closet/,
+vs HEAD~1) and reports any new .py file under lab/utility_closet/,
 or lab/claudecode/ that lacks the tag. Exempt: tests/ and __init__.py.
 
 Empty stdout = pass. Non-empty = list of violations, one per line.
@@ -45,7 +45,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Directories where the tag is enforced
 ENFORCED_DIRS = (
-    REPO_ROOT / "wild_igor",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor",
     REPO_ROOT / "lab" / "utility_closet",
     REPO_ROOT / "lab" / "claudecode",
 )

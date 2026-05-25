@@ -25,8 +25,8 @@ if env_path.exists():
             k, _, v = line.partition("=")
             os.environ.setdefault(k.strip(), v.strip())
 
-from wild_igor.igor.memory.cortex import Cortex
-from wild_igor.igor.memory.models import Memory, MemoryType
+from devices.igor.memory.cortex import Cortex
+from devices.igor.memory.models import Memory, MemoryType
 
 DB_PATH = Path(os.environ.get(
     "IGOR_DB_PATH",

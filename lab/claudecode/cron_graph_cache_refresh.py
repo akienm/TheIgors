@@ -78,10 +78,10 @@ def main():
     repo = Path(__file__).parent.parent
     sys.path.insert(0, str(repo))
 
-    from wild_igor.igor.memory.db_proxy import make_home_proxy, make_local_proxy
-    from wild_igor.igor.memory.graph_cache import GraphCache
-    from wild_igor.igor.memory.pending_replies import PendingReplyStore
-    from wild_igor.igor.paths import paths
+    from devices.igor.memory.db_proxy import make_home_proxy, make_local_proxy
+    from devices.igor.memory.graph_cache import GraphCache
+    from devices.igor.memory.pending_replies import PendingReplyStore
+    from devices.igor.paths import paths
 
     db_path = Path(os.getenv("IGOR_DB_PATH", str(paths().instance / "wild-0001.db")))
 

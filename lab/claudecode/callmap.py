@@ -19,7 +19,7 @@ query. This tool makes the callmap a durable, audit-checked artifact.
 
 API marking convention:
   - Default: all top-level non-_ functions and class methods in
-    SOURCE_ROOTS (lab/claudecode/, wild_igor/igor/tools/) count as API
+    SOURCE_ROOTS (lab/claudecode/, devices/igor/tools/) count as API
   - Override: `__api__ = ['name1', 'name2']` module-level list narrows
     the surface explicitly
   - Annotate: `# API: <one-line>` immediately above a function adds a
@@ -66,13 +66,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Modules whose top-level non-_ functions/methods count as API by default.
 SOURCE_ROOTS = (
     REPO_ROOT / "lab" / "claudecode",
-    REPO_ROOT / "wild_igor" / "igor" / "tools",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "tools",
 )
 
 # Files we walk for caller detection (entire repo minus excluded dirs).
 SCAN_ROOTS = (
     REPO_ROOT / "lab",
-    REPO_ROOT / "wild_igor",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor",
     REPO_ROOT / "tests",
 )
 
@@ -115,7 +115,7 @@ class ApiEntry:
 
 
 def _module_path_from_file(path: Path) -> str:
-    """Convert /home/.../wild_igor/igor/tools/foo.py → wild_igor.igor.tools.foo.
+    """Convert /home/.../devices/igor/tools/foo.py → devices.igor.tools.foo.
 
     Falls back to the file stem when the path isn't under REPO_ROOT (e.g.
     test fixtures in /tmp).
@@ -432,7 +432,7 @@ def render_markdown(apis: list[ApiEntry]) -> str:
         "",
         "Conventions:",
         "- API surface: top-level non-`_` functions and class methods in",
-        "  `lab/claudecode/` and `wild_igor/igor/tools/`. Override per-module",
+        "  `lab/claudecode/` and `devices/igor/tools/`. Override per-module",
         "  with `__api__ = [...]`. Annotate with `# API: <text>` above the def.",
         "- Caller kinds: `direct` (import + call) and `subprocess` (invocation",
         "  of the module's script file).",

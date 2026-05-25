@@ -95,7 +95,7 @@ class InferenceTransport(Transport):
 
     def _get_gateway(self):
         if self._gateway is None:
-            from wild_igor.igor.cognition.inference_gateway import get_gateway
+            from devices.igor.cognition.inference_gateway import get_gateway
 
             self._gateway = get_gateway()
         return self._gateway
@@ -113,7 +113,7 @@ class InferenceTransport(Transport):
         purpose_id; metadata has no corresponding channel in the gateway
         so we log it for traceability and drop it.
         """
-        from wild_igor.igor.cognition.inference_gateway import make_context
+        from devices.igor.cognition.inference_gateway import make_context
 
         try:
             gw = self._get_gateway()

@@ -1,9 +1,9 @@
 """
 registry.py — Tool + ToolRegistry + ToolStats (UC canonical home).
 
-T-uc-registry-move: moved from wild_igor/igor/tools/registry.py as the
+T-uc-registry-move: moved from devices/igor/tools/registry.py as the
 prereq for inverting T-uc-budget-shelf and T-uc-filesystem-shelf. The
-wild_igor-side file is now a thin re-export shim; any new import should
+original file is now a thin re-export shim; any new import should
 target lab.utility_closet.registry directly.
 
 Tools are AI-agnostic: they describe their parameters once, and adapter
@@ -182,7 +182,7 @@ class ToolRegistry(AgentBase):
         Non-critical — any failure is debug-logged and swallowed.
         """
         try:
-            from wild_igor.igor.tools.misfire_counter import get_misfire_counter
+            from devices.igor.tools.misfire_counter import get_misfire_counter
 
             counter = get_misfire_counter()
             counter.record_tool_error(

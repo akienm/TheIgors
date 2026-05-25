@@ -93,7 +93,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Show stats without writing")
     args = parser.parse_args()
 
-    from wild_igor.igor.cognition.word_graph import WordGraph
+    from devices.igor.cognition.word_graph import WordGraph
 
     print("Extracting Igor's historical replies...")
     ring_replies = extract_replies_from_ring(DB_PATH)

@@ -8,7 +8,7 @@ All scattered psutil calls across push_sources, inference_gateway,
 filesystem, training_corpus should route through here.
 
 Usage:
-    from wild_igor.igor.network.system_proxy import system_proxy
+    from devices.igor.network.system_proxy import system_proxy
     snap = system_proxy.snapshot()
     cpu = system_proxy.cpu_percent()
     mem = system_proxy.memory()
@@ -223,7 +223,7 @@ class SystemProxy(IgorBase):
         """NetworkProxy singleton — per-host HTTP stats, latency, error rates."""
         if not hasattr(self, "_network_cache"):
             try:
-                from wild_igor.igor.network.proxy import proxy as _net_proxy
+                from devices.igor.network.proxy import proxy as _net_proxy
 
                 self._network_cache = _net_proxy
             except Exception:
@@ -235,7 +235,7 @@ class SystemProxy(IgorBase):
         """Static hardware inventory — probed once at first access."""
         if not hasattr(self, "_hardware_cache"):
             try:
-                from wild_igor.igor.tools.hardware_detect import detect_hardware
+                from devices.igor.tools.hardware_detect import detect_hardware
 
                 self._hardware_cache: dict[str, Any] = detect_hardware()
             except Exception:

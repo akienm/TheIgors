@@ -27,10 +27,10 @@ os.environ.setdefault(
 )
 DB_URL = os.environ["IGOR_HOME_DB_URL"]
 
-from wild_igor.igor.memory.models import Memory, MemoryType
-from wild_igor.igor.memory.cortex import Cortex
+from devices.igor.memory.models import Memory, MemoryType
+from devices.igor.memory.cortex import Cortex
 from lab.utility_closet.registry import registry
-import wild_igor.igor.tools  # noqa — loads all tools
+import devices.igor.tools  # noqa — loads all tools
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
 cortex = Cortex(instance_id="Igor-wild-0001")

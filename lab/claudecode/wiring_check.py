@@ -115,7 +115,7 @@ def run_wiring_check(
 
     if source_dir is None:
         source_dir = (
-            Path(__file__).resolve().parent.parent.parent / "wild_igor" / "igor"
+            Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
         )
 
     switches = _load_switches(cfg_path)

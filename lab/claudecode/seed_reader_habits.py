@@ -57,8 +57,8 @@ os.environ.setdefault(
     str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
 
-from wild_igor.igor.tools.template_tools import instantiate_template
-from wild_igor.igor.memory.cortex import Cortex
+from devices.igor.tools.template_tools import instantiate_template
+from devices.igor.memory.cortex import Cortex
 
 DRY_RUN = "--dry-run" in sys.argv
 

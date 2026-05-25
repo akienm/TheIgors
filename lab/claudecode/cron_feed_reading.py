@@ -20,7 +20,7 @@ os.environ.setdefault(
 )
 
 # Import the tool directly
-from wild_igor.igor.tools.learner import feed_reading_list
+from devices.igor.tools.learner import feed_reading_list
 
 # Call it
 result = feed_reading_list()

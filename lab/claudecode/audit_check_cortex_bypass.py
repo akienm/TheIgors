@@ -1,7 +1,7 @@
 """
 audit_check_cortex_bypass.py — T-cortex-store-bypass-audit
 
-Fails if wild_igor/igor/tools/ contains a runtime file with `INSERT INTO
+Fails if devices/igor/tools/ contains a runtime file with `INSERT INTO
 memories` that isn't a seed_*.py script or memory_sync.py (which are
 legitimate genesis / sync bypass paths).
 
@@ -27,7 +27,7 @@ EXEMPT_FILENAMES: set[str] = {
 
 def main() -> int:
     repo = Path(__file__).resolve().parents[2]
-    src = repo / "wild_igor" / "igor" / "tools"
+    src = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "tools"
 
     if not src.exists():
         print(f"AUDIT ERROR: tools tree not found at {src}")

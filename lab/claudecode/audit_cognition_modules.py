@@ -4,7 +4,7 @@ audit_cognition_modules.py — T-cognition-module-audit
 
 # author-model: opus
 
-Classify every wild_igor/igor/cognition/*.py module as one of:
+Classify every devices/igor/cognition/*.py module as one of:
 
   LIVE          — imported by main.py, turn_pipeline.py, push_sources.py,
                   brainstem/, or another LIVE cognition module
@@ -34,14 +34,14 @@ from pathlib import Path
 from typing import Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-COG_ROOT = REPO_ROOT / "wild_igor" / "igor" / "cognition"
+COG_ROOT = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "cognition"
 
 ANCHOR_PATHS = (
-    REPO_ROOT / "wild_igor" / "igor" / "main.py",
-    REPO_ROOT / "wild_igor" / "igor" / "cognition" / "turn_pipeline.py",
-    REPO_ROOT / "wild_igor" / "igor" / "cognition" / "push_sources.py",
-    REPO_ROOT / "wild_igor" / "igor" / "brainstem",
-    REPO_ROOT / "wild_igor" / "igor" / "tools" / "pe_chain.py",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "main.py",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "cognition" / "turn_pipeline.py",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "cognition" / "push_sources.py",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "brainstem",
+    Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "tools" / "pe_chain.py",
 )
 
 
@@ -86,7 +86,7 @@ def _cognition_imports(tree: ast.AST) -> list[str]:
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom):
             mod = node.module or ""
-            if mod.startswith("wild_igor.igor.cognition."):
+            if mod.startswith("devices.igor.cognition."):
                 out.add(mod.split(".")[-1])
             elif node.level >= 1 and mod:
                 clean = mod.split(".")[0]
@@ -122,7 +122,7 @@ def _is_essentially_empty(tree: ast.AST, content: str) -> bool:
 def _grep_importers(module_name: str) -> list[str]:
     # Catches: relative imports (`.foo`, `..foo`), qualified relative
     # (`.cognition.foo`, `..cognition.foo`, `.reasoners.foo`), absolute
-    # (`wild_igor.igor.cognition.foo`), and the `.reasoners.<name>` shape
+    # (`devices.igor.cognition.foo`), and the `.reasoners.<name>` shape
     # used by anchor files importing into cognition/reasoners/.
     patterns = (
         f"from .{module_name} import",
@@ -132,9 +132,9 @@ def _grep_importers(module_name: str) -> list[str]:
         f"from .reasoners.{module_name} import",
         f"from .cognition.reasoners.{module_name} import",
         f"from ..cognition.reasoners.{module_name} import",
-        f"from wild_igor.igor.cognition.{module_name} import",
-        f"from wild_igor.igor.cognition.reasoners.{module_name} import",
-        f"import wild_igor.igor.cognition.{module_name}",
+        f"from devices.igor.cognition.{module_name} import",
+        f"from devices.igor.cognition.reasoners.{module_name} import",
+        f"import devices.igor.cognition.{module_name}",
     )
     found: set[str] = set()
     for pat in patterns:
@@ -181,7 +181,7 @@ def _classify_importers(
         if is_anchor:
             anchors.append(rel)
             continue
-        if rel.startswith("wild_igor/igor/cognition/"):
+        if rel.startswith("devices/igor/cognition/"):
             other_cog.append(rel)
             continue
         other.append(rel)
@@ -297,7 +297,7 @@ def write_report(modules: list[ModuleInfo], out: Path) -> None:
         lines.append("|---|---|---|---|---|---|---|---|")
         for m in items:
             doc = (m.docstring_first_line or "").replace("|", "\\|")[:60]
-            short_path = m.path.replace("wild_igor/igor/cognition/", "")
+            short_path = m.path.replace("devices/igor/cognition/", "")
             lines.append(
                 f"| `{m.name}` | `{short_path}` | {m.line_count} | {len(m.imported_by_anchors)} "
                 f"| {len(m.imported_by_other_cognition)} | {len(m.imported_by_tests)} "

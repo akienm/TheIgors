@@ -1,7 +1,7 @@
 """
 audit_check_hardcoded_instance.py — T-hardcoded-instance-refs audit check
 
-Fails if Igor's runtime code (wild_igor/igor/) reintroduces hardcoded
+Fails if Igor's runtime code (devices/igor/) reintroduces hardcoded
 'Igor-wild-0001' strings or 'choose_a_password' credentials outside the
 known-exempt files: paths.py (canonical default), machine_manager.py
 (SQL schema default), cluster_ssh.py (ssh user constant + windows user
@@ -24,22 +24,22 @@ import sys
 from pathlib import Path
 
 EXEMPT_SUFFIXES: set[str] = {
-    "wild_igor/igor/paths.py",
-    "wild_igor/igor/cognition/job_manager.py",
-    "wild_igor/igor/cognition/response_habituation.py",
-    "wild_igor/igor/cognition/pipeline_manager.py",
-    "wild_igor/igor/cognition/machine_manager.py",
-    "wild_igor/igor/network/channels/file_inbox.py",
-    "wild_igor/igor/main.py",
-    "wild_igor/igor/memory/node_id.py",
-    "wild_igor/igor/tools/reading_tool.py",  # worker-script template path, exempt
-    "wild_igor/igor/tools/notebook.py",
-    "wild_igor/igor/tools/cluster_ssh.py",
-    "wild_igor/igor/tools/google_calendar.py",
-    "wild_igor/igor/tools/ebook_reader.py",
-    "wild_igor/igor/arbiter/queue.py",
-    "wild_igor/igor/config.py",  # defines the os.getenv default — canonical source
-    "wild_igor/igor/env_sync.py",  # boot-time env hydration helper — same default-fallback pattern as config.py
+    "devices/igor/paths.py",
+    "devices/igor/cognition/job_manager.py",
+    "devices/igor/cognition/response_habituation.py",
+    "devices/igor/cognition/pipeline_manager.py",
+    "devices/igor/cognition/machine_manager.py",
+    "devices/igor/network/channels/file_inbox.py",
+    "devices/igor/main.py",
+    "devices/igor/memory/node_id.py",
+    "devices/igor/tools/reading_tool.py",  # worker-script template path, exempt
+    "devices/igor/tools/notebook.py",
+    "devices/igor/tools/cluster_ssh.py",
+    "devices/igor/tools/google_calendar.py",
+    "devices/igor/tools/ebook_reader.py",
+    "devices/igor/arbiter/queue.py",
+    "devices/igor/config.py",  # defines the os.getenv default — canonical source
+    "devices/igor/env_sync.py",  # boot-time env hydration helper — same default-fallback pattern as config.py
 }
 
 PATTERNS: list[str] = [
@@ -50,7 +50,7 @@ PATTERNS: list[str] = [
 
 def main() -> int:
     repo = Path(__file__).resolve().parents[2]
-    src = repo / "wild_igor" / "igor"
+    src = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
 
     if not src.exists():
         print(f"AUDIT ERROR: source tree not found at {src}")

@@ -472,7 +472,7 @@ def main() -> None:
         # single source of truth (EBOOKS_ROOT / CALIBRE_LIBRARY_PATH overrides
         # handled inside). The previous hardcoded fallback was user-hostile
         # for any other checkout.
-        from wild_igor.igor.paths import paths
+        from devices.igor.paths import paths
 
         library_path = paths().calibre_library
 

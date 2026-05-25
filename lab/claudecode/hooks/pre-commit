@@ -13,7 +13,8 @@
 set -u
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-STAGED="$(git diff --cached --name-only)"
+# Use --name-status to get deletion status; format: "<status>\t<path>"
+STAGED_STATUS="$(git diff --cached --name-status)"
 
 reject() {
     # $1 = path, $2 = reason
@@ -21,8 +22,10 @@ reject() {
 }
 
 bad=0
-while IFS= read -r path; do
+while IFS=$'\t' read -r status path; do
     [ -z "$path" ] && continue
+    # Deletions (D) are always safe — we're removing, not adding secrets
+    [ "$status" = "D" ] && continue
     base="$(basename "$path")"
 
     # Rule 1: .env files
@@ -46,7 +49,7 @@ while IFS= read -r path; do
         continue
     fi
 
-done <<< "$STAGED"
+done <<< "$STAGED_STATUS"
 
 if [ "$bad" -eq 1 ]; then
     printf '\n\033[31mpre-commit aborted.\033[0m Unstage the offending files, then retry.\n' >&2

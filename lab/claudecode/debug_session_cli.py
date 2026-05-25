@@ -22,7 +22,7 @@ os.environ.setdefault(
     os.path.expanduser("~/.TheIgors/Igor-wild-0001/wild-0001.db"),
 )
 
-from wild_igor.igor.cognition.debug_session import claim, query, release, status
+from devices.igor.cognition.debug_session import claim, query, release, status
 
 
 def main():

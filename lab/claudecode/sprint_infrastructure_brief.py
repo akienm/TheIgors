@@ -16,7 +16,7 @@ from __future__ import annotations
 import os
 import re
 
-from wild_igor.igor.igor_base import IgorBase
+from devices.igor.igor_base import IgorBase
 
 _DB_URL = os.environ["IGOR_HOME_DB_URL"]
 _SEARCH_PATH = os.environ.get("IGOR_HOME_SEARCH_PATH") or "clan,infra,public"
@@ -27,12 +27,12 @@ KNOWN_AREAS = frozenset(
 
 # File-path prefix → area
 _AREA_PREFIXES = [
-    ("wild_igor/igor/brainstem/", "brainstem"),
-    ("wild_igor/igor/cognition/reasoners/", "reasoning"),
-    ("wild_igor/igor/cognition/", "cognition"),
-    ("wild_igor/igor/memory/", "memory"),
-    ("wild_igor/igor/network/", "network"),
-    ("wild_igor/igor/tools/", "tools"),
+    ("devices/igor/brainstem/", "brainstem"),
+    ("devices/igor/cognition/reasoners/", "reasoning"),
+    ("devices/igor/cognition/", "cognition"),
+    ("devices/igor/memory/", "memory"),
+    ("devices/igor/network/", "network"),
+    ("devices/igor/tools/", "tools"),
 ]
 
 

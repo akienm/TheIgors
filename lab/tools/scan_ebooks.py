@@ -32,7 +32,7 @@ from xml.etree import ElementTree as ET
 # T-scan-ebooks-use-paths-abstraction: use paths().ebooks_root and
 # paths().calibre_library instead of the hardcoded onedrive paths so the
 # script runs on any checkout honoring EBOOKS_ROOT / CALIBRE_LIBRARY_PATH.
-from wild_igor.igor.paths import paths as _paths
+from devices.igor.paths import paths as _paths
 
 CALIBRE_DB = _paths().calibre_library / "metadata.db"
 EBOOKS_ROOT = _paths().ebooks_root

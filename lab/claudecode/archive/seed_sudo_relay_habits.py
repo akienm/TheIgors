@@ -30,8 +30,8 @@ os.environ.setdefault(
     str(Path.home() / ".TheIgors" / "Igor-wild-0001" / "wild-0001.db"),
 )
 
-from wild_igor.igor.memory.models import Memory, MemoryType
-from wild_igor.igor.memory.cortex import Cortex
+from devices.igor.memory.models import Memory, MemoryType
+from devices.igor.memory.cortex import Cortex
 
 DB_PATH = Path(os.environ["IGOR_DB_PATH"])
 cortex = Cortex(instance_id="Igor-wild-0001")

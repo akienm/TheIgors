@@ -136,7 +136,7 @@ log = get_logger("utility_closet")
 _RUNTIME_ROOT = Path(os.environ.get("IGOR_RUNTIME_ROOT", Path.home() / ".TheIgors"))
 _INSTANCE_DIR = _RUNTIME_ROOT / os.environ.get("IGOR_INSTANCE_ID", "Igor-wild-0001")
 _REPO_DIR = Path(__file__).parent.parent  # ~/TheIgors
-_DIST_DIR = _REPO_DIR / "wild_igor" / "web_ui" / "dist"
+_DIST_DIR = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor" / "web_ui" / "dist"
 
 INBOX_DIR = _INSTANCE_DIR / "inbox"
 OUTBOX_DIR = _INSTANCE_DIR / "outbox"

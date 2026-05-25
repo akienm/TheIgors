@@ -2,12 +2,12 @@
 """
 audit_check_bare_except.py — silent-except detector.
 
-Walks wild_igor/igor/ for `except: pass` blocks (single bare-except whose only
+Walks devices/igor/ for `except: pass` blocks (single bare-except whose only
 body statement is `pass`). These silently swallow errors and are forbidden by
 TheIgors coding rules.
 
 Empty stdout = pass. Non-empty = list of violations, one per line:
-  wild_igor/igor/path/file.py:LINE
+  devices/igor/path/file.py:LINE
 """
 
 import ast
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_ROOT = REPO_ROOT / "wild_igor" / "igor"
+SOURCE_ROOT = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
 
 # Skip third-party DRM / vendored code
 SKIP_DIRS = ("ebook_drm",)

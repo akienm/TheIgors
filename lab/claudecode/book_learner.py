@@ -46,12 +46,10 @@ from pathlib import Path
 # ── Path setup ────────────────────────────────────────────────────────────────
 REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "wild_igor"))
 
 # Load config: try installer's cfg loader first, fall back to .env
 _instance_dir = Path.home() / ".TheIgors" / "Igor-wild-0001"
 try:
-    sys.path.insert(0, str(REPO / "wild_igor" / "setup_assets"))
     from installer import load_cfg
 
     load_cfg(_instance_dir)

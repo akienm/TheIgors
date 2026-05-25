@@ -7,7 +7,6 @@ from pathlib import Path
 
 REPO = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "wild_igor"))
 
 os.environ.setdefault(
     "IGOR_DB_PATH",

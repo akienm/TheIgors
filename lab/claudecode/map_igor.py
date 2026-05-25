@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from wild_igor.igor.igor_base import IgorBase
+from devices.igor.igor_base import IgorBase
 
 _DB_URL = os.environ["IGOR_HOME_DB_URL"]
 _SEARCH_PATH = os.environ.get("IGOR_HOME_SEARCH_PATH") or "clan,infra,public"
@@ -221,7 +221,7 @@ class IgorMap(IgorBase):
 
     def collect_code_map(self) -> dict:
         result = {}
-        igor_src = _REPO / "wild_igor" / "igor"
+        igor_src = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
         if igor_src.exists():
             for d in sorted(igor_src.iterdir()):
                 if d.is_dir() and not d.name.startswith("_"):
@@ -232,9 +232,7 @@ class IgorMap(IgorBase):
     def collect_processes(self) -> dict:
         return {
             "tmux": self._run("tmux ls 2>/dev/null"),
-            "igor_pids": self._run(
-                "pgrep -a -f 'wild_igor|igor.*main' 2>/dev/null | head -5"
-            ),
+            "igor_pids": self._run("pgrep -a -f 'igor.*main' 2>/dev/null | head -5"),
             "ollama": self._run("pgrep -a -f ollama 2>/dev/null | head -3"),
         }
 

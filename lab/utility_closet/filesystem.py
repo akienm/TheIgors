@@ -225,7 +225,7 @@ def check_disk_usage() -> str:
     """
     warn_gb = float(os.getenv("IGOR_DISK_WARN_GB", "1.0"))
     crit_gb = float(os.getenv("IGOR_DISK_CRITICAL_GB", "0.2"))
-    from wild_igor.igor.paths import paths as _igor_paths
+    from devices.igor.paths import paths as _igor_paths
     igor_home = _igor_paths().runtime
     src_home = Path.home() / "TheIgors"
 
@@ -279,7 +279,7 @@ def check_resource_load() -> str:
       - This process: RSS memory (Igor's own footprint)
       - Verdict: ok / warn / critical with a plain-language note
     """
-    from wild_igor.igor.network.system_proxy import system_proxy
+    from devices.igor.network.system_proxy import system_proxy
 
     snap = system_proxy.snapshot()
 
@@ -374,7 +374,7 @@ def _resource_load_dict() -> dict:
     Returns empty dict if psutil unavailable.
     """
     try:
-        from wild_igor.igor.network.system_proxy import system_proxy as _sp
+        from devices.igor.network.system_proxy import system_proxy as _sp
 
         _snap = _sp.snapshot()
         _mem = _snap.memory

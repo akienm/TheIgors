@@ -29,7 +29,7 @@ REPO = Path(__file__).parent.parent
 VENV_PYTHON = REPO / "venv" / "bin" / "python"
 BOOK_LEARNER = REPO / "claudecode" / "book_learner.py"
 sys.path.insert(0, str(REPO))
-from wild_igor.igor.paths import paths as _igor_paths  # noqa: E402
+from devices.igor.paths import paths as _igor_paths  # noqa: E402
 
 QUEUE_FILE = _igor_paths().learn_queue
 LOG_DIR = _igor_paths().logs

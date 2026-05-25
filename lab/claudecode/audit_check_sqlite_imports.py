@@ -2,12 +2,12 @@
 """
 audit_check_sqlite_imports.py — CLAUDE.md hard rule enforcement.
 
-Greps wild_igor/igor/ for `import sqlite3` and `from sqlite3 import ...`,
+Greps devices/igor/ for `import sqlite3` and `from sqlite3 import ...`,
 excluding files that legitimately wrap EXTERNAL SQLite stores (Calibre's
 catalog, Kindle DRM keychain, etc.). Igor's OWN data is Postgres only.
 
 Empty stdout = pass. Non-empty = list of violations, one per line:
-  wild_igor/igor/path/file.py:LINE: matched line
+  devices/igor/path/file.py:LINE: matched line
 
 Tracked separately from T-remove-sqlite-references — that ticket is the
 cleanup; this check prevents reintroduction.
@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_ROOT = REPO_ROOT / "wild_igor" / "igor"
+SOURCE_ROOT = Path("/home/akien/dev/src/UnseenUniversity") / "devices" / "igor"
 
 # Files that legitimately import sqlite3 because they read EXTERNAL
 # SQLite stores Igor doesn't own. NOT exemptions for Igor's own data.

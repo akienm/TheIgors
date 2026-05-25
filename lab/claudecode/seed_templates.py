@@ -32,8 +32,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from pathlib import Path
-from wild_igor.igor.memory.models import Memory, MemoryType
-from wild_igor.igor.memory.cortex import Cortex
+from devices.igor.memory.models import Memory, MemoryType
+from devices.igor.memory.cortex import Cortex
 
 DB_PATH = Path(
     os.environ.get(

@@ -1,3 +1,10 @@
+> **⚠ ARCHIVED (2026-05-25):** Igor's source code has moved to
+> [UnseenUniversity/devices/igor/](https://github.com/akienm/UnseenUniversity).
+> This repo is now a documentation and workflow-tools archive.
+> See [ARCHIVE.md](ARCHIVE.md) for details.
+
+---
+
 # Igor
 
 Can we prove that narrative is the nature of consciousness?

@@ -74,7 +74,7 @@ def _db_proxy():
 def log_error(kind: str, detail: str) -> None:
     """Forensic log passthrough — lazy import to keep UC clean of wild_igor at load."""
     try:
-        from wild_igor.igor.cognition.forensic_logger import log_error as _le
+        from devices.igor.cognition.forensic_logger import log_error as _le
 
         _le(kind=kind, detail=detail)
     except Exception:
@@ -402,7 +402,7 @@ def query_costs_log(window_days: float = 1.0) -> dict:
     costs.log format: ts|inference|provider|model|tier|cost_usd|tokens_in|tokens_out|caller
     Returns: {total_usd, by_provider, by_tier, by_model, row_count, window_days}
     """
-    from wild_igor.igor.paths import paths as _paths
+    from devices.igor.paths import paths as _paths
     from datetime import timezone
 
     log_path = _paths().logs / "costs.log"

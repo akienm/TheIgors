@@ -107,7 +107,7 @@ def main():
             "blanket, so use jsonb_exists(metadata, 'key') not metadata ? 'key'. "
             "All DB access through db_proxy, never raw psycopg2 in tools.",
             [
-                {"type": "file", "ref": "wild_igor/igor/memory/db_proxy.py"},
+                {"type": "file", "ref": "devices/igor/memory/db_proxy.py"},
                 {"type": "table", "ref": "Igor-wild-0001 (Postgres)"},
             ],
         ),
@@ -148,10 +148,10 @@ def main():
             "only dispatch 1-required-arg tools. identity_gate fires on read_file "
             "output. New tools must be added to tools/__init__.py.",
             [
-                {"type": "file", "ref": "wild_igor/igor/tools/__init__.py"},
+                {"type": "file", "ref": "devices/igor/tools/__init__.py"},
                 {
                     "type": "file",
-                    "ref": "wild_igor/igor/cognition/inference_gateway.py",
+                    "ref": "devices/igor/cognition/inference_gateway.py",
                 },
             ],
         ),
@@ -220,7 +220,7 @@ def main():
             "Python AI agent with Postgres memory, graph matrix reasoning, "
             "persistent cognition. Runs on akiendelllinux. DB: Igor-wild-0001.",
             [
-                {"type": "dir", "ref": "wild_igor/igor/"},
+                {"type": "dir", "ref": "devices/igor/"},
                 {"type": "launch", "ref": "igor (bash alias, loops on exit 42)"},
                 {"type": "instance", "ref": "~/.TheIgors/Igor-wild-0001/"},
             ],
@@ -232,14 +232,14 @@ def main():
             "narrative engine, milieu (VAD state), interruptors, push sources "
             "(boredom/curiosity/goals), consolidation, habit dispatch.",
             [
-                {"type": "dir", "ref": "wild_igor/igor/cognition/"},
+                {"type": "dir", "ref": "devices/igor/cognition/"},
                 {
                     "type": "file",
-                    "ref": "wild_igor/igor/cognition/inference_gateway.py",
+                    "ref": "devices/igor/cognition/inference_gateway.py",
                 },
-                {"type": "file", "ref": "wild_igor/igor/cognition/thalamus.py"},
-                {"type": "file", "ref": "wild_igor/igor/cognition/narrative_engine.py"},
-                {"type": "file", "ref": "wild_igor/igor/cognition/push_sources.py"},
+                {"type": "file", "ref": "devices/igor/cognition/thalamus.py"},
+                {"type": "file", "ref": "devices/igor/cognition/narrative_engine.py"},
+                {"type": "file", "ref": "devices/igor/cognition/push_sources.py"},
             ],
         ),
         (
@@ -249,10 +249,10 @@ def main():
             "buffer), TWM (transient working memory, attentional gating), interpretive "
             "edges, engram trees, word graph (two-tier: words + bigram chunks).",
             [
-                {"type": "dir", "ref": "wild_igor/igor/memory/"},
-                {"type": "file", "ref": "wild_igor/igor/memory/cortex.py"},
-                {"type": "file", "ref": "wild_igor/igor/memory/models.py"},
-                {"type": "file", "ref": "wild_igor/igor/memory/db_proxy.py"},
+                {"type": "dir", "ref": "devices/igor/memory/"},
+                {"type": "file", "ref": "devices/igor/memory/cortex.py"},
+                {"type": "file", "ref": "devices/igor/memory/models.py"},
+                {"type": "file", "ref": "devices/igor/memory/db_proxy.py"},
                 {
                     "type": "table",
                     "ref": "memories, ring_memory, twm_observations, memory_palace",
@@ -267,7 +267,7 @@ def main():
             "(local free, OR $0.16/book). Trail training via Hebbian edges on "
             "search co-activation (D358).",
             [
-                {"type": "dir", "ref": "wild_igor/igor/tools/reading_engine.py"},
+                {"type": "dir", "ref": "devices/igor/tools/reading_engine.py"},
                 {"type": "file", "ref": "lab/claudecode/book_learner.py"},
                 {"type": "table", "ref": "reading_list"},
                 {"type": "habit", "ref": "PROC_LIST_ABSORBED_BOOKS"},
@@ -279,21 +279,21 @@ def main():
             "Budget tracking, cluster router (cross-machine inference), channels "
             "(web/discord/gmail), dashboard, forensic logging, jobs queue.",
             [
-                {"type": "file", "ref": "wild_igor/igor/tools/budget.py"},
-                {"type": "file", "ref": "wild_igor/igor/cognition/cluster_router.py"},
-                {"type": "dir", "ref": "wild_igor/igor/network/channels/"},
+                {"type": "file", "ref": "devices/igor/tools/budget.py"},
+                {"type": "file", "ref": "devices/igor/cognition/cluster_router.py"},
+                {"type": "dir", "ref": "devices/igor/network/channels/"},
                 {"type": "url", "ref": "http://localhost:8080/api/dashboard"},
             ],
         ),
         (
             "theigors/igor/tools",
             "Tool Registry",
-            "All Igor tools live in wild_igor/igor/tools/. Register via "
+            "All Igor tools live in devices/igor/tools/. Register via "
             "registry.register(Tool(...)) at module bottom. Import added to "
             "tools/__init__.py so reasoners pick them up. 150+ tools registered.",
             [
-                {"type": "file", "ref": "wild_igor/igor/tools/__init__.py"},
-                {"type": "file", "ref": "wild_igor/igor/tools/registry.py"},
+                {"type": "file", "ref": "devices/igor/tools/__init__.py"},
+                {"type": "file", "ref": "devices/igor/tools/registry.py"},
                 {
                     "type": "doc",
                     "ref": "lab/design_docs_for_igor/capabilities_index.dsb",
@@ -307,8 +307,8 @@ def main():
             "boredom_detector, curiosity, goal_continuation. Each checks cortex "
             "state and pushes to TWM if threshold met.",
             [
-                {"type": "file", "ref": "wild_igor/igor/cognition/interruptors.py"},
-                {"type": "file", "ref": "wild_igor/igor/cognition/push_sources.py"},
+                {"type": "file", "ref": "devices/igor/cognition/interruptors.py"},
+                {"type": "file", "ref": "devices/igor/cognition/push_sources.py"},
             ],
         ),
         (
@@ -318,7 +318,7 @@ def main():
             "cognition/reasoners/base.py — never edit casually. MEDIUM: cognition/, "
             "memory/cortex.py, main.py. LOW: tools/, dashboard/, word_graph.py.",
             [
-                {"type": "file", "ref": "wild_igor/igor/tools/self_edit.py"},
+                {"type": "file", "ref": "devices/igor/tools/self_edit.py"},
                 {"type": "env", "ref": "IGOR_SELF_EDIT_ENABLED"},
             ],
         ),

@@ -20,7 +20,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from wild_igor.igor.igor_base import IgorBase
+from devices.igor.igor_base import IgorBase
 
 
 class ScanForRestDrafter(IgorBase):

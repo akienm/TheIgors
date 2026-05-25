@@ -29,38 +29,40 @@ class PathScanReport:
     _candidates: dict[str, list[dict]] = field(default_factory=dict)
 
     # Patterns: (pattern_name, deprecated_regex, preferred_description)
-    PATTERNS: list[tuple[str, str, str]] = field(default_factory=lambda: [
-        (
-            "raw-psql-in-code",
-            r"psycopg2\.connect\(",
-            "memory_get() / memory_search() MCP tools for palace reads",
-        ),
-        (
-            "channel-direct-write",
-            r"from lab\.claudecode\.channel import|channel\.send\(",
-            "IMAP bus or _post_to_channel() wrapper",
-        ),
-        (
-            "print-in-igor",
-            r"^\+\s+print\(",
-            "self.log.info / self.log.warning (IgorBase logger)",
-        ),
-        (
-            "new-memory-type",
-            r"MemoryType\.\w+ = |class MemoryType.*Enum",
-            "metadata tag on existing MemoryType",
-        ),
-        (
-            "new-feature-flag",
-            r"IGOR_\w+_ENABLED\s*=\s*['\"]?false",
-            "build to intent + go-live-when companion ticket",
-        ),
-        (
-            "direct-db-write",
-            r"cursor\(\)\.execute\(['\"]INSERT|cursor\(\)\.execute\(['\"]UPDATE",
-            "PGDatabaseProxy / cortex.store()",
-        ),
-    ])
+    PATTERNS: list[tuple[str, str, str]] = field(
+        default_factory=lambda: [
+            (
+                "raw-psql-in-code",
+                r"psycopg2\.connect\(",
+                "memory_get() / memory_search() MCP tools for palace reads",
+            ),
+            (
+                "channel-direct-write",
+                r"from lab\.claudecode\.channel import|channel\.send\(",
+                "IMAP bus or _post_to_channel() wrapper",
+            ),
+            (
+                "print-in-igor",
+                r"^\+\s+print\(",
+                "self.log.info / self.log.warning (IgorBase logger)",
+            ),
+            (
+                "new-memory-type",
+                r"MemoryType\.\w+ = |class MemoryType.*Enum",
+                "metadata tag on existing MemoryType",
+            ),
+            (
+                "new-feature-flag",
+                r"IGOR_\w+_ENABLED\s*=\s*['\"]?false",
+                "build to intent + go-live-when companion ticket",
+            ),
+            (
+                "direct-db-write",
+                r"cursor\(\)\.execute\(['\"]INSERT|cursor\(\)\.execute\(['\"]UPDATE",
+                "PGDatabaseProxy / cortex.store()",
+            ),
+        ]
+    )
 
     def _run_git(self, cmd: str) -> str:
         try:
@@ -85,7 +87,7 @@ class PathScanReport:
         # Get patch content from git log
         diff_output = self._run_git(
             f"git log --since={since} --patch --unified=0 "
-            f"-- 'wild_igor/**/*.py' 'lab/**/*.py' 2>/dev/null"
+            f"-- 'lab/**/*.py' 2>/dev/null"
         )
 
         current_commit = ""
@@ -99,11 +101,13 @@ class PathScanReport:
                 added_line = line[1:]
                 for name, pattern, _ in self.PATTERNS:
                     if re.search(pattern, added_line):
-                        raw_hits[name].append({
-                            "commit": current_commit,
-                            "file": current_file,
-                            "line": added_line.strip()[:120],
-                        })
+                        raw_hits[name].append(
+                            {
+                                "commit": current_commit,
+                                "file": current_file,
+                                "line": added_line.strip()[:120],
+                            }
+                        )
 
         # Filter to candidates with ≥ min_occurrences
         self._candidates = {
@@ -133,7 +137,9 @@ class PathScanReport:
                 lines.append(f"    [{h['commit']}] {h['file']}: {h['line'][:80]}")
             lines.append("")
 
-        lines.append("Review candidates — merge approved ones into theigors/rules/preferred_paths/.")
+        lines.append(
+            "Review candidates — merge approved ones into theigors/rules/preferred_paths/."
+        )
         return "\n".join(lines)
 
     def to_palace_drafts(self) -> list[dict]:
@@ -147,36 +153,43 @@ class PathScanReport:
             if not pattern_meta:
                 continue
             _, deprecated_regex, preferred = pattern_meta
-            drafts.append({
-                "path": f"theigors/rules/preferred_paths/{name}",
-                "title": f"{name} (auto-candidate)",
-                "content": (
-                    f"applies_when: plan or diff adds pattern matching: {deprecated_regex}\n"
-                    f"deprecated: {name}\n"
-                    f"preferred: {preferred}\n"
-                    f"why: auto-detected from {len(hits)} occurrences in last 60 days\n"
-                    f"status: CANDIDATE — review before promoting to palace"
-                ),
-                "hit_count": len(hits),
-            })
+            drafts.append(
+                {
+                    "path": f"theigors/rules/preferred_paths/{name}",
+                    "title": f"{name} (auto-candidate)",
+                    "content": (
+                        f"applies_when: plan or diff adds pattern matching: {deprecated_regex}\n"
+                        f"deprecated: {name}\n"
+                        f"preferred: {preferred}\n"
+                        f"why: auto-detected from {len(hits)} occurrences in last 60 days\n"
+                        f"status: CANDIDATE — review before promoting to palace"
+                    ),
+                    "hit_count": len(hits),
+                }
+            )
         return drafts
 
 
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Scan git history for preferred_paths candidates")
+    parser = argparse.ArgumentParser(
+        description="Scan git history for preferred_paths candidates"
+    )
     parser.add_argument("--since-days", type=int, default=60)
     parser.add_argument("--min-occurrences", type=int, default=3)
     parser.add_argument("--output", default=None, help="Write candidates JSON to file")
     args = parser.parse_args()
 
-    report = PathScanReport(since_days=args.since_days, min_occurrences=args.min_occurrences)
+    report = PathScanReport(
+        since_days=args.since_days, min_occurrences=args.min_occurrences
+    )
     report.scan()
     print(report.render())
 
     if args.output:
         import json
+
         drafts = report.to_palace_drafts()
         with open(args.output, "w") as f:
             json.dump(drafts, f, indent=2)
