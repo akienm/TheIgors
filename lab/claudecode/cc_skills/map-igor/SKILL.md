@@ -12,9 +12,9 @@ running, what's broken, or how today's state differs from yesterday's.
 ## Usage
 
 ```bash
-python3 ~/TheIgors/lab/claudecode/map_igor.py
-python3 ~/TheIgors/lab/claudecode/map_igor.py --since=yesterday
-python3 ~/TheIgors/lab/claudecode/map_igor.py --section=tickets
+python3 ${CC_WORKFLOW_TOOLS}/map_igor.py
+python3 ${CC_WORKFLOW_TOOLS}/map_igor.py --since=yesterday
+python3 ${CC_WORKFLOW_TOOLS}/map_igor.py --section=tickets
 ```
 
 Output file: `~/.TheIgors/maps/igor-map-<YYYY-MM-DD-HHMMSS>.json`
@@ -45,7 +45,7 @@ Stdout: one-screen summary (the file has the detail).
 ## Diff mode
 
 ```bash
-python3 ~/TheIgors/lab/claudecode/map_igor.py --since=yesterday
+python3 ${CC_WORKFLOW_TOOLS}/map_igor.py --since=yesterday
 ```
 
 Compares current snapshot against the most recent prior map in
@@ -55,7 +55,7 @@ Useful at day-close to see what actually moved.
 ## Single-section mode
 
 ```bash
-python3 ~/TheIgors/lab/claudecode/map_igor.py --section=tickets
+python3 ${CC_WORKFLOW_TOOLS}/map_igor.py --section=tickets
 ```
 
 Runs only one section. Faster, less noise.

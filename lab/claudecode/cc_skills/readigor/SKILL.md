@@ -30,7 +30,7 @@ Call the MCP `channel_read` tool for the target machine (see table above) with `
 
 If no MCP tool is available for the target machine, fall back to:
 ```bash
-python3 ~/TheIgors/lab/claudecode/channel.py read 20
+python3 ${CC_WORKFLOW_TOOLS}/channel.py read 20
 ```
 (shared Postgres channel — shows all machines)
 
