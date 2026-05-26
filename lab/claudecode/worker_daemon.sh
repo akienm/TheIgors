@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
-# worker_daemon.sh — CC worker daemon.
+# worker_daemon.sh — RETIRED 2026-05-25
 #
-# Polls cc_queue.py next for the highest-priority unclaimed sprint ticket and
-# runs `claude /sprint <id>` for each one. Respects the queue gate file
-# (~/.TheIgors/cc_channel/queue_gate.json) — sleeps when gate is tripped.
-# Self-restarts via exec when this script is updated between iterations.
+# This daemon is permanently disabled. It auto-sprinted tickets autonomously,
+# which was suspended pending Igor reasoning stabilization and the ADC queue
+# rack device design.
 #
-# Launch via: python3 cc_queue.py worker-launch
-# Or directly: bash ~/TheIgors/lab/claudecode/worker_daemon.sh
+# REPLACEMENT: Use /query-ticket (read-only) to see what's next, then
+# /sprint T-xxx to explicitly start a ticket. The ADC queue rack device
+# (T-adc-queue-device) will provide queue_next(worker) via MCP when shipped.
+#
+# DO NOT restart this daemon without explicit Akien approval.
+# cc_queue.py claim now raises LegacyDirectClaimError — autonomous claiming
+# is removed from the system.
+
+echo "worker_daemon.sh is RETIRED (2026-05-25). See comment header for replacement path." >&2
+exit 1
+
+# ── ARCHIVED BODY BELOW ──────────────────────────────────────────────────────
+# The code below is kept for reference only. It does not execute.
+: <<'ARCHIVED'
 
 set -uo pipefail
 
@@ -91,3 +102,4 @@ while true; do
         sleep 300
     fi
 done
+ARCHIVED
