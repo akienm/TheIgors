@@ -207,14 +207,13 @@ Silent when the log is empty or has no records in the last 30 days. Never blocks
 
 ## Step 5.95 — Next ticket
 
-Always surface what the queue would hand out next — one line, read-only:
-```bash
-NEXT=$(python3 ${CC_WORKFLOW_TOOLS}/cc_queue.py next --worker claude 2>/dev/null)
-[ -n "$NEXT" ] && python3 ${CC_WORKFLOW_TOOLS}/cc_queue.py show "$NEXT" 2>/dev/null \
-  | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'Next ticket: {d[\"id\"]} ({d[\"size\"]}) — {d[\"title\"]}')" \
-  || echo "Next ticket: (queue empty)"
+Always surface what the queue would hand out next — one line, read-only.
+Call via MCP (canonical path):
 ```
-When the ADC queue device ships, replace this with `mcp__datacenter__queue_next(worker="claude")`.
+mcp__datacenter__queue_next(worker="claude")
+```
+Returns the full ticket dict. Print: `Next ticket: <id> (<size>) — <title>`.
+When null (empty queue or gate tripped): print `Next ticket: (queue empty or gate tripped)`.
 Use `/query-ticket` for the full interactive version.
 
 ## Step 6 — Assemble briefing
