@@ -43,6 +43,7 @@ Usage:
     cc_queue.py ungate <id> [note]               — clear a ticket's gate
     cc_queue.py set-decision <id> <decision-id>  — attach a decision id to a ticket
     cc_queue.py migrate-statuses                 — one-time migration: strip title prefixes, map old → new statuses
+# tags: Queue, Workflow
 """
 
 import json

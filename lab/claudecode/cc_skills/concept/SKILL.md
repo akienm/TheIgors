@@ -48,7 +48,7 @@ title: <one-line what-is-this>
 
 related_goals: [G-xxx, ...]  # which goals this concept serves (if any)
 related_concepts: [C-xxx, ...] # other concepts this one relies on or extends
-tags: [<Topic>, ...]
+tags: [<Topic>, ...]  # REQUIRED — at least 1, max 4, from C-tag-vocabulary canonical list
 ```
 
 **Content rules:**
@@ -56,6 +56,7 @@ tags: [<Topic>, ...]
 - Self-contained: define all jargon inline or via related_concepts links
 - No bullet-lists-as-substitute-for-prose — explain the shape in sentences
 - Scope: what this concept IS, what it is NOT, where it ends
+- Tags are mandatory: 1–4 tags from the C-tag-vocabulary canonical list
 
 ### 3. Accord check (mandatory)
 
