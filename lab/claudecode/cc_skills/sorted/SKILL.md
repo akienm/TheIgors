@@ -54,6 +54,8 @@ The hypothesis must be extracted and stored on the decision record before audit-
 
 **Question 3:** "How will we know? What's the signal?" — a metric, log line, behavior, or eval question that can be checked with current infrastructure.
 
+**Question 4:** "Which concepts does this decision assume?" — list C-xxx identifiers (from palace.concepts.*), or `none`.
+
 Store answers in the decision record (both the .md file and palace node metadata):
 ```
 ## Hypothesis
@@ -64,6 +66,9 @@ Store answers in the decision record (both the .md file and palace node metadata
 
 ## Goal Link
 <G-xxx or "none: <reason>">
+
+## Concept Links
+<C-xxx, C-yyy or "none">
 ```
 
 If Akien can't answer Question 2 in one falsifiable sentence, the design may not be ready to ticket yet — surface that and offer to continue designing.
@@ -176,15 +181,22 @@ at `lab/design_docs/decisions/D-....md`:
 **date:** YYYY-MM-DD
 **status:** open
 **spawned_tickets:** T-x, T-y, T-z
+**goal_link:** G-xxx or none
+**concept_links:** C-xxx, C-yyy or none
 
 ## Decision narrative
 <1-2 sentences from step 2 + context from the conversation scope>
+
+## Concept Links
+<C-xxx — <concept title>, or "none">
 ```
 
 Fields expected on the palace node (same shape):
 - `title` — one-line decision summary
 - `content` — decision narrative (summary + scope context)
 - `spawned_tickets` — list of ticket ids created
+- `goal_link` — G-xxx or "none: <reason>"
+- `concept_links` — list of C-xxx identifiers
 - `date` — YYYY-MM-DD
 - `status` — `open` (auto-closes when all spawned_tickets close, via decision-rollup)
 
