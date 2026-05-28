@@ -9,15 +9,16 @@
 #   igor --help           # show help
 #
 # This script's only job: find Python + ensure venv exists, then hand off
-# to wild_igor/setup_assets/installer.py (platform-smart Python).
-# All restart logic, migration, and crash recovery live in installer.py.
+# to UnseenUniversity/devices/igor/setup_assets/installer.py (platform-smart Python).
+# All restart logic and crash recovery live in installer.py.
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 VENV_DIR="$REPO_DIR/venv"
-INSTALLER="$REPO_DIR/wild_igor/setup_assets/installer.py"
-REQUIREMENTS="$REPO_DIR/wild_igor/requirements.txt"
+UU_DIR="$HOME/dev/src/UnseenUniversity"
+INSTALLER="$UU_DIR/devices/igor/setup_assets/installer.py"
+REQUIREMENTS="$REPO_DIR/requirements.txt"
 
 if [ ! -d "$VENV_DIR" ]; then
     echo "[igor] Bootstrapping venv (first run)..."
