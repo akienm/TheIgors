@@ -54,7 +54,7 @@ class TestIgorADCShimBasics:
     def test_device_id_property(self):
         """Verify device_id property returns correct identifier."""
         shim = IgorADCShim()
-        assert shim.device_id == "adc-utility-closet"
+        assert shim.device_id == "adc-web-server"
 
     def test_self_test_when_health_check_passes(self):
         """Verify self_test() returns {passed: True} when ADC responds."""
@@ -150,20 +150,17 @@ class TestIgorADCShimStartStopRestart:
         result = shim.stop()
         assert result is True
 
-    def test_stop_terminates_owned_process(self):
-        """Verify stop() terminates the ADC process if Igor owns it."""
+    def test_stop_delegates_to_device_when_owned(self):
+        """Verify stop() delegates to _device.stop() when Igor owns the process."""
         shim = IgorADCShim()
-        mock_process = MagicMock()
-        mock_process.poll.return_value = None  # Process running
-        shim._process = mock_process
+        mock_device = MagicMock()
+        shim._device = mock_device
         shim._owns_process = True
 
         result = shim.stop()
 
         assert result is True
-        mock_process.terminate.assert_called_once()
-        mock_process.wait.assert_called()
-        assert shim._process is None
+        mock_device.stop.assert_called_once()
         assert shim._owns_process is False
 
     def test_restart_calls_stop_and_start(self):
@@ -185,18 +182,16 @@ class TestIgorADCShimStartStopRestart:
 class TestIgorADCShimRollback:
     """Tests for IgorADCShim rollback on start failure."""
 
-    def test_rollback_kills_process_if_owned(self):
-        """Verify rollback() kills the subprocess if Igor owns it."""
+    def test_rollback_stops_device_if_owned(self):
+        """Verify rollback() stops the device via stop() when Igor owns the process."""
         shim = IgorADCShim()
-        mock_process = MagicMock()
-        mock_process.poll.return_value = None  # Process running
-        shim._process = mock_process
+        mock_device = MagicMock()
+        shim._device = mock_device
         shim._owns_process = True
 
         shim.rollback()
 
-        mock_process.kill.assert_called_once()
-        assert shim._process is None
+        mock_device.stop.assert_called_once()
         assert shim._owns_process is False
 
     def test_rollback_no_op_if_not_owned(self):
@@ -206,16 +201,15 @@ class TestIgorADCShimRollback:
         # Should not raise
         shim.rollback()
 
-    def test_rollback_handles_timeout(self):
-        """Verify rollback() handles SIGKILL timeout gracefully."""
+    def test_rollback_handles_stop_error(self):
+        """Verify rollback() handles errors from stop() gracefully."""
         shim = IgorADCShim()
-        mock_process = MagicMock()
-        mock_process.poll.return_value = None
-        mock_process.kill.side_effect = subprocess.TimeoutExpired("cmd", 5.0)
-        shim._process = mock_process
+        mock_device = MagicMock()
+        mock_device.stop.side_effect = RuntimeError("device error")
+        shim._device = mock_device
         shim._owns_process = True
 
-        # Should not raise despite timeout
+        # Should not raise despite error
         shim.rollback()
 
         assert shim._owns_process is False
