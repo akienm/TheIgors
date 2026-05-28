@@ -101,13 +101,17 @@ If the plan proposes a deprecated form (raw psql, channel.py direct write,
 print()), amend before coding. Also run `/audit-precode` on the plan text
 before Step 6.
 
-**Optional: Librarian research (graceful degradation)**
-When `mcp__librarian__*` tools are available (check deferred tool list),
-call before coding to surface related prior work:
+**Recall first (graceful degradation)**
+Before the infrastructure brief, call recall on the ticket title + key terms to surface
+related prior work from memory — recall is the first lookup, bash is the fallback:
+```
+mcp__librarian__recall(topic="<ticket title> <key terms from description>")
+```
+Surface as one line: `Recall: <findings>`. When recall returns results, surface them inline — they may contain related prior work, known constraints, or design decisions about the affected files. When recall is unavailable, fall back to research:
 ```
 mcp__librarian__research(topic="<ticket title or key term>", depth="brief")
 ```
-Surface as one line: `Librarian: <findings>`. When unavailable or errors, skip silently — never block the sprint on librarian.
+When both are unavailable or empty, proceed silently — never block the sprint on librarian.
 
 ### 6. Pull + work
 

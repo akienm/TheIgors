@@ -129,6 +129,16 @@ fi
 Graceful degradation: if `adc.palace` is unreachable (first boot, DB down),
 the block emits a single warning and continues — context-load never gates on it.
 
+## Step 2.5 — Recall focus area (graceful degradation)
+
+After reading the slate, recall on the in-flight focus area before deeper
+investigation — recall-first surfaces stored knowledge without re-deriving it:
+```
+mcp__librarian__recall(topic="<in-flight topic from slate, or today's focus area>")
+```
+Surface as one line: `Recall: <findings>`. When the tool is unavailable or
+returns empty, proceed silently — never block context-load on recall.
+
 ## Step 3 — Decisions hot window (last 10)
 
 Reads from `adc.palace` (palace.decisions.* nodes, ordered by date desc).

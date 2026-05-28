@@ -75,6 +75,15 @@ If Akien can't answer Question 2 in one falsifiable sentence, the design may not
 
 Then run `/audit-hypothesis` on the extracted hypothesis. If AMEND: apply fixes before proceeding to Step 2.5.
 
+**Recall first (graceful degradation)**
+Before audit-design, recall on the decision topic to surface related decisions
+and constraints from memory — recall is the first lookup:
+```
+mcp__librarian__recall(topic="<decision summary keywords>")
+```
+Surface as one line: `Recall: <findings>`. When the tool is unavailable or
+returns empty, proceed to audit-design silently.
+
 ### 2.5. Audit the design (audit-design)
 
 Always invoke `audit-design` on the decision summary + scope context before
