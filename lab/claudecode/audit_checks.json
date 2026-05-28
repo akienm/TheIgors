@@ -95,6 +95,17 @@
       "added_at": "2026-05-27T19:53:43.794239",
       "mode": "forever",
       "ack_until": null
+    },
+    {
+      "name": "palace-decay-detection",
+      "kind": "sql",
+      "pattern": "SELECT path, title, updated_at, NOW() - updated_at AS age FROM adc.palace WHERE updated_at < NOW() - INTERVAL '30 days' ORDER BY updated_at ASC LIMIT 20",
+      "description": "Palace nodes not updated in 30+ days may be stale. Surface for spot-check \u2014 Akien approves all changes. Distinct from capability_map drift check.",
+      "severity": "low",
+      "added_by": "claude-code",
+      "added_at": "2026-05-27T20:02:11.599566",
+      "mode": "forever",
+      "ack_until": null
     }
   ],
   "history": [
