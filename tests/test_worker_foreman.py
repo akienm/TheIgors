@@ -231,23 +231,15 @@ class TestCmdAddWorkerDefault(unittest.TestCase):
 class TestLaunchNextWorkerDispatch(unittest.TestCase):
     """launch_next_worker routes by top pending ticket's worker field."""
 
-    def _run_launch(self, tasks: list) -> tuple[str, MagicMock, MagicMock]:
+    def _run_launch(self, tasks: list) -> tuple[str, MagicMock]:
         """Invoke launch_next_worker with dependencies mocked.
 
-        Returns (result, mock_adopt, mock_popen) for inspection.
+        Returns (result, mock_adopt) for inspection.
+        worker_daemon.sh is retired — no subprocess/Popen path exists any more.
         """
         from devices.igor.tools import worker_foreman as wf
 
         mock_adopt = MagicMock(return_value="adopted T-xyz: mocked")
-        mock_popen = MagicMock()
-        # Popen instance: wait() returns None; returncode 0; stdout readable
-        popen_instance = MagicMock()
-        popen_instance.wait.return_value = None
-        popen_instance.returncode = 0
-        popen_instance.stdout.read.return_value = b"launched ok"
-        popen_instance.stderr.read.return_value = b""
-        popen_instance.pid = 12345
-        mock_popen.return_value = popen_instance
 
         # Patch Cortex so the active-goal DB check inside launch_next_worker
         # doesn't make these routing tests sensitive to live DB state.
@@ -259,16 +251,15 @@ class TestLaunchNextWorkerDispatch(unittest.TestCase):
         with (
             patch.object(wf, "_load_queue", return_value=tasks),
             patch.object(wf, "adopt_next_ticket", mock_adopt),
-            patch.object(wf.subprocess, "Popen", mock_popen),
             patch(_CORTEX_PATH, return_value=mock_cortex),
             patch(_MT_PATH, mock_mt),
         ):
             result = wf.launch_next_worker()
 
-        return result, mock_adopt, mock_popen
+        return result, mock_adopt
 
     def test_worker_igor_returns_dispatch_hint(self):
-        """Top pending worker='igor' → dispatch hint returned, no adopt, no konsole."""
+        """Top pending worker='igor' → dispatch hint returned, no adopt."""
         tasks = [
             {
                 "id": "T-igor-1",
@@ -279,15 +270,14 @@ class TestLaunchNextWorkerDispatch(unittest.TestCase):
                 "tags": [],
             }
         ]
-        result, mock_adopt, mock_popen = self._run_launch(tasks)
+        result, mock_adopt = self._run_launch(tasks)
 
         mock_adopt.assert_not_called()
-        mock_popen.assert_not_called()
         self.assertIn("T-igor-1", result)
         self.assertIn("dispatch", result.lower())
 
-    def test_worker_claude_routes_to_konsole(self):
-        """Top pending worker='claude' → konsole-spawn path, not adopt."""
+    def test_worker_claude_returns_dispatch_hint(self):
+        """Top pending worker='claude' → dispatch hint returned (worker_daemon.sh retired)."""
         tasks = [
             {
                 "id": "T-claude-1",
@@ -298,17 +288,14 @@ class TestLaunchNextWorkerDispatch(unittest.TestCase):
                 "tags": ["HIGH"],
             }
         ]
-        result, mock_adopt, mock_popen = self._run_launch(tasks)
+        result, mock_adopt = self._run_launch(tasks)
 
         mock_adopt.assert_not_called()
-        mock_popen.assert_called_once()
-        # First positional arg of Popen is the command list
-        cmd = mock_popen.call_args[0][0]
-        self.assertIn("worker-launch", cmd)
-        self.assertIn("T-claude-1", cmd)
+        self.assertIn("T-claude-1", result)
+        self.assertIn("dispatch", result.lower())
 
-    def test_missing_worker_defaults_to_konsole(self):
-        """Top pending with no worker field → safe default = claude → konsole."""
+    def test_missing_worker_defaults_to_dispatch_hint(self):
+        """Top pending with no worker field → safe default = claude → dispatch hint."""
         tasks = [
             {
                 "id": "T-nw-1",
@@ -319,10 +306,11 @@ class TestLaunchNextWorkerDispatch(unittest.TestCase):
                 # no 'worker' field at all
             }
         ]
-        result, mock_adopt, mock_popen = self._run_launch(tasks)
+        result, mock_adopt = self._run_launch(tasks)
 
         mock_adopt.assert_not_called()
-        mock_popen.assert_called_once()
+        self.assertIn("T-nw-1", result)
+        self.assertIn("dispatch", result.lower())
 
     def test_igor_chosen_over_later_claude(self):
         """Worker field of the *top-priority* pending ticket drives dispatch hint."""
@@ -344,10 +332,9 @@ class TestLaunchNextWorkerDispatch(unittest.TestCase):
                 "tags": [],
             },
         ]
-        result, mock_adopt, mock_popen = self._run_launch(tasks)
+        result, mock_adopt = self._run_launch(tasks)
 
         mock_adopt.assert_not_called()
-        mock_popen.assert_not_called()
         self.assertIn("T-top-igor", result)
         self.assertIn("dispatch", result.lower())
 
@@ -396,7 +383,6 @@ class TestAdoptNextTicketStrictFlag(unittest.TestCase):
 
         with (
             patch.object(wf, "_load_queue", return_value=tasks),
-            patch("devices.igor.tools.worker_foreman.subprocess.Popen", MagicMock()),
             patch(_CORTEX_PATH, return_value=mock_cortex),
             patch(_MT_PATH, mock_mt),
         ):

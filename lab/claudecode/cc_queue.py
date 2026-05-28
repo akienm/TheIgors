@@ -34,7 +34,6 @@ Usage:
     cc_queue.py flush_decision <id> <summary> — flush decision to Igor memory
     cc_queue.py flush_session <session> <summary> — flush session blob to Igor memory
     cc_queue.py next --worker <name> [--max-difficulty=N]  — mark in_progress + return highest-priority sprint ticket for worker; errors if --worker omitted
-    cc_queue.py worker-launch                     — ensure worker daemon is running (spawns konsole if not)
     cc_queue.py reset [--timeout] <id>           — reset one ticket from in_progress → sprint; --timeout increments counter, trips gate at 3
     cc_queue.py reset-stale                       — reset all in_progress tickets → sprint (daemon startup cleanup)
     cc_queue.py set-worker <worker> <id> [<id>]  — assign worker (igor|claude) to ticket(s)
@@ -1244,8 +1243,6 @@ def cmd_flush_session(args):
 
 
 WORKER_PIDS_PATH = os.path.expanduser("~/.TheIgors/cc_channel/worker_pids.json")
-DAEMON_PID_FILE = os.path.expanduser("~/.TheIgors/cc_channel/worker_daemon.pid")
-DAEMON_SCRIPT = os.path.expanduser("~/TheIgors/lab/claudecode/worker_daemon.sh")
 
 
 def _load_worker_pids():
@@ -1259,18 +1256,6 @@ def _save_worker_pids(pids):
     os.makedirs(os.path.dirname(WORKER_PIDS_PATH), exist_ok=True)
     with open(WORKER_PIDS_PATH, "w") as f:
         json.dump(pids, f, indent=2)
-
-
-def _daemon_alive():
-    """Return daemon PID if running, else None."""
-    if not os.path.exists(DAEMON_PID_FILE):
-        return None
-    try:
-        pid = int(open(DAEMON_PID_FILE).read().strip())
-        os.kill(pid, 0)
-        return pid
-    except (ValueError, ProcessLookupError, PermissionError):
-        return None
 
 
 def cmd_notify_igor(args):
@@ -1292,42 +1277,6 @@ def cmd_notify_igor(args):
     except Exception as e:
         _log({"action": "notify_igor_failed", "error": str(e), "msg": msg})
         print(f"  [notify-igor failed — Igor not running? {e}]")
-
-
-def cmd_worker_launch(args):
-    """Ensure the worker daemon is running. Spawns a konsole if not already alive.
-
-    The daemon (worker_daemon.sh) polls the queue and runs /sprint for each
-    pending ticket automatically — no xdotool injection needed.
-    Ticket-id argument is accepted but ignored (daemon finds next pending itself).
-    """
-    import subprocess
-
-    pid = _daemon_alive()
-    if pid:
-        print(
-            f"Worker daemon already running (PID {pid}) — will pick up next pending ticket automatically."
-        )
-        return
-
-    proc = subprocess.Popen(
-        [
-            "konsole",
-            "--separate",
-            "-e",
-            "bash",
-            "-c",
-            f"bash {DAEMON_SCRIPT}; exec bash",
-        ],
-        start_new_session=True,
-    )
-    pids = _load_worker_pids()
-    pids["daemon"] = {
-        "konsole_pid": proc.pid,
-        "launched_at": datetime.now(timezone.utc).isoformat(),
-    }
-    _save_worker_pids(pids)
-    print(f"Launched worker daemon — konsole PID {proc.pid}")
 
 
 def _trip_gate(ticket_id: str, reason: str) -> None:
@@ -1636,7 +1585,6 @@ COMMANDS = {
     "add": cmd_add,
     "flush_decision": cmd_flush_decision,
     "flush_session": cmd_flush_session,
-    "worker-launch": cmd_worker_launch,
     "notify-igor": cmd_notify_igor,
     "next": cmd_next,
     "dispatch": cmd_dispatch,
