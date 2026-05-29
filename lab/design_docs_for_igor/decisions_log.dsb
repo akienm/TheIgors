@@ -674,3 +674,4 @@ D-pass-condition-required-2026-05-04|pass-condition-required|decided|All tickets
 2026-05-28T13:02:07 | D-uu-launcher-config-2026-05-28 | UU zero-config launcher + config layout + configurable frontend shim | tickets: T-uu-config-layout, T-uu-librarian-chat, T-consequence-uu-launcher
 2026-05-28T13:02:07 | D-recall-and-book-2026-05-28 | recall-first tooling in skills + book ch3/4/5 updates | tickets: T-recall-in-skills, T-book-ch3-recall, T-book-ch4-debug, T-book-ch5-launcher, T-consequence-recall-tools
 2026-05-28T13:18:25 | D-granny-nanny-2026-05-28 | Granny Weatherwax + Nanny Ogg rack devices | tickets: T-granny-weatherwax-device, T-nanny-ogg-device, T-consequence-granny-nanny
+2026-05-28T15:51:26 | D-reader-device-unified-uri-2026-05-28 | Unified ReaderDevice — URI scheme handlers + two output modes (summary + nodes) | tickets: T-reader-uri-resolver, T-reader-summary-mode, T-reader-node-mode, T-reader-equivalence-test, T-consequence-reader-device
