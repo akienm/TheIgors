@@ -15,22 +15,18 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-VENV_DIR="$REPO_DIR/venv"
 UU_DIR="$HOME/dev/src/UnseenUniversity"
+VENV_DIR="$UU_DIR/.venv"
 INSTALLER="$UU_DIR/devices/igor/setup_assets/installer.py"
-REQUIREMENTS="$REPO_DIR/requirements.txt"
 
 if [ ! -d "$VENV_DIR" ]; then
-    echo "[igor] Bootstrapping venv (first run)..."
-    python3 -m venv "$VENV_DIR"
-    "$VENV_DIR/bin/pip" install --upgrade pip -q
-    "$VENV_DIR/bin/pip" install -r "$REQUIREMENTS" -q
-    echo "[igor] venv ready."
+    echo "[igor] UU venv not found — run: cd $UU_DIR && pip install -e ."
+    exit 1
 fi
 
 # D335: start utility closet if not already running
-UC_SERVER="$REPO_DIR/lab/claudecode/utility_closet_server.py"
-IGOR_HOME="${HOME}/.TheIgors"
+UC_SERVER="$UU_DIR/lab/claudecode/utility_closet_server.py"
+IGOR_HOME="${HOME}/.unseen_university"
 if [ -f "$UC_SERVER" ]; then
     if "$VENV_DIR/bin/python" "$UC_SERVER" --check >/dev/null 2>&1; then
         echo "[igor] Utility closet: running"

@@ -34,6 +34,9 @@ def main() -> int:
     jsonls = _recent_jsonls()
     if not jsonls:
         return 0
+    uu_root = Path.home() / "dev" / "src" / "UnseenUniversity"
+    if str(uu_root) not in sys.path:
+        sys.path.insert(0, str(uu_root))
     try:
         from devices.claude.chat_log_handler import ChatLogHandler, ingest_session
     except ImportError as e:
