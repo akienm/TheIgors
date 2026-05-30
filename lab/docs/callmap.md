@@ -186,8 +186,8 @@ Conventions:
   - `devices/igor/cognition/local_preparse.py:156`
   - `devices/igor/cognition/narrative_engine.py:960`
   - `devices/igor/cognition/narrative_engine.py:1048`
-  - `devices/igor/cognition/narrative_engine.py:2126`
-  - `devices/igor/cognition/narrative_engine.py:2355`
+  - `devices/igor/cognition/narrative_engine.py:2168`
+  - `devices/igor/cognition/narrative_engine.py:2397`
   - `devices/igor/cognition/node_executor.py:142`
   - `devices/igor/cognition/node_executor.py:217`
   - `devices/igor/cognition/node_executor.py:233`
@@ -229,8 +229,8 @@ Conventions:
   - `devices/igor/cognition/wandering_search.py:284`
   - `devices/igor/cognition/watch_problems.py:170`
   - `devices/igor/cognition/watch_problems.py:383`
-  - `UnseenUniversity/devices/igor/config.py:56`
-  - `UnseenUniversity/devices/igor/config.py:73`
+  - `UnseenUniversity/devices/igor/config.py:58`
+  - `UnseenUniversity/devices/igor/config.py:75`
   - `UnseenUniversity/devices/igor/logging_setup.py:193`
   - `UnseenUniversity/devices/igor/main.py:1912`
   - `UnseenUniversity/devices/igor/main.py:3494`
@@ -329,12 +329,13 @@ Conventions:
 ### `_EmergencySafeLogger.error`
 
 - **Defined:** `devices/igor/tools/agent_base.py:46`
-- **Callers** (96):
+- **Callers** (97):
   - `lab/claudecode/book_learner.py:1390`
   - `lab/claudecode/cc_bridge.py:85`
   - `lab/claudecode/cc_bridge.py:107`
   - `lab/claudecode/cc_bridge.py:110`
   - `lab/claudecode/cc_bridge.py:208`
+  - `lab/claudecode/cc_task_listener.py:183`
   - `lab/utility_closet/comms.py:365`
   - `lab/utility_closet/comms.py:402`
   - `lab/utility_closet/db_shelf.py:70`
@@ -444,7 +445,7 @@ Conventions:
 ### `_EmergencySafeLogger.info`
 
 - **Defined:** `devices/igor/tools/agent_base.py:40`
-- **Callers** (255):
+- **Callers** (259):
   - `lab/claudecode/cc_bridge.py:133`
   - `lab/claudecode/cc_bridge.py:135`
   - `lab/claudecode/cc_bridge.py:169`
@@ -453,6 +454,10 @@ Conventions:
   - `lab/claudecode/cc_bridge.py:222`
   - `lab/claudecode/cc_queue.py:233`
   - `lab/claudecode/cc_queue.py:271`
+  - `lab/claudecode/cc_task_listener.py:118`
+  - `lab/claudecode/cc_task_listener.py:167`
+  - `lab/claudecode/cc_task_listener.py:176`
+  - `lab/claudecode/cc_task_listener.py:181`
   - `lab/claudecode/reading_campaign.py:712`
   - `lab/claudecode/reading_integrator.py:62`
   - `lab/claudecode/redis_migrate_wg.py:256`
@@ -566,7 +571,7 @@ Conventions:
   - `devices/igor/cognition/state_coherence_check.py:103`
   - `devices/igor/cognition/watch_problems.py:195`
   - `devices/igor/cognition/watch_problems.py:232`
-  - `UnseenUniversity/devices/igor/env_sync.py:343`
+  - `UnseenUniversity/devices/igor/env_sync.py:348`
   - `UnseenUniversity/devices/igor/main.py:3456`
   - `UnseenUniversity/devices/igor/main.py:3754`
   - `UnseenUniversity/devices/igor/main.py:3760`
@@ -704,9 +709,13 @@ Conventions:
 ### `_EmergencySafeLogger.warning`
 
 - **Defined:** `devices/igor/tools/agent_base.py:43`
-- **Callers** (362):
+- **Callers** (367):
   - `lab/claudecode/cc_bridge.py:103`
   - `lab/claudecode/cc_bridge.py:202`
+  - `lab/claudecode/cc_task_listener.py:97`
+  - `lab/claudecode/cc_task_listener.py:120`
+  - `lab/claudecode/cc_task_listener.py:128`
+  - `lab/claudecode/cc_task_listener.py:143`
   - `lab/claudecode/datacenter_mcp.py:115`
   - `lab/claudecode/reading_campaign.py:683`
   - `lab/claudecode/reading_integrator.py:163`
@@ -842,6 +851,7 @@ Conventions:
   - `devices/igor/cognition/milieu.py:478`
   - `devices/igor/cognition/milieu.py:490`
   - `devices/igor/cognition/narrative_engine.py:628`
+  - `devices/igor/cognition/narrative_engine.py:1096`
   - `devices/igor/cognition/node_executor.py:92`
   - `devices/igor/cognition/node_executor.py:153`
   - `devices/igor/cognition/node_executor.py:167`
@@ -910,7 +920,7 @@ Conventions:
   - `devices/igor/dashboard/terminal.py:112`
   - `UnseenUniversity/devices/igor/env_sync.py:186`
   - `UnseenUniversity/devices/igor/env_sync.py:242`
-  - `UnseenUniversity/devices/igor/env_sync.py:312`
+  - `UnseenUniversity/devices/igor/env_sync.py:317`
   - `UnseenUniversity/devices/igor/main.py:2599`
   - `UnseenUniversity/devices/igor/main.py:3464`
   - `UnseenUniversity/devices/igor/main.py:7198`
@@ -1887,7 +1897,7 @@ Conventions:
   - `devices/igor/cognition/graph_integrator.py:220`
   - `devices/igor/cognition/graph_integrator.py:243`
   - `devices/igor/cognition/graph_integrator.py:252`
-  - `devices/igor/cognition/narrative_engine.py:2154`
+  - `devices/igor/cognition/narrative_engine.py:2196`
   - `devices/igor/cognition/reading_indexer.py:231`
   - `igor/cognition/reasoners/openrouter_reasoner.py:326`
   - `UnseenUniversity/devices/igor/main.py:5627`
@@ -2428,7 +2438,7 @@ Conventions:
 ### `NetworkProxy.get`
 
 - **Defined:** `devices/igor/tools/network_proxy.py:113`
-- **Callers** (2694):
+- **Callers** (2695):
   - `lab/benchmarks/benchmark.py:426`
   - `lab/benchmarks/benchmark.py:429`
   - `lab/benchmarks/benchmark.py:432`
@@ -2596,6 +2606,7 @@ Conventions:
   - `lab/claudecode/cc_queue.py:1828`
   - `lab/claudecode/cc_queue.py:1829`
   - `lab/claudecode/cc_queue.py:1852`
+  - `lab/claudecode/cc_task_listener.py:63`
   - `lab/claudecode/cert_worker_freeze.py:51`
   - `lab/claudecode/cert_worker_freeze.py:53`
   - `lab/claudecode/cert_worker_freeze.py:56`
@@ -3658,46 +3669,46 @@ Conventions:
   - `devices/igor/cognition/narrative_engine.py:974`
   - `devices/igor/cognition/narrative_engine.py:975`
   - `devices/igor/cognition/narrative_engine.py:1070`
-  - `devices/igor/cognition/narrative_engine.py:1117`
-  - `devices/igor/cognition/narrative_engine.py:1119`
-  - `devices/igor/cognition/narrative_engine.py:1175`
-  - `devices/igor/cognition/narrative_engine.py:1212`
-  - `devices/igor/cognition/narrative_engine.py:1361`
-  - `devices/igor/cognition/narrative_engine.py:1436`
-  - `devices/igor/cognition/narrative_engine.py:1455`
-  - `devices/igor/cognition/narrative_engine.py:1469`
-  - `devices/igor/cognition/narrative_engine.py:1470`
+  - `devices/igor/cognition/narrative_engine.py:1147`
+  - `devices/igor/cognition/narrative_engine.py:1149`
+  - `devices/igor/cognition/narrative_engine.py:1205`
+  - `devices/igor/cognition/narrative_engine.py:1242`
+  - `devices/igor/cognition/narrative_engine.py:1391`
   - `devices/igor/cognition/narrative_engine.py:1478`
-  - `devices/igor/cognition/narrative_engine.py:1504`
-  - `devices/igor/cognition/narrative_engine.py:1523`
-  - `devices/igor/cognition/narrative_engine.py:1534`
-  - `devices/igor/cognition/narrative_engine.py:1538`
+  - `devices/igor/cognition/narrative_engine.py:1497`
+  - `devices/igor/cognition/narrative_engine.py:1511`
+  - `devices/igor/cognition/narrative_engine.py:1512`
+  - `devices/igor/cognition/narrative_engine.py:1520`
+  - `devices/igor/cognition/narrative_engine.py:1546`
+  - `devices/igor/cognition/narrative_engine.py:1565`
   - `devices/igor/cognition/narrative_engine.py:1576`
-  - `devices/igor/cognition/narrative_engine.py:1583`
-  - `devices/igor/cognition/narrative_engine.py:1596`
-  - `devices/igor/cognition/narrative_engine.py:1597`
-  - `devices/igor/cognition/narrative_engine.py:1598`
-  - `devices/igor/cognition/narrative_engine.py:1686`
-  - `devices/igor/cognition/narrative_engine.py:1703`
-  - `devices/igor/cognition/narrative_engine.py:1708`
-  - `devices/igor/cognition/narrative_engine.py:1709`
-  - `devices/igor/cognition/narrative_engine.py:1744`
-  - `devices/igor/cognition/narrative_engine.py:1752`
-  - `devices/igor/cognition/narrative_engine.py:1753`
-  - `devices/igor/cognition/narrative_engine.py:1756`
-  - `devices/igor/cognition/narrative_engine.py:1763`
-  - `devices/igor/cognition/narrative_engine.py:1772`
-  - `devices/igor/cognition/narrative_engine.py:1820`
-  - `devices/igor/cognition/narrative_engine.py:1821`
-  - `devices/igor/cognition/narrative_engine.py:1839`
-  - `devices/igor/cognition/narrative_engine.py:1893`
-  - `devices/igor/cognition/narrative_engine.py:1914`
-  - `devices/igor/cognition/narrative_engine.py:1985`
-  - `devices/igor/cognition/narrative_engine.py:2069`
-  - `devices/igor/cognition/narrative_engine.py:2139`
-  - `devices/igor/cognition/narrative_engine.py:2140`
-  - `devices/igor/cognition/narrative_engine.py:2285`
-  - `devices/igor/cognition/narrative_engine.py:2288`
+  - `devices/igor/cognition/narrative_engine.py:1580`
+  - `devices/igor/cognition/narrative_engine.py:1618`
+  - `devices/igor/cognition/narrative_engine.py:1625`
+  - `devices/igor/cognition/narrative_engine.py:1638`
+  - `devices/igor/cognition/narrative_engine.py:1639`
+  - `devices/igor/cognition/narrative_engine.py:1640`
+  - `devices/igor/cognition/narrative_engine.py:1728`
+  - `devices/igor/cognition/narrative_engine.py:1745`
+  - `devices/igor/cognition/narrative_engine.py:1750`
+  - `devices/igor/cognition/narrative_engine.py:1751`
+  - `devices/igor/cognition/narrative_engine.py:1786`
+  - `devices/igor/cognition/narrative_engine.py:1794`
+  - `devices/igor/cognition/narrative_engine.py:1795`
+  - `devices/igor/cognition/narrative_engine.py:1798`
+  - `devices/igor/cognition/narrative_engine.py:1805`
+  - `devices/igor/cognition/narrative_engine.py:1814`
+  - `devices/igor/cognition/narrative_engine.py:1862`
+  - `devices/igor/cognition/narrative_engine.py:1863`
+  - `devices/igor/cognition/narrative_engine.py:1881`
+  - `devices/igor/cognition/narrative_engine.py:1935`
+  - `devices/igor/cognition/narrative_engine.py:1956`
+  - `devices/igor/cognition/narrative_engine.py:2027`
+  - `devices/igor/cognition/narrative_engine.py:2111`
+  - `devices/igor/cognition/narrative_engine.py:2181`
+  - `devices/igor/cognition/narrative_engine.py:2182`
+  - `devices/igor/cognition/narrative_engine.py:2327`
+  - `devices/igor/cognition/narrative_engine.py:2330`
   - `devices/igor/cognition/node_executor.py:109`
   - `devices/igor/cognition/node_executor.py:111`
   - `devices/igor/cognition/node_executor.py:139`
@@ -4005,12 +4016,12 @@ Conventions:
   - `devices/igor/cognition/word_graph.py:727`
   - `devices/igor/cognition/word_graph.py:762`
   - `devices/igor/cognition/word_graph.py:764`
-  - `devices/igor/cognition/word_graph.py:944`
-  - `devices/igor/cognition/word_graph.py:945`
-  - `UnseenUniversity/devices/igor/config.py:82`
-  - `UnseenUniversity/devices/igor/config.py:87`
-  - `UnseenUniversity/devices/igor/config.py:95`
-  - `UnseenUniversity/devices/igor/config.py:106`
+  - `devices/igor/cognition/word_graph.py:970`
+  - `devices/igor/cognition/word_graph.py:971`
+  - `UnseenUniversity/devices/igor/config.py:84`
+  - `UnseenUniversity/devices/igor/config.py:89`
+  - `UnseenUniversity/devices/igor/config.py:97`
+  - `UnseenUniversity/devices/igor/config.py:108`
   - `devices/igor/dashboard/terminal.py:80`
   - `devices/igor/dashboard/terminal.py:81`
   - `devices/igor/dashboard/terminal.py:82`
@@ -4041,7 +4052,7 @@ Conventions:
   - `UnseenUniversity/devices/igor/env_sync.py:156`
   - `UnseenUniversity/devices/igor/env_sync.py:233`
   - `UnseenUniversity/devices/igor/env_sync.py:234`
-  - `UnseenUniversity/devices/igor/env_sync.py:325`
+  - `UnseenUniversity/devices/igor/env_sync.py:330`
   - `UnseenUniversity/devices/igor/igor_base.py:193`
   - `UnseenUniversity/devices/igor/logging_setup.py:139`
   - `UnseenUniversity/devices/igor/logging_setup.py:201`
@@ -5847,7 +5858,7 @@ Conventions:
 ### `Tool.execute`
 
 - **Defined:** `devices/igor/tools/registry.py:29`
-- **Callers** (881):
+- **Callers** (882):
   - `lab/claudecode/audit_immobile_tickets.py:109`
   - `lab/claudecode/audit_immobile_tickets.py:110`
   - `lab/claudecode/audit_runner.py:97`
@@ -5882,6 +5893,7 @@ Conventions:
   - `lab/claudecode/cc_queue.py:533`
   - `lab/claudecode/cc_queue.py:1394`
   - `lab/claudecode/cc_queue.py:1413`
+  - `lab/claudecode/cc_task_listener.py:86`
   - `lab/claudecode/channel.py:110`
   - `lab/claudecode/cleanup_kernel_debris.py:55`
   - `lab/claudecode/cleanup_kernel_debris.py:57`
@@ -6273,11 +6285,11 @@ Conventions:
   - `devices/igor/cognition/goal_formation.py:247`
   - `devices/igor/cognition/graph_integrator.py:61`
   - `devices/igor/cognition/graph_integrator.py:135`
-  - `devices/igor/cognition/narrative_engine.py:1246`
-  - `devices/igor/cognition/narrative_engine.py:1251`
-  - `devices/igor/cognition/narrative_engine.py:1673`
-  - `devices/igor/cognition/narrative_engine.py:2335`
-  - `devices/igor/cognition/narrative_engine.py:2349`
+  - `devices/igor/cognition/narrative_engine.py:1276`
+  - `devices/igor/cognition/narrative_engine.py:1281`
+  - `devices/igor/cognition/narrative_engine.py:1715`
+  - `devices/igor/cognition/narrative_engine.py:2377`
+  - `devices/igor/cognition/narrative_engine.py:2391`
   - `devices/igor/cognition/playbook.py:66`
   - `devices/igor/cognition/playbook.py:85`
   - `devices/igor/cognition/playbook.py:116`
@@ -6333,11 +6345,11 @@ Conventions:
   - `devices/igor/cognition/word_graph.py:598`
   - `devices/igor/cognition/word_graph.py:709`
   - `devices/igor/cognition/word_graph.py:749`
-  - `devices/igor/cognition/word_graph.py:792`
-  - `devices/igor/cognition/word_graph.py:810`
-  - `devices/igor/cognition/word_graph.py:830`
-  - `devices/igor/cognition/word_graph.py:850`
-  - `devices/igor/cognition/word_graph.py:866`
+  - `devices/igor/cognition/word_graph.py:818`
+  - `devices/igor/cognition/word_graph.py:836`
+  - `devices/igor/cognition/word_graph.py:856`
+  - `devices/igor/cognition/word_graph.py:876`
+  - `devices/igor/cognition/word_graph.py:892`
   - `devices/igor/dashboard/terminal.py:282`
   - `devices/igor/dashboard/terminal.py:357`
   - `devices/igor/dashboard/terminal.py:382`
@@ -6791,7 +6803,7 @@ Conventions:
 ### `ToolRegistry.execute`
 
 - **Defined:** `devices/igor/tools/registry.py:126`
-- **Callers** (881):
+- **Callers** (882):
   - `lab/claudecode/audit_immobile_tickets.py:109`
   - `lab/claudecode/audit_immobile_tickets.py:110`
   - `lab/claudecode/audit_runner.py:97`
@@ -6826,6 +6838,7 @@ Conventions:
   - `lab/claudecode/cc_queue.py:533`
   - `lab/claudecode/cc_queue.py:1394`
   - `lab/claudecode/cc_queue.py:1413`
+  - `lab/claudecode/cc_task_listener.py:86`
   - `lab/claudecode/channel.py:110`
   - `lab/claudecode/cleanup_kernel_debris.py:55`
   - `lab/claudecode/cleanup_kernel_debris.py:57`
@@ -7217,11 +7230,11 @@ Conventions:
   - `devices/igor/cognition/goal_formation.py:247`
   - `devices/igor/cognition/graph_integrator.py:61`
   - `devices/igor/cognition/graph_integrator.py:135`
-  - `devices/igor/cognition/narrative_engine.py:1246`
-  - `devices/igor/cognition/narrative_engine.py:1251`
-  - `devices/igor/cognition/narrative_engine.py:1673`
-  - `devices/igor/cognition/narrative_engine.py:2335`
-  - `devices/igor/cognition/narrative_engine.py:2349`
+  - `devices/igor/cognition/narrative_engine.py:1276`
+  - `devices/igor/cognition/narrative_engine.py:1281`
+  - `devices/igor/cognition/narrative_engine.py:1715`
+  - `devices/igor/cognition/narrative_engine.py:2377`
+  - `devices/igor/cognition/narrative_engine.py:2391`
   - `devices/igor/cognition/playbook.py:66`
   - `devices/igor/cognition/playbook.py:85`
   - `devices/igor/cognition/playbook.py:116`
@@ -7277,11 +7290,11 @@ Conventions:
   - `devices/igor/cognition/word_graph.py:598`
   - `devices/igor/cognition/word_graph.py:709`
   - `devices/igor/cognition/word_graph.py:749`
-  - `devices/igor/cognition/word_graph.py:792`
-  - `devices/igor/cognition/word_graph.py:810`
-  - `devices/igor/cognition/word_graph.py:830`
-  - `devices/igor/cognition/word_graph.py:850`
-  - `devices/igor/cognition/word_graph.py:866`
+  - `devices/igor/cognition/word_graph.py:818`
+  - `devices/igor/cognition/word_graph.py:836`
+  - `devices/igor/cognition/word_graph.py:856`
+  - `devices/igor/cognition/word_graph.py:876`
+  - `devices/igor/cognition/word_graph.py:892`
   - `devices/igor/dashboard/terminal.py:282`
   - `devices/igor/dashboard/terminal.py:357`
   - `devices/igor/dashboard/terminal.py:382`
@@ -7677,7 +7690,7 @@ Conventions:
 ### `ToolRegistry.get`
 
 - **Defined:** `devices/igor/tools/registry.py:120`
-- **Callers** (2724):
+- **Callers** (2725):
   - `lab/benchmarks/benchmark.py:426`
   - `lab/benchmarks/benchmark.py:429`
   - `lab/benchmarks/benchmark.py:432`
@@ -7845,6 +7858,7 @@ Conventions:
   - `lab/claudecode/cc_queue.py:1828`
   - `lab/claudecode/cc_queue.py:1829`
   - `lab/claudecode/cc_queue.py:1852`
+  - `lab/claudecode/cc_task_listener.py:63`
   - `lab/claudecode/cert_worker_freeze.py:51`
   - `lab/claudecode/cert_worker_freeze.py:53`
   - `lab/claudecode/cert_worker_freeze.py:56`
@@ -8924,46 +8938,46 @@ Conventions:
   - `devices/igor/cognition/narrative_engine.py:974`
   - `devices/igor/cognition/narrative_engine.py:975`
   - `devices/igor/cognition/narrative_engine.py:1070`
-  - `devices/igor/cognition/narrative_engine.py:1117`
-  - `devices/igor/cognition/narrative_engine.py:1119`
-  - `devices/igor/cognition/narrative_engine.py:1175`
-  - `devices/igor/cognition/narrative_engine.py:1212`
-  - `devices/igor/cognition/narrative_engine.py:1361`
-  - `devices/igor/cognition/narrative_engine.py:1436`
-  - `devices/igor/cognition/narrative_engine.py:1455`
-  - `devices/igor/cognition/narrative_engine.py:1469`
-  - `devices/igor/cognition/narrative_engine.py:1470`
+  - `devices/igor/cognition/narrative_engine.py:1147`
+  - `devices/igor/cognition/narrative_engine.py:1149`
+  - `devices/igor/cognition/narrative_engine.py:1205`
+  - `devices/igor/cognition/narrative_engine.py:1242`
+  - `devices/igor/cognition/narrative_engine.py:1391`
   - `devices/igor/cognition/narrative_engine.py:1478`
-  - `devices/igor/cognition/narrative_engine.py:1504`
-  - `devices/igor/cognition/narrative_engine.py:1523`
-  - `devices/igor/cognition/narrative_engine.py:1534`
-  - `devices/igor/cognition/narrative_engine.py:1538`
+  - `devices/igor/cognition/narrative_engine.py:1497`
+  - `devices/igor/cognition/narrative_engine.py:1511`
+  - `devices/igor/cognition/narrative_engine.py:1512`
+  - `devices/igor/cognition/narrative_engine.py:1520`
+  - `devices/igor/cognition/narrative_engine.py:1546`
+  - `devices/igor/cognition/narrative_engine.py:1565`
   - `devices/igor/cognition/narrative_engine.py:1576`
-  - `devices/igor/cognition/narrative_engine.py:1583`
-  - `devices/igor/cognition/narrative_engine.py:1596`
-  - `devices/igor/cognition/narrative_engine.py:1597`
-  - `devices/igor/cognition/narrative_engine.py:1598`
-  - `devices/igor/cognition/narrative_engine.py:1686`
-  - `devices/igor/cognition/narrative_engine.py:1703`
-  - `devices/igor/cognition/narrative_engine.py:1708`
-  - `devices/igor/cognition/narrative_engine.py:1709`
-  - `devices/igor/cognition/narrative_engine.py:1744`
-  - `devices/igor/cognition/narrative_engine.py:1752`
-  - `devices/igor/cognition/narrative_engine.py:1753`
-  - `devices/igor/cognition/narrative_engine.py:1756`
-  - `devices/igor/cognition/narrative_engine.py:1763`
-  - `devices/igor/cognition/narrative_engine.py:1772`
-  - `devices/igor/cognition/narrative_engine.py:1820`
-  - `devices/igor/cognition/narrative_engine.py:1821`
-  - `devices/igor/cognition/narrative_engine.py:1839`
-  - `devices/igor/cognition/narrative_engine.py:1893`
-  - `devices/igor/cognition/narrative_engine.py:1914`
-  - `devices/igor/cognition/narrative_engine.py:1985`
-  - `devices/igor/cognition/narrative_engine.py:2069`
-  - `devices/igor/cognition/narrative_engine.py:2139`
-  - `devices/igor/cognition/narrative_engine.py:2140`
-  - `devices/igor/cognition/narrative_engine.py:2285`
-  - `devices/igor/cognition/narrative_engine.py:2288`
+  - `devices/igor/cognition/narrative_engine.py:1580`
+  - `devices/igor/cognition/narrative_engine.py:1618`
+  - `devices/igor/cognition/narrative_engine.py:1625`
+  - `devices/igor/cognition/narrative_engine.py:1638`
+  - `devices/igor/cognition/narrative_engine.py:1639`
+  - `devices/igor/cognition/narrative_engine.py:1640`
+  - `devices/igor/cognition/narrative_engine.py:1728`
+  - `devices/igor/cognition/narrative_engine.py:1745`
+  - `devices/igor/cognition/narrative_engine.py:1750`
+  - `devices/igor/cognition/narrative_engine.py:1751`
+  - `devices/igor/cognition/narrative_engine.py:1786`
+  - `devices/igor/cognition/narrative_engine.py:1794`
+  - `devices/igor/cognition/narrative_engine.py:1795`
+  - `devices/igor/cognition/narrative_engine.py:1798`
+  - `devices/igor/cognition/narrative_engine.py:1805`
+  - `devices/igor/cognition/narrative_engine.py:1814`
+  - `devices/igor/cognition/narrative_engine.py:1862`
+  - `devices/igor/cognition/narrative_engine.py:1863`
+  - `devices/igor/cognition/narrative_engine.py:1881`
+  - `devices/igor/cognition/narrative_engine.py:1935`
+  - `devices/igor/cognition/narrative_engine.py:1956`
+  - `devices/igor/cognition/narrative_engine.py:2027`
+  - `devices/igor/cognition/narrative_engine.py:2111`
+  - `devices/igor/cognition/narrative_engine.py:2181`
+  - `devices/igor/cognition/narrative_engine.py:2182`
+  - `devices/igor/cognition/narrative_engine.py:2327`
+  - `devices/igor/cognition/narrative_engine.py:2330`
   - `devices/igor/cognition/node_executor.py:109`
   - `devices/igor/cognition/node_executor.py:111`
   - `devices/igor/cognition/node_executor.py:139`
@@ -9275,12 +9289,12 @@ Conventions:
   - `devices/igor/cognition/word_graph.py:727`
   - `devices/igor/cognition/word_graph.py:762`
   - `devices/igor/cognition/word_graph.py:764`
-  - `devices/igor/cognition/word_graph.py:944`
-  - `devices/igor/cognition/word_graph.py:945`
-  - `UnseenUniversity/devices/igor/config.py:82`
-  - `UnseenUniversity/devices/igor/config.py:87`
-  - `UnseenUniversity/devices/igor/config.py:95`
-  - `UnseenUniversity/devices/igor/config.py:106`
+  - `devices/igor/cognition/word_graph.py:970`
+  - `devices/igor/cognition/word_graph.py:971`
+  - `UnseenUniversity/devices/igor/config.py:84`
+  - `UnseenUniversity/devices/igor/config.py:89`
+  - `UnseenUniversity/devices/igor/config.py:97`
+  - `UnseenUniversity/devices/igor/config.py:108`
   - `devices/igor/dashboard/terminal.py:80`
   - `devices/igor/dashboard/terminal.py:81`
   - `devices/igor/dashboard/terminal.py:82`
@@ -9311,7 +9325,7 @@ Conventions:
   - `UnseenUniversity/devices/igor/env_sync.py:156`
   - `UnseenUniversity/devices/igor/env_sync.py:233`
   - `UnseenUniversity/devices/igor/env_sync.py:234`
-  - `UnseenUniversity/devices/igor/env_sync.py:325`
+  - `UnseenUniversity/devices/igor/env_sync.py:330`
   - `UnseenUniversity/devices/igor/igor_base.py:193`
   - `UnseenUniversity/devices/igor/logging_setup.py:139`
   - `UnseenUniversity/devices/igor/logging_setup.py:201`
@@ -12525,7 +12539,7 @@ Conventions:
   - `devices/igor/cognition/forensic_logger.py:995`
   - `devices/igor/cognition/forensic_logger.py:1076`
   - `devices/igor/cognition/llm_peer_advisor.py:225`
-  - `devices/igor/cognition/narrative_engine.py:2417`
+  - `devices/igor/cognition/narrative_engine.py:2459`
   - `devices/igor/cognition/node_executor.py:271`
   - `devices/igor/cognition/response_coherence_inhibitor.py:212`
   - `devices/igor/cognition/self_test.py:121`
@@ -12987,7 +13001,7 @@ Conventions:
   - `devices/igor/cognition/forensic_logger.py:995`
   - `devices/igor/cognition/forensic_logger.py:1076`
   - `devices/igor/cognition/llm_peer_advisor.py:225`
-  - `devices/igor/cognition/narrative_engine.py:2417`
+  - `devices/igor/cognition/narrative_engine.py:2459`
   - `devices/igor/cognition/node_executor.py:271`
   - `devices/igor/cognition/response_coherence_inhibitor.py:212`
   - `devices/igor/cognition/self_test.py:121`
@@ -13418,7 +13432,7 @@ Conventions:
   - `devices/igor/cognition/forensic_logger.py:995`
   - `devices/igor/cognition/forensic_logger.py:1076`
   - `devices/igor/cognition/llm_peer_advisor.py:225`
-  - `devices/igor/cognition/narrative_engine.py:2417`
+  - `devices/igor/cognition/narrative_engine.py:2459`
   - `devices/igor/cognition/node_executor.py:271`
   - `devices/igor/cognition/response_coherence_inhibitor.py:212`
   - `devices/igor/cognition/self_test.py:121`
@@ -13934,7 +13948,7 @@ Conventions:
 ### `read_text`
 
 - **Defined:** `lab/claudecode/audit_pass1_run.py:211`
-- **Callers** (233):
+- **Callers** (234):
   - `lab/benchmarks/benchmark.py:529`
   - `lab/benchmarks/benchmark.py:680`
   - `lab/claudecode/audit_add.py:42`
@@ -13964,6 +13978,7 @@ Conventions:
   - `lab/claudecode/cc_hook_pending.py:59`
   - `lab/claudecode/cc_hook_pending.py:142`
   - `lab/claudecode/cc_queue.py:598`
+  - `lab/claudecode/cc_task_listener.py:69`
   - `lab/claudecode/cron_graph_cache_refresh.py:34`
   - `lab/claudecode/cron_graph_cache_refresh.py:58`
   - `lab/claudecode/decision_manager.py:105`
@@ -14122,7 +14137,7 @@ Conventions:
   - `devices/igor/cognition/training_corpus.py:294`
   - `devices/igor/cognition/training_corpus.py:523`
   - `devices/igor/cognition/user_context.py:108`
-  - `UnseenUniversity/devices/igor/config.py:62`
+  - `UnseenUniversity/devices/igor/config.py:64`
   - `UnseenUniversity/devices/igor/env_sync.py:174`
   - `UnseenUniversity/devices/igor/main.py:1658`
   - `UnseenUniversity/devices/igor/main.py:1680`
@@ -14763,6 +14778,15 @@ Conventions:
 - **Callers** (2):
   - `lab/claudecode/audit_findings_to_tickets.py:400` (subprocess)
   - `lab/claudecode/decision_manager.py:72` (subprocess)
+
+## `lab.claudecode.cc_task_listener`
+
+### `TaskListener.poll_once`
+
+- **Defined:** `lab/claudecode/cc_task_listener.py:149`
+- **Callers** (2):
+  - `lab/claudecode/cc_task_listener.py:179`
+  - `lab/claudecode/cc_task_listener.py:197`
 
 ## `lab.claudecode.cert_worker_freeze`
 
