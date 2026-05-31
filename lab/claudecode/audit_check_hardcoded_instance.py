@@ -29,9 +29,13 @@ EXEMPT_SUFFIXES: set[str] = {
     "devices/igor/cognition/response_habituation.py",
     "devices/igor/cognition/pipeline_manager.py",
     "devices/igor/cognition/machine_manager.py",
+    "devices/igor/cognition/safe_mode.py",  # fallback in except-block when paths() fails to import — canonical os.getenv pattern
+    "devices/igor/config.cfg.template",  # template placeholder set by first-run wizard, not runtime code
+    "devices/igor/tools/machine_manager.py",  # SQL schema DEFAULT — DDL literal, same exemption as cognition/machine_manager.py
     "devices/igor/network/channels/file_inbox.py",
     "devices/igor/main.py",
     "devices/igor/memory/node_id.py",
+    "devices/igor/setup_assets/installer.py",  # bootstrap launcher — reads IGOR_INSTANCE_ID before config loads; same pattern as config.py
     "devices/igor/tools/reading_tool.py",  # worker-script template path, exempt
     "devices/igor/tools/notebook.py",
     "devices/igor/tools/cluster_ssh.py",
@@ -88,7 +92,12 @@ def main() -> int:
             continue
         path_obj = Path(path_part)
         # Test whether this file is exempt by suffix match
-        rel = str(path_obj.relative_to(repo)) if path_obj.is_absolute() else path_part
+        try:
+            rel = (
+                str(path_obj.relative_to(repo)) if path_obj.is_absolute() else path_part
+            )
+        except ValueError:
+            rel = path_part  # cross-repo path: use raw path for suffix matching
         if any(rel.endswith(suffix) for suffix in EXEMPT_SUFFIXES):
             continue
         violations.append(line)
